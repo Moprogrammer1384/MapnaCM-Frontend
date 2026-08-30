@@ -64,17 +64,11 @@
 </div>
 <!--end::Quick links-->
 
-<!--begin::Theme mode-->
-<div class="app-navbar-item" [ngClass]="itemClass">
-  <app-theme-mode-switcher [toggleBtnClass]="btnClass" toggleBtnClass="{`btn-active-light-primary btn-custom ${toolbarButtonHeightClass}`}"></app-theme-mode-switcher>
-</div>
-<!--end::Theme mode-->
-
 <!--begin::User menu-->
 <div class="app-navbar-item" [ngClass]="itemClass">
   <!--begin::Menu wrapper-->
   <div class="cursor-pointer symbol" [ngClass]="userAvatarClass" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-    <img src="./assets/media/avatars/300-3.jpg" />
+    <img [src]="(user$ | async)?.pic || './assets/media/avatars/blank.png'" />
   </div>
   <app-user-inner data-kt-menu='true'></app-user-inner>
   <!--end::Menu wrapper-->

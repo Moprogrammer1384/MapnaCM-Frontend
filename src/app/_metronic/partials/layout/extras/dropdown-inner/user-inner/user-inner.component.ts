@@ -2,6 +2,10 @@ import { Component, HostBinding, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { TranslationService } from '../../../../../../modules/i18n';
 import { AuthService, UserType } from '../../../../../../modules/auth';
+import {
+  ThemeModeService,
+  ThemeModeType,
+} from '../../../theme-mode-switcher/theme-mode.service';
 
 @Component({
   selector: 'app-user-inner',
@@ -15,16 +19,23 @@ export class UserInnerComponent implements OnInit, OnDestroy {
   language: LanguageFlag;
   user$: Observable<UserType>;
   langs = languages;
+  menuMode$: Observable<ThemeModeType>;
   private unsubscribe: Subscription[] = [];
 
   constructor(
     private auth: AuthService,
-    private translationService: TranslationService
+    private translationService: TranslationService,
+    private themeModeService: ThemeModeService
   ) {}
 
   ngOnInit(): void {
     this.user$ = this.auth.currentUserSubject.asObservable();
+    this.menuMode$ = this.themeModeService.menuMode.asObservable();
     this.setLanguage(this.translationService.getSelectedLanguage());
+  }
+
+  switchMode(mode: ThemeModeType) {
+    this.themeModeService.switchMode(mode);
   }
 
   logout() {

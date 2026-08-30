@@ -2,8 +2,8 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
+    "rootDir": "./src",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "strictPropertyInitialization": false,
@@ -11,18 +11,22 @@
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
-    "downlevelIteration": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "module": "es2022",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "target": "es2022",
-    "module": "es2022",
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "src/*": [
+        "./src/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

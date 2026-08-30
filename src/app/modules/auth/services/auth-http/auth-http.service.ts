@@ -6,6 +6,7 @@ import { UserModel } from '../../models/user.model';
 import { environment } from '../../../../../environments/environment';
 import { AuthModel } from '../../models/auth.model';
 import { ApiEnvelope } from '../../../../core/models/response.model';
+import { UserProfile } from '../../../../core/models/profile.model';
 
 const API_AUTH_URL = `${environment.apiUrl}/Authentication`;
 const API_USER_URL = `${environment.apiUrl}/User`;
@@ -27,16 +28,7 @@ interface AuthenticationResponse {
   menus: unknown;
 }
 
-/** POST {apiUrl}/User/Profile response (AccountService.GetProfile) */
-interface UserProfile {
-  id: string;
-  userName: string;
-  phoneNumber?: string;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  isActive: boolean;
-}
+/** POST {apiUrl}/User/Profile response is shared: core/models/profile.model.ts */
 
 @Injectable({
   providedIn: 'root',
@@ -125,7 +117,8 @@ export class AuthHTTPService {
         .filter((part) => !!part)
         .join(' ')
         .trim(),
-      // pic is not part of the profile response; setUser defaults to the blank avatar
+      pic: profile.avatarImagePath || '',
+      phone: profile.phoneNumber || '',
     });
     return user;
   }

@@ -6,8 +6,9 @@ export const environment = {
   production: false,
   appVersion: 'v8.2.4',
   USERDATA_KEY: 'authf649fc9a5f55',
-  isMockEnabled: true,
-  apiUrl: 'api',
+  isMockEnabled: false,
+  // MapnaCM backend (Global.API) — CORS policy "AllowFrontend" already allows http://localhost:4200
+  apiUrl: 'http://localhost:5245/api',
   appThemeName: 'Metronic',
   appPurchaseUrl: 'https://1.envato.market/EA4JP',
   appHTMLIntegration:

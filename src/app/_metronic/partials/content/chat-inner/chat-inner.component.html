@@ -63,7 +63,7 @@
             <div class="symbol symbol-35px symbol-circle">
               <img
                 alt="Pic"
-                [src]="'./assets/media/' + getUser(message.user).avatar"
+                [src]="(currentUser$ | async)?.pic || './assets/media/avatars/blank.png'"
               />
             </div>
           </ng-container>

@@ -14,6 +14,7 @@ import {
   MessageModel,
   UserInfoModel,
 } from './dataExample';
+import { AuthService, UserType } from '../../../../modules/auth';
 
 @Component({
   selector: 'app-chat-inner',
@@ -32,9 +33,11 @@ export class ChatInnerComponent implements OnInit {
     Array<MessageModel>
   >(defaultMessages);
   messagesObs: Observable<Array<MessageModel>>;
+  currentUser$: Observable<UserType>;
 
-  constructor() {
+  constructor(private authService: AuthService) {
     this.messagesObs = this.messages$.asObservable();
+    this.currentUser$ = this.authService.currentUser$;
   }
 
   submitMessage(): void {

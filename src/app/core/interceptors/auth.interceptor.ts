@@ -9,15 +9,19 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { AuthService } from '../../modules/auth/services/auth.service';
+import { AuthService, getStoredAuthToken } from '../../modules/auth/services/auth.service';
 
 /**
  * Attaches the JWT access token to outgoing requests against the MapnaCM API
  * and logs the user out when the backend answers 401 (expired/invalid token).
  *
- * AuthService is resolved lazily through the Injector: the chain
- * AuthService -> AuthHTTPService -> HttpClient -> AuthInterceptor would
- * otherwise be a circular dependency at bootstrap (NG0200).
+ * The token is read via getStoredAuthToken() (a plain storage read, no DI)
+ * rather than through an injected AuthService: AuthService fires an HTTP
+ * request on itself during construction, and if this interceptor asked the
+ * injector for AuthService on that same request, it would be asking for
+ * AuthService while it's still being constructed (NG0200). AuthService is
+ * only resolved lazily, inside catchError, for the (async, post-bootstrap)
+ * logout() call on a 401.
  */
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -27,8 +31,7 @@ export class AuthInterceptor implements HttpInterceptor {
     req: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    const authService = this.injector.get(AuthService);
-    const token = authService.getAuthToken();
+    const token = getStoredAuthToken();
     const isApiRequest = req.url.startsWith(environment.apiUrl);
 
     const authReq =
@@ -42,9 +45,9 @@ export class AuthInterceptor implements HttpInterceptor {
           error instanceof HttpErrorResponse &&
           error.status === 401 &&
           isApiRequest &&
-          authService.getAuthToken()
+          token
         ) {
-          authService.logout();
+          this.injector.get(AuthService).logout();
         }
         return throwError(() => error);
       })

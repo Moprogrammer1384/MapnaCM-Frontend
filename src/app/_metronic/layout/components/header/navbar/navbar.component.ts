@@ -9,7 +9,6 @@ import { AuthService, UserType } from 'src/app/modules/auth';
 	styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent implements OnInit, AfterViewInit {
-	@Input() appHeaderDefaulMenuDisplay: boolean;
 	@Input() isRtl: boolean;
 
 	itemClass: string = 'ms-1 ms-lg-3';

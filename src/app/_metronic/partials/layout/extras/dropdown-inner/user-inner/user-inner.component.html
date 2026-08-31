@@ -140,18 +140,6 @@
           Dark
         </a>
       </div>
-
-      <div class="menu-item px-3 cursor-pointer" (click)="switchMode('system')">
-        <a
-          class="menu-link d-flex px-5"
-          [ngClass]="(menuMode$ | async) === 'system' ? 'active' : ''"
-        >
-          <span class="symbol symbol-20px me-4">
-            <app-keenicon name="screen" class="fs-3"></app-keenicon>
-          </span>
-          System
-        </a>
-      </div>
     </div>
   </div>
 

@@ -108,7 +108,11 @@ export class ToolbarComponent implements OnInit, OnDestroy {
       config
     ) as boolean;
 
-    document.body.setAttribute('data-kt-app-toolbar-enabled', 'true');
+    // Not setting data-kt-app-toolbar-enabled: that attribute tells
+    // _content.scss to zero out .app-content's own top padding, which only
+    // made sense when the toolbar was a separate spacer row above the
+    // content. Now the toolbar renders inside the header (see
+    // header.component.html), so content should keep its normal padding.
     document.body.setAttribute('data-kt-app-header-minimize', 'on');
   }
 

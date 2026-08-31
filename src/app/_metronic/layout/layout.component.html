@@ -26,11 +26,7 @@
       <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
         <!--begin::Content wrapper-->
         <div class="d-flex flex-column flex-column-fluid">
-          <ng-container *ngIf="appToolbarDisplay">
-            <app-toolbar class="app-toolbar" [ngClass]="appToolbarCSSClass" id="kt_app_toolbar"
-              [appToolbarLayout]="appToolbarLayout"></app-toolbar>
-          </ng-container>
-          <app-content id=" kt_app_content" class="app-content" [ngClass]="contentCSSClasses"
+          <app-content id="kt_app_content" class="app-content" [ngClass]="contentCSSClasses"
             [contentContainerCSSClass]="contentContainerCSSClass" [appContentContiner]="appContentContiner"
             [appContentContainerClass]="appContentContainerClass">
           </app-content>

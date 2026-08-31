@@ -45,37 +45,6 @@ export class LayoutInitService {
     document.body.setAttribute('data-kt-app-layout', layoutType);
     document.body.setAttribute('data-kt-name', 'metronic');
     document.body.classList.add('app-default');
-
-    const pageWidth = config.app?.general?.pageWidth;
-    if (layoutType === 'light-header' || layoutType === 'dark-header') {
-      if (pageWidth === 'default') {
-        const header = config.app?.header;
-        if (header && header.default && header.default.container) {
-          header.default.container = 'fixed';
-        }
-        const toolbar = config.app?.toolbar;
-        if (toolbar) {
-          toolbar.container = 'fixed';
-        }
-        const content = config.app?.content;
-        if (content) {
-          content.container = 'fixed';
-        }
-        const footer = config.app?.footer;
-        if (footer) {
-          footer.container = 'fixed';
-        }
-
-        const updatedApp = {
-          ...config.app,
-          ...header,
-          ...toolbar,
-          ...content,
-          ...footer,
-        };
-        this.config.next({ ...config, ...updatedApp });
-      }
-    }
   }
 
   private initToolbarSettings(config: ILayout) {

@@ -8,9 +8,7 @@ import {
   CSSClassesType,
   HTMLAttributesType,
 } from './configs/config';
-import { DarkHeaderConfig } from './configs/dark-header.config';
 import { DarkSidebarConfig } from './configs/dark-sidebar.config';
-import { LightHeaderConfig } from './configs/light-header.config';
 import { LightSidebarConfig } from './configs/light-sidebar.config';
 import { ActivatedRoute } from '@angular/router';
 
@@ -156,10 +154,6 @@ export class LayoutService {
         return DarkSidebarConfig;
       case 'light-sidebar':
         return LightSidebarConfig;
-      case 'dark-header':
-        return DarkHeaderConfig;
-      case 'light-header':
-        return LightHeaderConfig;
       default:
         return defaultLayoutConfig;
     }

@@ -9,13 +9,28 @@ import { Router } from '@angular/router';
 
 export type UserType = UserModel | undefined;
 
+const authLocalStorageToken = `${environment.appVersion}-${environment.USERDATA_KEY}`;
+
+// Reads the token straight from storage, with no AuthService instance involved.
+// AuthInterceptor uses this (instead of injecting AuthService) so that the HTTP
+// request AuthService fires on itself during construction doesn't ask the DI
+// container for AuthService while it's still being constructed (NG0200).
+export function getStoredAuthToken(): string | undefined {
+  try {
+    const lsValue = localStorage.getItem(authLocalStorageToken);
+    return lsValue ? (JSON.parse(lsValue) as AuthModel)?.authToken : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService implements OnDestroy {
   // private fields
   private unsubscribe: Subscription[] = []; // Read more: => https://brianflove.com/2016/12/11/anguar-2-unsubscribe-observables/
-  private authLocalStorageToken = `${environment.appVersion}-${environment.USERDATA_KEY}`;
+  private authLocalStorageToken = authLocalStorageToken;
 
   // public fields
   currentUser$: Observable<UserType>;

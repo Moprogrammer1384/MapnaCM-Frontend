@@ -19,7 +19,6 @@ import { ScriptsInitComponent } from './components/scripts-init/scripts-init.com
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
 import { TopbarComponent } from './components/topbar/topbar.component';
 import { PageTitleComponent } from './components/header/page-title/page-title.component';
-import { HeaderMenuComponent } from './components/header/header-menu/header-menu.component';
 import {
   DrawersModule,
   DropdownMenusModule,
@@ -56,7 +55,6 @@ const routes: Routes = [
     ToolbarComponent,
     TopbarComponent,
     PageTitleComponent,
-    HeaderMenuComponent,
     SidebarComponent,
     SidebarLogoComponent,
     SidebarMenuComponent,

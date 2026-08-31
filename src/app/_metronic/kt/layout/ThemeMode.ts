@@ -1,6 +1,6 @@
 import {EventHandlerUtil} from '../_utils'
 
-type Mode = 'light' | 'dark' | 'system'
+type Mode = 'light' | 'dark'
 
 class ThemeMode {
   menu: HTMLElement | null = null
@@ -34,10 +34,6 @@ class ThemeMode {
       return defaultMode
     }
 
-    if (menuMode === 'system') {
-      return this.getSystemMode()
-    }
-
     return menuMode
   }
 
@@ -50,13 +46,6 @@ class ThemeMode {
     // Get param names
     const modeParam: string = this.getParamName('value')
     const menuModeParam: string = this.getParamName('menu')
-
-    // Reset mode if system mode was changed
-    if (menuMode === 'system') {
-      if (this.getSystemMode() !== mode) {
-        mode = this.getSystemMode()
-      }
-    }
 
     // Check menu mode
     if (!menuMode) {
@@ -110,10 +99,6 @@ class ThemeMode {
     return (ls as Mode) || ''
   }
 
-  public getSystemMode = (): Mode => {
-    return window.matchMedia('(prefers-color-scheme: dark)') ? 'dark' : 'light'
-  }
-
   private initMode = (): void => {
     this.setMode(this.getMode(), this.getMenuMode())
     if (this.element) {
@@ -151,10 +136,9 @@ class ThemeMode {
           e.preventDefault()
 
           const menuMode: string | null = item.getAttribute('data-kt-value')
-          const mode = menuMode === 'system' ? this.getSystemMode() : menuMode
 
-          if (mode) {
-            this.setMode(mode as Mode, menuMode as Mode | '')
+          if (menuMode) {
+            this.setMode(menuMode as Mode, menuMode as Mode | '')
           }
         })
       })

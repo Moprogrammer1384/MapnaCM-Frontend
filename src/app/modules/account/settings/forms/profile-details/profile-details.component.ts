@@ -21,15 +21,17 @@ export class ProfileDetailsComponent implements OnInit, OnDestroy {
   isLoading: boolean;
   form: FormGroup;
   avatarPreview: string = './assets/media/avatars/blank.png';
+  hasCustomAvatar = false;
   errorMessage: string | undefined;
   successMessage: string | undefined;
   avatarError: string | undefined;
   @ViewChild('avatarInput') avatarInput: ElementRef<HTMLInputElement>;
 
+  private readonly defaultAvatar = './assets/media/avatars/blank.png';
   private readonly maxAvatarSizeBytes = 2 * 1024 * 1024;
   private readonly allowedAvatarTypes = ['image/jpeg', 'image/png', 'image/webp'];
   avatarFile: File | null = null;
-  private currentAvatar = './assets/media/avatars/blank.png';
+  private currentAvatar = this.defaultAvatar;
   private unsubscribe: Subscription[] = [];
 
   constructor(
@@ -46,10 +48,10 @@ export class ProfileDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      firstName: ['', Validators.required],
+      firstName: [''],
       lastName: [''],
-      email: ['', Validators.email],
-      phoneNumber: [''],
+      email: ['', [Validators.required, Validators.email]],
+      phoneNumber: ['', Validators.required],
       address: [''],
     });
     this.loadProfile();
@@ -92,6 +94,46 @@ export class ProfileDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
+  removeAvatar() {
+    if (!this.hasCustomAvatar) {
+      return;
+    }
+
+    this.errorMessage = undefined;
+    this.successMessage = undefined;
+    this.avatarError = undefined;
+
+    this.isLoading$.next(true);
+    const subscr = this.profileService
+      .removeAvatar()
+      .pipe(
+        first(),
+        finalize(() => {
+          this.isLoading$.next(false);
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (profile) => {
+          // drop any pending picked file and restore the default picture
+          this.avatarFile = null;
+          if (this.avatarInput) {
+            this.avatarInput.nativeElement.value = '';
+          }
+          this.currentAvatar = profile.avatarImagePath || this.defaultAvatar;
+          this.avatarPreview = this.currentAvatar;
+          this.hasCustomAvatar = !!profile.avatarImagePath;
+          this.successMessage = 'Profile picture removed.';
+          // refresh the shared current user so the header avatar updates everywhere
+          this.authService.getUserByToken().subscribe();
+        },
+        error: (err) => {
+          this.errorMessage = err?.message || 'Unable to remove the avatar.';
+        },
+      });
+    this.unsubscribe.push(subscr);
+  }
+
   saveSettings() {
     this.errorMessage = undefined;
     this.successMessage = undefined;
@@ -123,8 +165,9 @@ export class ProfileDetailsComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (profile) => {
-          this.currentAvatar = profile.avatarImagePath || this.currentAvatar;
+          this.currentAvatar = profile.avatarImagePath || this.defaultAvatar;
           this.avatarPreview = this.currentAvatar;
+          this.hasCustomAvatar = !!profile.avatarImagePath;
           this.avatarFile = null;
           this.successMessage = 'Profile updated successfully.';
           // refresh the shared current user so the header/avatar update everywhere
@@ -151,8 +194,9 @@ export class ProfileDetailsComponent implements OnInit, OnDestroy {
             address: profile.address || '',
           });
           this.currentAvatar =
-            profile.avatarImagePath || './assets/media/avatars/blank.png';
+            profile.avatarImagePath || this.defaultAvatar;
           this.avatarPreview = this.currentAvatar;
+          this.hasCustomAvatar = !!profile.avatarImagePath;
           this.cdr.detectChanges();
         },
         error: (err) => {

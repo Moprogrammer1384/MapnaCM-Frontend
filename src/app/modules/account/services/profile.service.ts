@@ -37,4 +37,17 @@ export class ProfileService {
       })
     );
   }
+
+  // POST {apiUrl}/User/RemoveAvatar => deletes the stored avatar file and
+  // resets AvatarImagePath; responds with the refreshed profile.
+  removeAvatar(): Observable<UserProfile> {
+    return this.http.post<ApiEnvelope<UserProfile>>(`${this.apiUrl}/RemoveAvatar`, {}).pipe(
+      map((response) => {
+        if (!response.success || !response.data) {
+          throw new Error(response.message || 'Unable to remove the avatar');
+        }
+        return response.data;
+      })
+    );
+  }
 }

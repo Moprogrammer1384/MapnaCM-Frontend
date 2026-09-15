@@ -1,12 +1,24 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit, Renderer2, TemplateRef, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
-import { Observable } from 'rxjs';
-import { DataTablesResponse, IUserModel, UserService } from 'src/app/_fake/services/user-service';
-import { SweetAlertOptions } from 'sweetalert2';
-import moment from 'moment';
-import { IRoleModel, RoleService } from 'src/app/_fake/services/role.service';
 import { Config } from 'datatables.net';
+import moment from 'moment';
+import Swal from 'sweetalert2';
+import { SweetAlertOptions } from 'sweetalert2';
+import { RoleModel } from 'src/app/core/models/user-management.model';
+import { RolesApiService } from '../../role/services/roles-api.service';
+import { AdminUserDetail, CreateUserPayload, EditUserPayload } from '../../../core/models/user-management.model';
+import { DataTablesResponse, UserManagementService } from '../services/user-management.service';
+
+interface UserFormModel {
+  id?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  roles: string[];
+}
 
 @Component({
   selector: 'app-user-listing',
@@ -16,34 +28,39 @@ import { Config } from 'datatables.net';
 export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isCollapsed1 = false;
-  isCollapsed2 = true;
 
   isLoading = false;
-
-  users: DataTablesResponse;
 
   datatableConfig: Config = {};
 
   // Reload emitter inside datatable
   reloadEvent: EventEmitter<boolean> = new EventEmitter();
 
-  // Single model
-  aUser: Observable<IUserModel>;
-  userModel: IUserModel = { id: 0, name: '', email: '', role: '' };
+  // Single model backing the add/edit modal
+  userModel: UserFormModel = this.emptyUserModel();
+
+  roles: RoleModel[] = [];
 
   @ViewChild('noticeSwal')
   noticeSwal!: SwalComponent;
 
   swalOptions: SweetAlertOptions = {};
 
-  roles$: Observable<DataTablesResponse>;
+  private clickListener: () => void;
 
-  constructor(private apiService: UserService, private roleService: RoleService, private cdr: ChangeDetectorRef) { }
-
-  ngAfterViewInit(): void {
-  }
+  constructor(
+    private apiService: UserManagementService,
+    private rolesApiService: RolesApiService,
+    private cdr: ChangeDetectorRef,
+    private renderer: Renderer2
+  ) { }
 
   ngOnInit(): void {
+    this.rolesApiService.getAll().subscribe((roles) => {
+      this.roles = roles;
+      this.cdr.detectChanges();
+    });
+
     this.datatableConfig = {
       serverSide: true,
       ajax: (dataTablesParameters: any, callback) => {
@@ -53,79 +70,157 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       columns: [
         {
-          title: 'Name', data: 'name', render: function (data, type, full) {
-            const colorClasses = ['success', 'info', 'warning', 'danger'];
-            const randomColorClass = colorClasses[Math.floor(Math.random() * colorClasses.length)];
-
-            const initials = data[0].toUpperCase();
-            const symbolLabel = `
-              <div class="symbol-label fs-3 bg-light-${randomColorClass} text-${randomColorClass}">
-                ${initials}
-              </div>
-            `;
-
-            const nameAndEmail = `
-              <div class="d-flex flex-column" data-action="view" data-id="${full.id}">
-                <a href="javascript:;" class="text-gray-800 text-hover-primary mb-1">${data}</a>
-                <span>${full.email}</span>
-              </div>
-            `;
+          title: 'User', data: 'userName', render: (data, type, full) => {
+            const name = `${full.firstName || ''} ${full.lastName || ''}`.trim() || full.userName;
+            const initials = (full.firstName?.[0] || full.userName?.[0] || '?').toUpperCase();
+            const email = full.email || '';
 
             return `
-              <div class="symbol symbol-circle symbol-50px overflow-hidden me-3" data-action="view" data-id="${full.id}">
-                <a href="javascript:;">
-                  ${symbolLabel}
-                </a>
+              <div class="d-flex align-items-center">
+                <div class="symbol symbol-circle symbol-50px overflow-hidden me-3" data-action="view" data-id="${full.id}">
+                  <a href="javascript:;">
+                    <span class="symbol-label fs-3 bg-light-primary text-primary">${initials}</span>
+                  </a>
+                </div>
+                <div class="d-flex flex-column" data-action="view" data-id="${full.id}">
+                  <a href="javascript:;" class="text-gray-800 text-hover-primary mb-1">${name}</a>
+                  <span>${email}</span>
+                </div>
               </div>
-              ${nameAndEmail}
             `;
           }
         },
         {
-          title: 'Role', data: 'role', render: function (data, type, row) {
-            const roleName = row.roles[0]?.name;
-            return roleName || '';
-          },
-          orderData: [1],
-          orderSequence: ['asc', 'desc'],
-          type: 'string',
-        },
-        {
-          title: 'Last Login', data: 'last_login_at', render: (data, type, full) => {
-            const date = data || full.created_at;
-            const dateString = moment(date).fromNow();
-            return `<div class="badge badge-light fw-bold">${dateString}</div>`;
+          title: 'Roles', data: 'roles', orderable: false, render: (data: string[]) => {
+            const badges = (data || [])
+              .map(role => `<span class="badge badge-light-primary fw-bold me-1">${role}</span>`)
+              .join('');
+            return badges || '<span class="text-muted fs-7">—</span>';
           }
         },
         {
-          title: 'Joined Date', data: 'created_at', render: function (data) {
-            return moment(data).format('DD MMM YYYY, hh:mm a');;
+          title: 'Status', data: 'isActive', render: (data: boolean, type, full) => {
+            // Clicks are confirmed in the component before the API call.
+            return `
+              <label class="form-check form-switch form-switch-sm form-check-custom form-check-solid" data-action="toggle-active" data-id="${full.id}" data-active="${data}" title="${data ? 'Deactivate' : 'Activate'}">
+                <input class="form-check-input" type="checkbox" ${data ? 'checked' : ''} />
+              </label>
+            `;
+          }
+        },
+        {
+          title: 'Created', data: 'createdAtUtc', render: (data) => {
+            if (!data) {
+              return '<span class="text-muted fs-7">—</span>';
+            }
+            return `
+              <div class="d-flex flex-column">
+                <span class="text-gray-800 fw-semibold">${moment(data).format('DD MMM YYYY')}</span>
+                <span class="text-muted fs-7">${moment(data).format('hh:mm a')}</span>
+              </div>
+            `;
           }
         }
       ],
       createdRow: function (row, data, dataIndex) {
-        $('td:eq(0)', row).addClass('d-flex align-items-center');
+        $('td:eq(0)', row).addClass('min-w-250px');
       },
     };
-
-    this.roles$ = this.roleService.getRoles();
   }
 
-  delete(id: number) {
-    this.apiService.deleteUser(id).subscribe(() => {
-      this.reloadEvent.emit(true);
+  ngAfterViewInit(): void {
+    // The status switches are rendered by DataTables, so listen at document
+    // level (same delegation approach as <app-crud>).
+    this.clickListener = this.renderer.listen(document, 'click', (event) => {
+      const toggle = (event.target as HTMLElement).closest('[data-action="toggle-active"]') as HTMLElement | null;
+      if (!toggle) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const id = toggle.dataset['id'];
+      const willActivate = toggle.dataset['active'] !== 'true';
+      if (!id) {
+        return;
+      }
+
+      Swal.fire({
+        icon: 'warning',
+        title: willActivate ? 'Activate user?' : 'Deactivate user?',
+        text: willActivate
+          ? 'The user will be able to sign in again.'
+          : 'The user will be signed out and unable to sign in until reactivated.',
+        showCancelButton: true,
+        buttonsStyling: false,
+        confirmButtonText: `Yes, ${willActivate ? 'activate' : 'deactivate'}!`,
+        cancelButtonText: 'Cancel',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-light',
+        },
+      }).then((result) => {
+        if (!result.isConfirmed) {
+          this.reloadEvent.emit(true);
+          return;
+        }
+
+        this.apiService.setActive(id, willActivate).subscribe({
+          next: () => {
+            this.showAlert({
+              icon: 'success',
+              title: 'Success!',
+              text: `User ${willActivate ? 'activated' : 'deactivated'} successfully!`,
+            });
+            this.reloadEvent.emit(true);
+          },
+          error: (error) => {
+            this.showAlert({ icon: 'error', title: 'Error!', text: this.errorMessage(error) });
+            this.reloadEvent.emit(true);
+          },
+        });
+      });
     });
   }
 
-  edit(id: number) {
-    this.aUser = this.apiService.getUser(id);
-    this.aUser.subscribe((user: IUserModel) => {
-      this.userModel = user;
+  delete(id: string) {
+    this.apiService.deleteUser(id).subscribe({
+      next: () => this.reloadEvent.emit(true),
+      error: (error) => {
+        this.showAlert({ icon: 'error', title: 'Error!', text: this.errorMessage(error) });
+        this.reloadEvent.emit(true);
+      },
+    });
+  }
+
+  edit(id: string) {
+    this.apiService.getUserById(id).subscribe((user: AdminUserDetail) => {
+      this.userModel = {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phoneNumber: user.phoneNumber || '',
+        password: '',
+        roles: (user.roles || []).map(role => role.name),
+      };
+      this.cdr.detectChanges();
     });
   }
 
   create() {
-    this.userModel = { id: 0, name: '', email: '', };
+    this.userModel = this.emptyUserModel();
+  }
+
+  onRoleToggle(roleName: string, event: any) {
+    const checked = event.target?.checked;
+    if (checked) {
+      if (!this.userModel.roles.includes(roleName)) {
+        this.userModel.roles = [...this.userModel.roles, roleName];
+      }
+    } else {
+      this.userModel.roles = this.userModel.roles.filter(role => role !== roleName);
+    }
   }
 
   onSubmit(event: Event, myForm: NgForm) {
@@ -133,12 +228,18 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    if (this.userModel.roles.length === 0) {
+      this.showAlert({ icon: 'error', title: 'Error!', text: 'Please assign at least one role.' });
+      return;
+    }
+
     this.isLoading = true;
 
+    const isEdit = !!this.userModel.id;
     const successAlert: SweetAlertOptions = {
       icon: 'success',
       title: 'Success!',
-      text: this.userModel.id > 0 ? 'User updated successfully!' : 'User created successfully!',
+      text: isEdit ? 'User updated successfully!' : 'User created successfully!',
     };
     const errorAlert: SweetAlertOptions = {
       icon: 'error',
@@ -146,46 +247,46 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       text: '',
     };
 
-    const completeFn = () => {
-      this.isLoading = false;
-    };
+    const request$ = isEdit
+      ? this.apiService.editUser({
+          userId: this.userModel.id!,
+          firstName: this.userModel.firstName,
+          lastName: this.userModel.lastName,
+          email: this.userModel.email,
+          phoneNumber: this.userModel.phoneNumber,
+          roles: this.userModel.roles,
+        } as EditUserPayload)
+      : this.apiService.createUser({
+          firstName: this.userModel.firstName,
+          lastName: this.userModel.lastName,
+          email: this.userModel.email,
+          userName: this.userModel.email,
+          phoneNumber: this.userModel.phoneNumber,
+          password: this.userModel.password,
+          roles: this.userModel.roles,
+        } as CreateUserPayload);
 
-    const updateFn = () => {
-      this.apiService.updateUser(this.userModel.id, this.userModel).subscribe({
-        next: () => {
-          this.showAlert(successAlert);
-          this.reloadEvent.emit(true);
-        },
-        error: (error) => {
-          errorAlert.text = this.extractText(error.error);
-          this.showAlert(errorAlert);
-          this.isLoading = false;
-        },
-        complete: completeFn,
-      });
-    };
+    request$.subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.showAlert(successAlert);
+        this.reloadEvent.emit(true);
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        errorAlert.text = this.errorMessage(error);
+        this.showAlert(errorAlert);
+      },
+    });
+  }
 
-    const createFn = () => {
-      this.userModel.password = 'test123';
-      this.apiService.createUser(this.userModel).subscribe({
-        next: () => {
-          this.showAlert(successAlert);
-          this.reloadEvent.emit(true);
-        },
-        error: (error) => {
-          errorAlert.text = this.extractText(error.error);
-          this.showAlert(errorAlert);
-          this.isLoading = false;
-        },
-        complete: completeFn,
-      });
-    };
+  private emptyUserModel(): UserFormModel {
+    return { firstName: '', lastName: '', email: '', phoneNumber: '', password: '', roles: [] };
+  }
 
-    if (this.userModel.id > 0) {
-      updateFn();
-    } else {
-      createFn();
-    }
+  private errorMessage(error: any): string {
+    return error?.message || this.extractText(error?.error) || 'An unexpected error occurred.';
   }
 
   extractText(obj: any): string {
@@ -204,7 +305,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
     // Use a Set to remove duplicates and convert back to an array
     var uniqueTextArray = Array.from(new Set(textArray));
 
-    // Convert the uniqueTextArray to a single string with line breaks
+    // Convert back to a single string with line breaks
     var text = uniqueTextArray.join('\n');
 
     return text;
@@ -227,6 +328,8 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.reloadEvent.unsubscribe();
+    if (this.clickListener) {
+      this.clickListener();
+    }
   }
 }

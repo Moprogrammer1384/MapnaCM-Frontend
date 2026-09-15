@@ -1,0 +1,1916 @@
+{
+  "_fake/fake-api.service.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6417162,
+    "ast_hash": "0655fe2393df0a956510efe9338877bc",
+    "semantic_hash": "0655fe2393df0a956510efe9338877bc"
+  },
+  "_fake/index.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6417162,
+    "ast_hash": "c4cafde937c7eab96d6e774478411ce8",
+    "semantic_hash": "c4cafde937c7eab96d6e774478411ce8"
+  },
+  "_fake/services/permission.service.ts": {
+    "mtime": 1707808636.0,
+    "seen": 1789489467.6417162,
+    "ast_hash": "3315d19a7c3cd9bf197237990cfe5f61",
+    "semantic_hash": "3315d19a7c3cd9bf197237990cfe5f61"
+  },
+  "_fake/services/role.service.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6417162,
+    "ast_hash": "cc12c2581b85b98f5275fb4eaa699603",
+    "semantic_hash": "cc12c2581b85b98f5275fb4eaa699603"
+  },
+  "_fake/services/user-service.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "bda9e7dd5adc7977db0b36822bf5b144",
+    "semantic_hash": "bda9e7dd5adc7977db0b36822bf5b144"
+  },
+  "_fake/users.table.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "8f3488f3ae2c9463d329756b50b66bd8",
+    "semantic_hash": "8f3488f3ae2c9463d329756b50b66bd8"
+  },
+  "_metronic/kt/_utils/DomHelpers.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "4f357510b22e8c920b14893c4a3947b4",
+    "semantic_hash": "4f357510b22e8c920b14893c4a3947b4"
+  },
+  "_metronic/kt/_utils/ElementAnimateUtil.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "a6c37ce88168ecf3501b5be7b9e1b195",
+    "semantic_hash": "a6c37ce88168ecf3501b5be7b9e1b195"
+  },
+  "_metronic/kt/_utils/EventHandlerUtil.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "4ea0588a32bc8bc2f0177794ad1a8553",
+    "semantic_hash": "4ea0588a32bc8bc2f0177794ad1a8553"
+  },
+  "_metronic/kt/_utils/_DOMEventHandlerUtil.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "928a9036a16640fdce5dc92dbae1f3d6",
+    "semantic_hash": "928a9036a16640fdce5dc92dbae1f3d6"
+  },
+  "_metronic/kt/_utils/_DataUtil.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "e423b9a7c3f0c8e315ce444dfb050c31",
+    "semantic_hash": "e423b9a7c3f0c8e315ce444dfb050c31"
+  },
+  "_metronic/kt/_utils/_ElementStyleUtil.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "e62348ba5e5a9363ee92c457a1a81ace",
+    "semantic_hash": "e62348ba5e5a9363ee92c457a1a81ace"
+  },
+  "_metronic/kt/_utils/_TypesHelpers.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "d308b0e800e85fa56346ef3547e9ef6b",
+    "semantic_hash": "d308b0e800e85fa56346ef3547e9ef6b"
+  },
+  "_metronic/kt/_utils/index.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "ae4371e569843938f0fb6f0b8051553c",
+    "semantic_hash": "ae4371e569843938f0fb6f0b8051553c"
+  },
+  "_metronic/kt/_utils/models/OffsetModel.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "5b4d70c72982040f75af2c5fc9b11cda",
+    "semantic_hash": "5b4d70c72982040f75af2c5fc9b11cda"
+  },
+  "_metronic/kt/_utils/models/ViewPortModel.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "402a957422c5dc393d51a47ca1eb0659",
+    "semantic_hash": "402a957422c5dc393d51a47ca1eb0659"
+  },
+  "_metronic/kt/components/MenuComponent.ts": {
+    "mtime": 1726511604.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "62d4660030e2abebfafca09b0356631a",
+    "semantic_hash": "62d4660030e2abebfafca09b0356631a"
+  },
+  "_metronic/kt/components/_CookieComponent.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "dc7bd0c312452d63c3eeb29bf4ff1ba0",
+    "semantic_hash": "dc7bd0c312452d63c3eeb29bf4ff1ba0"
+  },
+  "_metronic/kt/components/_DrawerComponent.ts": {
+    "mtime": 1726470268.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "59310df06a29ea159ec4a881ff9a0817",
+    "semantic_hash": "59310df06a29ea159ec4a881ff9a0817"
+  },
+  "_metronic/kt/components/_FeedbackComponent.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "9884a106b04939b2d8d5b327caaee8d1",
+    "semantic_hash": "9884a106b04939b2d8d5b327caaee8d1"
+  },
+  "_metronic/kt/components/_PasswordMeterComponent.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "c1f1a728455d08dfbb5f89da672b8bee",
+    "semantic_hash": "c1f1a728455d08dfbb5f89da672b8bee"
+  },
+  "_metronic/kt/components/_ScrollComponent.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "b83a0e99f8881906228ce6da21371e5a",
+    "semantic_hash": "b83a0e99f8881906228ce6da21371e5a"
+  },
+  "_metronic/kt/components/_ScrollTopComponent.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "c221dc88d0806fda2ee5bbbb860e5353",
+    "semantic_hash": "c221dc88d0806fda2ee5bbbb860e5353"
+  },
+  "_metronic/kt/components/_StepperComponent.ts": {
+    "mtime": 1714975520.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "2ea947df8631e9aefa2c4c7b89b6abbc",
+    "semantic_hash": "2ea947df8631e9aefa2c4c7b89b6abbc"
+  },
+  "_metronic/kt/components/_StickyComponent.ts": {
+    "mtime": 1688422790.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "89f6889a3d5988aaaa1799a96ddabff3",
+    "semantic_hash": "89f6889a3d5988aaaa1799a96ddabff3"
+  },
+  "_metronic/kt/components/_SwapperComponent.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "1e37c60b59e1eff90c4b7d7ceff7aa97",
+    "semantic_hash": "1e37c60b59e1eff90c4b7d7ceff7aa97"
+  },
+  "_metronic/kt/components/_ToggleComponent.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "3ad0eb97d92b354e7ca27c9468a10fe9",
+    "semantic_hash": "3ad0eb97d92b354e7ca27c9468a10fe9"
+  },
+  "_metronic/kt/components/index.ts": {
+    "mtime": 1695366194.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "394523136deb742439137e5c739f3217",
+    "semantic_hash": "394523136deb742439137e5c739f3217"
+  },
+  "_metronic/kt/index.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "3d285e65060829f4d1b8a4b148b6b487",
+    "semantic_hash": "3d285e65060829f4d1b8a4b148b6b487"
+  },
+  "_metronic/kt/kt-helpers.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "edf4e16e7a4cd08a44b88e9eb713e923",
+    "semantic_hash": "edf4e16e7a4cd08a44b88e9eb713e923"
+  },
+  "_metronic/kt/layout/ThemeMode.ts": {
+    "mtime": 1789487583.9647958,
+    "seen": 1789489467.6441216,
+    "ast_hash": "8bc7017b73f871a5ea91641ed8ed6faa",
+    "semantic_hash": "8bc7017b73f871a5ea91641ed8ed6faa"
+  },
+  "_metronic/kt/layout/index.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "04e9b0ef70663d8a33264857250c1c92",
+    "semantic_hash": "04e9b0ef70663d8a33264857250c1c92"
+  },
+  "_metronic/layout/components/content/content.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "9dc0cd595b0916ad6c30a3053fb960f3",
+    "semantic_hash": "9dc0cd595b0916ad6c30a3053fb960f3"
+  },
+  "_metronic/layout/components/footer/footer.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "89c0a738ec9ac5f4db88ac5c828f7d20",
+    "semantic_hash": "89c0a738ec9ac5f4db88ac5c828f7d20"
+  },
+  "_metronic/layout/components/footer/footer.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "c3c45858fcca8c68f3117b7574765eb2",
+    "semantic_hash": "c3c45858fcca8c68f3117b7574765eb2"
+  },
+  "_metronic/layout/components/header/header.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "365c6ed4c6eb5cf89cd5e4b0e1436326",
+    "semantic_hash": "365c6ed4c6eb5cf89cd5e4b0e1436326"
+  },
+  "_metronic/layout/components/header/header.component.ts": {
+    "mtime": 1789487583.9681978,
+    "seen": 1789489467.6441216,
+    "ast_hash": "fa534d7483dc0b49f47d8b989ab34822",
+    "semantic_hash": "fa534d7483dc0b49f47d8b989ab34822"
+  },
+  "_metronic/layout/components/header/navbar/navbar.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "14842651e4d12e2436c13dc44c279e0e",
+    "semantic_hash": "14842651e4d12e2436c13dc44c279e0e"
+  },
+  "_metronic/layout/components/header/navbar/navbar.component.ts": {
+    "mtime": 1789487583.9730098,
+    "seen": 1789489467.6441216,
+    "ast_hash": "a710686574d52fa965306e9f2bc1ea9d",
+    "semantic_hash": "a710686574d52fa965306e9f2bc1ea9d"
+  },
+  "_metronic/layout/components/header/page-title/page-title.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "6f97c9d0657c147915efce07cce29510",
+    "semantic_hash": "6f97c9d0657c147915efce07cce29510"
+  },
+  "_metronic/layout/components/scripts-init/scripts-init.component.ts": {
+    "mtime": 1709539296.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "35d4bd95d5ca35a2e1a671a87127d180",
+    "semantic_hash": "35d4bd95d5ca35a2e1a671a87127d180"
+  },
+  "_metronic/layout/components/sidebar/sidebar-footer/sidebar-footer.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "8b5eb35a0651c33ac52052d4c6373def",
+    "semantic_hash": "8b5eb35a0651c33ac52052d4c6373def"
+  },
+  "_metronic/layout/components/sidebar/sidebar-footer/sidebar-footer.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "aa87cb830848f53f566c20e403921c6d",
+    "semantic_hash": "aa87cb830848f53f566c20e403921c6d"
+  },
+  "_metronic/layout/components/sidebar/sidebar-logo/sidebar-logo.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "1a4f009d42cd2d548c6dd47b4f08133b",
+    "semantic_hash": "1a4f009d42cd2d548c6dd47b4f08133b"
+  },
+  "_metronic/layout/components/sidebar/sidebar-logo/sidebar-logo.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "685ab881df5b2b103923dbaac47c447c",
+    "semantic_hash": "685ab881df5b2b103923dbaac47c447c"
+  },
+  "_metronic/layout/components/sidebar/sidebar-menu/sidebar-menu.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "be609e124a77e66606cde5691d3b807d",
+    "semantic_hash": "be609e124a77e66606cde5691d3b807d"
+  },
+  "_metronic/layout/components/sidebar/sidebar-menu/sidebar-menu.component.ts": {
+    "mtime": 1706084142.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "abb5022c8b9d1f664826c837583b49f0",
+    "semantic_hash": "abb5022c8b9d1f664826c837583b49f0"
+  },
+  "_metronic/layout/components/sidebar/sidebar.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "b8b9b96652a674094fdff591989493fc",
+    "semantic_hash": "b8b9b96652a674094fdff591989493fc"
+  },
+  "_metronic/layout/components/sidebar/sidebar.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "a7cb74694f8aeed9f8b501c923184fde",
+    "semantic_hash": "a7cb74694f8aeed9f8b501c923184fde"
+  },
+  "_metronic/layout/components/toolbar/accounting/accounting.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "568768cdc407051f7c4fb993f4a4676f",
+    "semantic_hash": "568768cdc407051f7c4fb993f4a4676f"
+  },
+  "_metronic/layout/components/toolbar/accounting/accounting.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "9fc0bfe3569d76c1b361e72b9ea35d6a",
+    "semantic_hash": "9fc0bfe3569d76c1b361e72b9ea35d6a"
+  },
+  "_metronic/layout/components/toolbar/classic/classic.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "2faa360fa85f8a49c2d9b9ed863ed88a",
+    "semantic_hash": "2faa360fa85f8a49c2d9b9ed863ed88a"
+  },
+  "_metronic/layout/components/toolbar/classic/classic.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "cee7739ec3361a7676be5a349776d092",
+    "semantic_hash": "cee7739ec3361a7676be5a349776d092"
+  },
+  "_metronic/layout/components/toolbar/extended/extended.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "591b7a70ddd326e1343b9540eb76c27d",
+    "semantic_hash": "591b7a70ddd326e1343b9540eb76c27d"
+  },
+  "_metronic/layout/components/toolbar/extended/extended.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "f488908a03d3ce9e116eb26cb05b93a1",
+    "semantic_hash": "f488908a03d3ce9e116eb26cb05b93a1"
+  },
+  "_metronic/layout/components/toolbar/reports/reports.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "581a4d0e1ce18148c058dd8b8a6f001b",
+    "semantic_hash": "581a4d0e1ce18148c058dd8b8a6f001b"
+  },
+  "_metronic/layout/components/toolbar/reports/reports.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "59182cefa7840a77a55811965ce7cd5b",
+    "semantic_hash": "59182cefa7840a77a55811965ce7cd5b"
+  },
+  "_metronic/layout/components/toolbar/saas/saas.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "e79b281c48c99d0176ac26ef48364002",
+    "semantic_hash": "e79b281c48c99d0176ac26ef48364002"
+  },
+  "_metronic/layout/components/toolbar/saas/saas.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "8fffc2870f909c6dfad65cf782b6cb3c",
+    "semantic_hash": "8fffc2870f909c6dfad65cf782b6cb3c"
+  },
+  "_metronic/layout/components/toolbar/toolbar.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "2be3cc75712427c3989d5c8df2f43ff2",
+    "semantic_hash": "2be3cc75712427c3989d5c8df2f43ff2"
+  },
+  "_metronic/layout/components/toolbar/toolbar.component.ts": {
+    "mtime": 1789487583.976737,
+    "seen": 1789489467.6441216,
+    "ast_hash": "af87747e56a838a3ef3fc71987abd67e",
+    "semantic_hash": "af87747e56a838a3ef3fc71987abd67e"
+  },
+  "_metronic/layout/components/topbar/topbar.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "ea020c7ab9231d408dc45256eb16a5f5",
+    "semantic_hash": "ea020c7ab9231d408dc45256eb16a5f5"
+  },
+  "_metronic/layout/components/topbar/topbar.component.ts": {
+    "mtime": 1788121520.613992,
+    "seen": 1789489467.6441216,
+    "ast_hash": "7403595e7b380b7d14ffae4ebce21dba",
+    "semantic_hash": "7403595e7b380b7d14ffae4ebce21dba"
+  },
+  "_metronic/layout/core/configs/config.ts": {
+    "mtime": 1789487583.9772482,
+    "seen": 1789489467.6441216,
+    "ast_hash": "457acb7db32f8acdfd0953c96be3b1ea",
+    "semantic_hash": "457acb7db32f8acdfd0953c96be3b1ea"
+  },
+  "_metronic/layout/core/configs/dark-sidebar.config.ts": {
+    "mtime": 1742129930.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "a1b46bc1849d94542911b7b72a4cc405",
+    "semantic_hash": "a1b46bc1849d94542911b7b72a4cc405"
+  },
+  "_metronic/layout/core/configs/light-sidebar.config.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "2522383775de15f34359ca73b3adbe5b",
+    "semantic_hash": "2522383775de15f34359ca73b3adbe5b"
+  },
+  "_metronic/layout/core/layout-init.service.ts": {
+    "mtime": 1789487583.9772482,
+    "seen": 1789489467.6441216,
+    "ast_hash": "5d1f3671c39a8369ab5acf18b3b9df1c",
+    "semantic_hash": "5d1f3671c39a8369ab5acf18b3b9df1c"
+  },
+  "_metronic/layout/core/layout.service.ts": {
+    "mtime": 1789487583.9772482,
+    "seen": 1789489467.6441216,
+    "ast_hash": "a310bbdf4da63be3e72422a49124e845",
+    "semantic_hash": "a310bbdf4da63be3e72422a49124e845"
+  },
+  "_metronic/layout/core/page-info.service.ts": {
+    "mtime": 1704434004.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "261e1753ad663005a923c7ef68be067a",
+    "semantic_hash": "261e1753ad663005a923c7ef68be067a"
+  },
+  "_metronic/layout/index.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "7718bdd5155bf87da350cddd9f475da5",
+    "semantic_hash": "7718bdd5155bf87da350cddd9f475da5"
+  },
+  "_metronic/layout/layout.component.ts": {
+    "mtime": 1789487583.9772482,
+    "seen": 1789489467.6441216,
+    "ast_hash": "baa793ec9b5bd34f70e346a69c1e146f",
+    "semantic_hash": "baa793ec9b5bd34f70e346a69c1e146f"
+  },
+  "_metronic/layout/layout.module.ts": {
+    "mtime": 1789487583.9772482,
+    "seen": 1789489467.6441216,
+    "ast_hash": "bda3b099443bbe4993394568c270f707",
+    "semantic_hash": "bda3b099443bbe4993394568c270f707"
+  },
+  "_metronic/partials/content/cards/card1/card1.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "870a33c2d38e815cc3a4f7856233897f",
+    "semantic_hash": "870a33c2d38e815cc3a4f7856233897f"
+  },
+  "_metronic/partials/content/cards/card2/card2.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "ca2dacc90ea74b7f25016811f3e7830e",
+    "semantic_hash": "ca2dacc90ea74b7f25016811f3e7830e"
+  },
+  "_metronic/partials/content/cards/card3/card3.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "2b1936631ec5cfd37cbb1c3b507114f5",
+    "semantic_hash": "2b1936631ec5cfd37cbb1c3b507114f5"
+  },
+  "_metronic/partials/content/cards/card4/card4.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "ac6d3812201faa16aabbc05cbf94e193",
+    "semantic_hash": "ac6d3812201faa16aabbc05cbf94e193"
+  },
+  "_metronic/partials/content/cards/card5/card5.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "29bc206a1f74de61bec3660f55bb5032",
+    "semantic_hash": "29bc206a1f74de61bec3660f55bb5032"
+  },
+  "_metronic/partials/content/cards/cards.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "3d3475e76a02e58d258d6cf491148a12",
+    "semantic_hash": "3d3475e76a02e58d258d6cf491148a12"
+  },
+  "_metronic/partials/content/cards/icon-user.model.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "da431ec2592a96cc6487fa3f68ce27df",
+    "semantic_hash": "da431ec2592a96cc6487fa3f68ce27df"
+  },
+  "_metronic/partials/content/cards/user-list/user-list.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "47c78c3f1de2ad8138f1f64a7d3346e1",
+    "semantic_hash": "47c78c3f1de2ad8138f1f64a7d3346e1"
+  },
+  "_metronic/partials/content/cards/user-list/user-list.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "dfb3bd40a92565ca9b1b26d41116ac15",
+    "semantic_hash": "dfb3bd40a92565ca9b1b26d41116ac15"
+  },
+  "_metronic/partials/content/chat-inner/chat-inner.component.ts": {
+    "mtime": 1789487583.9772482,
+    "seen": 1789489467.6441216,
+    "ast_hash": "6d4abbc34dec12d3c3e8b6d86664c83c",
+    "semantic_hash": "6d4abbc34dec12d3c3e8b6d86664c83c"
+  },
+  "_metronic/partials/content/chat-inner/chat-inner.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "e3970121f97ca123574fab0f4c8b6914",
+    "semantic_hash": "e3970121f97ca123574fab0f4c8b6914"
+  },
+  "_metronic/partials/content/chat-inner/dataExample.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "790a42a24ec53803f997ec751983879d",
+    "semantic_hash": "790a42a24ec53803f997ec751983879d"
+  },
+  "_metronic/partials/content/dropdown-menus/dropdown-menu1/dropdown-menu1.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "f1ca3430a20a9666e63a5ac48e7cbdc4",
+    "semantic_hash": "f1ca3430a20a9666e63a5ac48e7cbdc4"
+  },
+  "_metronic/partials/content/dropdown-menus/dropdown-menu2/dropdown-menu2.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "a35a3df51a0c3405d25936415f028ba7",
+    "semantic_hash": "a35a3df51a0c3405d25936415f028ba7"
+  },
+  "_metronic/partials/content/dropdown-menus/dropdown-menu3/dropdown-menu3.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "37f89c5fa6b2f6c563753d9950b26185",
+    "semantic_hash": "37f89c5fa6b2f6c563753d9950b26185"
+  },
+  "_metronic/partials/content/dropdown-menus/dropdown-menus.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "521acd8a86a8967c84d32f237dc5f2c6",
+    "semantic_hash": "521acd8a86a8967c84d32f237dc5f2c6"
+  },
+  "_metronic/partials/content/widgets/_new/cards/cards-widget17/cards-widget17.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "492dda6ab939a370bc7b735d78acaf21",
+    "semantic_hash": "492dda6ab939a370bc7b735d78acaf21"
+  },
+  "_metronic/partials/content/widgets/_new/cards/cards-widget17/cards-widget17.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "e660f9bc18fca68b9b762c7c578cb9f6",
+    "semantic_hash": "e660f9bc18fca68b9b762c7c578cb9f6"
+  },
+  "_metronic/partials/content/widgets/_new/cards/cards-widget18/cards-widget18.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "c94594d8575184edfad12e21164aaa04",
+    "semantic_hash": "c94594d8575184edfad12e21164aaa04"
+  },
+  "_metronic/partials/content/widgets/_new/cards/cards-widget18/cards-widget18.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "1c78699209b26e261e135d6091b4492b",
+    "semantic_hash": "1c78699209b26e261e135d6091b4492b"
+  },
+  "_metronic/partials/content/widgets/_new/cards/cards-widget20/cards-widget20.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "84d26e89e63997fb45f5629c65c1afe9",
+    "semantic_hash": "84d26e89e63997fb45f5629c65c1afe9"
+  },
+  "_metronic/partials/content/widgets/_new/cards/cards-widget20/cards-widget20.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "3e6f25ad3e2e2b829509afc663f434d5",
+    "semantic_hash": "3e6f25ad3e2e2b829509afc663f434d5"
+  },
+  "_metronic/partials/content/widgets/_new/cards/cards-widget7/cards-widget7.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "dfbc4f0ddfbe2a55ed10ced4324fb244",
+    "semantic_hash": "dfbc4f0ddfbe2a55ed10ced4324fb244"
+  },
+  "_metronic/partials/content/widgets/_new/cards/cards-widget7/cards-widget7.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "bebdfee2c7fd157565229475a412aeae",
+    "semantic_hash": "bebdfee2c7fd157565229475a412aeae"
+  },
+  "_metronic/partials/content/widgets/_new/charts/new-charts-widget8/new-charts-widget8.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "fb96b12002da30da7fd056b157c85fa1",
+    "semantic_hash": "fb96b12002da30da7fd056b157c85fa1"
+  },
+  "_metronic/partials/content/widgets/_new/charts/new-charts-widget8/new-charts-widget8.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "29c8927efcba75b2e5c84e5678da4380",
+    "semantic_hash": "29c8927efcba75b2e5c84e5678da4380"
+  },
+  "_metronic/partials/content/widgets/_new/engage/engage-widget10/engage-widget10.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "708e070f27032847cf16e1dc1643b4c1",
+    "semantic_hash": "708e070f27032847cf16e1dc1643b4c1"
+  },
+  "_metronic/partials/content/widgets/_new/engage/engage-widget10/engage-widget10.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "0fb4f840b42e78d0d3a74ad7f3ecdab8",
+    "semantic_hash": "0fb4f840b42e78d0d3a74ad7f3ecdab8"
+  },
+  "_metronic/partials/content/widgets/_new/lists/lists-widget26/lists-widget26.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "fdf7da1212f596260411fffef4468495",
+    "semantic_hash": "fdf7da1212f596260411fffef4468495"
+  },
+  "_metronic/partials/content/widgets/_new/lists/lists-widget26/lists-widget26.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "3ab5952d5d75949c9dc3ac62fde6dfb4",
+    "semantic_hash": "3ab5952d5d75949c9dc3ac62fde6dfb4"
+  },
+  "_metronic/partials/content/widgets/_new/tables/tables-widget16/tables-widget16.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "8ae22a7bef691a4697eb013f37ea0cfa",
+    "semantic_hash": "8ae22a7bef691a4697eb013f37ea0cfa"
+  },
+  "_metronic/partials/content/widgets/_new/tables/tables-widget16/tables-widget16.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "f1bcbe22e91b5517e1a1571f5e4ea267",
+    "semantic_hash": "f1bcbe22e91b5517e1a1571f5e4ea267"
+  },
+  "_metronic/partials/content/widgets/advance-tables/advance-tables-widget1/advance-tables-widget1.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "4521bffa71cc0386d659072de2d92ea3",
+    "semantic_hash": "4521bffa71cc0386d659072de2d92ea3"
+  },
+  "_metronic/partials/content/widgets/advance-tables/advance-tables-widget2/advance-tables-widget2.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "dc521c396167d2d8f2bbcd4938883d71",
+    "semantic_hash": "dc521c396167d2d8f2bbcd4938883d71"
+  },
+  "_metronic/partials/content/widgets/advance-tables/advance-tables-widget7/advance-tables-widget7.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "d7d70d97ba6b67818c7f18c85253e176",
+    "semantic_hash": "d7d70d97ba6b67818c7f18c85253e176"
+  },
+  "_metronic/partials/content/widgets/base-tables/base-tables-widget1/base-tables-widget1.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "c3d26798570249f7bddba8d16b7c3561",
+    "semantic_hash": "c3d26798570249f7bddba8d16b7c3561"
+  },
+  "_metronic/partials/content/widgets/base-tables/base-tables-widget2/base-tables-widget2.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "f46b5ba407f556977ecf27f9df35ff72",
+    "semantic_hash": "f46b5ba407f556977ecf27f9df35ff72"
+  },
+  "_metronic/partials/content/widgets/base-tables/base-tables-widget6/base-tables-widget6.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "e5e5f2b839295cb50895325715a22470",
+    "semantic_hash": "e5e5f2b839295cb50895325715a22470"
+  },
+  "_metronic/partials/content/widgets/charts/charts-widget1/charts-widget1.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "c238fa0d69ce70892e05fb7242884aa0",
+    "semantic_hash": "c238fa0d69ce70892e05fb7242884aa0"
+  },
+  "_metronic/partials/content/widgets/charts/charts-widget2/charts-widget2.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "bdd365ea3b4cdad9a80b475ebe01af4f",
+    "semantic_hash": "bdd365ea3b4cdad9a80b475ebe01af4f"
+  },
+  "_metronic/partials/content/widgets/charts/charts-widget3/charts-widget3.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "8b7962914b824262a52149268dd0cfcc",
+    "semantic_hash": "8b7962914b824262a52149268dd0cfcc"
+  },
+  "_metronic/partials/content/widgets/charts/charts-widget4/charts-widget4.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "37b5c8da1597f98897d36103d20448a9",
+    "semantic_hash": "37b5c8da1597f98897d36103d20448a9"
+  },
+  "_metronic/partials/content/widgets/charts/charts-widget5/charts-widget5.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "92f1270880afc66beda2ace915761b39",
+    "semantic_hash": "92f1270880afc66beda2ace915761b39"
+  },
+  "_metronic/partials/content/widgets/charts/charts-widget6/charts-widget6.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "3618ff3f328f7c7ec8f08b08e8667c2b",
+    "semantic_hash": "3618ff3f328f7c7ec8f08b08e8667c2b"
+  },
+  "_metronic/partials/content/widgets/charts/charts-widget7/charts-widget7.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "49dbd9d6ee486695abaa39bb1774f4fe",
+    "semantic_hash": "49dbd9d6ee486695abaa39bb1774f4fe"
+  },
+  "_metronic/partials/content/widgets/charts/charts-widget8/charts-widget8.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "177ddabaf392575a9b3729d7c6447bf5",
+    "semantic_hash": "177ddabaf392575a9b3729d7c6447bf5"
+  },
+  "_metronic/partials/content/widgets/feeds/feeds-widget2/feeds-widget2.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "d20def635f8ff64a9c92b183f403010b",
+    "semantic_hash": "d20def635f8ff64a9c92b183f403010b"
+  },
+  "_metronic/partials/content/widgets/feeds/feeds-widget3/feeds-widget3.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "d72432c73ebc48b8b2378f0f07aa6345",
+    "semantic_hash": "d72432c73ebc48b8b2378f0f07aa6345"
+  },
+  "_metronic/partials/content/widgets/feeds/feeds-widget4/feeds-widget4.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "1a2b38fef190f5e99190e2a756e3a5f8",
+    "semantic_hash": "1a2b38fef190f5e99190e2a756e3a5f8"
+  },
+  "_metronic/partials/content/widgets/feeds/feeds-widget5/feeds-widget5.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "c9dfa4c5d096f5436ac65641305f3c5c",
+    "semantic_hash": "c9dfa4c5d096f5436ac65641305f3c5c"
+  },
+  "_metronic/partials/content/widgets/feeds/feeds-widget6/feeds-widget6.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "03073e8d7b217f287e1beb192da5f47a",
+    "semantic_hash": "03073e8d7b217f287e1beb192da5f47a"
+  },
+  "_metronic/partials/content/widgets/lists/lists-widget1/lists-widget1.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "1270e444d27872daa9a79e30aaf2e641",
+    "semantic_hash": "1270e444d27872daa9a79e30aaf2e641"
+  },
+  "_metronic/partials/content/widgets/lists/lists-widget2/lists-widget2.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "5c42830a3402b3dbd04469e7545c463c",
+    "semantic_hash": "5c42830a3402b3dbd04469e7545c463c"
+  },
+  "_metronic/partials/content/widgets/lists/lists-widget3/lists-widget3.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "a7f8670e632c207ca2805db5c446e1d7",
+    "semantic_hash": "a7f8670e632c207ca2805db5c446e1d7"
+  },
+  "_metronic/partials/content/widgets/lists/lists-widget4/lists-widget4.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "61efa9e9a1079b8742b92e939d88971d",
+    "semantic_hash": "61efa9e9a1079b8742b92e939d88971d"
+  },
+  "_metronic/partials/content/widgets/lists/lists-widget5/lists-widget5.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "bcc3631ccd8ee72854e8e65fddd1e193",
+    "semantic_hash": "bcc3631ccd8ee72854e8e65fddd1e193"
+  },
+  "_metronic/partials/content/widgets/lists/lists-widget6/lists-widget6.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "efca35ef8607687950e1be2383d58846",
+    "semantic_hash": "efca35ef8607687950e1be2383d58846"
+  },
+  "_metronic/partials/content/widgets/lists/lists-widget7/lists-widget7.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "f0d2978a996371bf16d850b8363a60fd",
+    "semantic_hash": "f0d2978a996371bf16d850b8363a60fd"
+  },
+  "_metronic/partials/content/widgets/lists/lists-widget8/lists-widget8.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "550badb5108eb599c992eead5d8477ca",
+    "semantic_hash": "550badb5108eb599c992eead5d8477ca"
+  },
+  "_metronic/partials/content/widgets/mixed/mixed-widget10/mixed-widget10.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "14ffd228ced72e8710bc0004106dbb4c",
+    "semantic_hash": "14ffd228ced72e8710bc0004106dbb4c"
+  },
+  "_metronic/partials/content/widgets/mixed/mixed-widget11/mixed-widget11.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "70f0841ffa4e879e673e48e569bc7e77",
+    "semantic_hash": "70f0841ffa4e879e673e48e569bc7e77"
+  },
+  "_metronic/partials/content/widgets/mixed/mixed-widget1/mixed-widget1.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "93f63ffbcd2d56a5442e4a7a46fb0b38",
+    "semantic_hash": "93f63ffbcd2d56a5442e4a7a46fb0b38"
+  },
+  "_metronic/partials/content/widgets/mixed/mixed-widget2/mixed-widget2.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "a214fcabc6dcc3766b7c5467b581d076",
+    "semantic_hash": "a214fcabc6dcc3766b7c5467b581d076"
+  },
+  "_metronic/partials/content/widgets/mixed/mixed-widget3/mixed-widget3.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "ebeaa3c1d7be5b46bec290fc3f7364ca",
+    "semantic_hash": "ebeaa3c1d7be5b46bec290fc3f7364ca"
+  },
+  "_metronic/partials/content/widgets/mixed/mixed-widget4/mixed-widget4.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "b03fb00a45664e1b49cc3fc5b75278e0",
+    "semantic_hash": "b03fb00a45664e1b49cc3fc5b75278e0"
+  },
+  "_metronic/partials/content/widgets/mixed/mixed-widget5/mixed-widget5.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "0e4e2220bc70779d75248553908e9999",
+    "semantic_hash": "0e4e2220bc70779d75248553908e9999"
+  },
+  "_metronic/partials/content/widgets/mixed/mixed-widget6/mixed-widget6.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "c80c8b3d0b765c3722b5c751297ebd45",
+    "semantic_hash": "c80c8b3d0b765c3722b5c751297ebd45"
+  },
+  "_metronic/partials/content/widgets/mixed/mixed-widget7/mixed-widget7.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "221b3c2c55cdbbf1d3858dbf2de093b1",
+    "semantic_hash": "221b3c2c55cdbbf1d3858dbf2de093b1"
+  },
+  "_metronic/partials/content/widgets/mixed/mixed-widget8/mixed-widget8.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "1536e20b46aec94302113f49e2b2d33f",
+    "semantic_hash": "1536e20b46aec94302113f49e2b2d33f"
+  },
+  "_metronic/partials/content/widgets/mixed/mixed-widget9/mixed-widget9.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "738d16f76e0e0c928027ca167599655b",
+    "semantic_hash": "738d16f76e0e0c928027ca167599655b"
+  },
+  "_metronic/partials/content/widgets/mixed/mixed-widget9/mixed-widget9.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "9c0def2978ef11f40dc5b11947172db2",
+    "semantic_hash": "9c0def2978ef11f40dc5b11947172db2"
+  },
+  "_metronic/partials/content/widgets/stats/stats-widget1/stats-widget1.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "39f58e8f808615789b7d544d4d95fcc9",
+    "semantic_hash": "39f58e8f808615789b7d544d4d95fcc9"
+  },
+  "_metronic/partials/content/widgets/stats/stats-widget2/stats-widget2.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "0ca9d8a68b2772f4422c9129b7033253",
+    "semantic_hash": "0ca9d8a68b2772f4422c9129b7033253"
+  },
+  "_metronic/partials/content/widgets/stats/stats-widget3/stats-widget3.component.ts": {
+    "mtime": 1745896456.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "c1b195dce86326b8d92473f84d6183d7",
+    "semantic_hash": "c1b195dce86326b8d92473f84d6183d7"
+  },
+  "_metronic/partials/content/widgets/stats/stats-widget4/stats-widget4.component.ts": {
+    "mtime": 1745896446.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "57afe38639d3eee698aa84e853e00543",
+    "semantic_hash": "57afe38639d3eee698aa84e853e00543"
+  },
+  "_metronic/partials/content/widgets/stats/stats-widget5/stats-widget5.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "7f03c3fd1a4f7b81d9203a88ebfab172",
+    "semantic_hash": "7f03c3fd1a4f7b81d9203a88ebfab172"
+  },
+  "_metronic/partials/content/widgets/stats/stats-widget6/stats-widget6.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "be99f878bfb51459f8105d27b2f3b2c2",
+    "semantic_hash": "be99f878bfb51459f8105d27b2f3b2c2"
+  },
+  "_metronic/partials/content/widgets/tables/tables-widget10/tables-widget10.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "a0906a0019daccb24e27246c14d4c552",
+    "semantic_hash": "a0906a0019daccb24e27246c14d4c552"
+  },
+  "_metronic/partials/content/widgets/tables/tables-widget11/tables-widget11.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "b7f5d7d8e0caab5164d15e535fb825c8",
+    "semantic_hash": "b7f5d7d8e0caab5164d15e535fb825c8"
+  },
+  "_metronic/partials/content/widgets/tables/tables-widget12/tables-widget12.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "e3f8537a343735a555d9dd15fa1c1c6e",
+    "semantic_hash": "e3f8537a343735a555d9dd15fa1c1c6e"
+  },
+  "_metronic/partials/content/widgets/tables/tables-widget13/tables-widget13.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "b0f5f8e66abb1981517831b8aab1a371",
+    "semantic_hash": "b0f5f8e66abb1981517831b8aab1a371"
+  },
+  "_metronic/partials/content/widgets/tables/tables-widget14/tables-widget14.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "254da12615a7806e77973d885b7b1a9a",
+    "semantic_hash": "254da12615a7806e77973d885b7b1a9a"
+  },
+  "_metronic/partials/content/widgets/tables/tables-widget14/tables-widget14.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "e0f091935220b8983de36e8ccb814786",
+    "semantic_hash": "e0f091935220b8983de36e8ccb814786"
+  },
+  "_metronic/partials/content/widgets/tables/tables-widget1/tables-widget1.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "e655909d5d90d08c3afe4ab3e3dd573f",
+    "semantic_hash": "e655909d5d90d08c3afe4ab3e3dd573f"
+  },
+  "_metronic/partials/content/widgets/tables/tables-widget2/tables-widget2.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "03bd38d346ee1640ff7b5970a28c9ed2",
+    "semantic_hash": "03bd38d346ee1640ff7b5970a28c9ed2"
+  },
+  "_metronic/partials/content/widgets/tables/tables-widget3/tables-widget3.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "398af4fe17076087410ff527bf1f0051",
+    "semantic_hash": "398af4fe17076087410ff527bf1f0051"
+  },
+  "_metronic/partials/content/widgets/tables/tables-widget4/tables-widget4.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "c1ea15a067924e0215bf6a336f0c3f47",
+    "semantic_hash": "c1ea15a067924e0215bf6a336f0c3f47"
+  },
+  "_metronic/partials/content/widgets/tables/tables-widget5/tables-widget5.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "673c4a262ff83fef6d73abc97065ac2e",
+    "semantic_hash": "673c4a262ff83fef6d73abc97065ac2e"
+  },
+  "_metronic/partials/content/widgets/tables/tables-widget6/tables-widget6.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "9ea5bbe023dfa09bfec201023f1bf775",
+    "semantic_hash": "9ea5bbe023dfa09bfec201023f1bf775"
+  },
+  "_metronic/partials/content/widgets/tables/tables-widget7/tables-widget7.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "fbdc3bd199a89777ae689bff014270d3",
+    "semantic_hash": "fbdc3bd199a89777ae689bff014270d3"
+  },
+  "_metronic/partials/content/widgets/tables/tables-widget8/tables-widget8.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "f773496ad2407a812a39d436353810f2",
+    "semantic_hash": "f773496ad2407a812a39d436353810f2"
+  },
+  "_metronic/partials/content/widgets/tables/tables-widget9/tables-widget9.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "1ce097094f4f8d83a8ffffcfaf5ec977",
+    "semantic_hash": "1ce097094f4f8d83a8ffffcfaf5ec977"
+  },
+  "_metronic/partials/content/widgets/tiles/tiles-widget10/tiles-widget10.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "409d398f4be97be8723edf816148a890",
+    "semantic_hash": "409d398f4be97be8723edf816148a890"
+  },
+  "_metronic/partials/content/widgets/tiles/tiles-widget11/tiles-widget11.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "a2c99ef3f34f0b96e3812eec8db9f1fd",
+    "semantic_hash": "a2c99ef3f34f0b96e3812eec8db9f1fd"
+  },
+  "_metronic/partials/content/widgets/tiles/tiles-widget12/tiles-widget12.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "05ef5b54af26903362ccc140e0f2cc6f",
+    "semantic_hash": "05ef5b54af26903362ccc140e0f2cc6f"
+  },
+  "_metronic/partials/content/widgets/tiles/tiles-widget13/tiles-widget13.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "cba8cddd2c43778c8b4497488266c9d6",
+    "semantic_hash": "cba8cddd2c43778c8b4497488266c9d6"
+  },
+  "_metronic/partials/content/widgets/tiles/tiles-widget14/tiles-widget14.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "328d6a5df6b4e10bdc7e6c8a15e05d62",
+    "semantic_hash": "328d6a5df6b4e10bdc7e6c8a15e05d62"
+  },
+  "_metronic/partials/content/widgets/tiles/tiles-widget1/tiles-widget1.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "d1d8406b35e53533963e6f442304e455",
+    "semantic_hash": "d1d8406b35e53533963e6f442304e455"
+  },
+  "_metronic/partials/content/widgets/tiles/tiles-widget3/tiles-widget3.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "c8fc2262299ec6f74321b07824c61aa7",
+    "semantic_hash": "c8fc2262299ec6f74321b07824c61aa7"
+  },
+  "_metronic/partials/content/widgets/widgets.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "2df1760b419e335baacc1c1d09571be0",
+    "semantic_hash": "2df1760b419e335baacc1c1d09571be0"
+  },
+  "_metronic/partials/index.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "37713505c30cbbb2a0db351ef5b76025",
+    "semantic_hash": "37713505c30cbbb2a0db351ef5b76025"
+  },
+  "_metronic/partials/layout/drawers/activity-drawer/activity-drawer.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "aa951d4b630a3a104fb21969707f86e0",
+    "semantic_hash": "aa951d4b630a3a104fb21969707f86e0"
+  },
+  "_metronic/partials/layout/drawers/drawers.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "02bea305feda4ad4d9bca92a5e8265c7",
+    "semantic_hash": "02bea305feda4ad4d9bca92a5e8265c7"
+  },
+  "_metronic/partials/layout/drawers/messenger-drawer/messenger-drawer.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "cd9064095a7db80434dcf307f7aff8e3",
+    "semantic_hash": "cd9064095a7db80434dcf307f7aff8e3"
+  },
+  "_metronic/partials/layout/engages/engages.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "c63caa8b6ac1ef24bebbe4cb1babaa5c",
+    "semantic_hash": "c63caa8b6ac1ef24bebbe4cb1babaa5c"
+  },
+  "_metronic/partials/layout/engages/engages.module.ts": {
+    "mtime": 1687933038.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "b11aa554686d204718263ba267b5fc7e",
+    "semantic_hash": "b11aa554686d204718263ba267b5fc7e"
+  },
+  "_metronic/partials/layout/engages/explore-main-drawer/explore-main-drawer.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "6c5a6e01da58d820310da707e2da0006",
+    "semantic_hash": "6c5a6e01da58d820310da707e2da0006"
+  },
+  "_metronic/partials/layout/engages/help-drawer/help-drawer.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "e5ed667fb30f52401c3fdc8bcc2baa42",
+    "semantic_hash": "e5ed667fb30f52401c3fdc8bcc2baa42"
+  },
+  "_metronic/partials/layout/engages/purchase-toolbar/purchase-toolbar.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "6c55b22f210620793bbfd8269f509e77",
+    "semantic_hash": "6c55b22f210620793bbfd8269f509e77"
+  },
+  "_metronic/partials/layout/extras/dropdown-inner/notifications-inner/notifications-inner.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "eee522e5d82c94cb6ca8e4ba53ff60ab",
+    "semantic_hash": "eee522e5d82c94cb6ca8e4ba53ff60ab"
+  },
+  "_metronic/partials/layout/extras/dropdown-inner/quick-links-inner/quick-links-inner.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "d09db952efb790a3743a0b922460cd86",
+    "semantic_hash": "d09db952efb790a3743a0b922460cd86"
+  },
+  "_metronic/partials/layout/extras/dropdown-inner/search-result-inner/search-result-inner.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "08baf11d0b7fce22147d9404a6b987c2",
+    "semantic_hash": "08baf11d0b7fce22147d9404a6b987c2"
+  },
+  "_metronic/partials/layout/extras/dropdown-inner/user-inner/user-inner.component.ts": {
+    "mtime": 1788114162.8504746,
+    "seen": 1789489467.6441216,
+    "ast_hash": "2b6a2b41bef7902ba3b8136da312eeee",
+    "semantic_hash": "2b6a2b41bef7902ba3b8136da312eeee"
+  },
+  "_metronic/partials/layout/extras/extras.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "3c3187933d961de99c3e3399972135a1",
+    "semantic_hash": "3c3187933d961de99c3e3399972135a1"
+  },
+  "_metronic/partials/layout/extras/scroll-top/scroll-top.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "c3991dcba6aa07fb7f2ccb0517b75938",
+    "semantic_hash": "c3991dcba6aa07fb7f2ccb0517b75938"
+  },
+  "_metronic/partials/layout/modals/invite-users-modal/invite-users-modal.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "1ecfb8449c60f9e58ae22b78ce588c18",
+    "semantic_hash": "1ecfb8449c60f9e58ae22b78ce588c18"
+  },
+  "_metronic/partials/layout/modals/main-modal/main-modal.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "a18a70cf2f94b1b45eebcdc376c57bcc",
+    "semantic_hash": "a18a70cf2f94b1b45eebcdc376c57bcc"
+  },
+  "_metronic/partials/layout/modals/modal.config.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "8e13babab3ef71e1d879741973d25709",
+    "semantic_hash": "8e13babab3ef71e1d879741973d25709"
+  },
+  "_metronic/partials/layout/modals/modal/modal.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "9c6c53ff1ad1d7c9ce228fa27515dec5",
+    "semantic_hash": "9c6c53ff1ad1d7c9ce228fa27515dec5"
+  },
+  "_metronic/partials/layout/modals/modals.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "e9d8f9541053b92a2dc3ddfc7376b669",
+    "semantic_hash": "e9d8f9541053b92a2dc3ddfc7376b669"
+  },
+  "_metronic/partials/layout/modals/upgrade-plan-modal/upgrade-plan-modal.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "942188218859fa742fc0b897cd45ebfb",
+    "semantic_hash": "942188218859fa742fc0b897cd45ebfb"
+  },
+  "_metronic/partials/layout/splash-screen/splash-screen.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "e085721d9269554fb63817034fce00ec",
+    "semantic_hash": "e085721d9269554fb63817034fce00ec"
+  },
+  "_metronic/partials/layout/splash-screen/splash-screen.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "07bd6361db77cba64e1a53e89146536e",
+    "semantic_hash": "07bd6361db77cba64e1a53e89146536e"
+  },
+  "_metronic/partials/layout/splash-screen/splash-screen.service.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "99b0480ee44ae56961d969eead496d72",
+    "semantic_hash": "99b0480ee44ae56961d969eead496d72"
+  },
+  "_metronic/partials/layout/theme-mode-switcher/theme-mode-switcher.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "33e320fab1efecad05069e17b3fddb7e",
+    "semantic_hash": "33e320fab1efecad05069e17b3fddb7e"
+  },
+  "_metronic/partials/layout/theme-mode-switcher/theme-mode.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "d00bd35a21bf5fd43fa0a8a53922b7f3",
+    "semantic_hash": "d00bd35a21bf5fd43fa0a8a53922b7f3"
+  },
+  "_metronic/partials/layout/theme-mode-switcher/theme-mode.service.ts": {
+    "mtime": 1789487583.9772482,
+    "seen": 1789489467.6441216,
+    "ast_hash": "8a1e8d2ed906270a78def2a0a3b8fadd",
+    "semantic_hash": "8a1e8d2ed906270a78def2a0a3b8fadd"
+  },
+  "_metronic/shared/keenicon/icons.json": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "78a5ece6be3f922d1230b4c51210e104",
+    "semantic_hash": "78a5ece6be3f922d1230b4c51210e104"
+  },
+  "_metronic/shared/keenicon/keenicon.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "ff0294f253cec1ff2429c33264150fed",
+    "semantic_hash": "ff0294f253cec1ff2429c33264150fed"
+  },
+  "_metronic/shared/keenicon/keenicon.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "aecd290165f9178ef9e28a6eb01930f5",
+    "semantic_hash": "aecd290165f9178ef9e28a6eb01930f5"
+  },
+  "_metronic/shared/shared.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "42202acd9bee7675675ffa7148e87af6",
+    "semantic_hash": "42202acd9bee7675675ffa7148e87af6"
+  },
+  "app-routing.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "6e72e3700672ba406b6635efee0ab413",
+    "semantic_hash": "6e72e3700672ba406b6635efee0ab413"
+  },
+  "app.component.ts": {
+    "mtime": 1694592166.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "ecf058f30247b97628b4f30337828f1a",
+    "semantic_hash": "ecf058f30247b97628b4f30337828f1a"
+  },
+  "app.module.ts": {
+    "mtime": 1788085048.8747332,
+    "seen": 1789489467.6441216,
+    "ast_hash": "39ba2e5a0bfaf58402dbce0ec86c4374",
+    "semantic_hash": "39ba2e5a0bfaf58402dbce0ec86c4374"
+  },
+  "core/interceptors/auth.interceptor.ts": {
+    "mtime": 1789487583.9772482,
+    "seen": 1789489467.6441216,
+    "ast_hash": "00ab243655502f5f12fe6afbbd7a719c",
+    "semantic_hash": "00ab243655502f5f12fe6afbbd7a719c"
+  },
+  "core/models/profile.model.ts": {
+    "mtime": 1788120971.5624826,
+    "seen": 1789489467.6441216,
+    "ast_hash": "fc2ceb97c8d5adc7439638813364b259",
+    "semantic_hash": "fc2ceb97c8d5adc7439638813364b259"
+  },
+  "core/models/response.model.ts": {
+    "mtime": 1788084951.658211,
+    "seen": 1789489467.6441216,
+    "ast_hash": "25570f411ce2ffab4c5038724a06b3ad",
+    "semantic_hash": "25570f411ce2ffab4c5038724a06b3ad"
+  },
+  "modules/account/account-routing.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "065ebd75d36f378a909809d1ec485241",
+    "semantic_hash": "065ebd75d36f378a909809d1ec485241"
+  },
+  "modules/account/account.component.ts": {
+    "mtime": 1788121008.1545236,
+    "seen": 1789489467.6441216,
+    "ast_hash": "4390dc57760636ca2a6fc6173ac917bd",
+    "semantic_hash": "4390dc57760636ca2a6fc6173ac917bd"
+  },
+  "modules/account/account.module.ts": {
+    "mtime": 1788121043.1021543,
+    "seen": 1789489467.6441216,
+    "ast_hash": "ac5e116c66cf218e9d3dbcbdf948249a",
+    "semantic_hash": "ac5e116c66cf218e9d3dbcbdf948249a"
+  },
+  "modules/account/overview/overview.component.ts": {
+    "mtime": 1788120984.6675842,
+    "seen": 1789489467.6441216,
+    "ast_hash": "a84f70d684254229ca2dfa8dc2cca039",
+    "semantic_hash": "a84f70d684254229ca2dfa8dc2cca039"
+  },
+  "modules/account/services/profile.service.ts": {
+    "mtime": 1788120972.4764416,
+    "seen": 1789489467.6441216,
+    "ast_hash": "17dd309c6be5a11ff2e9e431fa5fb69b",
+    "semantic_hash": "17dd309c6be5a11ff2e9e431fa5fb69b"
+  },
+  "modules/account/settings/forms/connected-accounts/connected-accounts.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "8e0ca0c2e4c70c0a728d0f8dbe03dd36",
+    "semantic_hash": "8e0ca0c2e4c70c0a728d0f8dbe03dd36"
+  },
+  "modules/account/settings/forms/deactivate-account/deactivate-account.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "61b16beef27f9a6d13e1e9e816209519",
+    "semantic_hash": "61b16beef27f9a6d13e1e9e816209519"
+  },
+  "modules/account/settings/forms/email-preferences/email-preferences.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "69856f418f5b96cd0d7649c3805b0810",
+    "semantic_hash": "69856f418f5b96cd0d7649c3805b0810"
+  },
+  "modules/account/settings/forms/notifications/notifications.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "a1b387776c8c1da63857bd14857801f8",
+    "semantic_hash": "a1b387776c8c1da63857bd14857801f8"
+  },
+  "modules/account/settings/forms/profile-details/profile-details.component.ts": {
+    "mtime": 1788123723.7574577,
+    "seen": 1789489467.6441216,
+    "ast_hash": "47a96e705c943a9c2352317e2dea9ac3",
+    "semantic_hash": "47a96e705c943a9c2352317e2dea9ac3"
+  },
+  "modules/account/settings/forms/sign-in-method/sign-in-method.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "8b2a9e946b37d7a212cec03e5741ad3c",
+    "semantic_hash": "8b2a9e946b37d7a212cec03e5741ad3c"
+  },
+  "modules/account/settings/settings.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "34ca132e2c17c6d9377f1ef2fb4c04af",
+    "semantic_hash": "34ca132e2c17c6d9377f1ef2fb4c04af"
+  },
+  "modules/apps/chat/chat-routing.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "c03d7b941b9d2d11b8167434ea85ec46",
+    "semantic_hash": "c03d7b941b9d2d11b8167434ea85ec46"
+  },
+  "modules/apps/chat/chat.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "b3a1dd5e40dfa9cdca6254d24fbc06c5",
+    "semantic_hash": "b3a1dd5e40dfa9cdca6254d24fbc06c5"
+  },
+  "modules/apps/chat/chat.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "2d63ee5acba1748588fb5fa202116c6f",
+    "semantic_hash": "2d63ee5acba1748588fb5fa202116c6f"
+  },
+  "modules/apps/chat/chat.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "e31a16841a2aacac8c012ea8ecec5bfc",
+    "semantic_hash": "e31a16841a2aacac8c012ea8ecec5bfc"
+  },
+  "modules/apps/chat/drawer-chat/drawer-chat.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "20a819cd2f0726e0bc02898238d6c448",
+    "semantic_hash": "20a819cd2f0726e0bc02898238d6c448"
+  },
+  "modules/apps/chat/drawer-chat/drawer-chat.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "3354ad60c4bf7e325d62da732d023266",
+    "semantic_hash": "3354ad60c4bf7e325d62da732d023266"
+  },
+  "modules/apps/chat/group-chat/group-chat.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "b6e72307c6480fcbad260f60ddc7f33f",
+    "semantic_hash": "b6e72307c6480fcbad260f60ddc7f33f"
+  },
+  "modules/apps/chat/group-chat/group-chat.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "58e3f0eb9ee5efc869af4f30cea9860b",
+    "semantic_hash": "58e3f0eb9ee5efc869af4f30cea9860b"
+  },
+  "modules/apps/chat/private-chat/private-chat.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "15414c89cffdc9c38e1e6373c97118a4",
+    "semantic_hash": "15414c89cffdc9c38e1e6373c97118a4"
+  },
+  "modules/apps/chat/private-chat/private-chat.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "56df43ef819141ca4326e32bfdad175c",
+    "semantic_hash": "56df43ef819141ca4326e32bfdad175c"
+  },
+  "modules/auth/auth-routing.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "5fe8d7101e255afa0c1238a99fb63409",
+    "semantic_hash": "5fe8d7101e255afa0c1238a99fb63409"
+  },
+  "modules/auth/auth.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "a7e6d93a0835e2abbdfbc69d9e614f9d",
+    "semantic_hash": "a7e6d93a0835e2abbdfbc69d9e614f9d"
+  },
+  "modules/auth/auth.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "280bca788c6683e265e11b46ce196c8e",
+    "semantic_hash": "280bca788c6683e265e11b46ce196c8e"
+  },
+  "modules/auth/components/forgot-password/forgot-password.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "2732d26f1ae5d17abfa20f5fa0358935",
+    "semantic_hash": "2732d26f1ae5d17abfa20f5fa0358935"
+  },
+  "modules/auth/components/login/login.component.ts": {
+    "mtime": 1788085039.1704304,
+    "seen": 1789489467.6441216,
+    "ast_hash": "4d9ed8e45fc81efd2d0ef2806d4a6baa",
+    "semantic_hash": "4d9ed8e45fc81efd2d0ef2806d4a6baa"
+  },
+  "modules/auth/components/logout/logout.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "05154e3a2ab230b1d4d8f6f4888c479c",
+    "semantic_hash": "05154e3a2ab230b1d4d8f6f4888c479c"
+  },
+  "modules/auth/components/registration/confirm-password.validator.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "0e706cd76701c85f5354f3bb34d4513d",
+    "semantic_hash": "0e706cd76701c85f5354f3bb34d4513d"
+  },
+  "modules/auth/components/registration/registration.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6441216,
+    "ast_hash": "08e64ac68d0ed4858e6eaf5359692eae",
+    "semantic_hash": "08e64ac68d0ed4858e6eaf5359692eae"
+  },
+  "modules/auth/index.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "4782f82e7b74a2bf7da7fac07451c44f",
+    "semantic_hash": "4782f82e7b74a2bf7da7fac07451c44f"
+  },
+  "modules/auth/models/address.model.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "62a84a9a9de0f94ae879c360239b3fb2",
+    "semantic_hash": "62a84a9a9de0f94ae879c360239b3fb2"
+  },
+  "modules/auth/models/auth.model.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "f35f87d5b38dc1790bf889c25520866a",
+    "semantic_hash": "f35f87d5b38dc1790bf889c25520866a"
+  },
+  "modules/auth/models/social-networks.model.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "b0a0442117b04528ce21e550f9556731",
+    "semantic_hash": "b0a0442117b04528ce21e550f9556731"
+  },
+  "modules/auth/models/user.model.ts": {
+    "mtime": 1695902812.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "cae0b931606e2f7e59a6e9ec58ddb988",
+    "semantic_hash": "cae0b931606e2f7e59a6e9ec58ddb988"
+  },
+  "modules/auth/services/auth-http/auth-http.service.ts": {
+    "mtime": 1788121052.7083836,
+    "seen": 1789489467.6451182,
+    "ast_hash": "ac2a95e751f85872bf5cbbb43ac0da59",
+    "semantic_hash": "ac2a95e751f85872bf5cbbb43ac0da59"
+  },
+  "modules/auth/services/auth-http/fake/auth-fake-http.service.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "8371d1d30cebd2b786573505fa67dc31",
+    "semantic_hash": "8371d1d30cebd2b786573505fa67dc31"
+  },
+  "modules/auth/services/auth-http/index.ts": {
+    "mtime": 1788084970.1588132,
+    "seen": 1789489467.6451182,
+    "ast_hash": "5940e10a69ae231fcf918bb101bf0ae2",
+    "semantic_hash": "5940e10a69ae231fcf918bb101bf0ae2"
+  },
+  "modules/auth/services/auth.guard.ts": {
+    "mtime": 1788085021.2443583,
+    "seen": 1789489467.6451182,
+    "ast_hash": "10267028246309cb666326947650cb1b",
+    "semantic_hash": "10267028246309cb666326947650cb1b"
+  },
+  "modules/auth/services/auth.service.ts": {
+    "mtime": 1789487583.9888215,
+    "seen": 1789489467.6451182,
+    "ast_hash": "d4412e1e04d11f2bf2ff061b2037f9e8",
+    "semantic_hash": "d4412e1e04d11f2bf2ff061b2037f9e8"
+  },
+  "modules/crud/crud.component.spec.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "67b6a198600a82c0125a187f8af09d34",
+    "semantic_hash": "67b6a198600a82c0125a187f8af09d34"
+  },
+  "modules/crud/crud.component.ts": {
+    "mtime": 1715063668.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "cabec1085bbaddb7013a178a9a389f16",
+    "semantic_hash": "cabec1085bbaddb7013a178a9a389f16"
+  },
+  "modules/crud/crud.module.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "ed8a1e895153387a63984f0bc7f7dacf",
+    "semantic_hash": "ed8a1e895153387a63984f0bc7f7dacf"
+  },
+  "modules/errors/error404/error404.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "a6722e038ac84c9fc87ccd8af6d608f5",
+    "semantic_hash": "a6722e038ac84c9fc87ccd8af6d608f5"
+  },
+  "modules/errors/error404/error404.component.ts": {
+    "mtime": 1726510470.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "f778bfe85484b89be593bafeb995888e",
+    "semantic_hash": "f778bfe85484b89be593bafeb995888e"
+  },
+  "modules/errors/error500/error500.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "c372f6b91489f9ab8700ce3d6be260f8",
+    "semantic_hash": "c372f6b91489f9ab8700ce3d6be260f8"
+  },
+  "modules/errors/error500/error500.component.ts": {
+    "mtime": 1726510448.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "6902df5edb6210d7183563db1810961b",
+    "semantic_hash": "6902df5edb6210d7183563db1810961b"
+  },
+  "modules/errors/errors-routing.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "d791754c5d5c2c95156e2d28e87704ed",
+    "semantic_hash": "d791754c5d5c2c95156e2d28e87704ed"
+  },
+  "modules/errors/errors.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "d0d6901af216391fef7e7ca880748970",
+    "semantic_hash": "d0d6901af216391fef7e7ca880748970"
+  },
+  "modules/errors/errors.component.ts": {
+    "mtime": 1726510460.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "a0bde744ce49882cb6a1403e4168deec",
+    "semantic_hash": "a0bde744ce49882cb6a1403e4168deec"
+  },
+  "modules/errors/errors.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "b4db10c88aa9f3e755ff9a2eb3b65736",
+    "semantic_hash": "b4db10c88aa9f3e755ff9a2eb3b65736"
+  },
+  "modules/i18n/index.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "87bbc9a3c8a7b06e55a5de9ea52b0d8d",
+    "semantic_hash": "87bbc9a3c8a7b06e55a5de9ea52b0d8d"
+  },
+  "modules/i18n/translation.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "e3b82cd339b4ec9d157a0a785f163712",
+    "semantic_hash": "e3b82cd339b4ec9d157a0a785f163712"
+  },
+  "modules/i18n/translation.service.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "8e999aa074703a20533fc5dcefe435e5",
+    "semantic_hash": "8e999aa074703a20533fc5dcefe435e5"
+  },
+  "modules/i18n/vocabs/ch.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "07f11a7197eb16c4bf660b38f5971c90",
+    "semantic_hash": "07f11a7197eb16c4bf660b38f5971c90"
+  },
+  "modules/i18n/vocabs/de.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "9d414c840ffab1df725b83a6e92dc4b6",
+    "semantic_hash": "9d414c840ffab1df725b83a6e92dc4b6"
+  },
+  "modules/i18n/vocabs/en.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "7209fdd04b8c6e5ca14c50095afca06a",
+    "semantic_hash": "7209fdd04b8c6e5ca14c50095afca06a"
+  },
+  "modules/i18n/vocabs/es.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "72c7ed07d27ccc67c6b7e8e2ef08f096",
+    "semantic_hash": "72c7ed07d27ccc67c6b7e8e2ef08f096"
+  },
+  "modules/i18n/vocabs/fr.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "cb6a36d1c7cd3bd7413cec8b9cdd183b",
+    "semantic_hash": "cb6a36d1c7cd3bd7413cec8b9cdd183b"
+  },
+  "modules/i18n/vocabs/jp.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "604e3bea97c7a58512d4bffa575c6e6c",
+    "semantic_hash": "604e3bea97c7a58512d4bffa575c6e6c"
+  },
+  "modules/profile/campaigns/campaigns.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "29ceb286408c1a7df33a32cfd27f8324",
+    "semantic_hash": "29ceb286408c1a7df33a32cfd27f8324"
+  },
+  "modules/profile/connections/connections.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "a3ffcd4d0a781b6d061b47f7f7c72472",
+    "semantic_hash": "a3ffcd4d0a781b6d061b47f7f7c72472"
+  },
+  "modules/profile/documents/documents.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "3b033134938c2e009df09e46035feeef",
+    "semantic_hash": "3b033134938c2e009df09e46035feeef"
+  },
+  "modules/profile/overview/overview.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "8969d153ce96ad51e356019891e2e207",
+    "semantic_hash": "8969d153ce96ad51e356019891e2e207"
+  },
+  "modules/profile/profile-routing.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "a5a9b73457a28eecdb08ddd76f871f3f",
+    "semantic_hash": "a5a9b73457a28eecdb08ddd76f871f3f"
+  },
+  "modules/profile/profile.component.ts": {
+    "mtime": 1704434224.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "e4a630855b265020774b144f1c6a22dd",
+    "semantic_hash": "e4a630855b265020774b144f1c6a22dd"
+  },
+  "modules/profile/profile.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "767e03fa34d865991e2fcbf1fc2530c5",
+    "semantic_hash": "767e03fa34d865991e2fcbf1fc2530c5"
+  },
+  "modules/profile/projects/projects.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "e2ace3cae1eea3be538fe4e2ae44415d",
+    "semantic_hash": "e2ace3cae1eea3be538fe4e2ae44415d"
+  },
+  "modules/widgets-examples/charts/charts.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "2fb693a617ada31f303158f142940493",
+    "semantic_hash": "2fb693a617ada31f303158f142940493"
+  },
+  "modules/widgets-examples/feeds/feeds.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "c5892075f607f03abd92d8b034bd85fd",
+    "semantic_hash": "c5892075f607f03abd92d8b034bd85fd"
+  },
+  "modules/widgets-examples/lists/lists.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "e289e89146899ca245812b508c44b19a",
+    "semantic_hash": "e289e89146899ca245812b508c44b19a"
+  },
+  "modules/widgets-examples/mixed/mixed.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "0db37a57aa4ac04360f7034d4cb229b0",
+    "semantic_hash": "0db37a57aa4ac04360f7034d4cb229b0"
+  },
+  "modules/widgets-examples/statistics/statistics.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "10ed414f0c7a5d9c155c6910a28d2c64",
+    "semantic_hash": "10ed414f0c7a5d9c155c6910a28d2c64"
+  },
+  "modules/widgets-examples/statistics/statistics.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "8192facdafea6c7e0b818da452c7c768",
+    "semantic_hash": "8192facdafea6c7e0b818da452c7c768"
+  },
+  "modules/widgets-examples/tables/tables.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "bb0f2168fb295c053dd9056000abdcea",
+    "semantic_hash": "bb0f2168fb295c053dd9056000abdcea"
+  },
+  "modules/widgets-examples/widgets-examples-routing.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "59bd48ff7dc8edf915d481e22871968d",
+    "semantic_hash": "59bd48ff7dc8edf915d481e22871968d"
+  },
+  "modules/widgets-examples/widgets-examples.component.spec.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "f4c8714e1e0ad03d1bb287eee6862680",
+    "semantic_hash": "f4c8714e1e0ad03d1bb287eee6862680"
+  },
+  "modules/widgets-examples/widgets-examples.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "3934a1e3b3196f9e12d5ca175dc7abdf",
+    "semantic_hash": "3934a1e3b3196f9e12d5ca175dc7abdf"
+  },
+  "modules/widgets-examples/widgets-examples.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "689fc84110cebd299d4e3ad8c0e52939",
+    "semantic_hash": "689fc84110cebd299d4e3ad8c0e52939"
+  },
+  "modules/wizards/create-account.helper.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "86a978cab20edba20c325ea7b1fa6b2e",
+    "semantic_hash": "86a978cab20edba20c325ea7b1fa6b2e"
+  },
+  "modules/wizards/horizontal/horizontal.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "bce8d57a724b6ca1a448ee6a14439601",
+    "semantic_hash": "bce8d57a724b6ca1a448ee6a14439601"
+  },
+  "modules/wizards/steps/step1/step1.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "62a2841144301c1cd159009b6793372a",
+    "semantic_hash": "62a2841144301c1cd159009b6793372a"
+  },
+  "modules/wizards/steps/step2/step2.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "279c82361508a6cfe6620d273fb365a4",
+    "semantic_hash": "279c82361508a6cfe6620d273fb365a4"
+  },
+  "modules/wizards/steps/step3/step3.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "67e39215165cc12ec77bba4f3c0458f5",
+    "semantic_hash": "67e39215165cc12ec77bba4f3c0458f5"
+  },
+  "modules/wizards/steps/step4/step4.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "2bba749de6e5fa050a81f17048c2f063",
+    "semantic_hash": "2bba749de6e5fa050a81f17048c2f063"
+  },
+  "modules/wizards/steps/step5/step5.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "4a95a6ec6d45c6255b9aacfaf65b998d",
+    "semantic_hash": "4a95a6ec6d45c6255b9aacfaf65b998d"
+  },
+  "modules/wizards/vertical/vertical.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "339ae740ac1d9d4a76586c63523dcfdc",
+    "semantic_hash": "339ae740ac1d9d4a76586c63523dcfdc"
+  },
+  "modules/wizards/wizards-routing.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "878e121edc45379e6166b61aa3ca3bd3",
+    "semantic_hash": "878e121edc45379e6166b61aa3ca3bd3"
+  },
+  "modules/wizards/wizards.component.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "54cc7de52709504bdfca7edaeb1866d0",
+    "semantic_hash": "54cc7de52709504bdfca7edaeb1866d0"
+  },
+  "modules/wizards/wizards.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "691e248c6946de5a10a98e10a3511be7",
+    "semantic_hash": "691e248c6946de5a10a98e10a3511be7"
+  },
+  "pages/builder/builder.component.ts": {
+    "mtime": 1692342044.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "484038923f8e7798bce903a6605a09c7",
+    "semantic_hash": "484038923f8e7798bce903a6605a09c7"
+  },
+  "pages/builder/builder.module.ts": {
+    "mtime": 1683870916.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "7a6c3007c3eec90673c6d130d969421a",
+    "semantic_hash": "7a6c3007c3eec90673c6d130d969421a"
+  },
+  "pages/dashboard/dashboard.component.ts": {
+    "mtime": 1696509424.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "f624335d4ac87c3f8c7612faead64042",
+    "semantic_hash": "f624335d4ac87c3f8c7612faead64042"
+  },
+  "pages/dashboard/dashboard.module.ts": {
+    "mtime": 1697135190.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "d904e2f913ad89c746ff0c045d886a43",
+    "semantic_hash": "d904e2f913ad89c746ff0c045d886a43"
+  },
+  "pages/permission/permission-details/permission-details.component.spec.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "74bec86438404f42ad652deceda61c7f",
+    "semantic_hash": "74bec86438404f42ad652deceda61c7f"
+  },
+  "pages/permission/permission-details/permission-details.component.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "97967cfabe4f32a5312e8567fe18b2b3",
+    "semantic_hash": "97967cfabe4f32a5312e8567fe18b2b3"
+  },
+  "pages/permission/permission-listing/permission-listing.component.spec.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "a3e0d926761c1d8e2cbc67383d8d2f4a",
+    "semantic_hash": "a3e0d926761c1d8e2cbc67383d8d2f4a"
+  },
+  "pages/permission/permission-listing/permission-listing.component.ts": {
+    "mtime": 1713848170.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "fa6be62282eb3164463695956f24a277",
+    "semantic_hash": "fa6be62282eb3164463695956f24a277"
+  },
+  "pages/permission/permission.module.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "c965eb13eac2c5389255ddff1ffcd6eb",
+    "semantic_hash": "c965eb13eac2c5389255ddff1ffcd6eb"
+  },
+  "pages/role/role-details/role-details.component.spec.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "0d92b74f4c70affd4875c07dac123297",
+    "semantic_hash": "0d92b74f4c70affd4875c07dac123297"
+  },
+  "pages/role/role-details/role-details.component.ts": {
+    "mtime": 1713848152.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "be9d68032e1d552a9a16873c4ef56fe3",
+    "semantic_hash": "be9d68032e1d552a9a16873c4ef56fe3"
+  },
+  "pages/role/role-listing/role-listing.component.spec.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "2d868a845154c8b5060f0efacce2526b",
+    "semantic_hash": "2d868a845154c8b5060f0efacce2526b"
+  },
+  "pages/role/role-listing/role-listing.component.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "d1fba9b52c60c00886433d37f6bf11e4",
+    "semantic_hash": "d1fba9b52c60c00886433d37f6bf11e4"
+  },
+  "pages/role/role.module.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "9d7796e738de1e7d752d947407dfdab3",
+    "semantic_hash": "9d7796e738de1e7d752d947407dfdab3"
+  },
+  "pages/routing.ts": {
+    "mtime": 1789487583.9888215,
+    "seen": 1789489467.6451182,
+    "ast_hash": "57f8f9bccaae6cddcc071aed0aa61933",
+    "semantic_hash": "57f8f9bccaae6cddcc071aed0aa61933"
+  },
+  "pages/user/user-details/user-details.component.spec.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "7c7dcd62d9055d976bc4b27751a7275b",
+    "semantic_hash": "7c7dcd62d9055d976bc4b27751a7275b"
+  },
+  "pages/user/user-details/user-details.component.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "fe19df3c3dc7bad437124bb808d67ad8",
+    "semantic_hash": "fe19df3c3dc7bad437124bb808d67ad8"
+  },
+  "pages/user/user-listing/user-listing.component.spec.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "384a0553c611dd91292877690dd421dd",
+    "semantic_hash": "384a0553c611dd91292877690dd421dd"
+  },
+  "pages/user/user-listing/user-listing.component.ts": {
+    "mtime": 1713848138.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "a42ba6e4783e0e30ef91b9e9835e11ba",
+    "semantic_hash": "a42ba6e4783e0e30ef91b9e9835e11ba"
+  },
+  "pages/user/user.module.ts": {
+    "mtime": 1702361196.0,
+    "seen": 1789489467.6451182,
+    "ast_hash": "228004b0583a81e1cdd9480857290379",
+    "semantic_hash": "228004b0583a81e1cdd9480857290379"
+  }
+}

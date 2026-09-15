@@ -24,8 +24,9 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() modal: TemplateRef<any>;
 
-  @Output() deleteEvent = new EventEmitter<number>();
-  @Output() editEvent = new EventEmitter<number>();
+  // Row ids may be numbers (demo APIs) or GUID strings (MapnaCM backend).
+  @Output() deleteEvent = new EventEmitter<any>();
+  @Output() editEvent = new EventEmitter<any>();
   @Output() createEvent = new EventEmitter<boolean>();
 
   dtOptions: Config = {};
@@ -39,7 +40,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('successSwal')
   public readonly successSwal!: SwalComponent;
 
-  private idInAction: number;
+  private idInAction: any;
 
   modalConfig: NgbModalOptions = {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',

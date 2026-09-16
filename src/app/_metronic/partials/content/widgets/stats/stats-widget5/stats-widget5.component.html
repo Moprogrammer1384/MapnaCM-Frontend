@@ -1,9 +1,8 @@
 <div class="card-body">
-  <span
-    [inlineSVG]="svgIcon"
-    class="svg-icon fs-2x fs-3x ms-n1"
-    [ngClass]="'svg-icon-' + iconColor"
-  ></span>
+  <app-keenicon
+    [name]="icon"
+    [class]="'fs-3x ms-n1 text-' + iconColor"
+  ></app-keenicon>
   <div [ngClass]="'text-inverse-' + color" class="fw-bolder fs-2 mb-2 mt-5">
     {{ title }}
   </div>

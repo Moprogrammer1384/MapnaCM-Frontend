@@ -8,11 +8,11 @@ export class TilesWidget12Component implements OnInit {
   @Input() cssClass = '';
   @Input() widgetHeight = '150px';
   @Input() iconColor = 'success';
-  svgCSSClass = '';
+  iconCSSClass = '';
 
   constructor() {}
 
   ngOnInit() {
-    this.svgCSSClass = `svg-icon--${this.iconColor}`;
+    this.iconCSSClass = `text-${this.iconColor}`;
   }
 }

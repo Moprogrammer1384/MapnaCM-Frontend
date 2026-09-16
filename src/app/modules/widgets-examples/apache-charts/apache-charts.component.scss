@@ -1,0 +1,10 @@
+.apache-charts-filter {
+  display: block;
+  width: min(100%, 20rem);
+}
+
+.apache-charts-filter .form-label {
+  margin-bottom: 0.4rem;
+  color: var(--bs-gray-700);
+  font-weight: 600;
+}

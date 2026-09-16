@@ -27,6 +27,10 @@ const Routing: Routes = [
     loadChildren: () => import('../modules/widgets-examples/widgets-examples.module').then((m) => m.WidgetsExamplesModule),
   },
   {
+    path: 'cm/vibration',
+    loadChildren: () => import('./cm/vibration/vibration.module').then((m) => m.VibrationModule),
+  },
+  {
     path: 'apps/chat',
     loadChildren: () => import('../modules/apps/chat/chat.module').then((m) => m.ChatModule),
     // data: { layout: 'light-sidebar' },

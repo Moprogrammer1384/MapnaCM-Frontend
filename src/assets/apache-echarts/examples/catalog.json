@@ -1,0 +1,3244 @@
+[
+  {
+    "id": "bar-histogram",
+    "title": "Histogram with Custom Series",
+    "titleCN": "直方图（自定义系列）",
+    "categories": [
+      "custom"
+    ],
+    "difficulty": 0
+  },
+  {
+    "id": "bar-simple",
+    "title": "Basic Bar",
+    "titleCN": "基础柱状图",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 0
+  },
+  {
+    "id": "bar-tick-align",
+    "title": "Axis Align with Tick",
+    "titleCN": "坐标轴刻度与标签对齐",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 0
+  },
+  {
+    "id": "calendar-simple",
+    "title": "Simple Calendar",
+    "titleCN": "基础日历图",
+    "categories": [
+      "calendar"
+    ],
+    "difficulty": 0
+  },
+  {
+    "id": "candlestick-simple",
+    "title": "Basic Candlestick",
+    "titleCN": "基础 K 线图",
+    "categories": [
+      "candlestick"
+    ],
+    "difficulty": 0
+  },
+  {
+    "id": "chord-simple",
+    "title": "Basic Chord",
+    "titleCN": "基础和弦图",
+    "categories": [
+      "chord"
+    ],
+    "difficulty": 0,
+    "since": "6.0.0"
+  },
+  {
+    "id": "data-transform-sort-bar",
+    "title": "Sort Data in Bar Chart",
+    "titleCN": "柱状图排序",
+    "categories": [
+      "dataset",
+      "bar",
+      "transform"
+    ],
+    "difficulty": 0
+  },
+  {
+    "id": "heatmap-cartesian",
+    "title": "Heatmap on Cartesian",
+    "titleCN": "笛卡尔坐标系上的热力图",
+    "categories": [
+      "heatmap"
+    ],
+    "difficulty": 0
+  },
+  {
+    "id": "line-simple",
+    "title": "Basic Line Chart",
+    "titleCN": "基础折线图",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 0
+  },
+  {
+    "id": "line-smooth",
+    "title": "Smoothed Line Chart",
+    "titleCN": "基础平滑折线图",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 0
+  },
+  {
+    "id": "pie-simple",
+    "title": "Referer of a Website",
+    "titleCN": "某站点用户访问来源",
+    "categories": [
+      "pie"
+    ],
+    "difficulty": 0
+  },
+  {
+    "id": "radar",
+    "title": "Basic Radar Chart",
+    "titleCN": "基础雷达图",
+    "categories": [
+      "radar"
+    ],
+    "difficulty": 0
+  },
+  {
+    "id": "sankey-simple",
+    "title": "Basic Sankey",
+    "titleCN": "基础桑基图",
+    "categories": [
+      "sankey"
+    ],
+    "difficulty": 0
+  },
+  {
+    "id": "scatter-simple",
+    "title": "Basic Scatter Chart",
+    "titleCN": "基础散点图",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 0
+  },
+  {
+    "id": "area-basic",
+    "title": "Basic area chart",
+    "titleCN": "基础面积图",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "bar-background",
+    "title": "Bar with Background",
+    "titleCN": "带背景色的柱状图",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "bar-data-color",
+    "title": "Set Style of Single Bar.",
+    "titleCN": "自定义单个柱子颜色",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "bar-waterfall",
+    "title": "Waterfall Chart",
+    "titleCN": "瀑布图（柱状图模拟）",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "calendar-heatmap",
+    "title": "Calendar Heatmap",
+    "titleCN": "日历热力图",
+    "categories": [
+      "calendar",
+      "heatmap"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "calendar-vertical",
+    "title": "Calendar Heatmap Vertical",
+    "titleCN": "纵向日历图",
+    "categories": [
+      "calendar",
+      "heatmap"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "chord-minAngle",
+    "title": "Chord minAngle",
+    "titleCN": "和弦图 minAngle",
+    "categories": [
+      "chord"
+    ],
+    "difficulty": 1,
+    "since": "6.0.0"
+  },
+  {
+    "id": "custom-ohlc",
+    "title": "OHLC Chart",
+    "titleCN": "OHLC 图（使用自定义系列）",
+    "categories": [
+      "candlestick"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "custom-profit",
+    "title": "Profit",
+    "titleCN": "利润分布直方图",
+    "categories": [
+      "custom"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "dataset-encode0",
+    "title": "Simple Encode",
+    "titleCN": "指定数据到坐标轴的映射",
+    "categories": [
+      "dataset",
+      "bar"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "gauge",
+    "title": "Gauge Basic chart",
+    "titleCN": "基础仪表盘",
+    "categories": [
+      "gauge"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "gauge-simple",
+    "title": "Simple Gauge",
+    "titleCN": "带标签数字动画的基础仪表盘",
+    "categories": [
+      "gauge"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "graph-force2",
+    "title": "Force Layout",
+    "titleCN": "力引导布局",
+    "categories": [
+      "graph"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "line-stack",
+    "title": "Stacked Line Chart",
+    "titleCN": "堆叠折线图",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "matrix-simple",
+    "title": "Simple Matrix",
+    "titleCN": "简单的矩阵图",
+    "categories": [
+      "matrix"
+    ],
+    "difficulty": 1,
+    "since": "6.0.0"
+  },
+  {
+    "id": "parallel-simple",
+    "title": "Basic Parallel",
+    "titleCN": "基础平行坐标",
+    "categories": [
+      "parallel"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "pie-borderRadius",
+    "title": "Doughnut Chart with Rounded Corner",
+    "titleCN": "圆角环形图",
+    "categories": [
+      "pie"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "pie-doughnut",
+    "title": "Doughnut Chart",
+    "titleCN": "环形图",
+    "categories": [
+      "pie"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "pie-half-donut",
+    "title": "Half Doughnut Chart",
+    "titleCN": "半环形图",
+    "categories": [
+      "pie"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "pie-padAngle",
+    "title": "Pie with padAngle",
+    "titleCN": "饼图扇区间隙",
+    "categories": [
+      "pie"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "radar-aqi",
+    "title": "AQI - Radar Chart",
+    "titleCN": "AQI - 雷达图",
+    "categories": [
+      "radar"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "sankey-vertical",
+    "title": "Sankey Orient Vertical",
+    "titleCN": "垂直方向的桑基图",
+    "categories": [
+      "sankey"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "scatter-anscombe-quartet",
+    "title": "Anscomb's quartet",
+    "titleCN": "安斯库姆四重奏",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "scatter-clustering",
+    "title": "Clustering Process",
+    "titleCN": "数据聚合",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "scatter-clustering-process",
+    "title": "Clustering Process",
+    "titleCN": "聚合过程可视化",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "scatter-exponential-regression",
+    "title": "Exponential Regression",
+    "titleCN": "指数回归（使用统计插件）",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "sunburst-simple",
+    "title": "Basic Sunburst",
+    "titleCN": "基础旭日图",
+    "categories": [
+      "sunburst"
+    ],
+    "difficulty": 1
+  },
+  {
+    "id": "area-stack",
+    "title": "Stacked Area Chart",
+    "titleCN": "堆叠面积图",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "area-stack-gradient",
+    "title": "Gradient Stacked Area Chart",
+    "titleCN": "渐变堆叠面积图",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "bar-negative2",
+    "title": "Bar Chart with Negative Value",
+    "titleCN": "交错正负轴标签",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "bar-polar-label-radial",
+    "title": "Radial Polar Bar Label Position",
+    "titleCN": "极坐标柱状图标签",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "bar-polar-label-tangential",
+    "title": "Tangential Polar Bar Label Position",
+    "titleCN": "极坐标柱状图标签",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "bar-y-category",
+    "title": "World Population",
+    "titleCN": "世界人口总量 - 条形图",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "bump-chart",
+    "title": "Bump Chart (Ranking)",
+    "titleCN": "凹凸图",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "calendar-horizontal",
+    "title": "Calendar Heatmap Horizontal",
+    "titleCN": "横向日历图",
+    "categories": [
+      "calendar"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "candlestick-sh",
+    "title": "ShangHai Index",
+    "titleCN": "上证指数",
+    "categories": [
+      "candlestick"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "custom-error-scatter",
+    "title": "Error Scatter on Catesian",
+    "titleCN": "使用自定系列给散点图添加误差范围",
+    "categories": [
+      "custom",
+      "dataZoom"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "gauge-speed",
+    "title": "Speed Gauge",
+    "titleCN": "速度仪表盘",
+    "categories": [
+      "gauge"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "graph-grid",
+    "title": "Graph on Cartesian",
+    "titleCN": "笛卡尔坐标系上的 Graph",
+    "categories": [
+      "graph"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "graph-simple",
+    "title": "Simple Graph",
+    "titleCN": "Graph 简单示例",
+    "categories": [
+      "graph"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "heatmap-large",
+    "title": "Heatmap - 20K data",
+    "titleCN": "热力图 - 2w 数据",
+    "categories": [
+      "heatmap"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "heatmap-large-piecewise",
+    "title": "Heatmap - Discrete Mapping of Color",
+    "titleCN": "热力图 - 颜色的离散映射",
+    "categories": [
+      "heatmap"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "line-marker",
+    "title": "Temperature Change in the Coming Week",
+    "titleCN": "未来一周气温变化",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "matrix-correlation-heatmap",
+    "title": "Correlation Matrix (Heatmap)",
+    "titleCN": "相关矩阵（热力图）",
+    "categories": [
+      "matrix"
+    ],
+    "difficulty": 2,
+    "since": "6.0.0"
+  },
+  {
+    "id": "matrix-correlation-scatter",
+    "title": "Correlation Matrix (Scatter)",
+    "titleCN": "相关矩阵（散点图）",
+    "categories": [
+      "matrix"
+    ],
+    "difficulty": 2,
+    "since": "6.0.0"
+  },
+  {
+    "id": "matrix-covariance",
+    "title": "Covariance Matrix",
+    "titleCN": "协方差矩阵",
+    "categories": [
+      "matrix"
+    ],
+    "difficulty": 2,
+    "since": "6.0.0"
+  },
+  {
+    "id": "matrix-graph",
+    "title": "Graph Chart in Matrix",
+    "titleCN": "矩阵布局下的关系图",
+    "categories": [
+      "matrix"
+    ],
+    "difficulty": 2,
+    "since": "6.0.0"
+  },
+  {
+    "id": "matrix-pie",
+    "title": "Pie Charts in Matrix",
+    "titleCN": "矩阵布局下的饼图",
+    "categories": [
+      "matrix"
+    ],
+    "difficulty": 2,
+    "since": "6.0.0"
+  },
+  {
+    "id": "parallel-aqi",
+    "title": "Parallel Aqi",
+    "titleCN": "AQI 分布（平行坐标）",
+    "categories": [
+      "parallel"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "pie-custom",
+    "title": "Customized Pie",
+    "titleCN": "饼图自定义样式",
+    "categories": [
+      "pie"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "pie-pattern",
+    "title": "Texture on Pie Chart",
+    "titleCN": "饼图纹理",
+    "categories": [
+      "pie"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "pie-roseType",
+    "title": "Nightingale Chart",
+    "titleCN": "南丁格尔玫瑰图",
+    "categories": [
+      "pie"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "pie-roseType-simple",
+    "title": "Nightingale Chart",
+    "titleCN": "基础南丁格尔玫瑰图",
+    "categories": [
+      "pie"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "polar-endAngle",
+    "title": "Polar endAngle",
+    "titleCN": "极坐标系 endAngle",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "radar-custom",
+    "title": "Customized Radar Chart",
+    "titleCN": "自定义雷达图",
+    "categories": [
+      "radar"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "sankey-itemstyle",
+    "title": "Specify ItemStyle for Each Node in Sankey",
+    "titleCN": "桑基图节点自定义样式",
+    "categories": [
+      "sankey"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "sankey-levels",
+    "title": "Sankey with Levels Setting",
+    "titleCN": "桑基图层级自定义样式",
+    "categories": [
+      "sankey"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "scatter-effect",
+    "title": "Effect Scatter Chart",
+    "titleCN": "涟漪特效散点图",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "scatter-linear-regression",
+    "title": "Linear Regression",
+    "titleCN": "线性回归（使用统计插件）",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "scatter-polynomial-regression",
+    "title": "Polynomial Regression",
+    "titleCN": "多项式回归（使用统计插件）",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "sunburst-borderRadius",
+    "title": "Sunburst with Rounded Corner",
+    "titleCN": "圆角旭日图",
+    "categories": [
+      "sunburst"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "sunburst-label-rotate",
+    "title": "Sunburst Label Rotate",
+    "titleCN": "旭日图标签旋转",
+    "categories": [
+      "sunburst"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "area-pieces",
+    "title": "Area Pieces",
+    "titleCN": "折线图区域高亮",
+    "categories": [
+      "line",
+      "visualMap"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "bar-breaks-simple",
+    "title": "Bar Chart with Axis Breaks",
+    "titleCN": "断轴上的柱状图",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 3,
+    "since": "6.0.0"
+  },
+  {
+    "id": "bar-gradient",
+    "title": "Clickable Column Chart with Gradient",
+    "titleCN": "特性示例：渐变色 阴影 点击缩放",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "bar-label-rotation",
+    "title": "Bar Label Rotation",
+    "titleCN": "柱状图标签旋转",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "bar-stack",
+    "title": "Stacked Column Chart",
+    "titleCN": "堆叠柱状图",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "bar-stack-borderRadius",
+    "title": "Stacked Bar with borderRadius",
+    "titleCN": "带圆角的堆积柱状图",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "bar-stack-normalization",
+    "title": "Stacked Bar Normalization",
+    "titleCN": "堆叠柱状图的归一化",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "bar-stack-normalization-and-variation",
+    "title": "Stacked Bar Normalization and Variation",
+    "titleCN": "堆叠柱状图的归一化和变化",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "bar-waterfall2",
+    "title": "Waterfall Chart",
+    "titleCN": "阶梯瀑布图（柱状图模拟）",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "bar-y-category-stack",
+    "title": "Stacked Horizontal Bar",
+    "titleCN": "堆叠条形图",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "candlestick-large",
+    "title": "Large Scale Candlestick",
+    "titleCN": "大数据量K线图",
+    "categories": [
+      "candlestick"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "chord-lineStyle-color",
+    "title": "Chord lineStyle.color",
+    "titleCN": "和弦图边的颜色",
+    "categories": [
+      "chord"
+    ],
+    "difficulty": 3,
+    "since": "6.0.0"
+  },
+  {
+    "id": "custom-bar-trend",
+    "title": "Custom Bar Trend",
+    "titleCN": "使用自定义系列添加柱状图趋势",
+    "categories": [
+      "custom"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "custom-cartesian-polygon",
+    "title": "Custom Cartesian Polygon",
+    "titleCN": "自定义多边形图",
+    "categories": [
+      "custom"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "custom-error-bar",
+    "title": "Error Bar on Catesian",
+    "titleCN": "使用自定系列给柱状图添加误差范围",
+    "categories": [
+      "custom"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "custom-profile",
+    "title": "Profile",
+    "titleCN": "性能分析图",
+    "categories": [
+      "custom"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "cycle-plot",
+    "title": "Cycle Plot",
+    "titleCN": "周期图",
+    "categories": [
+      "custom"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "data-transform-filter",
+    "title": "Data Transform Filter",
+    "titleCN": "数据过滤",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "data-transform-multiple-pie",
+    "title": "Partition Data to Pies",
+    "titleCN": "分割数据到数个饼图",
+    "categories": [
+      "dataset",
+      "pie",
+      "transform"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "dataset-default",
+    "title": "Default arrangement",
+    "titleCN": "默认 encode 设置",
+    "categories": [
+      "dataset",
+      "pie"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "dataset-encode1",
+    "title": "Encode and Matrix",
+    "titleCN": "指定数据到坐标轴的映射",
+    "categories": [
+      "dataset"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "gauge-progress",
+    "title": "Progress Gauge",
+    "titleCN": "进度仪表盘",
+    "categories": [
+      "gauge"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "gauge-stage",
+    "title": "Stage Speed Gauge",
+    "titleCN": "阶段速度仪表盘",
+    "categories": [
+      "gauge"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "geo-graph",
+    "title": "Geo Graph",
+    "titleCN": "地理坐标系上的关系图",
+    "categories": [
+      "map",
+      "graph"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "graph-force",
+    "title": "Force Layout",
+    "titleCN": "力引导布局",
+    "categories": [
+      "graph"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "graph-label-overlap",
+    "title": "Hide Overlapped Label",
+    "titleCN": "关系图自动隐藏重叠标签",
+    "categories": [
+      "graph"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "line-gradient",
+    "title": "Line Gradient",
+    "titleCN": "折线图的渐变",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "line-sections",
+    "title": "Distribution of Electricity",
+    "titleCN": "一天用电量分布",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "matrix-confusion",
+    "title": "Confusion Matrix",
+    "titleCN": "混淆矩阵",
+    "categories": [
+      "matrix"
+    ],
+    "difficulty": 3,
+    "since": "6.0.0"
+  },
+  {
+    "id": "matrix-grid-layout",
+    "title": "Responsive grid layout based on matrix",
+    "titleCN": "矩阵中响应式网格布局",
+    "categories": [
+      "matrix"
+    ],
+    "difficulty": 3,
+    "since": "6.0.0"
+  },
+  {
+    "id": "matrix-stock",
+    "title": "Matrix Stock Application",
+    "titleCN": "股市矩阵图",
+    "categories": [
+      "matrix",
+      "candlestick"
+    ],
+    "difficulty": 3,
+    "since": "6.0.0"
+  },
+  {
+    "id": "pie-alignTo",
+    "title": "Pie Label Align",
+    "titleCN": "饼图标签对齐",
+    "categories": [
+      "pie"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "pie-labelLine-adjust",
+    "title": "Label Line Adjust",
+    "titleCN": "饼图引导线调整",
+    "categories": [
+      "pie"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "radar2",
+    "title": "Proportion of Browsers",
+    "titleCN": "浏览器占比变化",
+    "categories": [
+      "radar"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "sankey-energy",
+    "title": "Gradient Edge",
+    "titleCN": "桑基图渐变色边",
+    "categories": [
+      "sankey"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "sankey-nodeAlign-left",
+    "title": "Node Align Left in Sankey",
+    "titleCN": "桑基图左对齐布局",
+    "categories": [
+      "sankey"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "sankey-nodeAlign-right",
+    "title": "Node Align Right in Sankey",
+    "titleCN": "桑基图右对齐布局",
+    "categories": [
+      "sankey"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "scatter-jitter",
+    "title": "Scatter with Jittering",
+    "titleCN": "带抖动的散点图",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 3,
+    "since": "6.0.0"
+  },
+  {
+    "id": "scatter-punchCard",
+    "title": "Punch Card of Github",
+    "titleCN": "GitHub 打卡气泡图",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "scatter-single-axis",
+    "title": "Scatter on Single Axis",
+    "titleCN": "单轴散点图",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "scatter-weight",
+    "title": "Distribution of Height and Weight",
+    "titleCN": "男性女性身高体重分布",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "sunburst-monochrome",
+    "title": "Monochrome Sunburst",
+    "titleCN": "单色旭日图",
+    "categories": [
+      "sunburst"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "area-simple",
+    "title": "Large scale area chart",
+    "titleCN": "大数据量面积图",
+    "categories": [
+      "line",
+      "dataZoom"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "bar-brush",
+    "title": "Brush Select on Column Chart",
+    "titleCN": "柱状图框选",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "bar-negative",
+    "title": "Bar Chart with Negative Value",
+    "titleCN": "正负条形图",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "bar1",
+    "title": "Rainfall and Evaporation",
+    "titleCN": "某地区蒸发量和降水量",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "calendar-graph",
+    "title": "Calendar Graph",
+    "titleCN": "日历关系图",
+    "categories": [
+      "calendar",
+      "graph"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "calendar-lunar",
+    "title": "Calendar Lunar",
+    "titleCN": "农历日历图",
+    "categories": [
+      "calendar"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "candlestick-touch",
+    "title": "Axis Pointer Link and Touch",
+    "titleCN": "触屏上的坐标轴指示器",
+    "categories": [
+      "candlestick"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "confidence-band",
+    "title": "Confidence Band",
+    "titleCN": "置信带",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "custom-gantt-flight",
+    "title": "Gantt Chart of Airport Flights",
+    "titleCN": "机场航班甘特图",
+    "categories": [
+      "custom",
+      "dataZoom"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "custom-polar-heatmap",
+    "title": "Polar Heatmap",
+    "titleCN": "极坐标热力图（自定义系列）",
+    "categories": [
+      "custom"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "data-transform-aggregate",
+    "title": "Data Transform Simple Aggregate",
+    "titleCN": "简单的数据聚合",
+    "categories": [
+      "boxplot"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "flame-graph",
+    "title": "Flame graph",
+    "titleCN": "火焰图",
+    "categories": [
+      "custom"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "gauge-grade",
+    "title": "Grade Gauge",
+    "titleCN": "等级仪表盘",
+    "categories": [
+      "gauge"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "gauge-multi-title",
+    "title": "Multi Title Gauge",
+    "titleCN": "多标题仪表盘",
+    "categories": [
+      "gauge"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "gauge-temperature",
+    "title": "Temperature Gauge chart",
+    "titleCN": "气温仪表盘",
+    "categories": [
+      "gauge"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "graph",
+    "title": "Les Miserables",
+    "titleCN": "悲惨世界人物关系图",
+    "categories": [
+      "graph"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "grid-multiple",
+    "title": "Rainfall vs Evaporation",
+    "titleCN": "雨量蒸发量关系图",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "intraday-breaks-1",
+    "title": "Intraday Chart with Breaks",
+    "titleCN": "断轴上的日内走势图",
+    "categories": [
+      "candlestick",
+      "line"
+    ],
+    "difficulty": 4,
+    "since": "6.0.0"
+  },
+  {
+    "id": "intraday-breaks-2",
+    "title": "Intraday Chart with Breaks (II)",
+    "titleCN": "断轴上的日内走势图 (II)",
+    "categories": [
+      "candlestick",
+      "line"
+    ],
+    "difficulty": 4,
+    "since": "6.0.0"
+  },
+  {
+    "id": "line-aqi",
+    "title": "Beijing AQI",
+    "titleCN": "北京 AQI 可视化",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "mix-line-bar",
+    "title": "Mixed Line and Bar",
+    "titleCN": "折柱混合",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "mix-zoom-on-value",
+    "title": "Mix Zoom On Value",
+    "titleCN": "多数值轴轴缩放",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "multiple-x-axis",
+    "title": "Multiple X Axes",
+    "titleCN": "多 X 轴",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "multiple-y-axis",
+    "title": "Multiple Y Axes",
+    "titleCN": "多 Y 轴示例",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "parallel-nutrients",
+    "title": "Parallel Nutrients",
+    "titleCN": "营养结构（平行坐标）",
+    "categories": [
+      "parallel"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "pictorialBar-bar-transition",
+    "title": "Transition between pictorialBar and bar",
+    "titleCN": "象形主图变形为柱状图",
+    "categories": [
+      "pictorialBar",
+      "animation"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "pie-legend",
+    "title": "Pie with Scrollable Legend",
+    "titleCN": "可滚动的图例",
+    "categories": [
+      "pie"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "pie-rich-text",
+    "title": "Pie Special Label",
+    "titleCN": "富文本标签",
+    "categories": [
+      "pie",
+      "rich"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "scatter-aggregate-bar",
+    "title": "Aggregate Scatter to Bar",
+    "titleCN": "散点图聚合为柱状图动画",
+    "categories": [
+      "scatter",
+      "animation"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "scatter-label-align-right",
+    "title": "Align Label on the Top",
+    "titleCN": "散点图标签顶部对齐",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "scatter-label-align-top",
+    "title": "Align Label on the Top",
+    "titleCN": "散点图标签顶部对齐",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "scatter-symbol-morph",
+    "title": "Symbol Shape Morph",
+    "titleCN": "散点图变形动画",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "sunburst-visualMap",
+    "title": "Sunburst VisualMap",
+    "titleCN": "旭日图使用视觉编码",
+    "categories": [
+      "sunburst"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "treemap-sunburst-transition",
+    "title": "Transition between Treemap and Sunburst",
+    "titleCN": "矩形树图和旭日图的动画过渡",
+    "categories": [
+      "treemap"
+    ],
+    "difficulty": 4
+  },
+  {
+    "id": "area-rainfall",
+    "title": "Rainfall",
+    "titleCN": "雨量流量关系图",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "area-time-axis",
+    "title": "Area Chart with Time Axis",
+    "titleCN": "时间轴折线图",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "bar-animation-delay",
+    "title": "Animation Delay",
+    "titleCN": "柱状图动画延迟",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "bar-drilldown",
+    "title": "Bar Chart Drilldown Animation",
+    "titleCN": "柱状图下钻动画",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "bar-large",
+    "title": "Large Scale Bar Chart",
+    "titleCN": "大数据量柱图",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "bar-race",
+    "title": "Bar Race",
+    "titleCN": "动态排序柱状图",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "dataset-link",
+    "title": "Share Dataset",
+    "titleCN": "联动和共享数据集",
+    "categories": [
+      "dataset",
+      "line",
+      "pie"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "dataset-series-layout-by",
+    "title": "Series Layout By Column or Row",
+    "titleCN": "系列按行和按列排布",
+    "categories": [
+      "dataset",
+      "bar"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "dataset-simple0",
+    "title": "Simple Example of Dataset",
+    "titleCN": "最简单的数据集（dataset）",
+    "categories": [
+      "dataset",
+      "bar"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "dataset-simple1",
+    "title": "Dataset in Object Array",
+    "titleCN": "对象数组的输入格式",
+    "categories": [
+      "dataset",
+      "bar"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "dynamic-data2",
+    "title": "Dynamic Data + Time Axis",
+    "titleCN": "动态数据 + 时间坐标轴",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "gauge-ring",
+    "title": "Ring Gauge",
+    "titleCN": "得分环",
+    "categories": [
+      "gauge"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "geo-choropleth-scatter",
+    "title": "Geo Choropleth and Scatter",
+    "titleCN": "地理坐标系上的等值区划图和散点图",
+    "categories": [
+      "map",
+      "scatter"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "graph-circular-layout",
+    "title": "Les Miserables",
+    "titleCN": "悲惨世界人物关系图(环形布局)",
+    "categories": [
+      "graph"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "graphic-stroke-animation",
+    "title": "Stroke Animation",
+    "titleCN": "关键帧描边动画",
+    "categories": [
+      "graphic"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "line-function",
+    "title": "Function Plot",
+    "titleCN": "函数绘图",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "line-race",
+    "title": "Line Race",
+    "titleCN": "动态排序折线图",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "map-iceland-pie",
+    "title": "Pie Charts on GEO Map",
+    "titleCN": "在地图上显示饼图",
+    "categories": [
+      "map",
+      "pie"
+    ],
+    "difficulty": 5,
+    "since": "5.4.0"
+  },
+  {
+    "id": "matrix-sparkline",
+    "title": "Mini Line Charts (Sparkline) in Matrix",
+    "titleCN": "矩阵中的微型折线图",
+    "categories": [
+      "matrix",
+      "line"
+    ],
+    "difficulty": 5,
+    "since": "6.0.0"
+  },
+  {
+    "id": "pie-nest",
+    "title": "Nested Pies",
+    "titleCN": "嵌套环形图",
+    "categories": [
+      "pie",
+      "rich"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "scatter-large",
+    "title": "Large Scatter",
+    "titleCN": "大规模散点图",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "scatter-nebula",
+    "title": "Scatter Nebula",
+    "titleCN": "大规模星云散点图",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "scatter-stream-visual",
+    "title": "Visual interaction with stream",
+    "titleCN": "流式渲染和视觉映射操作",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "sunburst-drink",
+    "title": "Drink Flavors",
+    "titleCN": "饮品风味分类",
+    "categories": [
+      "sunburst"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "wind-barb",
+    "title": "Wind Barb",
+    "titleCN": "风向图",
+    "categories": [
+      "custom",
+      "dataZoom"
+    ],
+    "difficulty": 5
+  },
+  {
+    "id": "bar-multi-drilldown",
+    "title": "Bar Chart Multi-level Drilldown Animation",
+    "titleCN": "柱状图多层下钻动画",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 6
+  },
+  {
+    "id": "bar-race-country",
+    "title": "Bar Race",
+    "titleCN": "动态排序柱状图 - 人均收入",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 6
+  },
+  {
+    "id": "bar-rich-text",
+    "title": "Weather Statistics",
+    "titleCN": "天气统计（富文本）",
+    "categories": [
+      "bar",
+      "rich"
+    ],
+    "difficulty": 6
+  },
+  {
+    "id": "bubble-gradient",
+    "title": "Bubble Chart",
+    "titleCN": "气泡图",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 6
+  },
+  {
+    "id": "calendar-pie",
+    "title": "Calendar Pie",
+    "titleCN": "日历饼图",
+    "categories": [
+      "calendar",
+      "pie"
+    ],
+    "difficulty": 6
+  },
+  {
+    "id": "custom-hexbin",
+    "title": "Hexagonal Binning",
+    "titleCN": "六边形分箱图（自定义系列）",
+    "categories": [
+      "custom",
+      "map"
+    ],
+    "difficulty": 6
+  },
+  {
+    "id": "dynamic-data",
+    "title": "Dynamic Data",
+    "titleCN": "动态数据",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 6
+  },
+  {
+    "id": "gauge-barometer",
+    "title": "Gauge Barometer chart",
+    "titleCN": "气压表",
+    "categories": [
+      "gauge"
+    ],
+    "difficulty": 6
+  },
+  {
+    "id": "graph-force-dynamic",
+    "title": "Graph Dynamic",
+    "titleCN": "动态增加图节点",
+    "categories": [
+      "graph"
+    ],
+    "difficulty": 6
+  },
+  {
+    "id": "graphic-loading",
+    "title": "Customized Loading Animation",
+    "titleCN": "加载动画",
+    "categories": [
+      "graphic"
+    ],
+    "difficulty": 6
+  },
+  {
+    "id": "line-markline",
+    "title": "Line with Marklines",
+    "titleCN": "折线图的标记线",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 6
+  },
+  {
+    "id": "line-style",
+    "title": "Line Style and Item Style",
+    "titleCN": "自定义折线图样式",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 6
+  },
+  {
+    "id": "matrix-mini-bar-geo",
+    "title": "Mini Bars and Geo in Matrix",
+    "titleCN": "矩阵坐标系下的微型条形图和地图",
+    "categories": [
+      "matrix",
+      "bar",
+      "geo"
+    ],
+    "difficulty": 6,
+    "since": "6.0.0"
+  },
+  {
+    "id": "mix-timeline-finance",
+    "title": "Finance Indices 2002",
+    "titleCN": "2002全国宏观经济指标",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 6
+  },
+  {
+    "id": "sunburst-book",
+    "title": "Book Records",
+    "titleCN": "书籍分布",
+    "categories": [
+      "sunburst"
+    ],
+    "difficulty": 6
+  },
+  {
+    "id": "watermark",
+    "title": "Watermark - ECharts Download",
+    "titleCN": "水印 - ECharts 下载统计",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 6
+  },
+  {
+    "id": "bar-polar-real-estate",
+    "title": "Bar Chart on Polar",
+    "titleCN": "极坐标系下的柱状图",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 7
+  },
+  {
+    "id": "bar-polar-stack",
+    "title": "Stacked Bar Chart on Polar",
+    "titleCN": "极坐标系下的堆叠柱状图",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 7
+  },
+  {
+    "id": "bar-polar-stack-radial",
+    "title": "Stacked Bar Chart on Polar(Radial)",
+    "titleCN": "极坐标系下的堆叠柱状图",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 7
+  },
+  {
+    "id": "custom-calendar-icon",
+    "title": "Custom Calendar Icon",
+    "titleCN": "日历图自定义图标",
+    "categories": [
+      "custom",
+      "calendar"
+    ],
+    "difficulty": 7
+  },
+  {
+    "id": "custom-wind",
+    "title": "Use custom series to draw wind vectors",
+    "titleCN": "使用自定义系列绘制风场",
+    "categories": [
+      "custom"
+    ],
+    "difficulty": 7
+  },
+  {
+    "id": "gauge-clock",
+    "title": "Clock",
+    "titleCN": "时钟仪表盘",
+    "categories": [
+      "gauge"
+    ],
+    "difficulty": 7
+  },
+  {
+    "id": "graph-life-expectancy",
+    "title": "Graph Life Expectancy",
+    "titleCN": "预期寿命",
+    "categories": [
+      "graph"
+    ],
+    "difficulty": 7
+  },
+  {
+    "id": "line-in-cartesian-coordinate-system",
+    "title": "Line Chart in Cartesian Coordinate System",
+    "titleCN": "双数值轴折线图",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 7
+  },
+  {
+    "id": "line-log",
+    "title": "Log Axis",
+    "titleCN": "对数轴示例",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 7
+  },
+  {
+    "id": "line-step",
+    "title": "Step Line",
+    "titleCN": "阶梯折线图",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 7
+  },
+  {
+    "id": "polar-roundCap",
+    "title": "Rounded Bar on Polar",
+    "titleCN": "圆角环形图",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 7
+  },
+  {
+    "id": "scatter-aqi-color",
+    "title": "Scatter Aqi Color",
+    "titleCN": "AQI 气泡图",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 7
+  },
+  {
+    "id": "scatter-nutrients",
+    "title": "Scatter Nutrients",
+    "titleCN": "营养分布散点图",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 7
+  },
+  {
+    "id": "scatter-nutrients-matrix",
+    "title": "Scatter Nutrients Matrix",
+    "titleCN": "营养分布散点矩阵",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 7
+  },
+  {
+    "id": "bar-breaks-brush",
+    "title": "Bar Chart with Axis Breaks (Brush-enabled)",
+    "titleCN": "断轴上的柱状图（可刷选）",
+    "categories": [
+      "bar"
+    ],
+    "difficulty": 8,
+    "since": "6.0.0"
+  },
+  {
+    "id": "gauge-car",
+    "title": "Gauge Car",
+    "titleCN": "汽车仪表盘",
+    "categories": [
+      "gauge"
+    ],
+    "difficulty": 8
+  },
+  {
+    "id": "graph-webkit-dep",
+    "title": "Graph Webkit Dep",
+    "titleCN": "WebKit 模块关系依赖图",
+    "categories": [
+      "graph"
+    ],
+    "difficulty": 8
+  },
+  {
+    "id": "line-easing",
+    "title": "Line Easing Visualizing",
+    "titleCN": "缓动函数可视化",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 8
+  },
+  {
+    "id": "line-fisheye-lens",
+    "title": "Fisheye Lens on Line Chart",
+    "titleCN": "折线图鱼眼放大",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 8,
+    "since": "6.0.0"
+  },
+  {
+    "id": "line-y-category",
+    "title": "Line Y Category",
+    "titleCN": "垂直折线图（Y轴为类目轴）",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 8
+  },
+  {
+    "id": "scatter-polar-punchCard",
+    "title": "Punch Card of Github",
+    "titleCN": "GitHub 打卡气泡图（极坐标）",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 8
+  },
+  {
+    "id": "custom-gauge",
+    "title": "Custom Gauge",
+    "titleCN": "自定义仪表",
+    "categories": [
+      "custom"
+    ],
+    "difficulty": 9
+  },
+  {
+    "id": "graph-npm",
+    "title": "NPM Dependencies",
+    "titleCN": "NPM 依赖关系图",
+    "categories": [
+      "graph"
+    ],
+    "difficulty": 9
+  },
+  {
+    "id": "line-graphic",
+    "title": "Custom Graphic Component",
+    "titleCN": "自定义图形组件",
+    "categories": [
+      "line",
+      "graphic"
+    ],
+    "difficulty": 9
+  },
+  {
+    "id": "line-pen",
+    "title": "Click to Add Points",
+    "titleCN": "点击添加折线图拐点",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 9
+  },
+  {
+    "id": "scatter-life-expectancy-timeline",
+    "title": "Life Expectancy and GDP",
+    "titleCN": "各国人均寿命与GDP关系演变",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 9
+  },
+  {
+    "id": "scatter-painter-choice",
+    "title": "Master Painter Color Choices Throughout History",
+    "titleCN": "历代绘画大师的色彩运用",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 9
+  },
+  {
+    "id": "boxplot-light-velocity",
+    "title": "Boxplot Light Velocity",
+    "titleCN": "基础盒须图",
+    "categories": [
+      "boxplot"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "boxplot-light-velocity2",
+    "title": "Boxplot Light Velocity2",
+    "titleCN": "垂直方向盒须图",
+    "categories": [
+      "boxplot"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "boxplot-multi",
+    "title": "Multiple Categories",
+    "titleCN": "多系列盒须图",
+    "categories": [
+      "boxplot"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "calendar-effectscatter",
+    "title": "Calendar Effectscatter",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "candlestick-brush",
+    "title": "Candlestick Brush",
+    "titleCN": "K 线图刷选",
+    "categories": [
+      "candlestick"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "candlestick-sh-2015",
+    "title": "ShangHai Index, 2015",
+    "titleCN": "2015 年上证指数",
+    "categories": [
+      "candlestick"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "chord-style",
+    "title": "Chord Style",
+    "titleCN": "和弦图样式",
+    "categories": [
+      "chord"
+    ],
+    "difficulty": 10,
+    "since": "6.0.0"
+  },
+  {
+    "id": "funnel",
+    "title": "Funnel Chart",
+    "titleCN": "漏斗图",
+    "categories": [
+      "funnel"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "funnel-align",
+    "title": "Funnel Compare",
+    "titleCN": "漏斗图(对比)",
+    "categories": [
+      "funnel"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "funnel-customize",
+    "title": "Customized Funnel",
+    "titleCN": "漏斗图",
+    "categories": [
+      "funnel"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "funnel-mutiple",
+    "title": "Multiple Funnels",
+    "titleCN": "多漏斗图",
+    "categories": [
+      "funnel"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "geo-beef-cuts",
+    "title": "GEO Beef Cuts",
+    "titleCN": "庖丁解牛",
+    "categories": [
+      "map"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "geo-organ",
+    "title": "Organ Data with SVG",
+    "titleCN": "内脏数据（SVG）",
+    "categories": [
+      "map"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "geo-seatmap-flight",
+    "title": "Flight Seatmap with SVG",
+    "titleCN": "航班选座（SVG）",
+    "categories": [
+      "map"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "geo-svg-custom-effect",
+    "title": "GEO SVG with Customized Effect",
+    "titleCN": "自定义特效",
+    "categories": [
+      "custom"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "geo-svg-lines",
+    "title": "GEO SVG Lines",
+    "titleCN": "GEO 路径图（SVG）",
+    "categories": [
+      "map"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "geo-svg-map",
+    "title": "GEO SVG Map",
+    "titleCN": "地图（SVG）",
+    "categories": [
+      "map"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "geo-svg-scatter-simple",
+    "title": "GEO SVG Scatter",
+    "titleCN": "散点图（SVG）",
+    "categories": [
+      "map"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "geo-svg-traffic",
+    "title": "GEO SVG Traffic",
+    "titleCN": "交通（SVG）",
+    "categories": [
+      "map"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "graphic-wave-animation",
+    "title": "Wave Animation",
+    "titleCN": "波浪动画",
+    "categories": [
+      "graphic"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "line-polar",
+    "title": "Two Value-Axes in Polar",
+    "titleCN": "极坐标双数值轴",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "line-polar2",
+    "title": "Two Value-Axes in Polar",
+    "titleCN": "极坐标双数值轴",
+    "categories": [
+      "line"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "line-tooltip-touch",
+    "title": "Tooltip and DataZoom on Mobile",
+    "titleCN": "移动端上的 dataZoom 和 tooltip",
+    "categories": [
+      "line",
+      "dataZoom"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "lines-airline",
+    "title": "65k+ Airline",
+    "titleCN": "65k+ 飞机航线",
+    "categories": [
+      "map",
+      "lines"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "lines-ny",
+    "title": "Use lines to draw 1 million New York streets",
+    "titleCN": "使用线图绘制近100万纽约街道数据",
+    "categories": [
+      "map",
+      "lines"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "map-bar-morph",
+    "title": "Morphing between Map and Bar",
+    "titleCN": "地图柱状图变形动画",
+    "categories": [
+      "map",
+      "animation"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "map-HK",
+    "title": "Population Density of HongKong (2011)",
+    "titleCN": "香港18区人口密度 （2011）",
+    "categories": [
+      "map"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "map-usa",
+    "title": "USA Population Estimates (2012)",
+    "titleCN": "2012 年美国人口统计",
+    "categories": [
+      "map"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "map-usa-projection",
+    "title": "USA Choropleth Map with Projection",
+    "titleCN": "自定义地图投影",
+    "categories": [
+      "map"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "matrix-periodic-table",
+    "title": "Periodic Table",
+    "titleCN": "元素周期表",
+    "categories": [
+      "matrix"
+    ],
+    "difficulty": 10,
+    "since": "6.0.0"
+  },
+  {
+    "id": "pictorialBar-body-fill",
+    "title": "Water Content",
+    "titleCN": "人体含水量",
+    "categories": [
+      "pictorialBar"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "pictorialBar-dotted",
+    "title": "Dotted bar",
+    "titleCN": "虚线柱状图效果",
+    "categories": [
+      "pictorialBar"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "pictorialBar-forest",
+    "title": "Expansion of forest",
+    "titleCN": "森林的增长",
+    "categories": [
+      "pictorialBar"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "pictorialBar-hill",
+    "title": "Wish List and Mountain Height",
+    "titleCN": "圣诞愿望清单和山峰高度",
+    "categories": [
+      "pictorialBar"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "pictorialBar-spirit",
+    "title": "Spirits",
+    "titleCN": "精灵",
+    "categories": [
+      "pictorialBar"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "pictorialBar-vehicle",
+    "title": "Vehicles",
+    "titleCN": "交通工具",
+    "categories": [
+      "pictorialBar"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "pictorialBar-velocity",
+    "title": "Velocity of Christmas Reindeers",
+    "titleCN": "驯鹿的速度",
+    "categories": [
+      "pictorialBar"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "pie-parliament-transition",
+    "title": "Transition of Parliament and Pie Chart",
+    "titleCN": "自定义议会图与饼图过渡动画",
+    "categories": [
+      "custom",
+      "animtion"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "radar-multiple",
+    "title": "Multiple Radar",
+    "titleCN": "多雷达图",
+    "categories": [
+      "radar"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "scatter-matrix",
+    "title": "Scatter Matrix",
+    "titleCN": "散点矩阵和平行坐标",
+    "categories": [
+      "parallel",
+      "scatter"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "scatter-world-population",
+    "title": "World Population (2011)",
+    "titleCN": "World Population (2011)",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "themeRiver-basic",
+    "title": "ThemeRiver",
+    "titleCN": "主题河流图",
+    "categories": [
+      "themeRiver"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "themeRiver-lastfm",
+    "title": "ThemeRiver Lastfm",
+    "titleCN": "Lastfm 主题河流图",
+    "categories": [
+      "themeRiver"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "tree-basic",
+    "title": "From Left to Right Tree",
+    "titleCN": "从左到右树状图",
+    "categories": [
+      "tree"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "tree-legend",
+    "title": "Multiple Trees",
+    "titleCN": "多棵树",
+    "categories": [
+      "tree"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "tree-orient-bottom-top",
+    "title": "From Bottom to Top Tree",
+    "titleCN": "从下到上树状图",
+    "categories": [
+      "tree"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "tree-orient-right-left",
+    "title": "From Right to Left Tree",
+    "titleCN": "从右到左树状图",
+    "categories": [
+      "tree"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "tree-polyline",
+    "title": "Tree with Polyline Edge",
+    "titleCN": "折线树图",
+    "categories": [
+      "tree"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "tree-radial",
+    "title": "Radial Tree",
+    "titleCN": "径向树状图",
+    "categories": [
+      "tree"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "tree-vertical",
+    "title": "From Top to Bottom Tree",
+    "titleCN": "从上到下树状图",
+    "categories": [
+      "tree"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "treemap-disk",
+    "title": "Disk Usage",
+    "titleCN": "磁盘占用",
+    "categories": [
+      "treemap"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "treemap-drill-down",
+    "title": "ECharts Option Query",
+    "titleCN": "ECharts 配置项查询分布",
+    "categories": [
+      "treemap"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "treemap-obama",
+    "title": "How $3.7 Trillion is Spent",
+    "titleCN": "3.7 万亿美元支出构成",
+    "categories": [
+      "treemap"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "treemap-show-parent",
+    "title": "Show Parent Labels",
+    "titleCN": "显示父层级标签",
+    "categories": [
+      "treemap"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "treemap-simple",
+    "title": "Basic Treemap",
+    "titleCN": "基础矩形树图",
+    "categories": [
+      "treemap"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "treemap-visual",
+    "title": "Gradient Mapping",
+    "titleCN": "映射为渐变色",
+    "categories": [
+      "treemap"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "calendar-charts",
+    "title": "Calendar Charts",
+    "titleCN": "日历图",
+    "categories": [
+      "calendar",
+      "scatter"
+    ],
+    "difficulty": 11
+  },
+  {
+    "id": "circle-packing-with-d3",
+    "title": "Circle Packing with d3",
+    "titleCN": "基于 d3 的圆形包络图",
+    "categories": [
+      "custom"
+    ],
+    "difficulty": 11
+  },
+  {
+    "id": "custom-spiral-race",
+    "title": "Custom Spiral Race",
+    "titleCN": "自定义螺旋线竞速",
+    "categories": [
+      "custom"
+    ],
+    "difficulty": 11
+  },
+  {
+    "id": "matrix-mbti",
+    "title": "MBTI Partner Compatibility",
+    "titleCN": "MBTI 伴侣相容性",
+    "categories": [
+      "matrix"
+    ],
+    "difficulty": 11,
+    "since": "6.0.0"
+  },
+  {
+    "id": "line-draggable",
+    "title": "Draggable Points",
+    "titleCN": "可拖拽点",
+    "categories": [
+      "line",
+      "graphic"
+    ],
+    "difficulty": 12
+  },
+  {
+    "id": "scatter-logarithmic-regression",
+    "title": "Logarithmic Regression",
+    "titleCN": "对数回归（使用统计插件）",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 16
+  },
+  {
+    "id": "effectScatter-map",
+    "title": "Air Quality",
+    "titleCN": "全国主要城市空气质量",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "heatmap-map",
+    "title": "Air Qulity",
+    "titleCN": "全国主要城市空气质量",
+    "categories": [
+      "heatmap"
+    ],
+    "difficulty": 3
+  },
+  {
+    "id": "matrix-mini-bar-data-collection",
+    "title": "Matrix Header Data Collection (Mini Bar)",
+    "titleCN": "矩阵坐标系表头数据自动收集（以微型条形图为例）",
+    "categories": [
+      "matrix"
+    ],
+    "difficulty": 3,
+    "since": "6.0.0"
+  },
+  {
+    "id": "doc-example/aria-decal",
+    "title": "Aria Decal",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/aria-decal-newspaper",
+    "title": "Aria Decal Newspaper",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/aria-decal-simple",
+    "title": "Aria Decal Simple",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/aria-pie",
+    "title": "Aria Pie",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/axis-label-align-min-max",
+    "title": "Axis Label Align Min Max",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/axisPointer-handle-image",
+    "title": "AxisPointer Handle Image",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/bar-dataZoom-filterMode",
+    "title": "Bar DataZoom FilterMode",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/bar-large",
+    "title": "Bar Large",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/bar-media-timeline",
+    "title": "Bar Media Timeline",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/barGrid-barGap",
+    "title": "BarGrid BarGap",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/candlestick-axisPointer",
+    "title": "Candlestick AxisPointer",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/canvas-vs-svg",
+    "title": "Canvas Vs Svg",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/canvas-vs-svg-en",
+    "title": "Canvas Vs Svg En",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/custom-transition-simple",
+    "title": "Custom Transition Simple",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/data-transform-multiple-sort-bar",
+    "title": "Data Transform Multiple Sort Bar",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/dataset-encode-simple0",
+    "title": "Dataset Encode Simple0",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/geo-roam-indicator",
+    "title": "geo roam indicator demo",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10,
+    "since": "6.0.0"
+  },
+  {
+    "id": "doc-example/geo-svg-label-basic",
+    "title": "Geo Svg Label Basic",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/geo-svg-layout-basic",
+    "title": "Geo Svg Layout Basic",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/geo-svg-named-basic",
+    "title": "Geo Svg Named Basic",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/getting-started",
+    "title": "Getting Started",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/graph-roam-indicator",
+    "title": "graph roam indicator demo",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10,
+    "since": "6.0.0"
+  },
+  {
+    "id": "doc-example/graphic-bounding",
+    "title": "Graphic Bounding",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/grid-outerBounds",
+    "title": "grid outerBounds example",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10,
+    "since": "6.0.0"
+  },
+  {
+    "id": "doc-example/label-position",
+    "title": "Label Position",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/line-stack-tiled",
+    "title": "Line Stack Tiled",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/map-example",
+    "title": "Map Example",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/map-visualMap-continuous",
+    "title": "Map VisualMap Continuous",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/map-visualMap-continuous-text",
+    "title": "Map VisualMap Continuous Text",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/map-visualMap-pieces",
+    "title": "Map VisualMap Pieces",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/map-visualMap-piecewise-text",
+    "title": "Map VisualMap Piecewise Text",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/matrix-graph-box",
+    "title": "Matrix Graph Box",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10,
+    "since": "6.0.0"
+  },
+  {
+    "id": "doc-example/mix-timeline-all",
+    "title": "Mix Timeline All",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/parallel-all",
+    "title": "Parallel All",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/pictorialBar-clip",
+    "title": "PictorialBar Clip",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/pictorialBar-graphicType",
+    "title": "PictorialBar GraphicType",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/pictorialBar-patternSize",
+    "title": "PictorialBar PatternSize",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/pictorialBar-position",
+    "title": "PictorialBar Position",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/pictorialBar-repeat",
+    "title": "PictorialBar Repeat",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/pictorialBar-repeatDirection",
+    "title": "PictorialBar RepeatDirection",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/pictorialBar-repeatLayout",
+    "title": "PictorialBar RepeatLayout",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/pictorialBar-symbolBoundingDataArray",
+    "title": "PictorialBar SymbolBoundingDataArray",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/pictorialBar-symbolSize",
+    "title": "PictorialBar SymbolSize",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/pie-highlight",
+    "title": "Pie Highlight",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/pie-label-bleedMargin",
+    "title": "Pie Label BleedMargin",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/pie-label-distanceToLabelLine",
+    "title": "Pie Label DistanceToLabelLine",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/pie-label-margin",
+    "title": "Pie Label Margin",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/pie-media",
+    "title": "Pie Media",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/polar-anticlockwise",
+    "title": "Polar Anticlockwise",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/polar-end-angle",
+    "title": "Polar End Angle",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/polar-start-angle",
+    "title": "Polar Start Angle",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/radar",
+    "title": "Radar",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/scatter-dataZoom-all",
+    "title": "Scatter DataZoom All",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/scatter-jitter-avoidOverlap",
+    "title": "Scatter Jitter AvoidOverlap",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/scatter-tutorial-dataZoom-1",
+    "title": "Scatter Tutorial DataZoom 1",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/scatter-tutorial-dataZoom-2",
+    "title": "Scatter Tutorial DataZoom 2",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/scatter-tutorial-dataZoom-3",
+    "title": "Scatter Tutorial DataZoom 3",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/scatter-visualMap-categories",
+    "title": "Scatter VisualMap Categories",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/scatter-visualMap-piecewise",
+    "title": "Scatter VisualMap Piecewise",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/sunburst-color",
+    "title": "Sunburst Color",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/sunburst-highlight-ancestor",
+    "title": "Sunburst Highlight Ancestor",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/sunburst-highlight-descendant",
+    "title": "Sunburst Highlight Descendant",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/sunburst-label-align",
+    "title": "Sunburst Label Align",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/sunburst-simple",
+    "title": "Sunburst Simple",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/text-block-fragment",
+    "title": "Text Block Fragment",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/text-fregment-align",
+    "title": "Text Fregment Align",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/text-options",
+    "title": "Text Options",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/timeline-dynamic-series",
+    "title": "Timeline Dynamic Series",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/title-block",
+    "title": "Title Block",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/treemap-borderColor",
+    "title": "Treemap BorderColor",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/tutorial-async",
+    "title": "Tutorial Async",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/tutorial-dynamic-data",
+    "title": "Tutorial Dynamic Data",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/tutorial-loading",
+    "title": "Tutorial Loading",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/tutorial-styling-step0",
+    "title": "Tutorial Styling Step0",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/tutorial-styling-step1",
+    "title": "Tutorial Styling Step1",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/tutorial-styling-step2",
+    "title": "Tutorial Styling Step2",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/tutorial-styling-step3",
+    "title": "Tutorial Styling Step3",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/tutorial-styling-step4",
+    "title": "Tutorial Styling Step4",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/tutorial-styling-step5",
+    "title": "Tutorial Styling Step5",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "doc-example/value-animation-simple",
+    "title": "Value Animation Simple",
+    "titleCN": "",
+    "categories": [],
+    "difficulty": 10
+  },
+  {
+    "id": "geo-lines",
+    "title": "Migration",
+    "titleCN": "模拟迁徙",
+    "categories": [
+      "map"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "geo-map-scatter",
+    "title": "map and scatter share a geo",
+    "titleCN": "map and scatter share a geo",
+    "categories": [
+      "map"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "scatter-map",
+    "title": "Air Quality",
+    "titleCN": "全国主要城市空气质量",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "scatter-map-brush",
+    "title": "Scatter Map Brush",
+    "titleCN": "Scatter Map Brush",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 10
+  },
+  {
+    "id": "scatter-weibo",
+    "title": "Sign in of weibo",
+    "titleCN": "微博签到数据点亮中国",
+    "categories": [
+      "scatter"
+    ],
+    "difficulty": 10
+  }
+]

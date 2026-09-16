@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/apache-echarts-spec",
+    "types": [
+      "jasmine"
+    ]
+  },
+  "files": [
+    "src/apache-echarts-test.ts",
+    "src/polyfills.ts"
+  ],
+  "include": [
+    "src/**/*.d.ts"
+  ]
+}

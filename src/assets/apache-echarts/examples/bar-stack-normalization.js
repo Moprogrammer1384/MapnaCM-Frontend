@@ -1,0 +1,59 @@
+/*
+ * Adapted from Apache ECharts examples (aebd221b302308af240b90267fd43b81657099a1).
+ * Licensed under the Apache License 2.0.
+ * Source: https://github.com/apache/echarts-examples
+ */
+/*
+title: Stacked Bar Normalization
+titleCN: 堆叠柱状图的归一化
+category: bar
+difficulty: 3
+*/
+// There should not be negative values in rawData
+const rawData = [
+    [100, 302, 301, 334, 390, 330, 320],
+    [320, 132, 101, 134, 90, 230, 210],
+    [220, 182, 191, 234, 290, 330, 310],
+    [150, 212, 201, 154, 190, 330, 410],
+    [820, 832, 901, 934, 1290, 1330, 1320]
+];
+const totalData = [];
+for (let i = 0; i < rawData[0].length; ++i) {
+    let sum = 0;
+    for (let j = 0; j < rawData.length; ++j) {
+        sum += rawData[j][i];
+    }
+    totalData.push(sum);
+}
+const series = [
+    'Direct',
+    'Mail Ad',
+    'Affiliate Ad',
+    'Video Ad',
+    'Search Engine'
+].map((name, sid) => {
+    return {
+        name,
+        type: 'bar',
+        stack: 'total',
+        barWidth: '60%',
+        label: {
+            show: true,
+            formatter: (params) => Math.round(params.value * 1000) / 10 + '%'
+        },
+        data: rawData[sid].map((d, did) => totalData[did] <= 0 ? 0 : d / totalData[did])
+    };
+});
+option = {
+    legend: {
+        selectedMode: false
+    },
+    yAxis: {
+        type: 'value'
+    },
+    xAxis: {
+        type: 'category',
+        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    },
+    series
+};

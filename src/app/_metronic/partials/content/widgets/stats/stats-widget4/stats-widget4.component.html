@@ -5,11 +5,10 @@
       [ngClass]="'symbol-light-' + color + ' me-2'"
     >
       <span class="symbol-label">
-        <span
-          [inlineSVG]="svgIcon"
-          class="svg-icon fs-2x"
-          [ngClass]="'svg-icon-' + color"
-        ></span>
+        <app-keenicon
+          [name]="icon"
+          [class]="'fs-2x text-' + color"
+        ></app-keenicon>
       </span>
     </span>
 

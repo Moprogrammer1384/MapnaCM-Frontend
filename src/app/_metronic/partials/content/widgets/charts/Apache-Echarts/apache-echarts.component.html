@@ -1,0 +1,76 @@
+<div class="apache-echarts" [style.min-height]="height">
+  <div #chartElement class="apache-echarts__canvas" [style.height]="height"></div>
+
+  <div *ngIf="loading" class="apache-echarts__status">
+    <span class="spinner-border spinner-border-sm text-primary" aria-hidden="true"></span>
+    <span>Loading chart...</span>
+  </div>
+
+  <div *ngIf="errorMessage" class="apache-echarts__status apache-echarts__status--error" role="alert">
+    <span class="fw-semibold">Chart could not be rendered</span>
+    <span class="small">{{ errorMessage }}</span>
+  </div>
+</div>
+
+<div *ngIf="controls.length" class="apache-echarts-controls">
+  <ng-container *ngFor="let control of controls">
+    <label *ngIf="control.kind !== 'action'" class="apache-echarts-controls__item">
+      <span>{{ control.label }}</span>
+
+      <input
+        *ngIf="control.kind === 'boolean'"
+        type="checkbox"
+        class="form-check-input"
+        [checked]="control.value"
+        (change)="updateControl(control, $any($event.target).checked)"
+      />
+
+      <input
+        *ngIf="control.kind === 'number'"
+        type="range"
+        class="form-range"
+        [min]="control.min ?? 0"
+        [max]="control.max ?? 100"
+        [step]="control.step ?? 1"
+        [value]="control.value"
+        (input)="updateControl(control, $any($event.target).value)"
+      />
+
+      <select
+        *ngIf="control.kind === 'select'"
+        class="form-select form-select-sm"
+        [value]="control.value"
+        (change)="updateControl(control, $any($event.target).value)"
+      >
+        <option *ngFor="let option of control.options" [value]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+
+      <input
+        *ngIf="control.kind === 'color'"
+        type="color"
+        class="form-control form-control-color form-control-sm"
+        [value]="control.value"
+        (input)="updateControl(control, $any($event.target).value)"
+      />
+
+      <input
+        *ngIf="control.kind === 'text'"
+        type="text"
+        class="form-control form-control-sm"
+        [value]="control.value"
+        (change)="updateControl(control, $any($event.target).value)"
+      />
+    </label>
+
+    <button
+      *ngIf="control.kind === 'action'"
+      type="button"
+      class="btn btn-sm btn-light-primary"
+      (click)="updateControl(control, null)"
+    >
+      {{ control.label }}
+    </button>
+  </ng-container>
+</div>

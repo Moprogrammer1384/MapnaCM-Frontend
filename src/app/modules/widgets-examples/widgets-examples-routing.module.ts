@@ -26,6 +26,13 @@ const routes: Routes = [
         component: ChartsComponent,
       },
       {
+        path: 'apache-charts',
+        loadComponent: () =>
+          import('./apache-charts/apache-charts.component').then(
+            (module) => module.ApacheChartsComponent
+          ),
+      },
+      {
         path: 'mixed',
         component: MixedComponent,
       },

@@ -27,7 +27,8 @@
               "clipboard.js",
               "prismjs",
               "sweetalert2",
-              "moment"
+              "moment",
+              "jquery"
             ],
             "index": "src/index.html",
             "main": "src/main.ts",

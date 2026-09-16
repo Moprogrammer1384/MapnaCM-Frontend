@@ -7,7 +7,7 @@ import { getCSSVariableValue } from '../../../../../kt/_utils';
   templateUrl: './stats-widget4.component.html',
 })
 export class StatsWidget4Component implements OnInit {
-  @Input() svgIcon = '';
+  @Input() icon = '';
   @Input() color = '';
   @Input() description = '';
   @Input() change = '';

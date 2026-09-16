@@ -5,7 +5,7 @@ import { Component, Input } from '@angular/core';
   templateUrl: './stats-widget5.component.html',
 })
 export class StatsWidget5Component {
-  @Input() svgIcon = '';
+  @Input() icon = '';
   @Input() iconColor = '';
   @Input() color = '';
   @Input() description = '';

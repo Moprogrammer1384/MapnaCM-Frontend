@@ -13,7 +13,7 @@
       <!--begin::Search-->
       <div class="d-flex align-items-center position-relative my-1 me-4">
         <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-150px ps-9" placeholder="Search Site" (input)="onSearch($any($event.target).value)" />
+        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-150px ps-9" placeholder="Search Site" (input)="table.search($any($event.target).value)" />
       </div>
       <!--end::Search-->
       <!--begin::Button-->
@@ -31,7 +31,7 @@
       <table id="kt_profile_overview_table" class="table table-row-bordered table-row-dashed gy-4 align-middle fw-bold dataTable no-footer">
         <thead class="fs-7 text-gray-500 text-uppercase">
           <tr>
-            <th *ngFor="let col of columns" [class]="col.class + ' dt-orderable-asc dt-orderable-desc'" [ngClass]="sortClass(col.key)" (click)="sortBy(col.key)">
+            <th *ngFor="let col of table.columns" [class]="col.class + ' dt-orderable-asc dt-orderable-desc'" [ngClass]="table.sortClass(col.key)" (click)="table.sortBy(col.key)">
               <div class="dt-column-header">
                 <span class="dt-column-title" role="button">{{ col.title }}</span>
                 <span class="dt-column-order"></span>
@@ -46,7 +46,7 @@
           </tr>
         </thead>
         <tbody class="fs-6">
-          <tr *ngFor="let site of pagedSites">
+          <tr *ngFor="let site of table.paged">
             <td>
               <a href="javascript:;" class="fs-6 text-gray-800 text-hover-primary">{{ site.city }}</a>
             </td>
@@ -64,7 +64,7 @@
               </a>
             </td>
           </tr>
-          <tr *ngIf="filteredSites.length === 0">
+          <tr *ngIf="table.filtered.length === 0">
             <td colspan="7" class="text-center text-gray-500">No matching records found</td>
           </tr>
         </tbody>
@@ -75,25 +75,25 @@
         <div class="d-flex align-items-center">
           <div class="dataTables_length">
             <label>
-              <select class="form-select form-select-sm form-select-solid" [value]="pageSize" (change)="onPageSizeChange($any($event.target).value)">
-                <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+              <select class="form-select form-select-sm form-select-solid" [value]="table.pageSize" (change)="table.setPageSize($any($event.target).value)">
+                <option *ngFor="let size of table.pageSizes" [value]="size">{{ size }}</option>
               </select>
             </label>
           </div>
           <div class="dataTables_info" role="status" aria-live="polite">
-            Showing {{ infoStart }} to {{ infoEnd }} of {{ filteredSites.length }} entries
+            Showing {{ table.infoStart }} to {{ table.infoEnd }} of {{ table.filtered.length }} entries
           </div>
         </div>
         <div class="dataTables_paginate paging_simple_numbers">
           <ul class="pagination">
-            <li class="paginate_button page-item previous" [class.disabled]="page === 1">
-              <a href="javascript:;" class="page-link" (click)="goToPage(page - 1)"><i class="previous"></i></a>
+            <li class="paginate_button page-item previous" [class.disabled]="table.page === 1">
+              <a href="javascript:;" class="page-link" (click)="table.goToPage(table.page - 1)"><i class="previous"></i></a>
             </li>
-            <li *ngFor="let p of pages" class="paginate_button page-item" [class.active]="p === page">
-              <a href="javascript:;" class="page-link" (click)="goToPage(p)">{{ p }}</a>
+            <li *ngFor="let p of table.pages" class="paginate_button page-item" [class.active]="p === table.page">
+              <a href="javascript:;" class="page-link" (click)="table.goToPage(p)">{{ p }}</a>
             </li>
-            <li class="paginate_button page-item next" [class.disabled]="page === totalPages">
-              <a href="javascript:;" class="page-link" (click)="goToPage(page + 1)"><i class="next"></i></a>
+            <li class="paginate_button page-item next" [class.disabled]="table.page === table.totalPages">
+              <a href="javascript:;" class="page-link" (click)="table.goToPage(table.page + 1)"><i class="next"></i></a>
             </li>
           </ul>
         </div>

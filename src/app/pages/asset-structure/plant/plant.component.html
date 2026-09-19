@@ -1,0 +1,358 @@
+<!--begin::Row-->
+<div class="row gx-5 gx-xl-10">
+  <!--begin::Col-->
+  <div class="col-xl-8 mb-5 mb-xl-10">
+    <!--begin::Table-->
+    <div class="card card-flush mt-6 mt-xl-9">
+      <!--begin::Card header-->
+      <div class="card-header mt-5">
+        <!--begin::Card title-->
+        <div class="card-title flex-column">
+          <h3 class="fw-bold mb-1">Plant</h3>
+        </div>
+        <!--begin::Card title-->
+        <!--begin::Card toolbar-->
+        <div class="card-toolbar my-1">
+          <!--begin::Search-->
+          <div class="d-flex align-items-center position-relative my-1 me-4">
+            <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
+            <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-150px ps-9" placeholder="Search Plant" (input)="plants.search($any($event.target).value)" />
+          </div>
+          <!--end::Search-->
+          <!--begin::Button-->
+          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1" (click)="openModal(addPlantModal)">Add Plant</a>
+          <!--end::Button-->
+        </div>
+        <!--begin::Card toolbar-->
+      </div>
+      <!--end::Card header-->
+      <!--begin::Card body-->
+      <div class="card-body pt-0">
+        <!--begin::Table container-->
+        <div class="table-responsive dataTables_wrapper dt-bootstrap5 no-footer">
+          <!--begin::Table-->
+          <table id="kt_profile_overview_table" class="table table-row-bordered table-row-dashed gy-4 align-middle fw-bold dataTable no-footer">
+            <thead class="fs-7 text-gray-500 text-uppercase">
+              <tr>
+                <th *ngFor="let col of plants.columns" [class]="col.class + ' dt-orderable-asc dt-orderable-desc'" [ngClass]="plants.sortClass(col.key)" (click)="plants.sortBy(col.key)">
+                  <div class="dt-column-header">
+                    <span class="dt-column-title" role="button">{{ col.title }}</span>
+                    <span class="dt-column-order"></span>
+                  </div>
+                </th>
+                <th class="min-w-100px text-end dt-orderable-none">
+                  <div class="dt-column-header">
+                    <span class="dt-column-title">Actions</span>
+                    <span class="dt-column-order"></span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="fs-6">
+              <tr *ngFor="let plant of plants.paged">
+                <td>
+                  <a href="javascript:;" class="fs-6 text-gray-800 text-hover-primary">{{ plant.name }}</a>
+                </td>
+                <td>{{ plant.type }}</td>
+                <td>{{ plant.site }}</td>
+                <td class="text-end">
+                  <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openModal(editPlantModal)">
+                    <app-keenicon name="pencil" class="fs-2"></app-keenicon>
+                  </a>
+                  <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" data-kt-site-table-filter="delete_row" (click)="deletePlant(plant)">
+                    <app-keenicon name="trash" class="fs-2"></app-keenicon>
+                  </a>
+                </td>
+              </tr>
+              <tr *ngIf="plants.filtered.length === 0">
+                <td colspan="4" class="text-center text-gray-500">No matching records found</td>
+              </tr>
+            </tbody>
+          </table>
+          <!--end::Table-->
+          <!--begin::Table footer-->
+          <div class="d-flex flex-stack flex-wrap">
+            <div class="d-flex align-items-center">
+              <div class="dataTables_length">
+                <label>
+                  <select class="form-select form-select-sm form-select-solid" [value]="plants.pageSize" (change)="plants.setPageSize($any($event.target).value)">
+                    <option *ngFor="let size of plants.pageSizes" [value]="size">{{ size }}</option>
+                  </select>
+                </label>
+              </div>
+              <div class="dataTables_info" role="status" aria-live="polite">
+                Showing {{ plants.infoStart }} to {{ plants.infoEnd }} of {{ plants.filtered.length }} entries
+              </div>
+            </div>
+            <div class="dataTables_paginate paging_simple_numbers">
+              <ul class="pagination">
+                <li class="paginate_button page-item previous" [class.disabled]="plants.page === 1">
+                  <a href="javascript:;" class="page-link" (click)="plants.goToPage(plants.page - 1)"><i class="previous"></i></a>
+                </li>
+                <li *ngFor="let p of plants.pages" class="paginate_button page-item" [class.active]="p === plants.page">
+                  <a href="javascript:;" class="page-link" (click)="plants.goToPage(p)">{{ p }}</a>
+                </li>
+                <li class="paginate_button page-item next" [class.disabled]="plants.page === plants.totalPages">
+                  <a href="javascript:;" class="page-link" (click)="plants.goToPage(plants.page + 1)"><i class="next"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!--end::Table footer-->
+        </div>
+        <!--end::Table container-->
+      </div>
+      <!--end::Card body-->
+    </div>
+    <!--end::Card-->
+  </div>
+  <!--end::Col-->
+  <!--begin::Col-->
+  <div class="col-xl-4 mb-5 mb-xl-10">
+    <!--begin::Table-->
+    <div class="card card-flush mt-6 mt-xl-9">
+      <!--begin::Card header-->
+      <div class="card-header mt-5">
+        <!--begin::Card title-->
+        <div class="card-title flex-column">
+          <h3 class="fw-bold mb-1">Type</h3>
+        </div>
+        <!--begin::Card title-->
+        <!--begin::Card toolbar-->
+        <div class="card-toolbar my-1">
+          <!--begin::Search-->
+          <div class="d-flex align-items-center position-relative my-1 me-4">
+            <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
+            <input type="text" id="kt_filter_search_type" class="form-control form-control-solid form-select-sm w-150px ps-9" placeholder="Search Type" (input)="types.search($any($event.target).value)" />
+          </div>
+          <!--end::Search-->
+          <!--begin::Button-->
+          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1" (click)="openModal(addTypeModal)">Add Type</a>
+          <!--end::Button-->
+        </div>
+        <!--begin::Card toolbar-->
+      </div>
+      <!--end::Card header-->
+      <!--begin::Card body-->
+      <div class="card-body pt-0">
+        <!--begin::Table container-->
+        <div class="table-responsive dataTables_wrapper dt-bootstrap5 no-footer">
+          <!--begin::Table-->
+          <table id="kt_plant_type_table" class="table table-row-bordered table-row-dashed gy-4 align-middle fw-bold dataTable no-footer">
+            <thead class="fs-7 text-gray-500 text-uppercase">
+              <tr>
+                <th *ngFor="let col of types.columns" [class]="col.class + ' dt-orderable-asc dt-orderable-desc'" [ngClass]="types.sortClass(col.key)" (click)="types.sortBy(col.key)">
+                  <div class="dt-column-header">
+                    <span class="dt-column-title" role="button">{{ col.title }}</span>
+                    <span class="dt-column-order"></span>
+                  </div>
+                </th>
+                <th class="min-w-100px text-end dt-orderable-none">
+                  <div class="dt-column-header">
+                    <span class="dt-column-title">Actions</span>
+                    <span class="dt-column-order"></span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="fs-6">
+              <tr *ngFor="let type of types.paged">
+                <td>
+                  <a href="javascript:;" class="fs-6 text-gray-800 text-hover-primary">{{ type.name }}</a>
+                </td>
+                <td class="text-end">
+                  <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openModal(editTypeModal)">
+                    <app-keenicon name="pencil" class="fs-2"></app-keenicon>
+                  </a>
+                  <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" data-kt-site-table-filter="delete_row" (click)="deleteType(type)">
+                    <app-keenicon name="trash" class="fs-2"></app-keenicon>
+                  </a>
+                </td>
+              </tr>
+              <tr *ngIf="types.filtered.length === 0">
+                <td colspan="2" class="text-center text-gray-500">No matching records found</td>
+              </tr>
+            </tbody>
+          </table>
+          <!--end::Table-->
+          <!--begin::Table footer-->
+          <div class="d-flex flex-stack flex-wrap">
+            <div class="d-flex align-items-center">
+              <div class="dataTables_length">
+                <label>
+                  <select class="form-select form-select-sm form-select-solid" [value]="types.pageSize" (change)="types.setPageSize($any($event.target).value)">
+                    <option *ngFor="let size of types.pageSizes" [value]="size">{{ size }}</option>
+                  </select>
+                </label>
+              </div>
+              <div class="dataTables_info" role="status" aria-live="polite">
+                Showing {{ types.infoStart }} to {{ types.infoEnd }} of {{ types.filtered.length }} entries
+              </div>
+            </div>
+            <div class="dataTables_paginate paging_simple_numbers">
+              <ul class="pagination">
+                <li class="paginate_button page-item previous" [class.disabled]="types.page === 1">
+                  <a href="javascript:;" class="page-link" (click)="types.goToPage(types.page - 1)"><i class="previous"></i></a>
+                </li>
+                <li *ngFor="let p of types.pages" class="paginate_button page-item" [class.active]="p === types.page">
+                  <a href="javascript:;" class="page-link" (click)="types.goToPage(p)">{{ p }}</a>
+                </li>
+                <li class="paginate_button page-item next" [class.disabled]="types.page === types.totalPages">
+                  <a href="javascript:;" class="page-link" (click)="types.goToPage(types.page + 1)"><i class="next"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!--end::Table footer-->
+        </div>
+        <!--end::Table container-->
+      </div>
+      <!--end::Card body-->
+    </div>
+    <!--end::Card-->
+  </div>
+  <!--end::Col-->
+</div>
+<!--end::Row-->
+
+<!--begin::Modal - Add Plant-->
+<ng-template #addPlantModal let-modal>
+  <ng-container *ngTemplateOutlet="plantForm; context: { modal: modal, title: 'Add Plant', formId: 'kt_modal_add_plant_form', submitLabel: 'Submit' }"></ng-container>
+</ng-template>
+<!--end::Modal - Add Plant-->
+
+<!--begin::Modal - Edit Plant-->
+<ng-template #editPlantModal let-modal>
+  <ng-container *ngTemplateOutlet="plantForm; context: { modal: modal, title: 'Edit Plant', formId: 'kt_modal_edit_plant_form', submitLabel: 'Save' }"></ng-container>
+</ng-template>
+<!--end::Modal - Edit Plant-->
+
+<!--begin::Modal - Add Type-->
+<ng-template #addTypeModal let-modal>
+  <ng-container *ngTemplateOutlet="typeForm; context: { modal: modal, title: 'Add Type', formId: 'kt_modal_add_type_form', submitLabel: 'Submit' }"></ng-container>
+</ng-template>
+<!--end::Modal - Add Type-->
+
+<!--begin::Modal - Edit Type-->
+<ng-template #editTypeModal let-modal>
+  <ng-container *ngTemplateOutlet="typeForm; context: { modal: modal, title: 'Edit Type', formId: 'kt_modal_edit_type_form', submitLabel: 'Save' }"></ng-container>
+</ng-template>
+<!--end::Modal - Edit Type-->
+
+<!-- Shared plant form (Add / Edit differ only in title, form id and submit label) -->
+<ng-template #plantForm let-modal="modal" let-title="title" let-formId="formId" let-submitLabel="submitLabel">
+  <!--begin::Modal header-->
+  <div class="modal-header pb-0 border-0 justify-content-end">
+    <!--begin::Close-->
+    <div class="btn btn-sm btn-icon btn-active-color-primary" (click)="modal.dismiss('Cross click')">
+      <app-keenicon name="cross" class="fs-1"></app-keenicon>
+    </div>
+    <!--end::Close-->
+  </div>
+  <!--begin::Modal header-->
+  <!--begin::Modal body-->
+  <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+    <!--begin:Form-->
+    <form [id]="formId" class="form" action="#">
+      <!--begin::Heading-->
+      <div class="mb-13 text-center">
+        <!--begin::Title-->
+        <h1 class="mb-3">{{ title }}</h1>
+        <!--end::Title-->
+      </div>
+      <!--end::Heading-->
+      <!--begin::Input group-->
+      <div class="d-flex flex-column mb-8 fv-row">
+        <!--begin::Label-->
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+          <span class="required">Name</span>
+        </label>
+        <!--end::Label-->
+        <input type="text" class="form-control form-control-solid" placeholder="Enter Plant Name" name="name" />
+      </div>
+      <!--end::Input group-->
+      <!--begin::Input group-->
+      <div class="row g-9 mb-15">
+        <!--begin::Col-->
+        <div class="col-md-6 fv-row">
+          <label class="required fs-6 fw-semibold mb-2">Type</label>
+          <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Select a Type" name="type">
+            <option value="">Select type...</option>
+            <option *ngFor="let t of typeOptions" [value]="t">{{ t }}</option>
+          </select>
+        </div>
+        <!--end::Col-->
+        <!--begin::Col-->
+        <div class="col-md-6 fv-row">
+          <label class="required fs-6 fw-semibold mb-2">Site</label>
+          <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Site" name="site">
+            <option value="">Select site...</option>
+            <option *ngFor="let s of siteOptions" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+        <!--end::Col-->
+      </div>
+      <!--end::Input group-->
+      <!--begin::Actions-->
+      <div class="text-center">
+        <button type="reset" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Cancel</button>
+        <button type="submit" class="btn btn-primary">
+          <span class="indicator-label">{{ submitLabel }}</span>
+          <span class="indicator-progress">Please wait...
+          <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+        </button>
+      </div>
+      <!--end::Actions-->
+    </form>
+    <!--end:Form-->
+  </div>
+  <!--end::Modal body-->
+</ng-template>
+
+<!-- Shared type form (Add / Edit differ only in title, form id and submit label) -->
+<ng-template #typeForm let-modal="modal" let-title="title" let-formId="formId" let-submitLabel="submitLabel">
+  <!--begin::Modal header-->
+  <div class="modal-header pb-0 border-0 justify-content-end">
+    <!--begin::Close-->
+    <div class="btn btn-sm btn-icon btn-active-color-primary" (click)="modal.dismiss('Cross click')">
+      <app-keenicon name="cross" class="fs-1"></app-keenicon>
+    </div>
+    <!--end::Close-->
+  </div>
+  <!--begin::Modal header-->
+  <!--begin::Modal body-->
+  <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+    <!--begin:Form-->
+    <form [id]="formId" class="form" action="#">
+      <!--begin::Heading-->
+      <div class="mb-13 text-center">
+        <!--begin::Title-->
+        <h1 class="mb-3">{{ title }}</h1>
+        <!--end::Title-->
+      </div>
+      <!--end::Heading-->
+      <!--begin::Input group-->
+      <div class="d-flex flex-column mb-15 fv-row">
+        <!--begin::Label-->
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+          <span class="required">Name</span>
+        </label>
+        <!--end::Label-->
+        <input type="text" class="form-control form-control-solid" placeholder="Enter Type Name" name="name" />
+      </div>
+      <!--end::Input group-->
+      <!--begin::Actions-->
+      <div class="text-center">
+        <button type="reset" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Cancel</button>
+        <button type="submit" class="btn btn-primary">
+          <span class="indicator-label">{{ submitLabel }}</span>
+          <span class="indicator-progress">Please wait...
+          <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+        </button>
+      </div>
+      <!--end::Actions-->
+    </form>
+    <!--end:Form-->
+  </div>
+  <!--end::Modal body-->
+</ng-template>

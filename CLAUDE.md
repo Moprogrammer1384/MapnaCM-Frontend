@@ -78,3 +78,14 @@ i18n uses `@ngx-translate` with vocabularies registered in `AppComponent` from `
 - Components default to SCSS; `ng generate` is configured accordingly.
 - API services live next to the feature (`pages/<feature>/services/`), wire models shared across features go in `src/app/core/models/`.
 - CommonJS deps must be listed in `allowedCommonJsDependencies` in `angular.json` or the build warns.
+
+## Porting pages from the Mapna-UIUX project
+
+New screens are designed first as static HTML in a sibling project, **Mapna-UIUX** (`C:\Users\hafez\Documents\Mapna\Mapna-UIUX`), which is the plain-HTML Metronic 8.3.2 demo1 template that this Angular project is the port of. The user's own pages live in **`Mapna-UIUX/customize/<page-name>.html`** (everything else in that repo is untouched vendor demo). Each one is a copy of `customize/_template.html` (full demo chrome) with the design pasted between `<!--begin::Page content-->` / `<!--end::Page content-->` inside `#kt_app_content_container`, plus an optional title/breadcrumb/actions block in the `<!--begin::Toolbar content-->` slot. A sibling `customize/<page-name>.js` may exist; it documents intended behaviour (e.g. DataTables init) but is never copied — see rules below. The usual sequence is: (1) the user asks for a **blank page** by name — scaffold it as a feature module under `src/app/pages/<feature>/` (empty `.html`/`.scss`, like `pages/cm/vibration/overview`), add the lazy route in `src/app/pages/routing.ts`, and add a `menu-item menu-accordion` entry in `sidebar-menu.component.html`; (2) later the user asks to **insert the content** of the matching Mapna-UIUX page into that blank page.
+
+Rules for the port:
+
+- **HTML only** — never copy `<style>`/CSS or `<script>`/JS from the demo page; the Metronic bundles are already loaded globally here.
+- **Content only** — never copy header, sidebar, toolbar or footer. Take only what is inside the demo's `#kt_app_content_container` (`<div class="app-container container-fluid">`); `LayoutComponent` supplies the chrome.
+- Convert `<i class="ki-duotone ki-xxx">` icons to `<app-keenicon name="xxx" type="duotone">`; keep `data-kt-*` attributes because the `kt/` DOM helpers attach to them.
+- Large or repetitive markup should be split into new Angular components rather than one giant template.

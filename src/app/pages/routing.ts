@@ -48,6 +48,10 @@ const Routing: Routes = [
     loadChildren: () => import('./permission/permission.module').then((m) => m.PermissionModule),
   },
   {
+    path: 'asset-structure',
+    loadChildren: () => import('./asset-structure/asset-structure.module').then((m) => m.AssetStructureModule),
+  },
+  {
     path: '',
     redirectTo: '/dashboard',
     pathMatch: 'full',

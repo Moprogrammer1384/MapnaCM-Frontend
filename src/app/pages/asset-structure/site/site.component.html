@@ -1,0 +1,292 @@
+<!--begin::Table-->
+<div class="card card-flush mt-6 mt-xl-9">
+  <!--begin::Card header-->
+  <div class="card-header mt-5">
+    <!--begin::Card title-->
+    <div class="card-title flex-column">
+      <h3 class="fw-bold mb-1">Site</h3>
+      <div class="fs-6 text-gray-500">Site details</div>
+    </div>
+    <!--begin::Card title-->
+    <!--begin::Card toolbar-->
+    <div class="card-toolbar my-1">
+      <!--begin::Search-->
+      <div class="d-flex align-items-center position-relative my-1 me-4">
+        <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
+        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-150px ps-9" placeholder="Search Site" (input)="onSearch($any($event.target).value)" />
+      </div>
+      <!--end::Search-->
+      <!--begin::Button-->
+      <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1" (click)="openModal(addSiteModal)">Add Site</a>
+      <!--end::Button-->
+    </div>
+    <!--begin::Card toolbar-->
+  </div>
+  <!--end::Card header-->
+  <!--begin::Card body-->
+  <div class="card-body pt-0">
+    <!--begin::Table container-->
+    <div class="table-responsive dataTables_wrapper dt-bootstrap5 no-footer">
+      <!--begin::Table-->
+      <table id="kt_profile_overview_table" class="table table-row-bordered table-row-dashed gy-4 align-middle fw-bold dataTable no-footer">
+        <thead class="fs-7 text-gray-500 text-uppercase">
+          <tr>
+            <th *ngFor="let col of columns" [class]="col.class + ' dt-orderable-asc dt-orderable-desc'" [ngClass]="sortClass(col.key)" (click)="sortBy(col.key)">
+              <div class="dt-column-header">
+                <span class="dt-column-title" role="button">{{ col.title }}</span>
+                <span class="dt-column-order"></span>
+              </div>
+            </th>
+            <th class="min-w-100px text-end dt-orderable-none">
+              <div class="dt-column-header">
+                <span class="dt-column-title">Actions</span>
+                <span class="dt-column-order"></span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="fs-6">
+          <tr *ngFor="let site of pagedSites">
+            <td>
+              <a href="javascript:;" class="fs-6 text-gray-800 text-hover-primary">{{ site.city }}</a>
+            </td>
+            <td>{{ site.address }}</td>
+            <td>{{ site.latitude }}</td>
+            <td>{{ site.longitude }}</td>
+            <td>{{ site.location }}</td>
+            <td>{{ site.elevation }}</td>
+            <td class="text-end">
+              <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openModal(editSiteModal)">
+                <app-keenicon name="pencil" class="fs-2"></app-keenicon>
+              </a>
+              <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" data-kt-site-table-filter="delete_row" (click)="deleteSite(site)">
+                <app-keenicon name="trash" class="fs-2"></app-keenicon>
+              </a>
+            </td>
+          </tr>
+          <tr *ngIf="filteredSites.length === 0">
+            <td colspan="7" class="text-center text-gray-500">No matching records found</td>
+          </tr>
+        </tbody>
+      </table>
+      <!--end::Table-->
+      <!--begin::Table footer-->
+      <div class="d-flex flex-stack flex-wrap">
+        <div class="d-flex align-items-center">
+          <div class="dataTables_length">
+            <label>
+              <select class="form-select form-select-sm form-select-solid" [value]="pageSize" (change)="onPageSizeChange($any($event.target).value)">
+                <option *ngFor="let size of pageSizes" [value]="size">{{ size }}</option>
+              </select>
+            </label>
+          </div>
+          <div class="dataTables_info" role="status" aria-live="polite">
+            Showing {{ infoStart }} to {{ infoEnd }} of {{ filteredSites.length }} entries
+          </div>
+        </div>
+        <div class="dataTables_paginate paging_simple_numbers">
+          <ul class="pagination">
+            <li class="paginate_button page-item previous" [class.disabled]="page === 1">
+              <a href="javascript:;" class="page-link" (click)="goToPage(page - 1)"><i class="previous"></i></a>
+            </li>
+            <li *ngFor="let p of pages" class="paginate_button page-item" [class.active]="p === page">
+              <a href="javascript:;" class="page-link" (click)="goToPage(p)">{{ p }}</a>
+            </li>
+            <li class="paginate_button page-item next" [class.disabled]="page === totalPages">
+              <a href="javascript:;" class="page-link" (click)="goToPage(page + 1)"><i class="next"></i></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!--end::Table footer-->
+    </div>
+    <!--end::Table container-->
+  </div>
+  <!--end::Card body-->
+</div>
+<!--end::Card-->
+
+<!--begin::Modal - Add Site-->
+<ng-template #addSiteModal let-modal>
+  <!--begin::Modal header-->
+  <div class="modal-header pb-0 border-0 justify-content-end">
+    <!--begin::Close-->
+    <div class="btn btn-sm btn-icon btn-active-color-primary" (click)="modal.dismiss('Cross click')">
+      <app-keenicon name="cross" class="fs-1"></app-keenicon>
+    </div>
+    <!--end::Close-->
+  </div>
+  <!--begin::Modal header-->
+  <!--begin::Modal body-->
+  <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+    <!--begin:Form-->
+    <form id="kt_modal_new_target_form" class="form" action="#">
+      <!--begin::Heading-->
+      <div class="mb-13 text-center">
+        <!--begin::Title-->
+        <h1 class="mb-3">Add Site</h1>
+        <!--end::Title-->
+      </div>
+      <!--end::Heading-->
+      <!--begin::Input group-->
+      <div class="d-flex flex-column mb-8 fv-row">
+        <!--begin::Label-->
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+          <span class="required">City</span>
+        </label>
+        <!--end::Label-->
+        <input type="text" class="form-control form-control-solid" placeholder="Enter City" name="city" />
+      </div>
+      <!--end::Input group-->
+      <!--begin::Input group-->
+      <div class="d-flex flex-column mb-8 fv-row">
+        <!--begin::Label-->
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+          <span class="required">Address</span>
+        </label>
+        <!--end::Label-->
+        <input type="text" class="form-control form-control-solid" placeholder="Enter Address" name="address" />
+      </div>
+      <!--end::Input group-->
+      <!--begin::Input group-->
+      <div class="row g-9 mb-8">
+        <!--begin::Col-->
+        <div class="col-md-6 fv-row">
+          <label class="required fs-6 fw-semibold mb-2">Latitude</label>
+          <input type="text" class="form-control form-control-solid" placeholder="e.g. 35.6892" name="latitude" />
+        </div>
+        <!--end::Col-->
+        <!--begin::Col-->
+        <div class="col-md-6 fv-row">
+          <label class="required fs-6 fw-semibold mb-2">Longitude</label>
+          <input type="text" class="form-control form-control-solid" placeholder="e.g. 51.3890" name="longitude" />
+        </div>
+        <!--end::Col-->
+      </div>
+      <!--end::Input group-->
+      <!--begin::Input group-->
+      <div class="row g-9 mb-15">
+        <!--begin::Col-->
+        <div class="col-md-6 fv-row">
+          <label class="fs-6 fw-semibold mb-2">Location</label>
+          <input type="text" class="form-control form-control-solid" placeholder="Enter Location" name="location" />
+        </div>
+        <!--end::Col-->
+        <!--begin::Col-->
+        <div class="col-md-6 fv-row">
+          <label class="required fs-6 fw-semibold mb-2">Elevation above sea level</label>
+          <input type="text" class="form-control form-control-solid" placeholder="e.g. 1,190 m" name="elevation" />
+        </div>
+        <!--end::Col-->
+      </div>
+      <!--end::Input group-->
+      <!--begin::Actions-->
+      <div class="text-center">
+        <button type="reset" id="kt_modal_new_target_cancel" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Cancel</button>
+        <button type="submit" id="kt_modal_new_target_submit" class="btn btn-primary">
+          <span class="indicator-label">Submit</span>
+          <span class="indicator-progress">Please wait...
+          <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+        </button>
+      </div>
+      <!--end::Actions-->
+    </form>
+    <!--end:Form-->
+  </div>
+  <!--end::Modal body-->
+</ng-template>
+<!--end::Modal - Add Site-->
+
+<!--begin::Modal - Edit Site-->
+<ng-template #editSiteModal let-modal>
+  <!--begin::Modal header-->
+  <div class="modal-header pb-0 border-0 justify-content-end">
+    <!--begin::Close-->
+    <div class="btn btn-sm btn-icon btn-active-color-primary" (click)="modal.dismiss('Cross click')">
+      <app-keenicon name="cross" class="fs-1"></app-keenicon>
+    </div>
+    <!--end::Close-->
+  </div>
+  <!--begin::Modal header-->
+  <!--begin::Modal body-->
+  <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+    <!--begin:Form-->
+    <form id="kt_modal_edit_site_form" class="form" action="#">
+      <!--begin::Heading-->
+      <div class="mb-13 text-center">
+        <!--begin::Title-->
+        <h1 class="mb-3">Edit Site</h1>
+        <!--end::Title-->
+        <!--begin::Description-->
+        <div class="text-muted fw-semibold fs-5">Site details</div>
+        <!--end::Description-->
+      </div>
+      <!--end::Heading-->
+      <!--begin::Input group-->
+      <div class="d-flex flex-column mb-8 fv-row">
+        <!--begin::Label-->
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+          <span class="required">City</span>
+        </label>
+        <!--end::Label-->
+        <input type="text" class="form-control form-control-solid" placeholder="Enter City" name="city" />
+      </div>
+      <!--end::Input group-->
+      <!--begin::Input group-->
+      <div class="d-flex flex-column mb-8 fv-row">
+        <!--begin::Label-->
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+          <span class="required">Address</span>
+        </label>
+        <!--end::Label-->
+        <input type="text" class="form-control form-control-solid" placeholder="Enter Address" name="address" />
+      </div>
+      <!--end::Input group-->
+      <!--begin::Input group-->
+      <div class="row g-9 mb-8">
+        <!--begin::Col-->
+        <div class="col-md-6 fv-row">
+          <label class="required fs-6 fw-semibold mb-2">Latitude</label>
+          <input type="text" class="form-control form-control-solid" placeholder="e.g. 35.6892" name="latitude" />
+        </div>
+        <!--end::Col-->
+        <!--begin::Col-->
+        <div class="col-md-6 fv-row">
+          <label class="required fs-6 fw-semibold mb-2">Longitude</label>
+          <input type="text" class="form-control form-control-solid" placeholder="e.g. 51.3890" name="longitude" />
+        </div>
+        <!--end::Col-->
+      </div>
+      <!--end::Input group-->
+      <!--begin::Input group-->
+      <div class="row g-9 mb-15">
+        <!--begin::Col-->
+        <div class="col-md-6 fv-row">
+          <label class="fs-6 fw-semibold mb-2">Location</label>
+          <input type="text" class="form-control form-control-solid" placeholder="Enter Location" name="location" />
+        </div>
+        <!--end::Col-->
+        <!--begin::Col-->
+        <div class="col-md-6 fv-row">
+          <label class="required fs-6 fw-semibold mb-2">Elevation above sea level</label>
+          <input type="text" class="form-control form-control-solid" placeholder="e.g. 1,190 m" name="elevation" />
+        </div>
+        <!--end::Col-->
+      </div>
+      <!--end::Input group-->
+      <!--begin::Actions-->
+      <div class="text-center">
+        <button type="reset" id="kt_modal_edit_site_cancel" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Cancel</button>
+        <button type="submit" id="kt_modal_edit_site_submit" class="btn btn-primary">
+          <span class="indicator-label">Save</span>
+          <span class="indicator-progress">Please wait...
+          <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+        </button>
+      </div>
+      <!--end::Actions-->
+    </form>
+    <!--end:Form-->
+  </div>
+  <!--end::Modal body-->
+</ng-template>
+<!--end::Modal - Edit Site-->

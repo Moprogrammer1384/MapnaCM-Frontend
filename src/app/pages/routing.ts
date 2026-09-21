@@ -48,8 +48,8 @@ const Routing: Routes = [
     loadChildren: () => import('./permission/permission.module').then((m) => m.PermissionModule),
   },
   {
-    path: 'asset-structure',
-    loadChildren: () => import('./asset-structure/asset-structure.module').then((m) => m.AssetStructureModule),
+    path: 'asset-taxonomy',
+    loadChildren: () => import('./asset-taxonomy/asset-taxonomy.module').then((m) => m.AssetTaxonomyModule),
   },
   {
     path: '',

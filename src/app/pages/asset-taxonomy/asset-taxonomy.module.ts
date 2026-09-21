@@ -23,4 +23,4 @@ import { PlantComponent } from './plant/plant.component';
     ]),
   ],
 })
-export class AssetStructureModule {}
+export class AssetTaxonomyModule {}

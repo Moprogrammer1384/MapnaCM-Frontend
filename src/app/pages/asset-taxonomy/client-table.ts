@@ -9,7 +9,7 @@ export interface ClientTableColumn<T> {
 /**
  * Client-side search / sort / paging over an in-memory row array, mimicking
  * what DataTables gives the static Metronic demo pages. Used by the asset
- * structure pages until they are wired to the API (QueryCriteria skip/take).
+ * taxonomy pages until they are wired to the API (QueryCriteria skip/take).
  */
 export class ClientTable<T extends Record<string, string>> {
   searchText = '';

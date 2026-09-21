@@ -8,7 +8,7 @@ import type { EChartsOption } from 'echarts';
 })
 export class VibrationTimeDomainComponent {
   readonly chartOptions: EChartsOption = {
-    animation: false,
+    animation: true,
     color: ['#3e97ff'],
     tooltip: { trigger: 'axis', valueFormatter: (value) => `${value} mm/s` },
     grid: { left: 20, right: 24, top: 45, bottom: 75, containLabel: true },

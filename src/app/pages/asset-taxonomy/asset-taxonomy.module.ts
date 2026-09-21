@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
 import { SiteComponent } from './site/site.component';
@@ -10,6 +11,7 @@ import { PlantComponent } from './plant/plant.component';
   imports: [
     CommonModule,
     SharedModule,
+    FormsModule,
     RouterModule.forChild([
       {
         path: 'site',

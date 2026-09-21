@@ -20,7 +20,7 @@
           </div>
           <!--end::Search-->
           <!--begin::Button-->
-          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1" (click)="openModal(addPlantModal)">Add Plant</a>
+          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1" (click)="openAddPlantModal(addPlantModal)">Add Plant</a>
           <!--end::Button-->
         </div>
         <!--begin::Card toolbar-->
@@ -56,7 +56,7 @@
                 <td>{{ plant.type }}</td>
                 <td>{{ plant.site }}</td>
                 <td class="text-end">
-                  <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openModal(editPlantModal)">
+                  <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openEditPlantModal(editPlantModal, plant)">
                     <app-keenicon name="pencil" class="fs-2"></app-keenicon>
                   </a>
                   <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" data-kt-site-table-filter="delete_row" (click)="deletePlant(plant)">
@@ -127,7 +127,7 @@
           </div>
           <!--end::Search-->
           <!--begin::Button-->
-          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1" (click)="openModal(addTypeModal)">Add Type</a>
+          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1" (click)="openAddTypeModal(addTypeModal)">Add Type</a>
           <!--end::Button-->
         </div>
         <!--begin::Card toolbar-->
@@ -161,7 +161,7 @@
                   <a href="javascript:;" class="fs-6 text-gray-800 text-hover-primary">{{ type.name }}</a>
                 </td>
                 <td class="text-end">
-                  <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openModal(editTypeModal)">
+                  <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openEditTypeModal(editTypeModal, type)">
                     <app-keenicon name="pencil" class="fs-2"></app-keenicon>
                   </a>
                   <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" data-kt-site-table-filter="delete_row" (click)="deleteType(type)">
@@ -253,7 +253,7 @@
   <!--begin::Modal body-->
   <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
     <!--begin:Form-->
-    <form [id]="formId" class="form" action="#">
+    <form [id]="formId" class="form" (ngSubmit)="submitPlant(plantNgForm, modal)" #plantNgForm="ngForm" novalidate>
       <!--begin::Heading-->
       <div class="mb-13 text-center">
         <!--begin::Title-->
@@ -268,7 +268,7 @@
           <span class="required">Name</span>
         </label>
         <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter Plant Name" name="name" />
+        <input type="text" class="form-control form-control-solid" placeholder="Enter Plant Name" name="name" [(ngModel)]="plantFormModel.name" required />
       </div>
       <!--end::Input group-->
       <!--begin::Input group-->
@@ -276,18 +276,18 @@
         <!--begin::Col-->
         <div class="col-md-6 fv-row">
           <label class="required fs-6 fw-semibold mb-2">Type</label>
-          <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Select a Type" name="type">
-            <option value="">Select type...</option>
-            <option *ngFor="let t of typeOptions" [value]="t">{{ t }}</option>
+          <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Select a Type" name="plantTypeId" [(ngModel)]="plantFormModel.plantTypeId" required>
+            <option [ngValue]="null" disabled>Select type...</option>
+            <option *ngFor="let t of typeOptions" [ngValue]="t.id">{{ t.name }}</option>
           </select>
         </div>
         <!--end::Col-->
         <!--begin::Col-->
         <div class="col-md-6 fv-row">
           <label class="required fs-6 fw-semibold mb-2">Site</label>
-          <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Site" name="site">
-            <option value="">Select site...</option>
-            <option *ngFor="let s of siteOptions" [value]="s">{{ s }}</option>
+          <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Site" name="siteId" [(ngModel)]="plantFormModel.siteId" required>
+            <option [ngValue]="null" disabled>Select site...</option>
+            <option *ngFor="let s of siteOptions" [ngValue]="s.id">{{ s.label }}</option>
           </select>
         </div>
         <!--end::Col-->
@@ -296,7 +296,7 @@
       <!--begin::Actions-->
       <div class="text-center">
         <button type="reset" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Cancel</button>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary" [attr.data-kt-indicator]="saving ? 'on' : 'off'">
           <span class="indicator-label">{{ submitLabel }}</span>
           <span class="indicator-progress">Please wait...
           <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -323,7 +323,7 @@
   <!--begin::Modal body-->
   <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
     <!--begin:Form-->
-    <form [id]="formId" class="form" action="#">
+    <form [id]="formId" class="form" (ngSubmit)="submitType(typeNgForm, modal)" #typeNgForm="ngForm" novalidate>
       <!--begin::Heading-->
       <div class="mb-13 text-center">
         <!--begin::Title-->
@@ -338,13 +338,13 @@
           <span class="required">Name</span>
         </label>
         <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter Type Name" name="name" />
+        <input type="text" class="form-control form-control-solid" placeholder="Enter Type Name" name="name" [(ngModel)]="typeFormModel.name" required />
       </div>
       <!--end::Input group-->
       <!--begin::Actions-->
       <div class="text-center">
         <button type="reset" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Cancel</button>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary" [attr.data-kt-indicator]="saving ? 'on' : 'off'">
           <span class="indicator-label">{{ submitLabel }}</span>
           <span class="indicator-progress">Please wait...
           <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>

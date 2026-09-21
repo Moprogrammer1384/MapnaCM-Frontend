@@ -23,6 +23,10 @@ export class ClientTable<T extends Record<string, string>> {
     this.sortKey = columns[0].key;
   }
 
+  /** When set, deletion is delegated to the host (API call + reload); the
+   * local row drop is skipped and the host owns the success feedback. */
+  onConfirmedDelete?: (row: T) => void;
+
   get filtered(): T[] {
     const q = this.searchText.trim().toLowerCase();
     const rows = q
@@ -99,6 +103,10 @@ export class ClientTable<T extends Record<string, string>> {
       },
     }).then((result) => {
       if (result.value) {
+        if (this.onConfirmedDelete) {
+          this.onConfirmedDelete(row);
+          return;
+        }
         Swal.fire({
           text: 'You have deleted ' + label + '!.',
           icon: 'success',

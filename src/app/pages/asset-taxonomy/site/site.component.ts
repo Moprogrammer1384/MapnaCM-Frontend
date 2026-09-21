@@ -1,8 +1,23 @@
-import { Component, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import Swal from 'sweetalert2';
+import { SitePayload } from 'src/app/core/models/asset.model';
+import { AssetApiService } from '../services/asset-api.service';
 import { ClientTable } from '../client-table';
 
 interface SiteRow extends Record<string, string> {
+  id: string;
+  city: string;
+  address: string;
+  latitude: string;
+  longitude: string;
+  location: string;
+  elevation: string;
+}
+
+interface SiteFormModel {
+  id?: number;
   city: string;
   address: string;
   latitude: string;
@@ -16,30 +31,13 @@ interface SiteRow extends Record<string, string> {
   templateUrl: './site.component.html',
   styleUrls: ['./site.component.scss'],
 })
-export class SiteComponent {
+export class SiteComponent implements OnInit {
   modalConfig: NgbModalOptions = {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
 
-  // Demo rows ported from Mapna-UIUX/customize/site.html; to be replaced by the API.
   table = new ClientTable<SiteRow>(
-    [
-      { city: 'Tehran', address: 'Valiasr St., District 6', latitude: '35.6892', longitude: '51.3890', location: 'Tehran Province', elevation: '1,190 m' },
-      { city: 'Karaj', address: 'Fardis Industrial Zone, Taleghani Blvd.', latitude: '35.8400', longitude: '50.9391', location: 'Alborz Province', elevation: '1,312 m' },
-      { city: 'Isfahan', address: 'Chahar Bagh Abbasi St.', latitude: '32.6539', longitude: '51.6660', location: 'Isfahan Province', elevation: '1,574 m' },
-      { city: 'Mashhad', address: 'Imam Reza St.', latitude: '36.2605', longitude: '59.6168', location: 'Razavi Khorasan Province', elevation: '995 m' },
-      { city: 'Shiraz', address: 'Zand St.', latitude: '29.5918', longitude: '52.5837', location: 'Fars Province', elevation: '1,486 m' },
-      { city: 'Tabriz', address: 'Imam Khomeini St.', latitude: '38.0800', longitude: '46.2919', location: 'East Azerbaijan Province', elevation: '1,351 m' },
-      { city: 'Ahvaz', address: 'Naderi St.', latitude: '31.3183', longitude: '48.6706', location: 'Khuzestan Province', elevation: '18 m' },
-      { city: 'Bandar Abbas', address: 'Imam Khomeini Blvd.', latitude: '27.1832', longitude: '56.2666', location: 'Hormozgan Province', elevation: '9 m' },
-      { city: 'Asaluyeh', address: 'Pars Special Economic Energy Zone', latitude: '27.4750', longitude: '52.6081', location: 'Bushehr Province', elevation: '5 m' },
-      { city: 'Yazd', address: 'Kashani St.', latitude: '31.8974', longitude: '54.3569', location: 'Yazd Province', elevation: '1,216 m' },
-      { city: 'Kerman', address: 'Shariati St.', latitude: '30.2839', longitude: '57.0834', location: 'Kerman Province', elevation: '1,755 m' },
-      { city: 'Arak', address: 'Shahid Beheshti St.', latitude: '34.0917', longitude: '49.6890', location: 'Markazi Province', elevation: '1,708 m' },
-      { city: 'Qom', address: 'Eram St.', latitude: '34.6416', longitude: '50.8746', location: 'Qom Province', elevation: '936 m' },
-      { city: 'Rasht', address: 'Motahari St.', latitude: '37.2808', longitude: '49.5832', location: 'Gilan Province', elevation: '5 m' },
-      { city: 'Hamadan', address: 'Bu-Ali Sina St.', latitude: '34.7983', longitude: '48.5148', location: 'Hamadan Province', elevation: '1,850 m' },
-    ],
+    [],
     [
       { key: 'city', title: 'City', class: 'min-w-125px' },
       { key: 'address', title: 'Address', class: 'min-w-200px' },
@@ -50,13 +48,120 @@ export class SiteComponent {
     ]
   );
 
-  constructor(private modalService: NgbModal) {}
+  siteForm: SiteFormModel = this.emptySiteForm();
+  saving = false;
 
-  openModal(content: TemplateRef<any>): void {
+  constructor(
+    private modalService: NgbModal,
+    private apiService: AssetApiService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.table.onConfirmedDelete = (row) => this.deleteSite(row);
+    this.loadSites();
+  }
+
+  loadSites(): void {
+    this.apiService.getAllSites().subscribe({
+      next: (sites) => {
+        this.table.rows = sites.map((site) => ({
+          id: String(site.id),
+          city: site.city,
+          address: site.address,
+          latitude: site.latitude,
+          longitude: site.longitude,
+          location: site.location,
+          elevation: site.elevation,
+        }));
+        this.table.page = 1;
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load sites.'),
+    });
+  }
+
+  openAddModal(content: TemplateRef<any>): void {
+    this.siteForm = this.emptySiteForm();
     this.modalService.open(content, this.modalConfig);
   }
 
+  openEditModal(content: TemplateRef<any>, site: SiteRow): void {
+    this.siteForm = {
+      id: Number(site.id),
+      city: site.city,
+      address: site.address,
+      latitude: site.latitude,
+      longitude: site.longitude,
+      location: site.location,
+      elevation: site.elevation,
+    };
+    this.modalService.open(content, this.modalConfig);
+  }
+
+  submit(form: NgForm, modal: { dismiss: (reason: string) => void }): void {
+    if (this.saving) {
+      return;
+    }
+    if (form.invalid) {
+      form.control.markAllAsTouched();
+      this.showAlert('error', 'Error!', 'Please fill in all required fields.');
+      return;
+    }
+
+    this.saving = true;
+    const payload: SitePayload = {
+      city: this.siteForm.city,
+      address: this.siteForm.address,
+      latitude: this.siteForm.latitude,
+      longitude: this.siteForm.longitude,
+      location: this.siteForm.location,
+      elevation: this.siteForm.elevation,
+    };
+    const isEdit = !!this.siteForm.id;
+    const request$ = isEdit
+      ? this.apiService.updateSite({ id: this.siteForm.id!, ...payload })
+      : this.apiService.createSite(payload);
+
+    request$.subscribe({
+      next: () => {
+        this.saving = false;
+        modal.dismiss('saved');
+        this.showAlert('success', 'Success!', isEdit ? 'Site updated successfully!' : 'Site created successfully!');
+        this.loadSites();
+      },
+      error: (error) => {
+        this.saving = false;
+        this.cdr.detectChanges();
+        this.showAlert('error', 'Error!', error?.message || 'The request failed.');
+      },
+    });
+  }
+
   deleteSite(site: SiteRow): void {
-    this.table.confirmDelete(site, site.city);
+    this.apiService.deleteSite(Number(site.id)).subscribe({
+      next: () => {
+        this.showAlert('success', 'Deleted!', 'You have deleted ' + site.city + '!.');
+        this.loadSites();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the site.'),
+    });
+  }
+
+  private emptySiteForm(): SiteFormModel {
+    return { city: '', address: '', latitude: '', longitude: '', location: '', elevation: '' };
+  }
+
+  private showAlert(icon: 'success' | 'error', title: string, text: string): void {
+    Swal.fire({
+      icon,
+      title,
+      text,
+      buttonsStyling: false,
+      confirmButtonText: 'Ok, got it!',
+      customClass: {
+        confirmButton: 'btn fw-bold btn-' + (icon === 'error' ? 'danger' : 'primary'),
+      },
+    });
   }
 }

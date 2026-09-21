@@ -1,14 +1,33 @@
-import { Component, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import Swal from 'sweetalert2';
+import { AssetApiService } from '../services/asset-api.service';
 import { ClientTable } from '../client-table';
 
 interface PlantRow extends Record<string, string> {
+  id: string;
   name: string;
   type: string;
   site: string;
+  plantTypeId: string;
+  siteId: string;
 }
 
 interface TypeRow extends Record<string, string> {
+  id: string;
+  name: string;
+}
+
+interface PlantFormModel {
+  id?: number;
+  name: string;
+  plantTypeId: number | null;
+  siteId: number | null;
+}
+
+interface TypeFormModel {
+  id?: number;
   name: string;
 }
 
@@ -17,30 +36,13 @@ interface TypeRow extends Record<string, string> {
   templateUrl: './plant.component.html',
   styleUrls: ['./plant.component.scss'],
 })
-export class PlantComponent {
+export class PlantComponent implements OnInit {
   modalConfig: NgbModalOptions = {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
 
-  // Demo rows ported from Mapna-UIUX/customize/plant.html; to be replaced by the API.
   plants = new ClientTable<PlantRow>(
-    [
-      { name: 'Parand Combined Cycle Power Plant', type: 'Combined Cycle', site: 'Tehran (35.6892, 51.3890)' },
-      { name: 'Mapna Turbine Engineering (TUGA)', type: 'Manufacturing', site: 'Karaj (35.8400, 50.9391)' },
-      { name: 'Pars Generator Plant', type: 'Manufacturing', site: 'Karaj (35.8400, 50.9391)' },
-      { name: 'Isfahan Combined Cycle Power Plant', type: 'Combined Cycle', site: 'Isfahan (32.6539, 51.6660)' },
-      { name: 'Mashhad Gas Power Plant', type: 'Gas Turbine', site: 'Mashhad (36.2605, 59.6168)' },
-      { name: 'Fars Combined Cycle Power Plant', type: 'Combined Cycle', site: 'Shiraz (29.5918, 52.5837)' },
-      { name: 'Tabriz Thermal Power Plant', type: 'Steam', site: 'Tabriz (38.0800, 46.2919)' },
-      { name: 'Ahvaz Zargan Power Plant', type: 'Gas Turbine', site: 'Ahvaz (31.3183, 48.6706)' },
-      { name: 'Bandar Abbas Steam Power Plant', type: 'Steam', site: 'Bandar Abbas (27.1832, 56.2666)' },
-      { name: 'Asaluyeh Combined Cycle Power Plant', type: 'Combined Cycle', site: 'Asaluyeh (27.4750, 52.6081)' },
-      { name: 'Yazd Solar Power Plant', type: 'Solar', site: 'Yazd (31.8974, 54.3569)' },
-      { name: 'Kerman Combined Cycle Power Plant', type: 'Combined Cycle', site: 'Kerman (30.2839, 57.0834)' },
-      { name: 'Shazand Power Plant', type: 'Steam', site: 'Arak (34.0917, 49.6890)' },
-      { name: 'Qom Combined Cycle Power Plant', type: 'Combined Cycle', site: 'Qom (34.6416, 50.8746)' },
-      { name: 'Manjil Wind Farm', type: 'Wind', site: 'Rasht (37.2808, 49.5832)' },
-    ],
+    [],
     [
       { key: 'name', title: 'Name', class: 'min-w-250px' },
       { key: 'type', title: 'Type', class: 'min-w-150px' },
@@ -49,50 +51,216 @@ export class PlantComponent {
   );
 
   types = new ClientTable<TypeRow>(
-    [
-      { name: 'Combined Cycle' },
-      { name: 'Gas Turbine' },
-      { name: 'Steam' },
-      { name: 'Solar' },
-      { name: 'Wind' },
-      { name: 'Hydro' },
-      { name: 'Manufacturing' },
-    ],
+    [],
     [{ key: 'name', title: 'Name', class: 'min-w-150px' }]
   );
 
-  // Options for the Type / Site selects in the plant modals.
-  typeOptions = ['Combined Cycle', 'Gas Turbine', 'Steam', 'Solar', 'Wind', 'Hydro', 'Manufacturing'];
-  // Sites are shown as "name (latitude, longitude)", taken from the Site page data.
-  siteOptions = [
-    'Tehran (35.6892, 51.3890)',
-    'Karaj (35.8400, 50.9391)',
-    'Isfahan (32.6539, 51.6660)',
-    'Mashhad (36.2605, 59.6168)',
-    'Shiraz (29.5918, 52.5837)',
-    'Tabriz (38.0800, 46.2919)',
-    'Ahvaz (31.3183, 48.6706)',
-    'Bandar Abbas (27.1832, 56.2666)',
-    'Asaluyeh (27.4750, 52.6081)',
-    'Yazd (31.8974, 54.3569)',
-    'Kerman (30.2839, 57.0834)',
-    'Arak (34.0917, 49.6890)',
-    'Qom (34.6416, 50.8746)',
-    'Rasht (37.2808, 49.5832)',
-    'Hamadan (34.7983, 48.5148)',
-  ];
+  // Options for the Type / Site selects in the plant modals, loaded from the
+  // backend (sites keep the "City (lat, lng)" display label).
+  typeOptions: { id: number; name: string }[] = [];
+  siteOptions: { id: number; label: string }[] = [];
 
-  constructor(private modalService: NgbModal) {}
+  plantFormModel: PlantFormModel = this.emptyPlantForm();
+  typeFormModel: TypeFormModel = this.emptyTypeForm();
+  saving = false;
 
-  openModal(content: TemplateRef<any>): void {
+  constructor(
+    private modalService: NgbModal,
+    private apiService: AssetApiService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.plants.onConfirmedDelete = (row) => this.deletePlant(row);
+    this.types.onConfirmedDelete = (row) => this.deleteType(row);
+    this.loadAll();
+  }
+
+  loadAll(): void {
+    this.loadSites();
+    this.loadTypes();
+    this.loadPlants();
+  }
+
+  loadSites(): void {
+    this.apiService.getAllSites().subscribe({
+      next: (sites) => {
+        this.siteOptions = sites.map((site) => ({
+          id: site.id,
+          label: `${site.city} (${site.latitude}, ${site.longitude})`,
+        }));
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load sites.'),
+    });
+  }
+
+  loadTypes(): void {
+    this.apiService.getAllPlantTypes().subscribe({
+      next: (types) => {
+        this.typeOptions = types.map((type) => ({ id: type.id, name: type.name }));
+        this.types.rows = types.map((type) => ({ id: String(type.id), name: type.name }));
+        this.types.page = 1;
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load plant types.'),
+    });
+  }
+
+  loadPlants(): void {
+    this.apiService.getAllPlants().subscribe({
+      next: (plants) => {
+        this.plants.rows = plants.map((plant) => ({
+          id: String(plant.id),
+          name: plant.name,
+          type: plant.typeName,
+          site: plant.siteLabel,
+          plantTypeId: String(plant.plantTypeId),
+          siteId: String(plant.siteId),
+        }));
+        this.plants.page = 1;
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load plants.'),
+    });
+  }
+
+  // ---- Plant modal ----------------------------------------------------
+
+  openAddPlantModal(content: TemplateRef<any>): void {
+    this.plantFormModel = this.emptyPlantForm();
     this.modalService.open(content, this.modalConfig);
   }
 
+  openEditPlantModal(content: TemplateRef<any>, plant: PlantRow): void {
+    this.plantFormModel = {
+      id: Number(plant.id),
+      name: plant.name,
+      plantTypeId: Number(plant.plantTypeId),
+      siteId: Number(plant.siteId),
+    };
+    this.modalService.open(content, this.modalConfig);
+  }
+
+  submitPlant(form: NgForm, modal: { dismiss: (reason: string) => void }): void {
+    if (this.saving) {
+      return;
+    }
+    if (form.invalid || !this.plantFormModel.plantTypeId || !this.plantFormModel.siteId) {
+      form.control.markAllAsTouched();
+      this.showAlert('error', 'Error!', 'Please fill in all required fields.');
+      return;
+    }
+
+    this.saving = true;
+    const payload = {
+      name: this.plantFormModel.name,
+      siteId: this.plantFormModel.siteId,
+      plantTypeId: this.plantFormModel.plantTypeId,
+    };
+    const isEdit = !!this.plantFormModel.id;
+    const request$ = isEdit
+      ? this.apiService.updatePlant({ id: this.plantFormModel.id!, ...payload })
+      : this.apiService.createPlant(payload);
+
+    request$.subscribe({
+      next: () => {
+        this.saving = false;
+        modal.dismiss('saved');
+        this.showAlert('success', 'Success!', isEdit ? 'Plant updated successfully!' : 'Plant created successfully!');
+        this.loadPlants();
+      },
+      error: (error) => {
+        this.saving = false;
+        this.cdr.detectChanges();
+        this.showAlert('error', 'Error!', error?.message || 'The request failed.');
+      },
+    });
+  }
+
   deletePlant(plant: PlantRow): void {
-    this.plants.confirmDelete(plant, plant.name);
+    this.apiService.deletePlant(Number(plant.id)).subscribe({
+      next: () => {
+        this.showAlert('success', 'Deleted!', 'You have deleted ' + plant.name + '!.');
+        this.loadPlants();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the plant.'),
+    });
+  }
+
+  // ---- Type modal -------------------------------------------------------
+
+  openAddTypeModal(content: TemplateRef<any>): void {
+    this.typeFormModel = this.emptyTypeForm();
+    this.modalService.open(content, this.modalConfig);
+  }
+
+  openEditTypeModal(content: TemplateRef<any>, type: TypeRow): void {
+    this.typeFormModel = { id: Number(type.id), name: type.name };
+    this.modalService.open(content, this.modalConfig);
+  }
+
+  submitType(form: NgForm, modal: { dismiss: (reason: string) => void }): void {
+    if (this.saving) {
+      return;
+    }
+    if (form.invalid) {
+      form.control.markAllAsTouched();
+      this.showAlert('error', 'Error!', 'Please fill in all required fields.');
+      return;
+    }
+
+    this.saving = true;
+    const isEdit = !!this.typeFormModel.id;
+    const request$ = isEdit
+      ? this.apiService.updatePlantType({ id: this.typeFormModel.id!, name: this.typeFormModel.name })
+      : this.apiService.createPlantType(this.typeFormModel.name);
+
+    request$.subscribe({
+      next: () => {
+        this.saving = false;
+        modal.dismiss('saved');
+        this.showAlert('success', 'Success!', isEdit ? 'Type updated successfully!' : 'Type created successfully!');
+        this.loadTypes();
+      },
+      error: (error) => {
+        this.saving = false;
+        this.cdr.detectChanges();
+        this.showAlert('error', 'Error!', error?.message || 'The request failed.');
+      },
+    });
   }
 
   deleteType(type: TypeRow): void {
-    this.types.confirmDelete(type, type.name);
+    this.apiService.deletePlantType(Number(type.id)).subscribe({
+      next: () => {
+        this.showAlert('success', 'Deleted!', 'You have deleted ' + type.name + '!.');
+        this.loadTypes();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the type.'),
+    });
+  }
+
+  // ---- Helpers --------------------------------------------------------
+
+  private emptyPlantForm(): PlantFormModel {
+    return { name: '', plantTypeId: null, siteId: null };
+  }
+
+  private emptyTypeForm(): TypeFormModel {
+    return { name: '' };
+  }
+
+  private showAlert(icon: 'success' | 'error', title: string, text: string): void {
+    Swal.fire({
+      icon,
+      title,
+      text,
+      buttonsStyling: false,
+      confirmButtonText: 'Ok, got it!',
+      customClass: {
+        confirmButton: 'btn fw-bold btn-' + (icon === 'error' ? 'danger' : 'primary'),
+      },
+    });
   }
 }

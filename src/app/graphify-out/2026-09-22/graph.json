@@ -212,19 +212,6 @@
       "source_location": "L8"
     },
     {
-      "id": "pages_builder_builder_component_tabs",
-      "label": "Tabs",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 103,
-      "community_name": "TilesWidget1Component",
-      "file_type": "code",
-      "norm_label": "tabs",
-      "source_file": "pages/builder/builder.component.ts",
-      "source_location": "L5"
-    },
-    {
       "id": "metronic_partials_content_widgets_charts_apache_echarts_apache_echarts_component_apacheechartscleanup",
       "label": "ApacheEchartsCleanup",
       "_callable": true,
@@ -667,17 +654,17 @@
       "source_location": "L10"
     },
     {
-      "id": "metronic_layout_components_sidebar_sidebar_component_sidebarcomponent",
-      "label": "SidebarComponent",
+      "id": "metronic_partials_content_widgets_charts_charts_widget7_charts_widget7_component_chartswidget7component",
+      "label": "ChartsWidget7Component",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 119,
-      "community_name": "sidebar.component.ts",
+      "community_name": "charts-widget7.component.ts",
       "file_type": "code",
-      "norm_label": "sidebarcomponent",
-      "source_file": "_metronic/layout/components/sidebar/sidebar.component.ts",
-      "source_location": "L11"
+      "norm_label": "chartswidget7component",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget7/charts-widget7.component.ts",
+      "source_location": "L8"
     },
     {
       "id": "fake_users_table_userstable",
@@ -1889,17 +1876,43 @@
       "source_location": "L10"
     },
     {
+      "id": "core_models_asset_model_plantpayload",
+      "label": "PlantPayload",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": "plantpayload",
+      "source_file": "core/models/asset.model.ts",
+      "source_location": "L47"
+    },
+    {
       "id": "pages_asset_taxonomy_plant_plant_component_plantcomponent",
       "label": "PlantComponent",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": "plantcomponent",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
       "source_location": "L39"
+    },
+    {
+      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice",
+      "label": "AssetApiService",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": "assetapiservice",
+      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
+      "source_location": "L18"
     },
     {
       "id": "metronic_partials_content_widgets_charts_apache_widgets_bar_simple_bar_simple_apache_widget_component_barsimpleapachewidgetcomponent",
@@ -2266,17 +2279,17 @@
       "source_location": "L10"
     },
     {
-      "id": "metronic_layout_components_header_header_component_headercomponent",
-      "label": "HeaderComponent",
+      "id": "metronic_layout_components_sidebar_sidebar_component_sidebarcomponent",
+      "label": "SidebarComponent",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 19,
       "community_name": "ILayout",
       "file_type": "code",
-      "norm_label": "headercomponent",
-      "source_file": "_metronic/layout/components/header/header.component.ts",
-      "source_location": "L13"
+      "norm_label": "sidebarcomponent",
+      "source_file": "_metronic/layout/components/sidebar/sidebar.component.ts",
+      "source_location": "L11"
     },
     {
       "id": "metronic_layout_core_configs_config_ilayout",
@@ -2448,17 +2461,43 @@
       "source_location": "L23"
     },
     {
+      "id": "metronic_layout_core_layout_service_layoutservice",
+      "label": "LayoutService",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "LayoutService",
+      "file_type": "code",
+      "norm_label": "layoutservice",
+      "source_file": "_metronic/layout/core/layout.service.ts",
+      "source_location": "L53"
+    },
+    {
       "id": "pages_builder_builder_component_buildercomponent",
       "label": "BuilderComponent",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 20,
-      "community_name": "BuilderComponent",
+      "community_name": "LayoutService",
       "file_type": "code",
       "norm_label": "buildercomponent",
       "source_file": "pages/builder/builder.component.ts",
       "source_location": "L11"
+    },
+    {
+      "id": "pages_builder_builder_component_tabs",
+      "label": "Tabs",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "LayoutService",
+      "file_type": "code",
+      "norm_label": "tabs",
+      "source_file": "pages/builder/builder.component.ts",
+      "source_location": "L5"
     },
     {
       "id": "metronic_partials_content_widgets_charts_apache_widgets_chord_minangle_chord_minangle_apache_widget_component_chordminangleapachewidgetcomponent",
@@ -5269,19 +5308,6 @@
       "source_location": "L10"
     },
     {
-      "id": "modules_account_account_component_accountcomponent",
-      "label": "AccountComponent",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "account.module.ts",
-      "file_type": "code",
-      "norm_label": "accountcomponent",
-      "source_file": "modules/account/account.component.ts",
-      "source_location": "L9"
-    },
-    {
       "id": "modules_account_account_module_accountmodule",
       "label": "AccountModule",
       "_callable": true,
@@ -6205,19 +6231,6 @@
       "source_location": "L10"
     },
     {
-      "id": "core_models_user_management_model_rolemodel",
-      "label": "RoleModel",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 39,
-      "community_name": "RoleListingComponent",
-      "file_type": "code",
-      "norm_label": "rolemodel",
-      "source_file": "core/models/user-management.model.ts",
-      "source_location": "L35"
-    },
-    {
       "id": "pages_role_role_listing_role_listing_component_rolelistingcomponent",
       "label": "RoleListingComponent",
       "_callable": true,
@@ -6595,6 +6608,32 @@
       "source_location": "L49"
     },
     {
+      "id": "core_models_user_management_model_adminuserdetail",
+      "label": "AdminUserDetail",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "user-management.model.ts",
+      "file_type": "code",
+      "norm_label": "adminuserdetail",
+      "source_file": "core/models/user-management.model.ts",
+      "source_location": "L67"
+    },
+    {
+      "id": "core_models_user_management_model_createuserpayload",
+      "label": "CreateUserPayload",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "user-management.model.ts",
+      "file_type": "code",
+      "norm_label": "createuserpayload",
+      "source_file": "core/models/user-management.model.ts",
+      "source_location": "L89"
+    },
+    {
       "id": "core_models_user_management_model_edituserpayload",
       "label": "EditUserPayload",
       "_callable": true,
@@ -6605,7 +6644,7 @@
       "file_type": "code",
       "norm_label": "edituserpayload",
       "source_file": "core/models/user-management.model.ts",
-      "source_location": "L105"
+      "source_location": "L100"
     },
     {
       "id": "core_models_user_management_model_paginatedresult",
@@ -6619,6 +6658,19 @@
       "norm_label": "paginatedresult",
       "source_file": "core/models/user-management.model.ts",
       "source_location": "L30"
+    },
+    {
+      "id": "core_models_user_management_model_querycriteria",
+      "label": "QueryCriteria",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "user-management.model.ts",
+      "file_type": "code",
+      "norm_label": "querycriteria",
+      "source_file": "core/models/user-management.model.ts",
+      "source_location": "L22"
     },
     {
       "id": "core_models_user_management_model_queryfilter",
@@ -6645,6 +6697,19 @@
       "norm_label": "querysort",
       "source_file": "core/models/user-management.model.ts",
       "source_location": "L16"
+    },
+    {
+      "id": "core_models_user_management_model_rolemodel",
+      "label": "RoleModel",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "user-management.model.ts",
+      "file_type": "code",
+      "norm_label": "rolemodel",
+      "source_file": "core/models/user-management.model.ts",
+      "source_location": "L35"
     },
     {
       "id": "core_models_user_management_model_userauditentry",
@@ -6816,19 +6881,6 @@
       "source_location": "L10"
     },
     {
-      "id": "core_models_user_management_model_adminuserdetail",
-      "label": "AdminUserDetail",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 42,
-      "community_name": "UserDetailsComponent",
-      "file_type": "code",
-      "norm_label": "adminuserdetail",
-      "source_file": "core/models/user-management.model.ts",
-      "source_location": "L67"
-    },
-    {
       "id": "pages_user_user_details_user_details_component_userdetailscomponent",
       "label": "UserDetailsComponent",
       "_callable": true,
@@ -6970,32 +7022,6 @@
       "norm_label": "pieparliamenttransitionapachewidgetcomponent",
       "source_file": "_metronic/partials/content/widgets/charts/Apache-Widgets/pie-parliament-transition/pie-parliament-transition-apache-widget.component.ts",
       "source_location": "L10"
-    },
-    {
-      "id": "core_models_user_management_model_createuserpayload",
-      "label": "CreateUserPayload",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 43,
-      "community_name": "UserListingComponent",
-      "file_type": "code",
-      "norm_label": "createuserpayload",
-      "source_file": "core/models/user-management.model.ts",
-      "source_location": "L89"
-    },
-    {
-      "id": "core_models_user_management_model_querycriteria",
-      "label": "QueryCriteria",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 43,
-      "community_name": "UserListingComponent",
-      "file_type": "code",
-      "norm_label": "querycriteria",
-      "source_file": "core/models/user-management.model.ts",
-      "source_location": "L22"
     },
     {
       "id": "pages_user_services_user_management_service_usermanagementservice",
@@ -7427,6 +7453,19 @@
       "source_location": "L10"
     },
     {
+      "id": "metronic_partials_content_widgets_charts_charts_widget1_charts_widget1_component_chartswidget1component",
+      "label": "ChartsWidget1Component",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "getCSSVariableValue",
+      "file_type": "code",
+      "norm_label": "chartswidget1component",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget1/charts-widget1.component.ts",
+      "source_location": "L8"
+    },
+    {
       "id": "metronic_partials_content_widgets_charts_charts_widget2_charts_widget2_component_chartswidget2component",
       "label": "ChartsWidget2Component",
       "_callable": true,
@@ -7450,19 +7489,6 @@
       "file_type": "code",
       "norm_label": "chartswidget4component",
       "source_file": "_metronic/partials/content/widgets/charts/charts-widget4/charts-widget4.component.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "metronic_partials_content_widgets_charts_charts_widget7_charts_widget7_component_chartswidget7component",
-      "label": "ChartsWidget7Component",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 46,
-      "community_name": "getCSSVariableValue",
-      "file_type": "code",
-      "norm_label": "chartswidget7component",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget7/charts-widget7.component.ts",
       "source_location": "L8"
     },
     {
@@ -7659,6 +7685,19 @@
       "norm_label": "languageflag",
       "source_file": "_metronic/partials/layout/extras/dropdown-inner/user-inner/user-inner.component.ts",
       "source_location": "L68"
+    },
+    {
+      "id": "modules_account_account_component_accountcomponent",
+      "label": "AccountComponent",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "user-inner.component.ts",
+      "file_type": "code",
+      "norm_label": "accountcomponent",
+      "source_file": "modules/account/account.component.ts",
+      "source_location": "L9"
     },
     {
       "id": "modules_auth_services_auth_service_usertype",
@@ -8402,19 +8441,6 @@
       "source_location": "L10"
     },
     {
-      "id": "metronic_partials_content_widgets_charts_charts_widget1_charts_widget1_component_chartswidget1component",
-      "label": "ChartsWidget1Component",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 504,
-      "community_name": "charts-widget1.component.ts",
-      "file_type": "code",
-      "norm_label": "chartswidget1component",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget1/charts-widget1.component.ts",
-      "source_location": "L8"
-    },
-    {
       "id": "metronic_kt_layout_thememode_thememode",
       "label": "ThemeMode",
       "_callable": true,
@@ -8694,7 +8720,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 58,
-      "community_name": "LayoutService",
+      "community_name": "layout.service.ts",
       "file_type": "code",
       "norm_label": "cssclassestype",
       "source_file": "_metronic/layout/core/configs/config.ts",
@@ -8707,24 +8733,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 58,
-      "community_name": "LayoutService",
+      "community_name": "layout.service.ts",
       "file_type": "code",
       "norm_label": "htmlattributestype",
       "source_file": "_metronic/layout/core/configs/config.ts",
       "source_location": "L7"
-    },
-    {
-      "id": "metronic_layout_core_layout_service_layoutservice",
-      "label": "LayoutService",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 58,
-      "community_name": "LayoutService",
-      "file_type": "code",
-      "norm_label": "layoutservice",
-      "source_file": "_metronic/layout/core/layout.service.ts",
-      "source_location": "L53"
     },
     {
       "id": "modules_account_settings_forms_sign_in_method_sign_in_method_component_signinmethodcomponent",
@@ -9247,30 +9260,17 @@
       "source_location": "L3"
     },
     {
-      "id": "core_models_asset_model_plantpayload",
-      "label": "PlantPayload",
+      "id": "metronic_layout_components_header_header_component_headercomponent",
+      "label": "HeaderComponent",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 79,
-      "community_name": "AssetApiService",
+      "community_name": "HeaderComponent",
       "file_type": "code",
-      "norm_label": "plantpayload",
-      "source_file": "core/models/asset.model.ts",
-      "source_location": "L47"
-    },
-    {
-      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice",
-      "label": "AssetApiService",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 79,
-      "community_name": "AssetApiService",
-      "file_type": "code",
-      "norm_label": "assetapiservice",
-      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
-      "source_location": "L18"
+      "norm_label": "headercomponent",
+      "source_file": "_metronic/layout/components/header/header.component.ts",
+      "source_location": "L13"
     },
     {
       "id": "metronic_kt_components_drawercomponent_drawercomponent",
@@ -11168,52 +11168,40 @@
       "source_location": "L18"
     },
     {
-      "id": "metronic_layout_components_sidebar_sidebar_component_sidebarcomponent_constructor",
+      "id": "metronic_partials_content_widgets_charts_charts_widget7_charts_widget7_component_chartswidget7component_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
       "community": 119,
-      "community_name": "sidebar.component.ts",
+      "community_name": "charts-widget7.component.ts",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "_metronic/layout/components/sidebar/sidebar.component.ts",
-      "source_location": "L41"
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget7/charts-widget7.component.ts",
+      "source_location": "L11"
     },
     {
-      "id": "metronic_layout_components_sidebar_sidebar_component_sidebarcomponent_ngondestroy",
-      "label": ".ngOnDestroy()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 119,
-      "community_name": "sidebar.component.ts",
-      "file_type": "code",
-      "norm_label": ".ngondestroy()",
-      "source_file": "_metronic/layout/components/sidebar/sidebar.component.ts",
-      "source_location": "L200"
-    },
-    {
-      "id": "metronic_layout_components_sidebar_sidebar_component_sidebarcomponent_ngoninit",
+      "id": "metronic_partials_content_widgets_charts_charts_widget7_charts_widget7_component_chartswidget7component_ngoninit",
       "label": ".ngOnInit()",
       "_callable": true,
       "_origin": "ast",
       "community": 119,
-      "community_name": "sidebar.component.ts",
+      "community_name": "charts-widget7.component.ts",
       "file_type": "code",
       "norm_label": ".ngoninit()",
-      "source_file": "_metronic/layout/components/sidebar/sidebar.component.ts",
-      "source_location": "L43"
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget7/charts-widget7.component.ts",
+      "source_location": "L13"
     },
     {
-      "id": "metronic_layout_components_sidebar_sidebar_component_sidebarcomponent_updateprops",
-      "label": ".updateProps()",
+      "id": "metronic_partials_content_widgets_charts_charts_widget7_charts_widget7_component_getchartoptions",
+      "label": "getChartOptions()",
       "_callable": true,
       "_origin": "ast",
       "community": 119,
-      "community_name": "sidebar.component.ts",
+      "community_name": "charts-widget7.component.ts",
       "file_type": "code",
-      "norm_label": ".updateprops()",
-      "source_file": "_metronic/layout/components/sidebar/sidebar.component.ts",
-      "source_location": "L52"
+      "norm_label": "getchartoptions()",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget7/charts-widget7.component.ts",
+      "source_location": "L18"
     },
     {
       "id": "modules_auth_models_auth_model_authmodel_setauth",
@@ -12529,7 +12517,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".constructor()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
@@ -12541,7 +12529,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".deleteplant()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
@@ -12553,7 +12541,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".deletetype()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
@@ -12565,7 +12553,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".emptyplantform()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
@@ -12577,7 +12565,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".emptytypeform()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
@@ -12589,7 +12577,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".loadall()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
@@ -12601,7 +12589,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".loadplants()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
@@ -12613,7 +12601,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".loadsites()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
@@ -12625,7 +12613,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".loadtypes()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
@@ -12637,7 +12625,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".ngoninit()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
@@ -12649,7 +12637,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".openaddplantmodal()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
@@ -12661,7 +12649,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".openaddtypemodal()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
@@ -12673,7 +12661,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".openeditplantmodal()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
@@ -12685,7 +12673,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".openedittypemodal()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
@@ -12697,11 +12685,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".showalert()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
       "source_location": "L254"
+    },
+    {
+      "id": "pages_asset_taxonomy_plant_plant_component_plantcomponent_submitplant",
+      "label": ".submitPlant()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": ".submitplant()",
+      "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
+      "source_location": "L145"
     },
     {
       "id": "pages_asset_taxonomy_plant_plant_component_plantcomponent_submittype",
@@ -12709,11 +12709,95 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".submittype()",
       "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
       "source_location": "L203"
+    },
+    {
+      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
+      "source_location": "L21"
+    },
+    {
+      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_createplant",
+      "label": ".createPlant()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": ".createplant()",
+      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
+      "source_location": "L83"
+    },
+    {
+      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_createplanttype",
+      "label": ".createPlantType()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": ".createplanttype()",
+      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
+      "source_location": "L57"
+    },
+    {
+      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_createsite",
+      "label": ".createSite()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": ".createsite()",
+      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
+      "source_location": "L31"
+    },
+    {
+      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_deleteplant",
+      "label": ".deletePlant()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": ".deleteplant()",
+      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
+      "source_location": "L95"
+    },
+    {
+      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_deleteplanttype",
+      "label": ".deletePlantType()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": ".deleteplanttype()",
+      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
+      "source_location": "L69"
+    },
+    {
+      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_deletesite",
+      "label": ".deleteSite()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": ".deletesite()",
+      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
+      "source_location": "L43"
     },
     {
       "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_getallplants",
@@ -12721,11 +12805,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".getallplants()",
       "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
       "source_location": "L77"
+    },
+    {
+      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_getallplanttypes",
+      "label": ".getAllPlantTypes()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": ".getallplanttypes()",
+      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
+      "source_location": "L51"
     },
     {
       "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_getallsites",
@@ -12733,11 +12829,71 @@
       "_callable": true,
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": ".getallsites()",
       "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
       "source_location": "L25"
+    },
+    {
+      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_unwrappage",
+      "label": ".unwrapPage()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": ".unwrappage()",
+      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
+      "source_location": "L109"
+    },
+    {
+      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_unwrapvoid",
+      "label": ".unwrapVoid()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": ".unwrapvoid()",
+      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
+      "source_location": "L103"
+    },
+    {
+      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_updateplant",
+      "label": ".updatePlant()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": ".updateplant()",
+      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
+      "source_location": "L89"
+    },
+    {
+      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_updateplanttype",
+      "label": ".updatePlantType()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": ".updateplanttype()",
+      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
+      "source_location": "L63"
+    },
+    {
+      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_updatesite",
+      "label": ".updateSite()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": ".updatesite()",
+      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
+      "source_location": "L37"
     },
     {
       "id": "metronic_partials_content_cards_card1_card1_component_card1component_constructor",
@@ -12836,7 +12992,7 @@
       "source_location": "L14"
     },
     {
-      "id": "metronic_layout_components_header_header_component_headercomponent_constructor",
+      "id": "metronic_layout_components_sidebar_sidebar_component_sidebarcomponent_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
@@ -12844,11 +13000,11 @@
       "community_name": "ILayout",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "_metronic/layout/components/header/header.component.ts",
+      "source_file": "_metronic/layout/components/sidebar/sidebar.component.ts",
       "source_location": "L41"
     },
     {
-      "id": "metronic_layout_components_header_header_component_headercomponent_ngondestroy",
+      "id": "metronic_layout_components_sidebar_sidebar_component_sidebarcomponent_ngondestroy",
       "label": ".ngOnDestroy()",
       "_callable": true,
       "_origin": "ast",
@@ -12856,11 +13012,11 @@
       "community_name": "ILayout",
       "file_type": "code",
       "norm_label": ".ngondestroy()",
-      "source_file": "_metronic/layout/components/header/header.component.ts",
-      "source_location": "L221"
+      "source_file": "_metronic/layout/components/sidebar/sidebar.component.ts",
+      "source_location": "L200"
     },
     {
-      "id": "metronic_layout_components_header_header_component_headercomponent_ngoninit",
+      "id": "metronic_layout_components_sidebar_sidebar_component_sidebarcomponent_ngoninit",
       "label": ".ngOnInit()",
       "_callable": true,
       "_origin": "ast",
@@ -12868,23 +13024,11 @@
       "community_name": "ILayout",
       "file_type": "code",
       "norm_label": ".ngoninit()",
-      "source_file": "_metronic/layout/components/header/header.component.ts",
-      "source_location": "L203"
+      "source_file": "_metronic/layout/components/sidebar/sidebar.component.ts",
+      "source_location": "L43"
     },
     {
-      "id": "metronic_layout_components_header_header_component_headercomponent_routingchanges",
-      "label": ".routingChanges()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "ILayout",
-      "file_type": "code",
-      "norm_label": ".routingchanges()",
-      "source_file": "_metronic/layout/components/header/header.component.ts",
-      "source_location": "L212"
-    },
-    {
-      "id": "metronic_layout_components_header_header_component_headercomponent_updateprops",
+      "id": "metronic_layout_components_sidebar_sidebar_component_sidebarcomponent_updateprops",
       "label": ".updateProps()",
       "_callable": true,
       "_origin": "ast",
@@ -12892,20 +13036,8 @@
       "community_name": "ILayout",
       "file_type": "code",
       "norm_label": ".updateprops()",
-      "source_file": "_metronic/layout/components/header/header.component.ts",
-      "source_location": "L45"
-    },
-    {
-      "id": "metronic_layout_components_header_header_component_headercomponent_updatetoolbar",
-      "label": ".updateToolbar()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "ILayout",
-      "file_type": "code",
-      "norm_label": ".updatetoolbar()",
-      "source_file": "_metronic/layout/components/header/header.component.ts",
-      "source_location": "L115"
+      "source_file": "_metronic/layout/components/sidebar/sidebar.component.ts",
+      "source_location": "L52"
     },
     {
       "id": "metronic_layout_core_layout_service_layoutservice_getprop",
@@ -13184,12 +13316,60 @@
       "source_location": "L10"
     },
     {
+      "id": "metronic_layout_core_layout_service_layoutservice_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "LayoutService",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "_metronic/layout/core/layout.service.ts",
+      "source_location": "L71"
+    },
+    {
+      "id": "metronic_layout_core_layout_service_layoutservice_getcssclasses",
+      "label": ".getCSSClasses()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "LayoutService",
+      "file_type": "code",
+      "norm_label": ".getcssclasses()",
+      "source_file": "_metronic/layout/core/layout.service.ts",
+      "source_location": "L95"
+    },
+    {
+      "id": "metronic_layout_core_layout_service_layoutservice_gethtmlattributes",
+      "label": ".getHTMLAttributes()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "LayoutService",
+      "file_type": "code",
+      "norm_label": ".gethtmlattributes()",
+      "source_file": "_metronic/layout/core/layout.service.ts",
+      "source_location": "L108"
+    },
+    {
+      "id": "metronic_layout_core_layout_service_layoutservice_getstringcssclasses",
+      "label": ".getStringCSSClasses()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "LayoutService",
+      "file_type": "code",
+      "norm_label": ".getstringcssclasses()",
+      "source_file": "_metronic/layout/core/layout.service.ts",
+      "source_location": "L104"
+    },
+    {
       "id": "metronic_layout_core_layout_service_layoutservice_resetbaseconfig",
       "label": ".resetBaseConfig()",
       "_callable": true,
       "_origin": "ast",
       "community": 20,
-      "community_name": "BuilderComponent",
+      "community_name": "LayoutService",
       "file_type": "code",
       "norm_label": ".resetbaseconfig()",
       "source_file": "_metronic/layout/core/layout.service.ts",
@@ -13201,11 +13381,35 @@
       "_callable": true,
       "_origin": "ast",
       "community": 20,
-      "community_name": "BuilderComponent",
+      "community_name": "LayoutService",
       "file_type": "code",
       "norm_label": ".savebaseconfig()",
       "source_file": "_metronic/layout/core/layout.service.ts",
       "source_location": "L193"
+    },
+    {
+      "id": "metronic_layout_core_layout_service_layoutservice_setcssclass",
+      "label": ".setCSSClass()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "LayoutService",
+      "file_type": "code",
+      "norm_label": ".setcssclass()",
+      "source_file": "_metronic/layout/core/layout.service.ts",
+      "source_location": "L81"
+    },
+    {
+      "id": "metronic_layout_core_layout_service_layoutservice_sethtmlattribute",
+      "label": ".setHTMLAttribute()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "LayoutService",
+      "file_type": "code",
+      "norm_label": ".sethtmlattribute()",
+      "source_file": "_metronic/layout/core/layout.service.ts",
+      "source_location": "L118"
     },
     {
       "id": "pages_builder_builder_component_buildercomponent_constructor",
@@ -13213,7 +13417,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 20,
-      "community_name": "BuilderComponent",
+      "community_name": "LayoutService",
       "file_type": "code",
       "norm_label": ".constructor()",
       "source_file": "pages/builder/builder.component.ts",
@@ -13225,7 +13429,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 20,
-      "community_name": "BuilderComponent",
+      "community_name": "LayoutService",
       "file_type": "code",
       "norm_label": ".resetpreview()",
       "source_file": "pages/builder/builder.component.ts",
@@ -13237,7 +13441,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 20,
-      "community_name": "BuilderComponent",
+      "community_name": "LayoutService",
       "file_type": "code",
       "norm_label": ".setactivetab()",
       "source_file": "pages/builder/builder.component.ts",
@@ -13249,7 +13453,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 20,
-      "community_name": "BuilderComponent",
+      "community_name": "LayoutService",
       "file_type": "code",
       "norm_label": ".submitpreview()",
       "source_file": "pages/builder/builder.component.ts",
@@ -13916,6 +14120,18 @@
       "source_location": "L34"
     },
     {
+      "id": "metronic_layout_core_layout_init_service_layoutinitservice_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 27,
+      "community_name": "LayoutType",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "_metronic/layout/core/layout-init.service.ts",
+      "source_location": "L11"
+    },
+    {
       "id": "metronic_layout_core_layout_init_service_layoutinitservice_initlayoutsettings",
       "label": ".initLayoutSettings()",
       "_callable": true,
@@ -14130,6 +14346,18 @@
       "norm_label": ".ngoninit()",
       "source_file": "_metronic/partials/layout/engages/purchase-toolbar/purchase-toolbar.component.ts",
       "source_location": "L14"
+    },
+    {
+      "id": "metronic_kt_components_drawercomponent_drawercomponent_trigger",
+      "label": ".trigger()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 29,
+      "community_name": ".trigger",
+      "file_type": "code",
+      "norm_label": ".trigger()",
+      "source_file": "_metronic/kt/components/_DrawerComponent.ts",
+      "source_location": "L291"
     },
     {
       "id": "metronic_kt_components_togglecomponent_togglecomponent_bootstrap",
@@ -15044,30 +15272,6 @@
       "source_location": "L44"
     },
     {
-      "id": "modules_account_account_component_accountcomponent_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "account.module.ts",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "modules/account/account.component.ts",
-      "source_location": "L12"
-    },
-    {
-      "id": "modules_account_account_component_accountcomponent_ngoninit",
-      "label": ".ngOnInit()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "account.module.ts",
-      "file_type": "code",
-      "norm_label": ".ngoninit()",
-      "source_file": "modules/account/account.component.ts",
-      "source_location": "L16"
-    },
-    {
       "id": "modules_account_settings_forms_connected_accounts_connected_accounts_component_connectedaccountscomponent_constructor",
       "label": ".constructor()",
       "_callable": true,
@@ -15716,6 +15920,18 @@
       "source_location": "L51"
     },
     {
+      "id": "pages_user_user_listing_user_listing_component_userlistingcomponent_ngoninit",
+      "label": ".ngOnInit()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 39,
+      "community_name": "RoleListingComponent",
+      "file_type": "code",
+      "norm_label": ".ngoninit()",
+      "source_file": "pages/user/user-listing/user-listing.component.ts",
+      "source_location": "L58"
+    },
+    {
       "id": "metronic_partials_content_chat_inner_chat_inner_component_chatinnercomponent_addmessage",
       "label": ".addMessage()",
       "_callable": true,
@@ -16028,42 +16244,6 @@
       "source_location": "L41"
     },
     {
-      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_getallplanttypes",
-      "label": ".getAllPlantTypes()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "user-management.model.ts",
-      "file_type": "code",
-      "norm_label": ".getallplanttypes()",
-      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
-      "source_location": "L51"
-    },
-    {
-      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_unwrappage",
-      "label": ".unwrapPage()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "user-management.model.ts",
-      "file_type": "code",
-      "norm_label": ".unwrappage()",
-      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
-      "source_location": "L109"
-    },
-    {
-      "id": "pages_user_services_user_management_service_usermanagementservice_getuserbyid",
-      "label": ".getUserById()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 42,
-      "community_name": "UserDetailsComponent",
-      "file_type": "code",
-      "norm_label": ".getuserbyid()",
-      "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L56"
-    },
-    {
       "id": "pages_user_user_details_user_details_component_userdetailscomponent_actionbadgeclass",
       "label": ".actionBadgeClass()",
       "_callable": true,
@@ -16160,18 +16340,6 @@
       "source_location": "L52"
     },
     {
-      "id": "pages_user_user_details_user_details_component_userdetailscomponent_ngoninit",
-      "label": ".ngOnInit()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 42,
-      "community_name": "UserDetailsComponent",
-      "file_type": "code",
-      "norm_label": ".ngoninit()",
-      "source_file": "pages/user/user-details/user-details.component.ts",
-      "source_location": "L24"
-    },
-    {
       "id": "pages_user_user_details_user_details_component_userdetailscomponent_rolenames",
       "label": ".roleNames()",
       "_callable": true,
@@ -16182,18 +16350,6 @@
       "norm_label": ".rolenames()",
       "source_file": "pages/user/user-details/user-details.component.ts",
       "source_location": "L62"
-    },
-    {
-      "id": "pages_user_user_listing_user_listing_component_userlistingcomponent_edit",
-      "label": ".edit()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 42,
-      "community_name": "UserDetailsComponent",
-      "file_type": "code",
-      "norm_label": ".edit()",
-      "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L196"
     },
     {
       "id": "pages_user_services_user_management_service_usermanagementservice_constructor",
@@ -16217,7 +16373,7 @@
       "file_type": "code",
       "norm_label": ".createuser()",
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L73"
+      "source_location": "L68"
     },
     {
       "id": "pages_user_services_user_management_service_usermanagementservice_deleteuser",
@@ -16229,7 +16385,7 @@
       "file_type": "code",
       "norm_label": ".deleteuser()",
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L112"
+      "source_location": "L96"
     },
     {
       "id": "pages_user_services_user_management_service_usermanagementservice_edituser",
@@ -16241,7 +16397,19 @@
       "file_type": "code",
       "norm_label": ".edituser()",
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L91"
+      "source_location": "L75"
+    },
+    {
+      "id": "pages_user_services_user_management_service_usermanagementservice_getuserbyid",
+      "label": ".getUserById()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 43,
+      "community_name": "UserListingComponent",
+      "file_type": "code",
+      "norm_label": ".getuserbyid()",
+      "source_file": "pages/user/services/user-management.service.ts",
+      "source_location": "L56"
     },
     {
       "id": "pages_user_services_user_management_service_usermanagementservice_getusers",
@@ -16265,7 +16433,7 @@
       "file_type": "code",
       "norm_label": ".resetpassword()",
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L105"
+      "source_location": "L89"
     },
     {
       "id": "pages_user_services_user_management_service_usermanagementservice_setactive",
@@ -16277,7 +16445,7 @@
       "file_type": "code",
       "norm_label": ".setactive()",
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L98"
+      "source_location": "L82"
     },
     {
       "id": "pages_user_services_user_management_service_usermanagementservice_toquerycriteria",
@@ -16289,7 +16457,7 @@
       "file_type": "code",
       "norm_label": ".toquerycriteria()",
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L129"
+      "source_location": "L113"
     },
     {
       "id": "pages_user_services_user_management_service_usermanagementservice_unwrap",
@@ -16301,7 +16469,19 @@
       "file_type": "code",
       "norm_label": ".unwrap()",
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L118"
+      "source_location": "L102"
+    },
+    {
+      "id": "pages_user_user_details_user_details_component_userdetailscomponent_ngoninit",
+      "label": ".ngOnInit()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 43,
+      "community_name": "UserListingComponent",
+      "file_type": "code",
+      "norm_label": ".ngoninit()",
+      "source_file": "pages/user/user-details/user-details.component.ts",
+      "source_location": "L24"
     },
     {
       "id": "pages_user_user_listing_user_listing_component_userlistingcomponent_create",
@@ -16328,6 +16508,18 @@
       "source_location": "L186"
     },
     {
+      "id": "pages_user_user_listing_user_listing_component_userlistingcomponent_edit",
+      "label": ".edit()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 43,
+      "community_name": "UserListingComponent",
+      "file_type": "code",
+      "norm_label": ".edit()",
+      "source_file": "pages/user/user-listing/user-listing.component.ts",
+      "source_location": "L196"
+    },
+    {
       "id": "pages_user_user_listing_user_listing_component_userlistingcomponent_emptyusermodel",
       "label": ".emptyUserModel()",
       "_callable": true,
@@ -16337,7 +16529,7 @@
       "file_type": "code",
       "norm_label": ".emptyusermodel()",
       "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L323"
+      "source_location": "L284"
     },
     {
       "id": "pages_user_user_listing_user_listing_component_userlistingcomponent_errormessage",
@@ -16349,7 +16541,7 @@
       "file_type": "code",
       "norm_label": ".errormessage()",
       "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L327"
+      "source_location": "L288"
     },
     {
       "id": "pages_user_user_listing_user_listing_component_userlistingcomponent_extracttext",
@@ -16361,7 +16553,7 @@
       "file_type": "code",
       "norm_label": ".extracttext()",
       "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L331"
+      "source_location": "L292"
     },
     {
       "id": "pages_user_user_listing_user_listing_component_userlistingcomponent_ngafterviewinit",
@@ -16385,19 +16577,7 @@
       "file_type": "code",
       "norm_label": ".ngondestroy()",
       "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L369"
-    },
-    {
-      "id": "pages_user_user_listing_user_listing_component_userlistingcomponent_ngoninit",
-      "label": ".ngOnInit()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 43,
-      "community_name": "UserListingComponent",
-      "file_type": "code",
-      "norm_label": ".ngoninit()",
-      "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L58"
+      "source_location": "L330"
     },
     {
       "id": "pages_user_user_listing_user_listing_component_userlistingcomponent_onroletoggle",
@@ -16433,7 +16613,7 @@
       "file_type": "code",
       "norm_label": ".showalert()",
       "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L353"
+      "source_location": "L314"
     },
     {
       "id": "metronic_partials_content_widgets_charts_apache_echarts_apache_echarts_component_apacheechartscomponent_createcontrols",
@@ -16688,6 +16868,42 @@
       "source_location": "L22"
     },
     {
+      "id": "metronic_partials_content_widgets_charts_charts_widget1_charts_widget1_component_chartswidget1component_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "getCSSVariableValue",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget1/charts-widget1.component.ts",
+      "source_location": "L10"
+    },
+    {
+      "id": "metronic_partials_content_widgets_charts_charts_widget1_charts_widget1_component_chartswidget1component_ngoninit",
+      "label": ".ngOnInit()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "getCSSVariableValue",
+      "file_type": "code",
+      "norm_label": ".ngoninit()",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget1/charts-widget1.component.ts",
+      "source_location": "L12"
+    },
+    {
+      "id": "metronic_partials_content_widgets_charts_charts_widget1_charts_widget1_component_getchartoptions",
+      "label": "getChartOptions()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "getCSSVariableValue",
+      "file_type": "code",
+      "norm_label": "getchartoptions()",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget1/charts-widget1.component.ts",
+      "source_location": "L17"
+    },
+    {
       "id": "metronic_partials_content_widgets_charts_charts_widget2_charts_widget2_component_chartswidget2component_constructor",
       "label": ".constructor()",
       "_callable": true,
@@ -16757,42 +16973,6 @@
       "file_type": "code",
       "norm_label": "getchartoptions()",
       "source_file": "_metronic/partials/content/widgets/charts/charts-widget4/charts-widget4.component.ts",
-      "source_location": "L18"
-    },
-    {
-      "id": "metronic_partials_content_widgets_charts_charts_widget7_charts_widget7_component_chartswidget7component_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 46,
-      "community_name": "getCSSVariableValue",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget7/charts-widget7.component.ts",
-      "source_location": "L11"
-    },
-    {
-      "id": "metronic_partials_content_widgets_charts_charts_widget7_charts_widget7_component_chartswidget7component_ngoninit",
-      "label": ".ngOnInit()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 46,
-      "community_name": "getCSSVariableValue",
-      "file_type": "code",
-      "norm_label": ".ngoninit()",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget7/charts-widget7.component.ts",
-      "source_location": "L13"
-    },
-    {
-      "id": "metronic_partials_content_widgets_charts_charts_widget7_charts_widget7_component_getchartoptions",
-      "label": "getChartOptions()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 46,
-      "community_name": "getCSSVariableValue",
-      "file_type": "code",
-      "norm_label": "getchartoptions()",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget7/charts-widget7.component.ts",
       "source_location": "L18"
     },
     {
@@ -16986,6 +17166,30 @@
       "norm_label": ".ngoninit()",
       "source_file": "_metronic/layout/components/topbar/topbar.component.ts",
       "source_location": "L23"
+    },
+    {
+      "id": "modules_account_account_component_accountcomponent_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "user-inner.component.ts",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "modules/account/account.component.ts",
+      "source_location": "L12"
+    },
+    {
+      "id": "modules_account_account_component_accountcomponent_ngoninit",
+      "label": ".ngOnInit()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "user-inner.component.ts",
+      "file_type": "code",
+      "norm_label": ".ngoninit()",
+      "source_file": "modules/account/account.component.ts",
+      "source_location": "L16"
     },
     {
       "id": "metronic_partials_layout_extras_dropdown_inner_notifications_inner_notifications_inner_component_notificationsinnercomponent_constructor",
@@ -17478,42 +17682,6 @@
       "norm_label": ".ngoninit()",
       "source_file": "pages/role/role-details/role-details.component.ts",
       "source_location": "L24"
-    },
-    {
-      "id": "metronic_partials_content_widgets_charts_charts_widget1_charts_widget1_component_chartswidget1component_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 504,
-      "community_name": "charts-widget1.component.ts",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget1/charts-widget1.component.ts",
-      "source_location": "L10"
-    },
-    {
-      "id": "metronic_partials_content_widgets_charts_charts_widget1_charts_widget1_component_chartswidget1component_ngoninit",
-      "label": ".ngOnInit()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 504,
-      "community_name": "charts-widget1.component.ts",
-      "file_type": "code",
-      "norm_label": ".ngoninit()",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget1/charts-widget1.component.ts",
-      "source_location": "L12"
-    },
-    {
-      "id": "metronic_partials_content_widgets_charts_charts_widget1_charts_widget1_component_getchartoptions",
-      "label": "getChartOptions()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 504,
-      "community_name": "charts-widget1.component.ts",
-      "file_type": "code",
-      "norm_label": "getchartoptions()",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget1/charts-widget1.component.ts",
-      "source_location": "L17"
     },
     {
       "id": "metronic_kt_layout_thememode_thememode_flipimages",
@@ -18380,24 +18548,12 @@
       "source_location": "L48"
     },
     {
-      "id": "metronic_layout_core_layout_init_service_layoutinitservice_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 58,
-      "community_name": "LayoutService",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "_metronic/layout/core/layout-init.service.ts",
-      "source_location": "L11"
-    },
-    {
       "id": "metronic_layout_core_layout_service_getemptycssclasses",
       "label": "getEmptyCssClasses()",
       "_callable": true,
       "_origin": "ast",
       "community": 58,
-      "community_name": "LayoutService",
+      "community_name": "layout.service.ts",
       "file_type": "code",
       "norm_label": "getemptycssclasses()",
       "source_file": "_metronic/layout/core/layout.service.ts",
@@ -18409,59 +18565,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 58,
-      "community_name": "LayoutService",
+      "community_name": "layout.service.ts",
       "file_type": "code",
       "norm_label": "getemptyhtmlattributes()",
       "source_file": "_metronic/layout/core/layout.service.ts",
       "source_location": "L20"
-    },
-    {
-      "id": "metronic_layout_core_layout_service_layoutservice_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 58,
-      "community_name": "LayoutService",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "_metronic/layout/core/layout.service.ts",
-      "source_location": "L71"
-    },
-    {
-      "id": "metronic_layout_core_layout_service_layoutservice_getcssclasses",
-      "label": ".getCSSClasses()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 58,
-      "community_name": "LayoutService",
-      "file_type": "code",
-      "norm_label": ".getcssclasses()",
-      "source_file": "_metronic/layout/core/layout.service.ts",
-      "source_location": "L95"
-    },
-    {
-      "id": "metronic_layout_core_layout_service_layoutservice_gethtmlattributes",
-      "label": ".getHTMLAttributes()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 58,
-      "community_name": "LayoutService",
-      "file_type": "code",
-      "norm_label": ".gethtmlattributes()",
-      "source_file": "_metronic/layout/core/layout.service.ts",
-      "source_location": "L108"
-    },
-    {
-      "id": "metronic_layout_core_layout_service_layoutservice_getstringcssclasses",
-      "label": ".getStringCSSClasses()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 58,
-      "community_name": "LayoutService",
-      "file_type": "code",
-      "norm_label": ".getstringcssclasses()",
-      "source_file": "_metronic/layout/core/layout.service.ts",
-      "source_location": "L104"
     },
     {
       "id": "metronic_layout_core_layout_service_layoutservice_reinitprops",
@@ -18469,35 +18577,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 58,
-      "community_name": "LayoutService",
+      "community_name": "layout.service.ts",
       "file_type": "code",
       "norm_label": ".reinitprops()",
       "source_file": "_metronic/layout/core/layout.service.ts",
       "source_location": "L217"
-    },
-    {
-      "id": "metronic_layout_core_layout_service_layoutservice_setcssclass",
-      "label": ".setCSSClass()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 58,
-      "community_name": "LayoutService",
-      "file_type": "code",
-      "norm_label": ".setcssclass()",
-      "source_file": "_metronic/layout/core/layout.service.ts",
-      "source_location": "L81"
-    },
-    {
-      "id": "metronic_layout_core_layout_service_layoutservice_sethtmlattribute",
-      "label": ".setHTMLAttribute()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 58,
-      "community_name": "LayoutService",
-      "file_type": "code",
-      "norm_label": ".sethtmlattribute()",
-      "source_file": "_metronic/layout/core/layout.service.ts",
-      "source_location": "L118"
     },
     {
       "id": "modules_account_settings_forms_sign_in_method_sign_in_method_component_signinmethodcomponent_constructor",
@@ -19892,148 +19976,76 @@
       "source_location": "L17"
     },
     {
-      "id": "pages_asset_taxonomy_plant_plant_component_plantcomponent_submitplant",
-      "label": ".submitPlant()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 79,
-      "community_name": "AssetApiService",
-      "file_type": "code",
-      "norm_label": ".submitplant()",
-      "source_file": "pages/asset-taxonomy/plant/plant.component.ts",
-      "source_location": "L145"
-    },
-    {
-      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_constructor",
+      "id": "metronic_layout_components_header_header_component_headercomponent_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
       "community": 79,
-      "community_name": "AssetApiService",
+      "community_name": "HeaderComponent",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
-      "source_location": "L21"
+      "source_file": "_metronic/layout/components/header/header.component.ts",
+      "source_location": "L41"
     },
     {
-      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_createplant",
-      "label": ".createPlant()",
+      "id": "metronic_layout_components_header_header_component_headercomponent_ngondestroy",
+      "label": ".ngOnDestroy()",
       "_callable": true,
       "_origin": "ast",
       "community": 79,
-      "community_name": "AssetApiService",
+      "community_name": "HeaderComponent",
       "file_type": "code",
-      "norm_label": ".createplant()",
-      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
-      "source_location": "L83"
+      "norm_label": ".ngondestroy()",
+      "source_file": "_metronic/layout/components/header/header.component.ts",
+      "source_location": "L221"
     },
     {
-      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_createplanttype",
-      "label": ".createPlantType()",
+      "id": "metronic_layout_components_header_header_component_headercomponent_ngoninit",
+      "label": ".ngOnInit()",
       "_callable": true,
       "_origin": "ast",
       "community": 79,
-      "community_name": "AssetApiService",
+      "community_name": "HeaderComponent",
       "file_type": "code",
-      "norm_label": ".createplanttype()",
-      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
-      "source_location": "L57"
+      "norm_label": ".ngoninit()",
+      "source_file": "_metronic/layout/components/header/header.component.ts",
+      "source_location": "L203"
     },
     {
-      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_createsite",
-      "label": ".createSite()",
+      "id": "metronic_layout_components_header_header_component_headercomponent_routingchanges",
+      "label": ".routingChanges()",
       "_callable": true,
       "_origin": "ast",
       "community": 79,
-      "community_name": "AssetApiService",
+      "community_name": "HeaderComponent",
       "file_type": "code",
-      "norm_label": ".createsite()",
-      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
-      "source_location": "L31"
+      "norm_label": ".routingchanges()",
+      "source_file": "_metronic/layout/components/header/header.component.ts",
+      "source_location": "L212"
     },
     {
-      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_deleteplant",
-      "label": ".deletePlant()",
+      "id": "metronic_layout_components_header_header_component_headercomponent_updateprops",
+      "label": ".updateProps()",
       "_callable": true,
       "_origin": "ast",
       "community": 79,
-      "community_name": "AssetApiService",
+      "community_name": "HeaderComponent",
       "file_type": "code",
-      "norm_label": ".deleteplant()",
-      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
-      "source_location": "L95"
+      "norm_label": ".updateprops()",
+      "source_file": "_metronic/layout/components/header/header.component.ts",
+      "source_location": "L45"
     },
     {
-      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_deleteplanttype",
-      "label": ".deletePlantType()",
+      "id": "metronic_layout_components_header_header_component_headercomponent_updatetoolbar",
+      "label": ".updateToolbar()",
       "_callable": true,
       "_origin": "ast",
       "community": 79,
-      "community_name": "AssetApiService",
+      "community_name": "HeaderComponent",
       "file_type": "code",
-      "norm_label": ".deleteplanttype()",
-      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
-      "source_location": "L69"
-    },
-    {
-      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_deletesite",
-      "label": ".deleteSite()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 79,
-      "community_name": "AssetApiService",
-      "file_type": "code",
-      "norm_label": ".deletesite()",
-      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
-      "source_location": "L43"
-    },
-    {
-      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_unwrapvoid",
-      "label": ".unwrapVoid()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 79,
-      "community_name": "AssetApiService",
-      "file_type": "code",
-      "norm_label": ".unwrapvoid()",
-      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
-      "source_location": "L103"
-    },
-    {
-      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_updateplant",
-      "label": ".updatePlant()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 79,
-      "community_name": "AssetApiService",
-      "file_type": "code",
-      "norm_label": ".updateplant()",
-      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
-      "source_location": "L89"
-    },
-    {
-      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_updateplanttype",
-      "label": ".updatePlantType()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 79,
-      "community_name": "AssetApiService",
-      "file_type": "code",
-      "norm_label": ".updateplanttype()",
-      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
-      "source_location": "L63"
-    },
-    {
-      "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_updatesite",
-      "label": ".updateSite()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 79,
-      "community_name": "AssetApiService",
-      "file_type": "code",
-      "norm_label": ".updatesite()",
-      "source_file": "pages/asset-taxonomy/services/asset-api.service.ts",
-      "source_location": "L37"
+      "norm_label": ".updatetoolbar()",
+      "source_file": "_metronic/layout/components/header/header.component.ts",
+      "source_location": "L115"
     },
     {
       "id": "metronic_kt_components_drawercomponent_drawercomponent_bootstrap",
@@ -20276,18 +20288,6 @@
       "source_location": "L164"
     },
     {
-      "id": "metronic_kt_components_drawercomponent_drawercomponent_trigger",
-      "label": ".trigger()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 8,
-      "community_name": "DrawerComponent",
-      "file_type": "code",
-      "norm_label": ".trigger()",
-      "source_file": "_metronic/kt/components/_DrawerComponent.ts",
-      "source_location": "L291"
-    },
-    {
       "id": "metronic_kt_components_drawercomponent_drawercomponent_update",
       "label": "._update()",
       "_callable": true,
@@ -20370,6 +20370,18 @@
       "norm_label": ".set()",
       "source_file": "_metronic/kt/components/_DrawerComponent.ts",
       "source_location": "L16"
+    },
+    {
+      "id": "metronic_kt_utils_domeventhandlerutil_domeventhandlerutil_on",
+      "label": ".on()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "DrawerComponent",
+      "file_type": "code",
+      "norm_label": ".on()",
+      "source_file": "_metronic/kt/_utils/_DOMEventHandlerUtil.ts",
+      "source_location": "L6"
     },
     {
       "id": "metronic_partials_content_widgets_charts_charts_widget6_charts_widget6_component_chartswidget6component_constructor",
@@ -21188,18 +21200,6 @@
       "source_location": "L303"
     },
     {
-      "id": "metronic_kt_utils_domeventhandlerutil_domeventhandlerutil_on",
-      "label": ".on()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "StepperComponent",
-      "file_type": "code",
-      "norm_label": ".on()",
-      "source_file": "_metronic/kt/_utils/_DOMEventHandlerUtil.ts",
-      "source_location": "L6"
-    },
-    {
       "id": "metronic_kt_utils_domhelpers_getelementindex",
       "label": "getElementIndex()",
       "_callable": true,
@@ -21845,28 +21845,6 @@
       "source_location": ""
     },
     {
-      "id": "metronic_layout_index",
-      "label": "_metronic/layout/index.ts",
-      "_origin": "ast",
-      "community": 103,
-      "community_name": "TilesWidget1Component",
-      "file_type": "code",
-      "norm_label": "_metronic/layout/index.ts",
-      "source_file": "_metronic/layout/index.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "metronic_partials_content_widgets_tiles_tiles_widget1_tiles_widget1_component",
-      "label": "tiles-widget1.component.ts",
-      "_origin": "ast",
-      "community": 103,
-      "community_name": "TilesWidget1Component",
-      "file_type": "code",
-      "norm_label": "tiles-widget1.component.ts",
-      "source_file": "_metronic/partials/content/widgets/tiles/tiles-widget1/tiles-widget1.component.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "metronic_partials_content_widgets_tiles_tiles_widget1_tiles_widget1_component_ts_component",
       "label": "Component",
       "_origin": "ast",
@@ -21887,17 +21865,6 @@
       "norm_label": "input",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "pages_builder_builder_component",
-      "label": "builder.component.ts",
-      "_origin": "ast",
-      "community": 103,
-      "community_name": "TilesWidget1Component",
-      "file_type": "code",
-      "norm_label": "builder.component.ts",
-      "source_file": "pages/builder/builder.component.ts",
-      "source_location": "L1"
     },
     {
       "id": "metronic_partials_content_widgets_charts_apache_echarts_apache_echarts_component",
@@ -22651,33 +22618,22 @@
       "source_location": ""
     },
     {
-      "id": "metronic_layout_components_sidebar_sidebar_component",
-      "label": "sidebar.component.ts",
+      "id": "metronic_partials_content_widgets_charts_charts_widget7_charts_widget7_component",
+      "label": "charts-widget7.component.ts",
       "_origin": "ast",
       "community": 119,
-      "community_name": "sidebar.component.ts",
+      "community_name": "charts-widget7.component.ts",
       "file_type": "code",
-      "norm_label": "sidebar.component.ts",
-      "source_file": "_metronic/layout/components/sidebar/sidebar.component.ts",
+      "norm_label": "charts-widget7.component.ts",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget7/charts-widget7.component.ts",
       "source_location": "L1"
     },
     {
-      "id": "metronic_layout_components_sidebar_sidebar_component_spec",
-      "label": "sidebar.component.spec.ts",
-      "_origin": "ast",
-      "community": 119,
-      "community_name": "sidebar.component.ts",
-      "file_type": "code",
-      "norm_label": "sidebar.component.spec.ts",
-      "source_file": "_metronic/layout/components/sidebar/sidebar.component.spec.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "metronic_layout_components_sidebar_sidebar_component_ts_component",
+      "id": "metronic_partials_content_widgets_charts_charts_widget7_charts_widget7_component_ts_component",
       "label": "Component",
       "_origin": "ast",
       "community": 119,
-      "community_name": "sidebar.component.ts",
+      "community_name": "charts-widget7.component.ts",
       "file_type": "code",
       "norm_label": "component",
       "source_file": "",
@@ -23122,6 +23078,17 @@
       "norm_label": "input",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "metronic_layout_components_scripts_init_scripts_init_component",
+      "label": "scripts-init.component.ts",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "PageInfoService",
+      "file_type": "code",
+      "norm_label": "scripts-init.component.ts",
+      "source_file": "_metronic/layout/components/scripts-init/scripts-init.component.ts",
+      "source_location": "L1"
     },
     {
       "id": "metronic_layout_core_page_info_service",
@@ -24866,9 +24833,20 @@
       "label": "Component",
       "_origin": "ast",
       "community": 17,
-      "community_name": "PlantComponent",
+      "community_name": "AssetApiService",
       "file_type": "code",
       "norm_label": "component",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "pages_asset_taxonomy_services_asset_api_service_ts_injectable",
+      "label": "Injectable",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "AssetApiService",
+      "file_type": "code",
+      "norm_label": "injectable",
       "source_file": "",
       "source_location": ""
     },
@@ -25599,29 +25577,29 @@
       "source_location": ""
     },
     {
-      "id": "metronic_layout_components_header_header_component",
-      "label": "header.component.ts",
+      "id": "metronic_layout_components_sidebar_sidebar_component",
+      "label": "sidebar.component.ts",
       "_origin": "ast",
       "community": 19,
       "community_name": "ILayout",
       "file_type": "code",
-      "norm_label": "header.component.ts",
-      "source_file": "_metronic/layout/components/header/header.component.ts",
+      "norm_label": "sidebar.component.ts",
+      "source_file": "_metronic/layout/components/sidebar/sidebar.component.ts",
       "source_location": "L1"
     },
     {
-      "id": "metronic_layout_components_header_header_component_spec",
-      "label": "header.component.spec.ts",
+      "id": "metronic_layout_components_sidebar_sidebar_component_spec",
+      "label": "sidebar.component.spec.ts",
       "_origin": "ast",
       "community": 19,
       "community_name": "ILayout",
       "file_type": "code",
-      "norm_label": "header.component.spec.ts",
-      "source_file": "_metronic/layout/components/header/header.component.spec.ts",
+      "norm_label": "sidebar.component.spec.ts",
+      "source_file": "_metronic/layout/components/sidebar/sidebar.component.spec.ts",
       "source_location": "L1"
     },
     {
-      "id": "metronic_layout_components_header_header_component_ts_component",
+      "id": "metronic_layout_components_sidebar_sidebar_component_ts_component",
       "label": "Component",
       "_origin": "ast",
       "community": 19,
@@ -25874,11 +25852,55 @@
       "source_location": ""
     },
     {
+      "id": "metronic_layout_core_layout_service_ts_injectable",
+      "label": "Injectable",
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "LayoutService",
+      "file_type": "code",
+      "norm_label": "injectable",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "metronic_layout_index",
+      "label": "_metronic/layout/index.ts",
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "LayoutService",
+      "file_type": "code",
+      "norm_label": "_metronic/layout/index.ts",
+      "source_file": "_metronic/layout/index.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "metronic_partials_content_widgets_tiles_tiles_widget1_tiles_widget1_component",
+      "label": "tiles-widget1.component.ts",
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "LayoutService",
+      "file_type": "code",
+      "norm_label": "tiles-widget1.component.ts",
+      "source_file": "_metronic/partials/content/widgets/tiles/tiles-widget1/tiles-widget1.component.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "pages_builder_builder_component",
+      "label": "builder.component.ts",
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "LayoutService",
+      "file_type": "code",
+      "norm_label": "builder.component.ts",
+      "source_file": "pages/builder/builder.component.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "pages_builder_builder_component_ts_component",
       "label": "Component",
       "_origin": "ast",
       "community": 20,
-      "community_name": "BuilderComponent",
+      "community_name": "LayoutService",
       "file_type": "code",
       "norm_label": "component",
       "source_file": "",
@@ -25889,7 +25911,7 @@
       "label": "ViewChild",
       "_origin": "ast",
       "community": 20,
-      "community_name": "BuilderComponent",
+      "community_name": "LayoutService",
       "file_type": "code",
       "norm_label": "viewchild",
       "source_file": "",
@@ -27953,6 +27975,17 @@
       "source_location": ""
     },
     {
+      "id": "metronic_layout_core_layout_init_service",
+      "label": "layout-init.service.ts",
+      "_origin": "ast",
+      "community": 27,
+      "community_name": "LayoutType",
+      "file_type": "code",
+      "norm_label": "layout-init.service.ts",
+      "source_file": "_metronic/layout/core/layout-init.service.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "metronic_layout_core_layout_init_service_ts_injectable",
       "label": "Injectable",
       "_origin": "ast",
@@ -27962,6 +27995,17 @@
       "norm_label": "injectable",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "metronic_layout_layout_component",
+      "label": "layout.component.ts",
+      "_origin": "ast",
+      "community": 27,
+      "community_name": "LayoutType",
+      "file_type": "code",
+      "norm_label": "layout.component.ts",
+      "source_file": "_metronic/layout/layout.component.ts",
+      "source_location": "L1"
     },
     {
       "id": "metronic_partials_content_widgets_charts_apache_widgets_doc_example_pictorialbar_repeatlayout_pictorialbar_repeatlayout_apache_widget_component",
@@ -30296,28 +30340,6 @@
       "source_location": ""
     },
     {
-      "id": "modules_account_account_component",
-      "label": "account.component.ts",
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "account.module.ts",
-      "file_type": "code",
-      "norm_label": "account.component.ts",
-      "source_file": "modules/account/account.component.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "modules_account_account_component_ts_component",
-      "label": "Component",
-      "_origin": "ast",
-      "community": 34,
-      "community_name": "account.module.ts",
-      "file_type": "code",
-      "norm_label": "component",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "modules_account_account_module",
       "label": "account.module.ts",
       "_origin": "ast",
@@ -31946,17 +31968,6 @@
       "source_location": ""
     },
     {
-      "id": "pages_role_role_listing_role_listing_component",
-      "label": "role-listing.component.ts",
-      "_origin": "ast",
-      "community": 39,
-      "community_name": "RoleListingComponent",
-      "file_type": "code",
-      "norm_label": "role-listing.component.ts",
-      "source_file": "pages/role/role-listing/role-listing.component.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "pages_role_role_listing_role_listing_component_spec",
       "label": "role-listing.component.spec.ts",
       "_origin": "ast",
@@ -32584,6 +32595,28 @@
       "source_location": "L1"
     },
     {
+      "id": "core_models_user_management_model_user_audit_action_labels",
+      "label": "USER_AUDIT_ACTION_LABELS",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "user-management.model.ts",
+      "file_type": "code",
+      "norm_label": "user_audit_action_labels",
+      "source_file": "core/models/user-management.model.ts",
+      "source_location": "L110"
+    },
+    {
+      "id": "pages_role_role_listing_role_listing_component",
+      "label": "role-listing.component.ts",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "user-management.model.ts",
+      "file_type": "code",
+      "norm_label": "role-listing.component.ts",
+      "source_file": "pages/role/role-listing/role-listing.component.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "pages_role_services_roles_api_service",
       "label": "roles-api.service.ts",
       "_origin": "ast",
@@ -32617,6 +32650,17 @@
       "source_location": "L27"
     },
     {
+      "id": "pages_user_user_details_user_details_component",
+      "label": "user-details.component.ts",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "user-management.model.ts",
+      "file_type": "code",
+      "norm_label": "user-details.component.ts",
+      "source_file": "pages/user/user-details/user-details.component.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "pages_user_user_listing_user_listing_component",
       "label": "user-listing.component.ts",
       "_origin": "ast",
@@ -32625,17 +32669,6 @@
       "file_type": "code",
       "norm_label": "user-listing.component.ts",
       "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "pages_user_user_listing_user_listing_component_spec",
-      "label": "user-listing.component.spec.ts",
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "user-management.model.ts",
-      "file_type": "code",
-      "norm_label": "user-listing.component.spec.ts",
-      "source_file": "pages/user/user-listing/user-listing.component.spec.ts",
       "source_location": "L1"
     },
     {
@@ -32857,28 +32890,6 @@
       "norm_label": "component",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "core_models_user_management_model_user_audit_action_labels",
-      "label": "USER_AUDIT_ACTION_LABELS",
-      "_origin": "ast",
-      "community": 42,
-      "community_name": "UserDetailsComponent",
-      "file_type": "code",
-      "norm_label": "user_audit_action_labels",
-      "source_file": "core/models/user-management.model.ts",
-      "source_location": "L115"
-    },
-    {
-      "id": "pages_user_user_details_user_details_component",
-      "label": "user-details.component.ts",
-      "_origin": "ast",
-      "community": 42,
-      "community_name": "UserDetailsComponent",
-      "file_type": "code",
-      "norm_label": "user-details.component.ts",
-      "source_file": "pages/user/user-details/user-details.component.ts",
-      "source_location": "L1"
     },
     {
       "id": "pages_user_user_details_user_details_component_spec",
@@ -33132,6 +33143,17 @@
       "norm_label": "injectable",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "pages_user_user_listing_user_listing_component_spec",
+      "label": "user-listing.component.spec.ts",
+      "_origin": "ast",
+      "community": 43,
+      "community_name": "UserListingComponent",
+      "file_type": "code",
+      "norm_label": "user-listing.component.spec.ts",
+      "source_file": "pages/user/user-listing/user-listing.component.spec.ts",
+      "source_location": "L1"
     },
     {
       "id": "pages_user_user_listing_user_listing_component_ts_component",
@@ -33838,6 +33860,28 @@
       "source_location": ""
     },
     {
+      "id": "metronic_partials_content_widgets_charts_charts_widget1_charts_widget1_component",
+      "label": "charts-widget1.component.ts",
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "getCSSVariableValue",
+      "file_type": "code",
+      "norm_label": "charts-widget1.component.ts",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget1/charts-widget1.component.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "metronic_partials_content_widgets_charts_charts_widget1_charts_widget1_component_ts_component",
+      "label": "Component",
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "getCSSVariableValue",
+      "file_type": "code",
+      "norm_label": "component",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "metronic_partials_content_widgets_charts_charts_widget2_charts_widget2_component",
       "label": "charts-widget2.component.ts",
       "_origin": "ast",
@@ -33872,28 +33916,6 @@
     },
     {
       "id": "metronic_partials_content_widgets_charts_charts_widget4_charts_widget4_component_ts_component",
-      "label": "Component",
-      "_origin": "ast",
-      "community": 46,
-      "community_name": "getCSSVariableValue",
-      "file_type": "code",
-      "norm_label": "component",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "metronic_partials_content_widgets_charts_charts_widget7_charts_widget7_component",
-      "label": "charts-widget7.component.ts",
-      "_origin": "ast",
-      "community": 46,
-      "community_name": "getCSSVariableValue",
-      "file_type": "code",
-      "norm_label": "charts-widget7.component.ts",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget7/charts-widget7.component.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "metronic_partials_content_widgets_charts_charts_widget7_charts_widget7_component_ts_component",
       "label": "Component",
       "_origin": "ast",
       "community": 46,
@@ -34298,6 +34320,28 @@
       "norm_label": "languages",
       "source_file": "_metronic/partials/layout/extras/dropdown-inner/user-inner/user-inner.component.ts",
       "source_location": "L75"
+    },
+    {
+      "id": "modules_account_account_component",
+      "label": "account.component.ts",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "user-inner.component.ts",
+      "file_type": "code",
+      "norm_label": "account.component.ts",
+      "source_file": "modules/account/account.component.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "modules_account_account_component_ts_component",
+      "label": "Component",
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "user-inner.component.ts",
+      "file_type": "code",
+      "norm_label": "component",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "modules_auth_index",
@@ -35510,28 +35554,6 @@
       "source_location": ""
     },
     {
-      "id": "metronic_partials_content_widgets_charts_charts_widget1_charts_widget1_component",
-      "label": "charts-widget1.component.ts",
-      "_origin": "ast",
-      "community": 504,
-      "community_name": "charts-widget1.component.ts",
-      "file_type": "code",
-      "norm_label": "charts-widget1.component.ts",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget1/charts-widget1.component.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "metronic_partials_content_widgets_charts_charts_widget1_charts_widget1_component_ts_component",
-      "label": "Component",
-      "_origin": "ast",
-      "community": 504,
-      "community_name": "charts-widget1.component.ts",
-      "file_type": "code",
-      "norm_label": "component",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "core_models_asset_model",
       "label": "asset.model.ts",
       "_origin": "ast",
@@ -35741,22 +35763,11 @@
       "source_location": ""
     },
     {
-      "id": "metronic_layout_components_scripts_init_scripts_init_component",
-      "label": "scripts-init.component.ts",
-      "_origin": "ast",
-      "community": 58,
-      "community_name": "LayoutService",
-      "file_type": "code",
-      "norm_label": "scripts-init.component.ts",
-      "source_file": "_metronic/layout/components/scripts-init/scripts-init.component.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "metronic_layout_core_configs_dark_sidebar_config",
       "label": "dark-sidebar.config.ts",
       "_origin": "ast",
       "community": 58,
-      "community_name": "LayoutService",
+      "community_name": "layout.service.ts",
       "file_type": "code",
       "norm_label": "dark-sidebar.config.ts",
       "source_file": "_metronic/layout/core/configs/dark-sidebar.config.ts",
@@ -35767,7 +35778,7 @@
       "label": "DarkSidebarConfig",
       "_origin": "ast",
       "community": 58,
-      "community_name": "LayoutService",
+      "community_name": "layout.service.ts",
       "file_type": "code",
       "norm_label": "darksidebarconfig",
       "source_file": "_metronic/layout/core/configs/dark-sidebar.config.ts",
@@ -35778,7 +35789,7 @@
       "label": "light-sidebar.config.ts",
       "_origin": "ast",
       "community": 58,
-      "community_name": "LayoutService",
+      "community_name": "layout.service.ts",
       "file_type": "code",
       "norm_label": "light-sidebar.config.ts",
       "source_file": "_metronic/layout/core/configs/light-sidebar.config.ts",
@@ -35789,54 +35800,21 @@
       "label": "LightSidebarConfig",
       "_origin": "ast",
       "community": 58,
-      "community_name": "LayoutService",
+      "community_name": "layout.service.ts",
       "file_type": "code",
       "norm_label": "lightsidebarconfig",
       "source_file": "_metronic/layout/core/configs/light-sidebar.config.ts",
       "source_location": "L3"
     },
     {
-      "id": "metronic_layout_core_layout_init_service",
-      "label": "layout-init.service.ts",
-      "_origin": "ast",
-      "community": 58,
-      "community_name": "LayoutService",
-      "file_type": "code",
-      "norm_label": "layout-init.service.ts",
-      "source_file": "_metronic/layout/core/layout-init.service.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "metronic_layout_core_layout_service",
       "label": "layout.service.ts",
       "_origin": "ast",
       "community": 58,
-      "community_name": "LayoutService",
+      "community_name": "layout.service.ts",
       "file_type": "code",
       "norm_label": "layout.service.ts",
       "source_file": "_metronic/layout/core/layout.service.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "metronic_layout_core_layout_service_ts_injectable",
-      "label": "Injectable",
-      "_origin": "ast",
-      "community": 58,
-      "community_name": "LayoutService",
-      "file_type": "code",
-      "norm_label": "injectable",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "metronic_layout_layout_component",
-      "label": "layout.component.ts",
-      "_origin": "ast",
-      "community": 58,
-      "community_name": "LayoutService",
-      "file_type": "code",
-      "norm_label": "layout.component.ts",
-      "source_file": "_metronic/layout/layout.component.ts",
       "source_location": "L1"
     },
     {
@@ -37017,13 +36995,35 @@
       "source_location": ""
     },
     {
-      "id": "pages_asset_taxonomy_services_asset_api_service_ts_injectable",
-      "label": "Injectable",
+      "id": "metronic_layout_components_header_header_component",
+      "label": "header.component.ts",
       "_origin": "ast",
       "community": 79,
-      "community_name": "AssetApiService",
+      "community_name": "HeaderComponent",
       "file_type": "code",
-      "norm_label": "injectable",
+      "norm_label": "header.component.ts",
+      "source_file": "_metronic/layout/components/header/header.component.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "metronic_layout_components_header_header_component_spec",
+      "label": "header.component.spec.ts",
+      "_origin": "ast",
+      "community": 79,
+      "community_name": "HeaderComponent",
+      "file_type": "code",
+      "norm_label": "header.component.spec.ts",
+      "source_file": "_metronic/layout/components/header/header.component.spec.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "metronic_layout_components_header_header_component_ts_component",
+      "label": "Component",
+      "_origin": "ast",
+      "community": 79,
+      "community_name": "HeaderComponent",
+      "file_type": "code",
+      "norm_label": "component",
       "source_file": "",
       "source_location": ""
     },
@@ -45000,6 +45000,18 @@
       "weight": 1.0
     },
     {
+      "source": "pages_user_services_user_management_service_usermanagementservice_createuser",
+      "target": "pages_user_services_user_management_service_usermanagementservice_unwrap",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "pages/user/services/user-management.service.ts",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
       "source": "pages_user_services_user_management_service_usermanagementservice_deleteuser",
       "target": "pages_user_services_user_management_service_usermanagementservice_unwrap",
       "relation": "calls",
@@ -45008,7 +45020,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L115",
+      "source_location": "L99",
       "weight": 1.0
     },
     {
@@ -45020,7 +45032,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L94",
+      "source_location": "L78",
       "weight": 1.0
     },
     {
@@ -45044,7 +45056,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L108",
+      "source_location": "L92",
       "weight": 1.0
     },
     {
@@ -45056,7 +45068,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L101",
+      "source_location": "L85",
       "weight": 1.0
     },
     {
@@ -45104,7 +45116,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L328",
+      "source_location": "L289",
       "weight": 1.0
     },
     {
@@ -45152,7 +45164,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L246",
+      "source_location": "L278",
       "weight": 1.0
     },
     {
@@ -86468,7 +86480,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L73",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -86480,7 +86492,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L91",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
@@ -86492,7 +86504,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L118",
+      "source_location": "L102",
       "weight": 1.0
     },
     {
@@ -86648,7 +86660,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L129",
+      "source_location": "L113",
       "weight": 1.0
     },
     {
@@ -86971,7 +86983,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "core/models/user-management.model.ts",
-      "source_location": "L105",
+      "source_location": "L100",
       "weight": 1.0
     },
     {
@@ -86982,7 +86994,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "core/models/user-management.model.ts",
-      "source_location": "L115",
+      "source_location": "L110",
       "weight": 1.0
     },
     {
@@ -106172,35 +106184,13 @@
     },
     {
       "source": "pages_user_services_user_management_service_usermanagementservice",
-      "target": "pages_user_services_user_management_service_usermanagementservice_resetpassword",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L105",
-      "weight": 1.0
-    },
-    {
-      "source": "pages_user_services_user_management_service_usermanagementservice",
-      "target": "pages_user_services_user_management_service_usermanagementservice_deleteuser",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L112",
-      "weight": 1.0
-    },
-    {
-      "source": "pages_user_services_user_management_service_usermanagementservice",
       "target": "pages_user_services_user_management_service_usermanagementservice_unwrap",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L118",
+      "source_location": "L102",
       "weight": 1.0
     },
     {
@@ -106211,7 +106201,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L129",
+      "source_location": "L113",
       "weight": 1.0
     },
     {
@@ -106255,7 +106245,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L73",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -106266,7 +106256,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L91",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
@@ -106277,7 +106267,29 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/user/services/user-management.service.ts",
-      "source_location": "L98",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_user_services_user_management_service_usermanagementservice",
+      "target": "pages_user_services_user_management_service_usermanagementservice_resetpassword",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pages/user/services/user-management.service.ts",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_user_services_user_management_service_usermanagementservice",
+      "target": "pages_user_services_user_management_service_usermanagementservice_deleteuser",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pages/user/services/user-management.service.ts",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -106464,7 +106476,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L323",
+      "source_location": "L284",
       "weight": 1.0
     },
     {
@@ -106475,7 +106487,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L327",
+      "source_location": "L288",
       "weight": 1.0
     },
     {
@@ -106486,7 +106498,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L331",
+      "source_location": "L292",
       "weight": 1.0
     },
     {
@@ -106497,7 +106509,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L353",
+      "source_location": "L314",
       "weight": 1.0
     },
     {
@@ -106508,7 +106520,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L369",
+      "source_location": "L330",
       "weight": 1.0
     },
     {
@@ -107477,7 +107489,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "pages/user/user-listing/user-listing.component.ts",
-      "source_location": "L279",
+      "source_location": "L259",
       "weight": 1.0
     },
     {
@@ -107506,5 +107518,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "cf0e3bdce726dce70ae1b4af1f1122ba35e23863"
+  "built_at_commit": "04f34537918964e29bde92bb33d49c6eb5aa866d"
 }

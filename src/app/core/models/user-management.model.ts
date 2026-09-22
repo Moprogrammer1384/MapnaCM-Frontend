@@ -94,6 +94,11 @@ export interface CreateUserPayload {
   phoneNumber?: string;
   password: string;
   roles: string[];
+  /**
+   * Set on the retry when the admin confirmed redefining a soft-deleted user
+   * that owns the same email/username (the first attempt returns canRedefine).
+   */
+  redefineIfExists?: boolean;
 }
 
 /** api/User/Edit payload. */

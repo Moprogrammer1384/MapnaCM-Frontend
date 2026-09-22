@@ -235,49 +235,88 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.isLoading = true;
 
-    const isEdit = !!this.userModel.id;
-    const successAlert: SweetAlertOptions = {
-      icon: 'success',
-      title: 'Success!',
-      text: isEdit ? 'User updated successfully!' : 'User created successfully!',
-    };
     const errorAlert: SweetAlertOptions = {
       icon: 'error',
       title: 'Error!',
       text: '',
     };
+    const handleError = (error: any) => {
+      this.isLoading = false;
+      this.cdr.detectChanges();
+      errorAlert.text = this.errorMessage(error);
+      this.showAlert(errorAlert);
+    };
 
-    const request$ = isEdit
-      ? this.apiService.editUser({
-          userId: this.userModel.id!,
-          firstName: this.userModel.firstName,
-          lastName: this.userModel.lastName,
-          email: this.userModel.email,
-          phoneNumber: this.userModel.phoneNumber,
-          roles: this.userModel.roles,
-        } as EditUserPayload)
-      : this.apiService.createUser({
-          firstName: this.userModel.firstName,
-          lastName: this.userModel.lastName,
-          email: this.userModel.email,
-          userName: this.userModel.email,
-          phoneNumber: this.userModel.phoneNumber,
-          password: this.userModel.password,
-          roles: this.userModel.roles,
-        } as CreateUserPayload);
+    if (this.userModel.id) {
+      this.apiService.editUser({
+        userId: this.userModel.id,
+        firstName: this.userModel.firstName,
+        lastName: this.userModel.lastName,
+        email: this.userModel.email,
+        phoneNumber: this.userModel.phoneNumber,
+        roles: this.userModel.roles,
+      } as EditUserPayload).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.showAlert({ icon: 'success', title: 'Success!', text: 'User updated successfully!' });
+          this.reloadEvent.emit(true);
+        },
+        error: handleError,
+      });
+      return;
+    }
 
-    request$.subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.showAlert(successAlert);
-        this.reloadEvent.emit(true);
+    const createPayload: CreateUserPayload = {
+      firstName: this.userModel.firstName,
+      lastName: this.userModel.lastName,
+      email: this.userModel.email,
+      userName: this.userModel.email,
+      phoneNumber: this.userModel.phoneNumber,
+      password: this.userModel.password,
+      roles: this.userModel.roles,
+    };
+
+    this.apiService.createUser(createPayload).subscribe({
+      next: (result) => {
+        if (!result?.canRedefine) {
+          this.isLoading = false;
+          this.showAlert({ icon: 'success', title: 'Success!', text: 'User created successfully!' });
+          this.reloadEvent.emit(true);
+          return;
+        }
+
+        // The email/username belongs to a soft-deleted user; ask the admin
+        // to confirm restoring it with the entered data.
+        Swal.fire({
+          icon: 'question',
+          title: 'Redefine user?',
+          text: 'A deleted user with this email or username already exists. Redefine it with the entered details?',
+          showCancelButton: true,
+          buttonsStyling: false,
+          confirmButtonText: 'Yes, redefine!',
+          cancelButtonText: 'Cancel',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+            cancelButton: 'btn btn-light',
+          },
+        }).then((confirmResult) => {
+          if (!confirmResult.isConfirmed) {
+            this.isLoading = false;
+            this.cdr.detectChanges();
+            return;
+          }
+
+          this.apiService.createUser({ ...createPayload, redefineIfExists: true }).subscribe({
+            next: () => {
+              this.isLoading = false;
+              this.showAlert({ icon: 'success', title: 'Success!', text: 'User redefined successfully!' });
+              this.reloadEvent.emit(true);
+            },
+            error: handleError,
+          });
+        });
       },
-      error: (error) => {
-        this.isLoading = false;
-        this.cdr.detectChanges();
-        errorAlert.text = this.errorMessage(error);
-        this.showAlert(errorAlert);
-      },
+      error: handleError,
     });
   }
 

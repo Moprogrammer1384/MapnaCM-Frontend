@@ -64,11 +64,27 @@ export class UserManagementService {
     );
   }
 
-  /** POST api/User/Create — admin-created user with roles; password is set here. */
-  createUser(payload: CreateUserPayload): Observable<void> {
+  /**
+   * POST api/User/Create — admin-created user with roles; password is set here.
+   * When the email/username belongs to a soft-deleted user, the backend
+   * rejects with success=false + data.canRedefine=true (no throw) so the
+   * caller can ask the admin to confirm redefining it.
+   */
+  createUser(payload: CreateUserPayload): Observable<{ canRedefine?: boolean }> {
     return this.http
       .post<ApiEnvelope<object>>(`${this.apiUrl}/Create`, payload)
-      .pipe(map((response) => this.unwrap(response)));
+      .pipe(
+        map((response) => {
+          if (!response.success) {
+            const data = response.data as { canRedefine?: boolean } | null;
+            if (data?.canRedefine) {
+              return { canRedefine: true };
+            }
+            throw new Error(response.message || 'The request failed.');
+          }
+          return {};
+        })
+      );
   }
 
   /** POST api/User/Edit — admin update of profile fields and role assignment. */

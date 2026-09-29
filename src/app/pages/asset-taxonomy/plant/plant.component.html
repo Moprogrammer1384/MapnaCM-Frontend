@@ -275,8 +275,8 @@
       <div class="row g-9 mb-15">
         <!--begin::Col-->
         <div class="col-md-6 fv-row">
-          <label class="required fs-6 fw-semibold mb-2">Type</label>
-          <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Select a Type" name="plantTypeId" [(ngModel)]="plantFormModel.plantTypeId" required>
+          <label class="required fs-6 fw-semibold mb-2" [for]="formId + '_type'">Type</label>
+          <select [id]="formId + '_type'" aria-label="Type" class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Select a Type" name="plantTypeId" [(ngModel)]="plantFormModel.plantTypeId" required>
             <option [ngValue]="null" disabled>Select type...</option>
             <option *ngFor="let t of typeOptions" [ngValue]="t.id">{{ t.name }}</option>
           </select>
@@ -284,8 +284,8 @@
         <!--end::Col-->
         <!--begin::Col-->
         <div class="col-md-6 fv-row">
-          <label class="required fs-6 fw-semibold mb-2">Site</label>
-          <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Site" name="siteId" [(ngModel)]="plantFormModel.siteId" required>
+          <label class="required fs-6 fw-semibold mb-2" [for]="formId + '_site'">Site</label>
+          <select [id]="formId + '_site'" aria-label="Site" class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Site" name="siteId" [(ngModel)]="plantFormModel.siteId" required>
             <option [ngValue]="null" disabled>Select site...</option>
             <option *ngFor="let s of siteOptions" [ngValue]="s.id">{{ s.label }}</option>
           </select>

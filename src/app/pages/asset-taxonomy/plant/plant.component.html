@@ -51,7 +51,7 @@
             <tbody class="fs-6">
               <tr *ngFor="let plant of plants.paged">
                 <td>
-                  <a href="javascript:;" class="fs-6 text-gray-800 text-hover-primary">{{ plant.name }}</a>
+                  {{ plant.name }}
                 </td>
                 <td>{{ plant.type }}</td>
                 <td>{{ plant.site }}</td>
@@ -158,7 +158,7 @@
             <tbody class="fs-6">
               <tr *ngFor="let type of types.paged">
                 <td>
-                  <a href="javascript:;" class="fs-6 text-gray-800 text-hover-primary">{{ type.name }}</a>
+                  {{ type.name }}
                 </td>
                 <td class="text-end">
                   <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openEditTypeModal(editTypeModal, type)">

@@ -16,12 +16,10 @@ export class ClientTable<T extends Record<string, string>> {
   pageSize = 10;
   pageSizes = [10, 25, 50, 100];
   page = 1;
-  sortKey: keyof T;
-  sortDir: 'asc' | 'desc' = 'asc';
+  sortKey: keyof T | null = null;
+  sortDir: 'asc' | 'desc' | null = null;
 
-  constructor(public rows: T[], public columns: ClientTableColumn<T>[]) {
-    this.sortKey = columns[0].key;
-  }
+  constructor(public rows: T[], public columns: ClientTableColumn<T>[]) {}
 
   /** When set, deletion is delegated to the host (API call + reload); the
    * local row drop is skipped and the host owns the success feedback. */
@@ -32,8 +30,12 @@ export class ClientTable<T extends Record<string, string>> {
     const rows = q
       ? this.rows.filter((r) => Object.values(r).some((v) => v.toLowerCase().includes(q)))
       : [...this.rows];
+    const key = this.sortKey;
+    if (key === null || this.sortDir === null) {
+      return rows;
+    }
     const dir = this.sortDir === 'asc' ? 1 : -1;
-    return rows.sort((a, b) => this.compare(a[this.sortKey], b[this.sortKey]) * dir);
+    return rows.sort((a, b) => this.compare(a[key], b[key]) * dir);
   }
 
   get totalPages(): number {
@@ -74,8 +76,12 @@ export class ClientTable<T extends Record<string, string>> {
   }
 
   sortBy(key: keyof T): void {
-    if (this.sortKey === key) {
-      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    // Match the template's DataTables cycle: default -> asc -> desc -> default.
+    if (this.sortKey === key && this.sortDir === 'asc') {
+      this.sortDir = 'desc';
+    } else if (this.sortKey === key && this.sortDir === 'desc') {
+      this.sortKey = null;
+      this.sortDir = null;
     } else {
       this.sortKey = key;
       this.sortDir = 'asc';
@@ -85,7 +91,7 @@ export class ClientTable<T extends Record<string, string>> {
 
   // DataTables 2 header classes: dt-ordering-asc/desc highlights the active arrow.
   sortClass(key: keyof T): string {
-    return this.sortKey === key ? `dt-ordering-${this.sortDir}` : '';
+    return this.sortKey === key && this.sortDir !== null ? `dt-ordering-${this.sortDir}` : '';
   }
 
   /** SweetAlert2 confirm + success flow from the demo's siteplant.js, then drops the row. */

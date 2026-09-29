@@ -57,6 +57,25 @@ describe('Plant Select2 integration', () => {
     fixture.destroy();
   });
 
+  it('cycles both table headers through ascending, descending and default', async () => {
+    const headers = fixture.nativeElement.querySelectorAll('table thead th:first-child') as NodeListOf<HTMLElement>;
+    for (const header of Array.from(headers)) {
+      expect(header.classList).not.toContain('dt-ordering-asc');
+      expect(header.classList).not.toContain('dt-ordering-desc');
+      header.click();
+      await settle();
+      expect(header.classList).toContain('dt-ordering-asc');
+      header.click();
+      await settle();
+      expect(header.classList).toContain('dt-ordering-desc');
+      header.click();
+      await settle();
+      expect(header.classList).not.toContain('dt-ordering-asc');
+      expect(header.classList).not.toContain('dt-ordering-desc');
+      expect(getComputedStyle(header, '::after').display).toBe('none');
+    }
+  });
+
   it('opens the styled Site search inside the actual ng-bootstrap modal', async () => {
     await openAdd();
     const site = field('siteId');

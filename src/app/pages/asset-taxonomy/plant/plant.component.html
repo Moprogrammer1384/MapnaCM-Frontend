@@ -75,7 +75,7 @@
             <div class="d-flex align-items-center">
               <div class="dataTables_length">
                 <label>
-                  <select class="form-select form-select-sm form-select-solid" [value]="plants.pageSize" (change)="plants.setPageSize($any($event.target).value)">
+                  <select class="form-select form-select-sm form-select-solid" data-control="select2" data-hide-search="true" data-width="fit-content" aria-label="Page size" [value]="plants.pageSize" (change)="plants.setPageSize($any($event.target).value)">
                     <option *ngFor="let size of plants.pageSizes" [value]="size">{{ size }}</option>
                   </select>
                 </label>
@@ -180,7 +180,7 @@
             <div class="d-flex align-items-center">
               <div class="dataTables_length">
                 <label>
-                  <select class="form-select form-select-sm form-select-solid" [value]="types.pageSize" (change)="types.setPageSize($any($event.target).value)">
+                  <select class="form-select form-select-sm form-select-solid" data-control="select2" data-hide-search="true" data-width="fit-content" aria-label="Page size" [value]="types.pageSize" (change)="types.setPageSize($any($event.target).value)">
                     <option *ngFor="let size of types.pageSizes" [value]="size">{{ size }}</option>
                   </select>
                 </label>

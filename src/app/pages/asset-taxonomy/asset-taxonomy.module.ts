@@ -5,9 +5,10 @@ import { RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
 import { SiteComponent } from './site/site.component';
 import { PlantComponent } from './plant/plant.component';
+import { UnitComponent } from './unit/unit.component';
 
 @NgModule({
-  declarations: [SiteComponent, PlantComponent],
+  declarations: [SiteComponent, PlantComponent, UnitComponent],
   imports: [
     CommonModule,
     SharedModule,
@@ -20,6 +21,10 @@ import { PlantComponent } from './plant/plant.component';
       {
         path: 'plant',
         component: PlantComponent,
+      },
+      {
+        path: 'unit',
+        component: UnitComponent,
       },
       { path: '', redirectTo: 'site', pathMatch: 'full' },
     ]),

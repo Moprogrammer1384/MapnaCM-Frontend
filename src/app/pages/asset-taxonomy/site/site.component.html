@@ -74,7 +74,7 @@
         <div class="d-flex align-items-center">
           <div class="dataTables_length">
             <label>
-              <select class="form-select form-select-sm form-select-solid" [value]="table.pageSize" (change)="table.setPageSize($any($event.target).value)">
+              <select class="form-select form-select-sm form-select-solid" data-control="select2" data-hide-search="true" data-width="fit-content" aria-label="Page size" [value]="table.pageSize" (change)="table.setPageSize($any($event.target).value)">
                 <option *ngFor="let size of table.pageSizes" [value]="size">{{ size }}</option>
               </select>
             </label>

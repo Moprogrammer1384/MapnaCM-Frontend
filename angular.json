@@ -41,8 +41,8 @@
             ],
             "styles": [
               "node_modules/select2/dist/css/select2.min.css",
-              "src/styles.scss",
-              "node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css"
+              "node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css",
+              "src/styles.scss"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
@@ -116,6 +116,7 @@
             ],
             "styles": [
               "node_modules/select2/dist/css/select2.min.css",
+              "node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css",
               "src/styles.scss"
             ],
             "scripts": [

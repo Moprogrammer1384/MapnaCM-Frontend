@@ -12,6 +12,12 @@ table.dataTable {
     th {
         border-bottom-color: var(--#{$prefix}table-border-color);
     }
+
+    // DataTables 2 header layout from the HTML template. Keep the title and
+    // active sort icon together, including right-aligned Actions headers.
+    .dt-column-header {
+        display: inline-flex !important;
+    }
 }
 
 // Toolbar
@@ -63,6 +69,19 @@ table.dataTable>thead>tr> {
 
 // Sorting
 table.dataTable > thead {
+    // The template uses a single SVG on the sorted header, rather than the
+    // vendor's pair of arrows inside each .dt-column-order span.
+    .dt-column-order {
+        display: none;
+    }
+
+    .dt-orderable-asc,
+    .dt-orderable-desc {
+        outline: 0 !important;
+    }
+
+    .dt-orderable-asc,
+    .dt-orderable-desc,
     .sorting {
         &:after,
         &:before {
@@ -70,6 +89,8 @@ table.dataTable > thead {
         }
     }
 
+    .dt-ordering-asc,
+    .dt-ordering-desc,
     .sorting_asc,
     .sorting_desc {
         vertical-align: middle;
@@ -93,13 +114,23 @@ table.dataTable > thead {
             display: none !important;
         }
     }
+
+    .dt-ordering-asc,
+    .dt-ordering-desc {
+        &:after {
+            width: 0.65rem;
+            height: 0.65rem;
+        }
+    }
 }
 
+table.dataTable > thead .dt-ordering-asc:after,
 table.dataTable > thead .sorting_asc:after {
     opacity: 1;
     @include svg-bg-icon(arrow-top, var(--#{$prefix}text-muted));
 }
 
+table.dataTable > thead .dt-ordering-desc:after,
 table.dataTable > thead .sorting_desc:after {
     opacity: 1;
     @include svg-bg-icon(arrow-bottom, var(--#{$prefix}text-muted));

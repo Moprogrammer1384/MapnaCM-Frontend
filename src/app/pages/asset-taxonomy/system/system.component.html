@@ -15,6 +15,14 @@
         <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search System" (input)="table.search($any($event.target).value)" />
       </div>
       <!--end::Search-->
+      <!--begin::Employer filter-->
+      <div class="my-1 me-md-4 w-100 w-md-250px">
+        <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by employer" [ngModel]="employerFilter" (ngModelChange)="filterByEmployer($event)">
+          <option [ngValue]="null">All Employers</option>
+          <option *ngFor="let e of employers" [ngValue]="e">{{ e }}</option>
+        </select>
+      </div>
+      <!--end::Employer filter-->
       <!--begin::Unit filter-->
       <div class="my-1 me-md-4 w-100 w-md-250px">
         <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by unit" [ngModel]="unitFilter" (ngModelChange)="filterByUnit($event)">
@@ -56,6 +64,7 @@
           <tr *ngFor="let system of table.paged">
             <td>{{ system.system }}</td>
             <td>{{ system.unit }}</td>
+            <td>{{ system.employer }}</td>
             <td class="text-end text-nowrap">
               <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openEditModal(editSystemModal, system)">
                 <app-keenicon name="pencil" class="fs-2"></app-keenicon>
@@ -66,7 +75,7 @@
             </td>
           </tr>
           <tr *ngIf="table.filtered.length === 0">
-            <td colspan="3" class="text-center text-gray-500">No matching records found</td>
+            <td colspan="4" class="text-center text-gray-500">No matching records found</td>
           </tr>
         </tbody>
       </table>

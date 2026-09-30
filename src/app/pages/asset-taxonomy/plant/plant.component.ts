@@ -4,6 +4,7 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { AssetApiService } from '../services/asset-api.service';
 import { ClientTable } from '../client-table';
+import { EMPLOYERS, employerOf } from '../employers';
 
 interface PlantRow extends Record<string, string> {
   id: string;
@@ -12,6 +13,7 @@ interface PlantRow extends Record<string, string> {
   site: string;
   plantTypeId: string;
   siteId: string;
+  employer: string;
 }
 
 interface TypeRow extends Record<string, string> {
@@ -47,6 +49,7 @@ export class PlantComponent implements OnInit {
       { key: 'name', title: 'Name', class: 'min-w-150px' },
       { key: 'type', title: 'Type', class: 'min-w-150px' },
       { key: 'site', title: 'Site', class: 'min-w-175px min-w-md-250px' },
+      { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
     ]
   );
 
@@ -63,6 +66,8 @@ export class PlantComponent implements OnInit {
   plantFormModel: PlantFormModel = this.emptyPlantForm();
   typeFormModel: TypeFormModel = this.emptyTypeForm();
   saving = false;
+  employers = EMPLOYERS;
+  employerFilter: string | null = null;
 
   constructor(
     private modalService: NgbModal,
@@ -74,6 +79,11 @@ export class PlantComponent implements OnInit {
     this.plants.onConfirmedDelete = (row) => this.deletePlant(row);
     this.types.onConfirmedDelete = (row) => this.deleteType(row);
     this.loadAll();
+  }
+
+  filterByEmployer(employer: string | null): void {
+    this.employerFilter = employer;
+    this.plants.setFilter('employer', employer);
   }
 
   loadAll(): void {
@@ -117,6 +127,7 @@ export class PlantComponent implements OnInit {
           site: plant.siteLabel,
           plantTypeId: String(plant.plantTypeId),
           siteId: String(plant.siteId),
+          employer: employerOf(plant.name),
         }));
         this.plants.page = 1;
         this.cdr.detectChanges();

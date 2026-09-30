@@ -19,6 +19,14 @@
             <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Plant" (input)="plants.search($any($event.target).value)" />
           </div>
           <!--end::Search-->
+          <!--begin::Employer filter-->
+          <div class="my-1 me-md-4 w-100 w-md-250px">
+            <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by employer" [ngModel]="employerFilter" (ngModelChange)="filterByEmployer($event)">
+              <option [ngValue]="null">All Employers</option>
+              <option *ngFor="let e of employers" [ngValue]="e">{{ e }}</option>
+            </select>
+          </div>
+          <!--end::Employer filter-->
           <!--begin::Button-->
           <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddPlantModal(addPlantModal)">Add Plant</a>
           <!--end::Button-->
@@ -55,6 +63,7 @@
                 </td>
                 <td>{{ plant.type }}</td>
                 <td>{{ plant.site }}</td>
+                <td>{{ plant.employer }}</td>
                 <td class="text-end text-nowrap">
                   <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openEditPlantModal(editPlantModal, plant)">
                     <app-keenicon name="pencil" class="fs-2"></app-keenicon>
@@ -65,7 +74,7 @@
                 </td>
               </tr>
               <tr *ngIf="plants.filtered.length === 0">
-                <td colspan="4" class="text-center text-gray-500">No matching records found</td>
+                <td colspan="5" class="text-center text-gray-500">No matching records found</td>
               </tr>
             </tbody>
           </table>

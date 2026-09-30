@@ -3,8 +3,10 @@ import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { ClientTable } from '../client-table';
+import { EMPLOYERS, employerOf } from '../employers';
 
 interface UnitRow extends Record<string, string> {
+  employer: string;
   plant: string;
   unit: string;
 }
@@ -63,10 +65,11 @@ export class UnitComponent {
       { plant: 'Shazand Power Plant - Arak - Steam', unit: 'Unit 1' },
       { plant: 'Qom Combined Cycle Power Plant - Qom - Combined Cycle', unit: 'Unit 1' },
       { plant: 'Manjil Wind Farm - Rasht - Wind', unit: 'Unit 1' },
-    ],
+    ].map((r) => ({ ...r, employer: employerOf(r.plant) })),
     [
       { key: 'unit', title: 'Name', class: 'min-w-125px min-w-md-200px' },
       { key: 'plant', title: 'Plant Name', class: 'min-w-175px min-w-md-250px' },
+      { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
     ]
   );
 
@@ -74,7 +77,15 @@ export class UnitComponent {
   plantFilter: string | null = null;
   private editing: UnitRow | null = null;
 
+  employers = EMPLOYERS;
+  employerFilter: string | null = null;
+
   constructor(private modalService: NgbModal) {}
+
+  filterByEmployer(employer: string | null): void {
+    this.employerFilter = employer;
+    this.table.setFilter('employer', employer);
+  }
 
   filterByPlant(plant: string | null): void {
     this.plantFilter = plant;
@@ -100,7 +111,7 @@ export class UnitComponent {
       return;
     }
 
-    const row: UnitRow = { plant: this.unitForm.plant, unit: this.unitForm.unit };
+    const row: UnitRow = { plant: this.unitForm.plant, unit: this.unitForm.unit, employer: employerOf(this.unitForm.plant) };
     const isEdit = !!this.editing;
     this.table.rows = isEdit
       ? this.table.rows.map((r) => (r === this.editing ? row : r))

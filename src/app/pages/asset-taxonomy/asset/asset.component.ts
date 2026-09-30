@@ -3,8 +3,10 @@ import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { ClientTable } from '../client-table';
+import { EMPLOYERS, employerOf } from '../employers';
 
 interface AssetRow extends Record<string, string> {
+  employer: string;
   system: string;
   asset: string;
 }
@@ -64,10 +66,11 @@ export class AssetComponent {
       { system: 'Compressed Air System - Unit 1 - Kerman Combined Cycle Power Plant', asset: 'Instrument Air Compressor' },
       { system: 'Fire Protection System - Unit 1 - Qom Combined Cycle Power Plant', asset: 'Fire Water Pump' },
       { system: 'Pitch Control System - Unit 1 - Manjil Wind Farm', asset: 'Pitch Drive Motor' },
-    ],
+    ].map((r) => ({ ...r, employer: employerOf(r.system) })),
     [
       { key: 'asset', title: 'Name', class: 'min-w-125px min-w-md-200px' },
       { key: 'system', title: 'System Name', class: 'min-w-175px min-w-md-250px' },
+      { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
     ]
   );
 
@@ -75,7 +78,15 @@ export class AssetComponent {
   systemFilter: string | null = null;
   private editing: AssetRow | null = null;
 
+  employers = EMPLOYERS;
+  employerFilter: string | null = null;
+
   constructor(private modalService: NgbModal) {}
+
+  filterByEmployer(employer: string | null): void {
+    this.employerFilter = employer;
+    this.table.setFilter('employer', employer);
+  }
 
   filterBySystem(system: string | null): void {
     this.systemFilter = system;
@@ -101,7 +112,7 @@ export class AssetComponent {
       return;
     }
 
-    const row: AssetRow = { system: this.assetForm.system, asset: this.assetForm.asset };
+    const row: AssetRow = { system: this.assetForm.system, asset: this.assetForm.asset, employer: employerOf(this.assetForm.system) };
     const isEdit = !!this.editing;
     this.table.rows = isEdit
       ? this.table.rows.map((r) => (r === this.editing ? row : r))

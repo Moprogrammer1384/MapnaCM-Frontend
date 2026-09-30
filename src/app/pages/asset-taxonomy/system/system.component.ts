@@ -3,8 +3,10 @@ import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { ClientTable } from '../client-table';
+import { EMPLOYERS, employerOf } from '../employers';
 
 interface SystemRow extends Record<string, string> {
+  employer: string;
   unit: string;
   system: string;
 }
@@ -62,10 +64,11 @@ export class SystemComponent {
       { unit: 'Unit 1 - Kerman Combined Cycle Power Plant', system: 'Compressed Air System' },
       { unit: 'Unit 1 - Qom Combined Cycle Power Plant', system: 'Fire Protection System' },
       { unit: 'Unit 1 - Manjil Wind Farm', system: 'Pitch Control System' },
-    ],
+    ].map((r) => ({ ...r, employer: employerOf(r.unit) })),
     [
       { key: 'system', title: 'Name', class: 'min-w-125px min-w-md-200px' },
       { key: 'unit', title: 'Unit Name', class: 'min-w-175px min-w-md-250px' },
+      { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
     ]
   );
 
@@ -73,7 +76,15 @@ export class SystemComponent {
   unitFilter: string | null = null;
   private editing: SystemRow | null = null;
 
+  employers = EMPLOYERS;
+  employerFilter: string | null = null;
+
   constructor(private modalService: NgbModal) {}
+
+  filterByEmployer(employer: string | null): void {
+    this.employerFilter = employer;
+    this.table.setFilter('employer', employer);
+  }
 
   filterByUnit(unit: string | null): void {
     this.unitFilter = unit;
@@ -99,7 +110,7 @@ export class SystemComponent {
       return;
     }
 
-    const row: SystemRow = { unit: this.systemForm.unit, system: this.systemForm.system };
+    const row: SystemRow = { unit: this.systemForm.unit, system: this.systemForm.system, employer: employerOf(this.systemForm.unit) };
     const isEdit = !!this.editing;
     this.table.rows = isEdit
       ? this.table.rows.map((r) => (r === this.editing ? row : r))

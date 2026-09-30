@@ -4,7 +4,7 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { AssetApiService } from '../services/asset-api.service';
 import { ClientTable } from '../client-table';
-import { EMPLOYERS, employerOf } from '../employers';
+import { EMPLOYERS, assignEmployer, employerOf } from '../employers';
 
 interface PlantRow extends Record<string, string> {
   id: string;
@@ -26,6 +26,7 @@ interface PlantFormModel {
   name: string;
   plantTypeId: number | null;
   siteId: number | null;
+  employer: string | null;
 }
 
 interface TypeFormModel {
@@ -149,6 +150,7 @@ export class PlantComponent implements OnInit {
       name: plant.name,
       plantTypeId: Number(plant.plantTypeId),
       siteId: Number(plant.siteId),
+      employer: plant.employer,
     };
     this.modalService.open(content, this.modalConfig);
   }
@@ -157,7 +159,7 @@ export class PlantComponent implements OnInit {
     if (this.saving) {
       return;
     }
-    if (form.invalid || !this.plantFormModel.plantTypeId || !this.plantFormModel.siteId) {
+    if (form.invalid || !this.plantFormModel.plantTypeId || !this.plantFormModel.siteId || !this.plantFormModel.employer) {
       form.control.markAllAsTouched();
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
       return;
@@ -169,6 +171,7 @@ export class PlantComponent implements OnInit {
       siteId: this.plantFormModel.siteId,
       plantTypeId: this.plantFormModel.plantTypeId,
     };
+    const employer = this.plantFormModel.employer;
     const isEdit = !!this.plantFormModel.id;
     const request$ = isEdit
       ? this.apiService.updatePlant({ id: this.plantFormModel.id!, ...payload })
@@ -176,6 +179,7 @@ export class PlantComponent implements OnInit {
 
     request$.subscribe({
       next: () => {
+        assignEmployer(payload.name, employer);
         this.saving = false;
         modal.dismiss('saved');
         this.showAlert('success', 'Success!', isEdit ? 'Plant updated successfully!' : 'Plant created successfully!');
@@ -255,7 +259,7 @@ export class PlantComponent implements OnInit {
   // ---- Helpers --------------------------------------------------------
 
   private emptyPlantForm(): PlantFormModel {
-    return { name: '', plantTypeId: null, siteId: null };
+    return { name: '', plantTypeId: null, siteId: null, employer: null };
   }
 
   private emptyTypeForm(): TypeFormModel {

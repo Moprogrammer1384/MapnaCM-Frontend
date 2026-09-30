@@ -151,6 +151,16 @@
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
         <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+          <span class="required">Asset Name</span>
+        </label>
+        <!--end::Label-->
+        <input type="text" class="form-control form-control-solid" placeholder="Enter Asset Name" name="asset" [(ngModel)]="assetForm.asset" required />
+      </div>
+      <!--end::Input group-->
+      <!--begin::Input group-->
+      <div class="d-flex flex-column mb-15 fv-row">
+        <!--begin::Label-->
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
           <span class="required">System Name</span>
         </label>
         <!--end::Label-->
@@ -158,16 +168,6 @@
           <option [ngValue]="null">Select system...</option>
           <option *ngFor="let s of systemOptions" [ngValue]="s">{{ s }}</option>
         </select>
-      </div>
-      <!--end::Input group-->
-      <!--begin::Input group-->
-      <div class="d-flex flex-column mb-15 fv-row">
-        <!--begin::Label-->
-        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-          <span class="required">Asset Name</span>
-        </label>
-        <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter Asset Name" name="asset" [(ngModel)]="assetForm.asset" required />
       </div>
       <!--end::Input group-->
       <!--begin::Actions-->

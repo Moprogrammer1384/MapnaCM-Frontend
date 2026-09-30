@@ -281,7 +281,7 @@
       </div>
       <!--end::Input group-->
       <!--begin::Input group-->
-      <div class="row g-5 g-md-9 mb-15">
+      <div class="row g-5 g-md-9 mb-8">
         <!--begin::Col-->
         <div class="col-md-6 fv-row">
           <label class="required fs-6 fw-semibold mb-2" [for]="formId + '_type'">Type</label>
@@ -300,6 +300,15 @@
           </select>
         </div>
         <!--end::Col-->
+      </div>
+      <!--end::Input group-->
+      <!--begin::Input group-->
+      <div class="d-flex flex-column mb-15 fv-row">
+        <label class="required fs-6 fw-semibold mb-2" [for]="formId + '_employer'">Assign Employer</label>
+        <select [id]="formId + '_employer'" aria-label="Assign Employer" class="form-select form-select-solid" data-control="select2" data-placeholder="Select an Employer" name="employer" [(ngModel)]="plantFormModel.employer" required>
+          <option [ngValue]="null" disabled>Select employer...</option>
+          <option *ngFor="let e of employers" [ngValue]="e">{{ e }}</option>
+        </select>
       </div>
       <!--end::Input group-->
       <!--begin::Actions-->

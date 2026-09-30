@@ -53,6 +53,7 @@ describe('Plant Select2 integration', () => {
   });
 
   afterEach(() => {
+    localStorage.removeItem('asset-taxonomy-plant-employers');
     modals.dismissAll();
     fixture.destroy();
   });
@@ -100,13 +101,14 @@ describe('Plant Select2 integration', () => {
     const name = modal().querySelector<HTMLInputElement>('input[name="name"]')!;
     name.value = 'New plant';
     name.dispatchEvent(new Event('input'));
-    for (const key of ['plantTypeId', 'siteId']) {
+    for (const key of ['plantTypeId', 'siteId', 'employer']) {
       const select = field(key);
       window.jQuery(select).val(select.options[1].value).trigger('change');
     }
     await settle();
     modal().querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     expect(api.createPlant).toHaveBeenCalledOnceWith({ name: 'New plant', plantTypeId: 3, siteId: 11 });
+    expect(JSON.parse(localStorage.getItem('asset-taxonomy-plant-employers')!)['New plant']).toBe('Tehran Power Generation Co.');
   });
 
   it('shows edit selections, then restores placeholders when reopened for adding', async () => {
@@ -114,6 +116,7 @@ describe('Plant Select2 integration', () => {
     await settle();
     expect(field('plantTypeId').nextElementSibling!.textContent).toContain('Thermal');
     expect(field('siteId').nextElementSibling!.textContent).toContain('Shiraz (29, 52)');
+    expect(field('employer').nextElementSibling!.textContent).toContain(fixture.componentInstance.plants.rows[0].employer);
     window.jQuery(field('siteId')).select2('open');
     modals.dismissAll();
     await settle();
@@ -121,7 +124,8 @@ describe('Plant Select2 integration', () => {
     await openAdd();
     expect(field('plantTypeId').nextElementSibling!.textContent).toContain('Select a Type');
     expect(field('siteId').nextElementSibling!.textContent).toContain('Select a Site');
-    expect(modal().querySelectorAll('.select2-container').length).toBe(2);
+    expect(field('employer').nextElementSibling!.textContent).toContain('Select an Employer');
+    expect(modal().querySelectorAll('.select2-container').length).toBe(3);
   });
 
   it('keeps missing required selections invalid', async () => {

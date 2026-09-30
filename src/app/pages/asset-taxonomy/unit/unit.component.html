@@ -151,6 +151,16 @@
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
         <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+          <span class="required">Unit Name</span>
+        </label>
+        <!--end::Label-->
+        <input type="text" class="form-control form-control-solid" placeholder="Enter Unit Name" name="unit" [(ngModel)]="unitForm.unit" required />
+      </div>
+      <!--end::Input group-->
+      <!--begin::Input group-->
+      <div class="d-flex flex-column mb-15 fv-row">
+        <!--begin::Label-->
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
           <span class="required">Plant Name</span>
         </label>
         <!--end::Label-->
@@ -158,16 +168,6 @@
           <option [ngValue]="null">Select plant...</option>
           <option *ngFor="let p of plantOptions" [ngValue]="p">{{ p }}</option>
         </select>
-      </div>
-      <!--end::Input group-->
-      <!--begin::Input group-->
-      <div class="d-flex flex-column mb-15 fv-row">
-        <!--begin::Label-->
-        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-          <span class="required">Unit Name</span>
-        </label>
-        <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter Unit Name" name="unit" [(ngModel)]="unitForm.unit" required />
       </div>
       <!--end::Input group-->
       <!--begin::Actions-->

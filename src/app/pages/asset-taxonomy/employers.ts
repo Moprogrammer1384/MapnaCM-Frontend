@@ -35,6 +35,29 @@ const PLANT_EMPLOYERS: Record<string, string> = {
   'Manjil Wind Farm': 'Renewable Energy Generation Co.',
 };
 
+// Employers picked in the Add / Edit Plant form. The backend cannot store
+// them yet, so they are kept in localStorage and win over the defaults above.
+const ASSIGNED_KEY = 'asset-taxonomy-plant-employers';
+const assigned: Record<string, string> = loadAssigned();
+
+function loadAssigned(): Record<string, string> {
+  try {
+    return JSON.parse(localStorage.getItem(ASSIGNED_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
+
+/** Remember the employer chosen for a plant in the Plant form. */
+export function assignEmployer(plantName: string, employer: string): void {
+  assigned[plantName] = employer;
+  try {
+    localStorage.setItem(ASSIGNED_KEY, JSON.stringify(assigned));
+  } catch {
+    // Storage unavailable: the assignment still lasts for this session.
+  }
+}
+
 /**
  * Employer of the plant named in `text`, which may be a plant name or any
  * label containing it ("Unit 1 - Parand Combined Cycle Power Plant").
@@ -42,6 +65,13 @@ const PLANT_EMPLOYERS: Record<string, string> = {
  * list, so the same plant always shows the same employer.
  */
 export function employerOf(text: string): string {
+  if (assigned[text]) {
+    return assigned[text];
+  }
+  const assignedPlant = Object.keys(assigned).find((name) => text.includes(name));
+  if (assignedPlant) {
+    return assigned[assignedPlant];
+  }
   const plant = Object.keys(PLANT_EMPLOYERS).find((name) => text.includes(name));
   if (plant) {
     return PLANT_EMPLOYERS[plant];

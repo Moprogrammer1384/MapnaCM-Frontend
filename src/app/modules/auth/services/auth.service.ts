@@ -41,6 +41,9 @@ export class AuthService implements OnDestroy {
   authErrorMessage$: Observable<string | undefined>;
   authErrorMessageSubject: BehaviorSubject<string | undefined>;
 
+  // handle of the pending auto-logout timer for the current access token
+  private sessionWatchHandle: ReturnType<typeof setTimeout> | undefined;
+
   get currentUserValue(): UserType {
     return this.currentUserSubject.value;
   }
@@ -70,6 +73,7 @@ export class AuthService implements OnDestroy {
     return this.authHttpService.login(username, password).pipe(
       map((auth: AuthModel) => {
         const result = this.setAuthFromLocalStorage(auth);
+        this.startSessionWatch();
         return result;
       }),
       switchMap(() => this.getUserByToken()),
@@ -85,6 +89,7 @@ export class AuthService implements OnDestroy {
   }
 
   logout(returnUrl?: string) {
+    this.stopSessionWatch();
     const auth = this.getAuthFromLocalStorage();
     // clear the stored session first so the revoke call's 401 can't re-trigger logout
     localStorage.removeItem(this.authLocalStorageToken);
@@ -111,6 +116,7 @@ export class AuthService implements OnDestroy {
       map((user: UserType) => {
         if (user) {
           this.currentUserSubject.next(user);
+          this.startSessionWatch();
         } else {
           this.logout();
         }
@@ -118,6 +124,49 @@ export class AuthService implements OnDestroy {
       }),
       finalize(() => this.isLoadingSubject.next(false))
     );
+  }
+
+  /**
+   * True when the stored access token is missing or past its expiry
+   * (expiresIn holds the backend's accessTokenExpiresAtUtc, persisted as an
+   * ISO date string). Used by AuthGuard to kill silent sessions.
+   */
+  isTokenExpired(): boolean {
+    const auth = this.getAuthFromLocalStorage();
+    if (!auth?.authToken) {
+      return true;
+    }
+    if (!auth.expiresIn) {
+      // No expiry info stored — let the backend's 401 handling decide.
+      return false;
+    }
+    return new Date(auth.expiresIn).getTime() <= Date.now();
+  }
+
+  /**
+   * Schedules an automatic logout at the exact moment the access token
+   * expires, so an idle user can't keep looking at panel pages without any
+   * API traffic. Cleared on logout/login.
+   */
+  startSessionWatch(): void {
+    this.stopSessionWatch();
+    const auth = this.getAuthFromLocalStorage();
+    if (!auth?.authToken || !auth.expiresIn) {
+      return;
+    }
+    const remainingMs = new Date(auth.expiresIn).getTime() - Date.now();
+    if (remainingMs <= 0) {
+      this.logout();
+      return;
+    }
+    this.sessionWatchHandle = setTimeout(() => this.logout(), remainingMs);
+  }
+
+  stopSessionWatch(): void {
+    if (this.sessionWatchHandle !== undefined) {
+      clearTimeout(this.sessionWatchHandle);
+      this.sessionWatchHandle = undefined;
+    }
   }
 
   // need create new user then login
@@ -175,6 +224,7 @@ export class AuthService implements OnDestroy {
   }
 
   ngOnDestroy() {
+    this.stopSessionWatch();
     this.unsubscribe.forEach((sb) => sb.unsubscribe());
   }
 }

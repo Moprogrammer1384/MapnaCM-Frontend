@@ -77,8 +77,8 @@ export class PlantComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.plants.onConfirmedDelete = (row) => this.deletePlant(row);
-    this.types.onConfirmedDelete = (row) => this.deleteType(row);
+    this.plants.onConfirmedDelete = (row) => this.deletePlantConfirmed(row);
+    this.types.onConfirmedDelete = (row) => this.deleteTypeConfirmed(row);
     this.loadAll();
   }
 
@@ -193,7 +193,13 @@ export class PlantComponent implements OnInit {
     });
   }
 
+  // Opens the Metronic confirmation dialog; the API delete only runs from
+  // the onConfirmedDelete callback after the admin confirms.
   deletePlant(plant: PlantRow): void {
+    this.plants.confirmDelete(plant, plant.name);
+  }
+
+  private deletePlantConfirmed(plant: PlantRow): void {
     this.apiService.deletePlant(Number(plant.id)).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + plant.name + '!.');
@@ -247,6 +253,10 @@ export class PlantComponent implements OnInit {
   }
 
   deleteType(type: TypeRow): void {
+    this.types.confirmDelete(type, type.name);
+  }
+
+  private deleteTypeConfirmed(type: TypeRow): void {
     this.apiService.deletePlantType(Number(type.id)).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + type.name + '!.');

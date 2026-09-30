@@ -62,13 +62,13 @@ export class AuthHTTPService {
       );
   }
 
-  // POST {apiUrl}/User/Profile => current user, resolved by the backend from the JWT uid claim
+  // GET {apiUrl}/User/Profile => current user, resolved by the backend from the JWT uid claim
   getUserByToken(token: string): Observable<UserModel> {
     const httpHeaders = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
     return this.http
-      .post<ApiEnvelope<UserProfile>>(`${API_USER_URL}/Profile`, {}, { headers: httpHeaders })
+      .get<ApiEnvelope<UserProfile>>(`${API_USER_URL}/Profile`, { headers: httpHeaders })
       .pipe(
         map((response) => {
           if (!response.success || !response.data) {

@@ -104,15 +104,19 @@ export class ClientTable<T extends Record<string, string>> {
     return this.sortKey === key && this.sortDir !== null ? `dt-ordering-${this.sortDir}` : '';
   }
 
-  /** SweetAlert2 confirm + success flow from the demo's siteplant.js, then drops the row. */
+  /** Metronic-styled destructive-action confirmation, then delegates to the
+   * host (API delete) or drops the row locally. Cancel is focused so the
+   * destructive action is never the default. */
   confirmDelete(row: T, label: string): void {
     Swal.fire({
-      text: 'Are you sure you want to delete ' + label + '?',
+      title: 'Are you sure?',
+      text: 'You are about to delete "' + label + '". This action cannot be undone.',
       icon: 'warning',
       showCancelButton: true,
       buttonsStyling: false,
       confirmButtonText: 'Yes, delete!',
       cancelButtonText: 'No, cancel',
+      focusCancel: true,
       customClass: {
         confirmButton: 'btn fw-bold btn-danger',
         cancelButton: 'btn fw-bold btn-active-light-primary',

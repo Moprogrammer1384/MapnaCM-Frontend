@@ -8,6 +8,7 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { AuthService, getStoredAuthToken } from '../../modules/auth/services/auth.service';
 
@@ -19,9 +20,9 @@ import { AuthService, getStoredAuthToken } from '../../modules/auth/services/aut
  * rather than through an injected AuthService: AuthService fires an HTTP
  * request on itself during construction, and if this interceptor asked the
  * injector for AuthService on that same request, it would be asking for
- * AuthService while it's still being constructed (NG0200). AuthService is
- * only resolved lazily, inside catchError, for the (async, post-bootstrap)
- * logout() call on a 401.
+ * AuthService while it's still being constructed (NG0200). AuthService (and
+ * Router, for the returnUrl) are only resolved lazily, inside catchError,
+ * for the (async, post-bootstrap) logout() call on a 401.
  */
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -47,7 +48,9 @@ export class AuthInterceptor implements HttpInterceptor {
           isApiRequest &&
           token
         ) {
-          this.injector.get(AuthService).logout();
+          // Send the user back to the page they were on after re-login.
+          const router = this.injector.get(Router);
+          this.injector.get(AuthService).logout(router.url);
         }
         return throwError(() => error);
       })

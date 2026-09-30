@@ -14,9 +14,9 @@ export class ProfileService {
 
   constructor(private http: HttpClient) {}
 
-  // POST {apiUrl}/User/Profile => current user, resolved by the backend from the JWT uid claim
+  // GET {apiUrl}/User/Profile => current user, resolved by the backend from the JWT uid claim
   getProfile(): Observable<UserProfile> {
-    return this.http.post<ApiEnvelope<UserProfile>>(`${this.apiUrl}/Profile`, {}).pipe(
+    return this.http.get<ApiEnvelope<UserProfile>>(`${this.apiUrl}/Profile`).pipe(
       map((response) => {
         if (!response.success || !response.data) {
           throw new Error(response.message || 'Unable to load the profile');
@@ -26,9 +26,9 @@ export class ProfileService {
     );
   }
 
-  // POST {apiUrl}/User/UpdateProfile => multipart form data (fields + optional Avatar file)
+  // PUT {apiUrl}/User/UpdateProfile => multipart form data (fields + optional Avatar file)
   updateProfile(profile: FormData): Observable<UserProfile> {
-    return this.http.post<ApiEnvelope<UserProfile>>(`${this.apiUrl}/UpdateProfile`, profile).pipe(
+    return this.http.put<ApiEnvelope<UserProfile>>(`${this.apiUrl}/UpdateProfile`, profile).pipe(
       map((response) => {
         if (!response.success || !response.data) {
           throw new Error(response.message || 'Unable to update the profile');

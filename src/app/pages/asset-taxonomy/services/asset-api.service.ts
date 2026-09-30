@@ -4,8 +4,12 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { ApiEnvelope } from '../../../core/models/response.model';
+import { criteriaToHttpParams } from '../../../core/utils/query-params';
 import { PaginatedResult } from '../../../core/models/user-management.model';
 import { Plant, PlantPayload, PlantType, Site, SitePayload } from '../../../core/models/asset.model';
+
+/** Shared page request for the taxonomy lists: everything, client-side filtered. */
+const ALL_ROWS_PARAMS = criteriaToHttpParams({ skip: 0, take: 10000 });
 
 /**
  * Asset taxonomy APIs of the MapnaCM backend (Site / PlantType / Plant).
@@ -24,7 +28,7 @@ export class AssetApiService {
 
   getAllSites(): Observable<Site[]> {
     return this.http
-      .post<ApiEnvelope<PaginatedResult<Site>>>(`${this.apiUrl}/Site/GetAll`, { skip: 0, take: 10000 })
+      .get<ApiEnvelope<PaginatedResult<Site>>>(`${this.apiUrl}/Site/GetAll`, { params: ALL_ROWS_PARAMS })
       .pipe(map((response) => this.unwrapPage(response)));
   }
 
@@ -36,7 +40,7 @@ export class AssetApiService {
 
   updateSite(payload: SitePayload & { id: number }): Observable<void> {
     return this.http
-      .post<ApiEnvelope<object>>(`${this.apiUrl}/Site/Update`, payload)
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/Site/Update`, payload)
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
@@ -50,7 +54,7 @@ export class AssetApiService {
 
   getAllPlantTypes(): Observable<PlantType[]> {
     return this.http
-      .post<ApiEnvelope<PaginatedResult<PlantType>>>(`${this.apiUrl}/PlantType/GetAll`, { skip: 0, take: 10000 })
+      .get<ApiEnvelope<PaginatedResult<PlantType>>>(`${this.apiUrl}/PlantType/GetAll`, { params: ALL_ROWS_PARAMS })
       .pipe(map((response) => this.unwrapPage(response)));
   }
 
@@ -62,7 +66,7 @@ export class AssetApiService {
 
   updatePlantType(payload: { id: number; name: string }): Observable<void> {
     return this.http
-      .post<ApiEnvelope<object>>(`${this.apiUrl}/PlantType/Update`, payload)
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/PlantType/Update`, payload)
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
@@ -76,7 +80,7 @@ export class AssetApiService {
 
   getAllPlants(): Observable<Plant[]> {
     return this.http
-      .post<ApiEnvelope<PaginatedResult<Plant>>>(`${this.apiUrl}/Plant/GetAll`, { skip: 0, take: 10000 })
+      .get<ApiEnvelope<PaginatedResult<Plant>>>(`${this.apiUrl}/Plant/GetAll`, { params: ALL_ROWS_PARAMS })
       .pipe(map((response) => this.unwrapPage(response)));
   }
 
@@ -88,7 +92,7 @@ export class AssetApiService {
 
   updatePlant(payload: PlantPayload & { id: number }): Observable<void> {
     return this.http
-      .post<ApiEnvelope<object>>(`${this.apiUrl}/Plant/Update`, payload)
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/Plant/Update`, payload)
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 

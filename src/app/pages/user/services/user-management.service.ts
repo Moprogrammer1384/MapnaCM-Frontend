@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { ApiEnvelope } from '../../../core/models/response.model';
+import { criteriaToHttpParams } from '../../../core/utils/query-params';
 import {
   AdminUser,
   AdminUserDetail,
@@ -34,34 +35,40 @@ export class UserManagementService {
 
   constructor(private http: HttpClient) {}
 
-  /** POST api/User/Get — DataTables parameters translated to QueryCriteria. */
+  /** GET api/User/Get — DataTables parameters translated to QueryCriteria on the query string. */
   getUsers(dataTablesParameters: any): Observable<DataTablesResponse> {
     const criteria = this.toQueryCriteria(dataTablesParameters);
-    return this.http.post<ApiEnvelope<PaginatedResult<AdminUser>>>(`${this.apiUrl}/Get`, criteria).pipe(
-      map((response) => {
-        if (!response.success || !response.data) {
-          throw new Error(response.message || 'Unable to load users.');
-        }
-        const page = response.data;
-        return {
-          recordsTotal: page.totalCount,
-          recordsFiltered: page.totalCount,
-          data: page.items,
-        };
+    return this.http
+      .get<ApiEnvelope<PaginatedResult<AdminUser>>>(`${this.apiUrl}/Get`, {
+        params: criteriaToHttpParams(criteria),
       })
-    );
+      .pipe(
+        map((response) => {
+          if (!response.success || !response.data) {
+            throw new Error(response.message || 'Unable to load users.');
+          }
+          const page = response.data;
+          return {
+            recordsTotal: page.totalCount,
+            recordsFiltered: page.totalCount,
+            data: page.items,
+          };
+        })
+      );
   }
 
-  /** POST api/User/GetById — full user + roles + recent audit entries. */
+  /** GET api/User/GetById — full user + roles + recent audit entries. */
   getUserById(userId: string): Observable<AdminUserDetail> {
-    return this.http.post<ApiEnvelope<AdminUserDetail>>(`${this.apiUrl}/GetById`, { userId }).pipe(
-      map((response) => {
-        if (!response.success || !response.data) {
-          throw new Error(response.message || 'Unable to load the user.');
-        }
-        return response.data;
-      })
-    );
+    return this.http
+      .get<ApiEnvelope<AdminUserDetail>>(`${this.apiUrl}/GetById`, { params: { UserId: userId } })
+      .pipe(
+        map((response) => {
+          if (!response.success || !response.data) {
+            throw new Error(response.message || 'Unable to load the user.');
+          }
+          return response.data;
+        })
+      );
   }
 
   /**
@@ -87,10 +94,10 @@ export class UserManagementService {
       );
   }
 
-  /** POST api/User/Edit — admin update of profile fields and role assignment. */
+  /** PUT api/User/Edit — admin update of profile fields and role assignment. */
   editUser(payload: EditUserPayload): Observable<void> {
     return this.http
-      .post<ApiEnvelope<object>>(`${this.apiUrl}/Edit`, payload)
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/Edit`, payload)
       .pipe(map((response) => this.unwrap(response)));
   }
 

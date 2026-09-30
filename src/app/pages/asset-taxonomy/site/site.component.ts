@@ -58,7 +58,7 @@ export class SiteComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.table.onConfirmedDelete = (row) => this.deleteSite(row);
+    this.table.onConfirmedDelete = (row) => this.deleteSiteConfirmed(row);
     this.loadSites();
   }
 
@@ -138,7 +138,13 @@ export class SiteComponent implements OnInit {
     });
   }
 
+  // Opens the Metronic confirmation dialog; the API delete only runs from
+  // the onConfirmedDelete callback after the admin confirms.
   deleteSite(site: SiteRow): void {
+    this.table.confirmDelete(site, site.city);
+  }
+
+  private deleteSiteConfirmed(site: SiteRow): void {
     this.apiService.deleteSite(Number(site.id)).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + site.city + '!.');

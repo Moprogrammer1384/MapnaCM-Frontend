@@ -12,15 +12,15 @@
         </div>
         <!--begin::Card title-->
         <!--begin::Card toolbar-->
-        <div class="card-toolbar my-1">
+        <div class="card-toolbar my-1 w-100 w-md-auto gap-3 gap-md-0">
           <!--begin::Search-->
-          <div class="d-flex align-items-center position-relative my-1 me-4">
+          <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
             <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-            <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-150px ps-9" placeholder="Search Plant" (input)="plants.search($any($event.target).value)" />
+            <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Plant" (input)="plants.search($any($event.target).value)" />
           </div>
           <!--end::Search-->
           <!--begin::Button-->
-          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1" (click)="openAddPlantModal(addPlantModal)">Add Plant</a>
+          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddPlantModal(addPlantModal)">Add Plant</a>
           <!--end::Button-->
         </div>
         <!--begin::Card toolbar-->
@@ -55,7 +55,7 @@
                 </td>
                 <td>{{ plant.type }}</td>
                 <td>{{ plant.site }}</td>
-                <td class="text-end">
+                <td class="text-end text-nowrap">
                   <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openEditPlantModal(editPlantModal, plant)">
                     <app-keenicon name="pencil" class="fs-2"></app-keenicon>
                   </a>
@@ -71,7 +71,7 @@
           </table>
           <!--end::Table-->
           <!--begin::Table footer-->
-          <div class="d-flex flex-stack flex-wrap">
+          <div class="d-flex flex-column flex-md-row flex-stack flex-wrap gap-3">
             <div class="d-flex align-items-center">
               <div class="dataTables_length">
                 <label>
@@ -119,15 +119,15 @@
         </div>
         <!--begin::Card title-->
         <!--begin::Card toolbar-->
-        <div class="card-toolbar my-1">
+        <div class="card-toolbar my-1 w-100 w-md-auto gap-3 gap-md-0">
           <!--begin::Search-->
-          <div class="d-flex align-items-center position-relative my-1 me-4">
+          <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
             <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-            <input type="text" id="kt_filter_search_type" class="form-control form-control-solid form-select-sm w-150px ps-9" placeholder="Search Type" (input)="types.search($any($event.target).value)" />
+            <input type="text" id="kt_filter_search_type" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Type" (input)="types.search($any($event.target).value)" />
           </div>
           <!--end::Search-->
           <!--begin::Button-->
-          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1" (click)="openAddTypeModal(addTypeModal)">Add Type</a>
+          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddTypeModal(addTypeModal)">Add Type</a>
           <!--end::Button-->
         </div>
         <!--begin::Card toolbar-->
@@ -160,7 +160,7 @@
                 <td>
                   {{ type.name }}
                 </td>
-                <td class="text-end">
+                <td class="text-end text-nowrap">
                   <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openEditTypeModal(editTypeModal, type)">
                     <app-keenicon name="pencil" class="fs-2"></app-keenicon>
                   </a>
@@ -176,7 +176,7 @@
           </table>
           <!--end::Table-->
           <!--begin::Table footer-->
-          <div class="d-flex flex-stack flex-wrap">
+          <div class="d-flex flex-column flex-md-row flex-stack flex-wrap gap-3">
             <div class="d-flex align-items-center">
               <div class="dataTables_length">
                 <label>
@@ -251,11 +251,11 @@
   </div>
   <!--begin::Modal header-->
   <!--begin::Modal body-->
-  <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+  <div class="modal-body scroll-y px-5 px-md-10 px-lg-15 pt-0 pb-10 pb-md-15">
     <!--begin:Form-->
     <form [id]="formId" class="form" (ngSubmit)="submitPlant(plantNgForm, modal)" #plantNgForm="ngForm" novalidate>
       <!--begin::Heading-->
-      <div class="mb-13 text-center">
+      <div class="mb-8 mb-md-13 text-center">
         <!--begin::Title-->
         <h1 class="mb-3">{{ title }}</h1>
         <!--end::Title-->
@@ -272,7 +272,7 @@
       </div>
       <!--end::Input group-->
       <!--begin::Input group-->
-      <div class="row g-9 mb-15">
+      <div class="row g-5 g-md-9 mb-15">
         <!--begin::Col-->
         <div class="col-md-6 fv-row">
           <label class="required fs-6 fw-semibold mb-2" [for]="formId + '_type'">Type</label>
@@ -321,11 +321,11 @@
   </div>
   <!--begin::Modal header-->
   <!--begin::Modal body-->
-  <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+  <div class="modal-body scroll-y px-5 px-md-10 px-lg-15 pt-0 pb-10 pb-md-15">
     <!--begin:Form-->
     <form [id]="formId" class="form" (ngSubmit)="submitType(typeNgForm, modal)" #typeNgForm="ngForm" novalidate>
       <!--begin::Heading-->
-      <div class="mb-13 text-center">
+      <div class="mb-8 mb-md-13 text-center">
         <!--begin::Title-->
         <h1 class="mb-3">{{ title }}</h1>
         <!--end::Title-->

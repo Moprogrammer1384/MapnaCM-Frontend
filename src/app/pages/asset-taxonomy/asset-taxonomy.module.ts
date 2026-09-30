@@ -6,9 +6,11 @@ import { SharedModule } from 'src/app/_metronic/shared/shared.module';
 import { SiteComponent } from './site/site.component';
 import { PlantComponent } from './plant/plant.component';
 import { UnitComponent } from './unit/unit.component';
+import { SystemComponent } from './system/system.component';
+import { AssetComponent } from './asset/asset.component';
 
 @NgModule({
-  declarations: [SiteComponent, PlantComponent, UnitComponent],
+  declarations: [SiteComponent, PlantComponent, UnitComponent, SystemComponent, AssetComponent],
   imports: [
     CommonModule,
     SharedModule,
@@ -25,6 +27,14 @@ import { UnitComponent } from './unit/unit.component';
       {
         path: 'unit',
         component: UnitComponent,
+      },
+      {
+        path: 'system',
+        component: SystemComponent,
+      },
+      {
+        path: 'asset',
+        component: AssetComponent,
       },
       { path: '', redirectTo: 'site', pathMatch: 'full' },
     ]),

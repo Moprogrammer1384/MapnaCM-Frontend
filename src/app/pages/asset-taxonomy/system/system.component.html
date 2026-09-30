@@ -4,7 +4,7 @@
   <div class="card-header mt-5">
     <!--begin::Card title-->
     <div class="card-title flex-column">
-      <h3 class="fw-bold mb-1">Unit</h3>
+      <h3 class="fw-bold mb-1">System</h3>
     </div>
     <!--begin::Card title-->
     <!--begin::Card toolbar-->
@@ -12,19 +12,19 @@
       <!--begin::Search-->
       <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
         <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Unit" (input)="table.search($any($event.target).value)" />
+        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search System" (input)="table.search($any($event.target).value)" />
       </div>
       <!--end::Search-->
-      <!--begin::Plant filter-->
+      <!--begin::Unit filter-->
       <div class="my-1 me-md-4 w-100 w-md-250px">
-        <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by plant" [ngModel]="plantFilter" (ngModelChange)="filterByPlant($event)">
-          <option [ngValue]="null">All Plants</option>
-          <option *ngFor="let p of plantOptions" [ngValue]="p">{{ p }}</option>
+        <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by unit" [ngModel]="unitFilter" (ngModelChange)="filterByUnit($event)">
+          <option [ngValue]="null">All Units</option>
+          <option *ngFor="let u of unitOptions" [ngValue]="u">{{ u }}</option>
         </select>
       </div>
-      <!--end::Plant filter-->
+      <!--end::Unit filter-->
       <!--begin::Button-->
-      <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(addUnitModal)">Add Unit</a>
+      <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(addSystemModal)">Add System</a>
       <!--end::Button-->
     </div>
     <!--begin::Card toolbar-->
@@ -53,14 +53,14 @@
           </tr>
         </thead>
         <tbody class="fs-6">
-          <tr *ngFor="let unit of table.paged">
-            <td>{{ unit.unit }}</td>
-            <td>{{ unit.plant }}</td>
+          <tr *ngFor="let system of table.paged">
+            <td>{{ system.system }}</td>
+            <td>{{ system.unit }}</td>
             <td class="text-end text-nowrap">
-              <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openEditModal(editUnitModal, unit)">
+              <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openEditModal(editSystemModal, system)">
                 <app-keenicon name="pencil" class="fs-2"></app-keenicon>
               </a>
-              <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" data-kt-site-table-filter="delete_row" (click)="table.confirmDelete(unit, unit.plant)">
+              <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" data-kt-site-table-filter="delete_row" (click)="table.confirmDelete(system, system.system)">
                 <app-keenicon name="trash" class="fs-2"></app-keenicon>
               </a>
             </td>
@@ -107,17 +107,17 @@
 </div>
 <!--end::Card-->
 
-<!--begin::Modal - Add Unit-->
-<ng-template #addUnitModal let-modal>
-  <ng-container *ngTemplateOutlet="unitFormTpl; context: { modal: modal, title: 'Add Unit', formId: 'kt_modal_add_unit_form', submitLabel: 'Submit' }"></ng-container>
+<!--begin::Modal - Add System-->
+<ng-template #addSystemModal let-modal>
+  <ng-container *ngTemplateOutlet="systemFormTpl; context: { modal: modal, title: 'Add System', formId: 'kt_modal_add_system_form', submitLabel: 'Submit' }"></ng-container>
 </ng-template>
-<!--end::Modal - Add Unit-->
-<!--begin::Modal - Edit Unit-->
-<ng-template #editUnitModal let-modal>
-  <ng-container *ngTemplateOutlet="unitFormTpl; context: { modal: modal, title: 'Edit Unit', formId: 'kt_modal_edit_unit_form', submitLabel: 'Save' }"></ng-container>
+<!--end::Modal - Add System-->
+<!--begin::Modal - Edit System-->
+<ng-template #editSystemModal let-modal>
+  <ng-container *ngTemplateOutlet="systemFormTpl; context: { modal: modal, title: 'Edit System', formId: 'kt_modal_edit_system_form', submitLabel: 'Save' }"></ng-container>
 </ng-template>
-<!--end::Modal - Edit Unit-->
-<ng-template #unitFormTpl let-modal="modal" let-title="title" let-formId="formId" let-submitLabel="submitLabel">
+<!--end::Modal - Edit System-->
+<ng-template #systemFormTpl let-modal="modal" let-title="title" let-formId="formId" let-submitLabel="submitLabel">
   <!--begin::Modal header-->
   <div class="modal-header pb-0 border-0 justify-content-end">
     <!--begin::Close-->
@@ -130,7 +130,7 @@
   <!--begin::Modal body-->
   <div class="modal-body scroll-y px-5 px-md-10 px-lg-15 pt-0 pb-10 pb-md-15">
     <!--begin:Form-->
-    <form [id]="formId" class="form" (ngSubmit)="submit(unitNgForm, modal)" #unitNgForm="ngForm" novalidate>
+    <form [id]="formId" class="form" (ngSubmit)="submit(systemNgForm, modal)" #systemNgForm="ngForm" novalidate>
       <!--begin::Heading-->
       <div class="mb-8 mb-md-13 text-center">
         <!--begin::Title-->
@@ -142,12 +142,12 @@
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
         <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-          <span class="required">Plant Name</span>
+          <span class="required">Unit Name</span>
         </label>
         <!--end::Label-->
-        <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Plant" name="plant" [(ngModel)]="unitForm.plant" required>
-          <option [ngValue]="null">Select plant...</option>
-          <option *ngFor="let p of plantOptions" [ngValue]="p">{{ p }}</option>
+        <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Unit" name="unit" [(ngModel)]="systemForm.unit" required>
+          <option [ngValue]="null">Select unit...</option>
+          <option *ngFor="let u of unitOptions" [ngValue]="u">{{ u }}</option>
         </select>
       </div>
       <!--end::Input group-->
@@ -155,10 +155,10 @@
       <div class="d-flex flex-column mb-15 fv-row">
         <!--begin::Label-->
         <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
-          <span class="required">Unit Name</span>
+          <span class="required">System Name</span>
         </label>
         <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter Unit Name" name="unit" [(ngModel)]="unitForm.unit" required />
+        <input type="text" class="form-control form-control-solid" placeholder="Enter System Name" name="system" [(ngModel)]="systemForm.system" required />
       </div>
       <!--end::Input group-->
       <!--begin::Actions-->

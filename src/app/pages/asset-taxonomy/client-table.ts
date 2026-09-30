@@ -18,6 +18,8 @@ export class ClientTable<T extends Record<string, string>> {
   page = 1;
   sortKey: keyof T | null = null;
   sortDir: 'asc' | 'desc' | null = null;
+  /** Exact-match column filters (e.g. a toolbar select); null/empty means no filter. */
+  filters: Partial<Record<keyof T, string | null>> = {};
 
   constructor(public rows: T[], public columns: ClientTableColumn<T>[]) {}
 
@@ -27,9 +29,12 @@ export class ClientTable<T extends Record<string, string>> {
 
   get filtered(): T[] {
     const q = this.searchText.trim().toLowerCase();
-    const rows = q
-      ? this.rows.filter((r) => Object.values(r).some((v) => v.toLowerCase().includes(q)))
-      : [...this.rows];
+    const active = (Object.keys(this.filters) as (keyof T)[]).filter((k) => this.filters[k]);
+    const rows = this.rows.filter(
+      (r) =>
+        active.every((k) => r[k] === this.filters[k]) &&
+        (!q || Object.values(r).some((v) => v.toLowerCase().includes(q)))
+    );
     const key = this.sortKey;
     if (key === null || this.sortDir === null) {
       return rows;
@@ -61,6 +66,11 @@ export class ClientTable<T extends Record<string, string>> {
 
   search(value: string): void {
     this.searchText = value;
+    this.page = 1;
+  }
+
+  setFilter(key: keyof T, value: string | null): void {
+    this.filters[key] = value;
     this.page = 1;
   }
 

@@ -65,15 +65,21 @@ export class UnitComponent {
       { plant: 'Manjil Wind Farm - Rasht - Wind', unit: 'Unit 1' },
     ],
     [
-      { key: 'plant', title: 'Plant Name', class: 'min-w-250px' },
-      { key: 'unit', title: 'Unit Name', class: 'min-w-200px' },
+      { key: 'unit', title: 'Name', class: 'min-w-125px min-w-md-200px' },
+      { key: 'plant', title: 'Plant Name', class: 'min-w-175px min-w-md-250px' },
     ]
   );
 
   unitForm: UnitFormModel = this.emptyUnitForm();
+  plantFilter: string | null = null;
   private editing: UnitRow | null = null;
 
   constructor(private modalService: NgbModal) {}
+
+  filterByPlant(plant: string | null): void {
+    this.plantFilter = plant;
+    this.table.setFilter('plant', plant);
+  }
 
   openAddModal(content: TemplateRef<any>): void {
     this.editing = null;

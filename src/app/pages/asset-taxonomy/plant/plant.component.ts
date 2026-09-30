@@ -46,7 +46,7 @@ export class PlantComponent implements OnInit {
     [
       { key: 'name', title: 'Name', class: 'min-w-150px' },
       { key: 'type', title: 'Type', class: 'min-w-150px' },
-      { key: 'site', title: 'Site', class: 'min-w-250px' },
+      { key: 'site', title: 'Site', class: 'min-w-175px min-w-md-250px' },
     ]
   );
 

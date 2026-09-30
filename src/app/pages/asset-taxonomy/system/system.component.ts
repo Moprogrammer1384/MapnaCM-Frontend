@@ -1,70 +1,37 @@
-import { Component, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
+import { SystemPayload } from 'src/app/core/models/asset.model';
+import { AssetApiService } from '../services/asset-api.service';
 import { ClientTable } from '../client-table';
 import { EMPLOYERS, employerOf } from '../employers';
 
 interface SystemRow extends Record<string, string> {
+  id: string;
   employer: string;
   unit: string;
   system: string;
 }
 
 interface SystemFormModel {
+  id?: number;
   unit: string | null;
   system: string;
 }
 
-/**
- * Port of Mapna-UIUX customize/system.html. The backend has no System endpoints
- * yet, so the rows and the unit options are the design's static data;
- * add / edit / delete only change the in-memory rows.
- */
 @Component({
   selector: 'app-system',
   templateUrl: './system.component.html',
   styleUrls: ['./system.component.scss'],
 })
-export class SystemComponent {
+export class SystemComponent implements OnInit {
   modalConfig: NgbModalOptions = {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
 
-  unitOptions = [
-    'Unit 1 - Parand Combined Cycle Power Plant',
-    'Unit 2 - Parand Combined Cycle Power Plant',
-    'Unit 1 - Isfahan Combined Cycle Power Plant',
-    'Unit 1 - Mashhad Gas Power Plant',
-    'Unit 1 - Fars Combined Cycle Power Plant',
-    'Unit 1 - Tabriz Thermal Power Plant',
-    'Unit 1 - Ahvaz Zargan Power Plant',
-    'Unit 1 - Bandar Abbas Steam Power Plant',
-    'Unit 1 - Asaluyeh Combined Cycle Power Plant',
-    'Unit 1 - Yazd Solar Power Plant',
-    'Unit 1 - Kerman Combined Cycle Power Plant',
-    'Unit 1 - Shazand Power Plant',
-    'Unit 1 - Qom Combined Cycle Power Plant',
-    'Unit 1 - Manjil Wind Farm',
-  ];
-
   table = new ClientTable<SystemRow>(
-    [
-      { unit: 'Unit 1 - Parand Combined Cycle Power Plant', system: 'Gas Turbine System' },
-      { unit: 'Unit 1 - Parand Combined Cycle Power Plant', system: 'Generator System' },
-      { unit: 'Unit 2 - Parand Combined Cycle Power Plant', system: 'Steam Turbine System' },
-      { unit: 'Unit 1 - Isfahan Combined Cycle Power Plant', system: 'Heat Recovery Steam Generator' },
-      { unit: 'Unit 1 - Mashhad Gas Power Plant', system: 'Fuel Gas System' },
-      { unit: 'Unit 1 - Fars Combined Cycle Power Plant', system: 'Cooling Water System' },
-      { unit: 'Unit 1 - Tabriz Thermal Power Plant', system: 'Boiler System' },
-      { unit: 'Unit 1 - Ahvaz Zargan Power Plant', system: 'Lube Oil System' },
-      { unit: 'Unit 1 - Bandar Abbas Steam Power Plant', system: 'Condensate System' },
-      { unit: 'Unit 1 - Asaluyeh Combined Cycle Power Plant', system: 'Control System' },
-      { unit: 'Unit 1 - Yazd Solar Power Plant', system: 'Inverter System' },
-      { unit: 'Unit 1 - Kerman Combined Cycle Power Plant', system: 'Compressed Air System' },
-      { unit: 'Unit 1 - Qom Combined Cycle Power Plant', system: 'Fire Protection System' },
-      { unit: 'Unit 1 - Manjil Wind Farm', system: 'Pitch Control System' },
-    ].map((r) => ({ ...r, employer: employerOf(r.unit) })),
+    [],
     [
       { key: 'system', title: 'Name', class: 'min-w-125px min-w-md-200px' },
       { key: 'unit', title: 'Unit Name', class: 'min-w-175px min-w-md-250px' },
@@ -72,14 +39,32 @@ export class SystemComponent {
     ]
   );
 
-  systemForm: SystemFormModel = this.emptySystemForm();
-  unitFilter: string | null = null;
-  private editing: SystemRow | null = null;
-
-  employers = EMPLOYERS;
+  // Dropdown options are the display labels; ids are resolved through the
+  // label -> id map filled when the units load.
+  unitOptions: string[] = [];
+  employers: string[] = EMPLOYERS;
   employerFilter: string | null = null;
+  unitFilter: string | null = null;
 
-  constructor(private modalService: NgbModal) {}
+  systemForm: SystemFormModel = this.emptyForm();
+  saving = false;
+
+  private unitIdByLabel: Record<string, number> = {};
+  // plant id -> employer display name (backend value or placeholder fallback)
+  private employerByPlantId: Record<number, string> = {};
+  // unit id -> plant id (to inherit the plant's employer)
+  private plantIdByUnitId: Record<number, number> = {};
+
+  constructor(
+    private modalService: NgbModal,
+    private apiService: AssetApiService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.table.onConfirmedDelete = (row) => this.deleteSystemConfirmed(row);
+    this.refresh();
+  }
 
   filterByEmployer(employer: string | null): void {
     this.employerFilter = employer;
@@ -91,35 +76,134 @@ export class SystemComponent {
     this.table.setFilter('unit', unit);
   }
 
+  refresh(): void {
+    this.loadUnits();
+  }
+
+  private loadUnits(): void {
+    this.apiService.getAllUnits().subscribe({
+      next: (units) => {
+        this.unitOptions = [];
+        this.unitIdByLabel = {};
+
+        for (const unit of units) {
+          const label = `${unit.name} - ${unit.plantName}`;
+          this.unitOptions.push(label);
+          this.unitIdByLabel[label] = unit.id;
+          this.plantIdByUnitId[unit.id] = unit.plantId;
+        }
+        this.unitOptions.sort();
+
+        this.loadPlants();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load units.'),
+    });
+  }
+
+  private loadPlants(): void {
+    this.apiService.getAllPlants().subscribe({
+      next: (plants) => {
+        this.employerByPlantId = {};
+        for (const plant of plants) {
+          this.employerByPlantId[plant.id] = plant.employerName || employerOf(plant.name);
+        }
+
+        this.loadSystems();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load plants.'),
+    });
+  }
+
+  private employerOfUnit(unitId: number, fallbackLabel: string): string {
+    const plantId = this.plantIdByUnitId[unitId];
+    return (plantId && this.employerByPlantId[plantId]) || employerOf(fallbackLabel);
+  }
+
+  private loadSystems(): void {
+    this.apiService.getAllSystems().subscribe({
+      next: (systems) => {
+        this.table.rows = systems.map((system) => ({
+          id: String(system.id),
+          system: system.name,
+          unit: system.unitLabel,
+          unitId: String(system.unitId),
+          employer: this.employerOfUnit(system.unitId, system.unitLabel),
+        }));
+        this.table.page = 1;
+        this.employers = [...new Set([...EMPLOYERS, ...this.table.rows.map((row) => row.employer)])]
+          .filter(Boolean)
+          .sort();
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load systems.'),
+    });
+  }
+
   openAddModal(content: TemplateRef<any>): void {
-    this.editing = null;
-    this.systemForm = this.emptySystemForm();
+    this.systemForm = this.emptyForm();
     this.modalService.open(content, this.modalConfig);
   }
 
   openEditModal(content: TemplateRef<any>, system: SystemRow): void {
-    this.editing = system;
-    this.systemForm = { unit: system.unit, system: system.system };
+    this.systemForm = { id: Number(system.id), unit: system.unit, system: system.system };
     this.modalService.open(content, this.modalConfig);
   }
 
   submit(form: NgForm, modal: { dismiss: (reason: string) => void }): void {
+    if (this.saving) {
+      return;
+    }
     if (form.invalid || !this.systemForm.unit) {
       form.control.markAllAsTouched();
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
 
-    const row: SystemRow = { unit: this.systemForm.unit, system: this.systemForm.system, employer: employerOf(this.systemForm.unit) };
-    const isEdit = !!this.editing;
-    this.table.rows = isEdit
-      ? this.table.rows.map((r) => (r === this.editing ? row : r))
-      : [...this.table.rows, row];
-    modal.dismiss('saved');
-    this.showAlert('success', 'Success!', isEdit ? 'System updated successfully!' : 'System created successfully!');
+    const unitId = this.unitIdByLabel[this.systemForm.unit];
+    if (!unitId) {
+      this.showAlert('error', 'Error!', 'The selected unit is no longer available. Please pick it again.');
+      return;
+    }
+
+    this.saving = true;
+    const payload: SystemPayload = { name: this.systemForm.system, unitId };
+    const isEdit = !!this.systemForm.id;
+    const request$ = isEdit
+      ? this.apiService.updateSystem({ id: this.systemForm.id!, ...payload })
+      : this.apiService.createSystem(payload);
+
+    request$.subscribe({
+      next: () => {
+        this.saving = false;
+        modal.dismiss('saved');
+        this.showAlert('success', 'Success!', isEdit ? 'System updated successfully!' : 'System created successfully!');
+        this.loadSystems();
+      },
+      error: (error) => {
+        this.saving = false;
+        this.cdr.detectChanges();
+        this.showAlert('error', 'Error!', error?.message || 'The request failed.');
+      },
+    });
   }
 
-  private emptySystemForm(): SystemFormModel {
+  // Opens the Metronic confirmation dialog; the API delete only runs from
+  // the onConfirmedDelete callback after the admin confirms.
+  deleteSystem(system: SystemRow): void {
+    this.table.confirmDelete(system, system.system);
+  }
+
+  private deleteSystemConfirmed(system: SystemRow): void {
+    this.apiService.deleteSystem(Number(system.id)).subscribe({
+      next: () => {
+        this.showAlert('success', 'Deleted!', 'You have deleted ' + system.system + '!.');
+        this.loadSystems();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the system.'),
+    });
+  }
+
+  private emptyForm(): SystemFormModel {
     return { unit: null, system: '' };
   }
 

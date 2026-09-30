@@ -137,28 +137,16 @@
           </div>
           <!--end::Input group-->
 
-          <div class="mb-7">
-            <label class="required fw-semibold fs-6 mb-5">Roles</label>
+          <div class="mb-7 fv-row">
+            <label class="required fw-semibold fs-6 mb-2">Role</label>
 
-            <div *ngFor="let role of roles; let last = last">
-              <div class="d-flex fv-row">
-                <div class="form-check form-check-custom form-check-solid">
-                  <input class="form-check-input me-3" id="kt_modal_update_role_option_{{ role.id }}" name="role_{{ role.id }}" type="checkbox" [checked]="userModel.roles.includes(role.name)" (change)="onRoleToggle(role.name, $event)" />
-                  <label class="form-check-label" for="kt_modal_update_role_option_{{ role.id }}">
-                    <div class="fw-bold text-gray-800">
-                      {{ role.name | titlecase }}
-                    </div>
-                    <div class="text-gray-600">
-                      {{ role.name }}
-                    </div>
-                  </label>
-                </div>
-              </div>
-              <div *ngIf="!last" class="separator separator-dashed my-5"></div>
-            </div>
+            <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Role" name="role" [(ngModel)]="userModel.role" #roleField="ngModel" required>
+              <option [ngValue]="null" disabled>Select a role...</option>
+              <option *ngFor="let role of roles" [ngValue]="role.name">{{ role.name | titlecase }}</option>
+            </select>
 
-            <div *ngIf="myForm.submitted && userModel.roles.length === 0" class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-              At least one role must be assigned
+            <div *ngIf="myForm.submitted && (roleField.invalid || !userModel.role)" class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+              Role is required
             </div>
           </div>
 

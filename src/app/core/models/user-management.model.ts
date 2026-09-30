@@ -93,7 +93,8 @@ export interface CreateUserPayload {
   userName?: string;
   phoneNumber?: string;
   password: string;
-  roles: string[];
+  /** Exactly one role per user (role name). */
+  role: string;
   /**
    * Set on the retry when the admin confirmed redefining a soft-deleted user
    * that owns the same email/username (the first attempt returns canRedefine).
@@ -108,7 +109,8 @@ export interface EditUserPayload {
   lastName: string;
   email?: string;
   phoneNumber?: string;
-  roles: string[];
+  /** Exactly one role per user (role name); assigning replaces all roles. */
+  role: string;
 }
 
 /** IdentityUserAuditAction values (Identity.Domain.Enums.UserAuditAction). */

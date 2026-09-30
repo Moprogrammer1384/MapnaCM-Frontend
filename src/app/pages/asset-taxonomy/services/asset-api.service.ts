@@ -6,7 +6,20 @@ import { environment } from '../../../../environments/environment';
 import { ApiEnvelope } from '../../../core/models/response.model';
 import { criteriaToHttpParams } from '../../../core/utils/query-params';
 import { PaginatedResult } from '../../../core/models/user-management.model';
-import { Plant, PlantPayload, PlantType, Site, SitePayload } from '../../../core/models/asset.model';
+import {
+  Asset,
+  AssetPayload,
+  AssetSystem,
+  Plant,
+  PlantPayload,
+  PlantType,
+  RoleUser,
+  Site,
+  SitePayload,
+  SystemPayload,
+  Unit,
+  UnitPayload,
+} from '../../../core/models/asset.model';
 
 /** Shared page request for the taxonomy lists: everything, client-side filtered. */
 const ALL_ROWS_PARAMS = criteriaToHttpParams({ skip: 0, take: 10000 });
@@ -99,6 +112,98 @@ export class AssetApiService {
   deletePlant(id: number): Observable<void> {
     return this.http
       .delete<ApiEnvelope<object>>(`${this.apiUrl}/Plant/Delete`, { params: { Id: String(id) } })
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  /** GET api/User/GetUsersByRole — Identity users carrying a role (Employer assignment). */
+  getUsersByRole(role: string): Observable<RoleUser[]> {
+    return this.http
+      .get<ApiEnvelope<RoleUser[]>>(`${environment.apiUrl}/User/GetUsersByRole`, { params: { RoleId: role } })
+      .pipe(
+        map((response) => {
+          if (!response.success || !response.data) {
+            throw new Error(response.message || 'Unable to load the users.');
+          }
+          return response.data;
+        })
+      );
+  }
+
+  // ---- Units ----------------------------------------------------------
+
+  getAllUnits(): Observable<Unit[]> {
+    return this.http
+      .get<ApiEnvelope<PaginatedResult<Unit>>>(`${this.apiUrl}/Unit/GetAll`, { params: ALL_ROWS_PARAMS })
+      .pipe(map((response) => this.unwrapPage(response)));
+  }
+
+  createUnit(payload: UnitPayload): Observable<void> {
+    return this.http
+      .post<ApiEnvelope<object>>(`${this.apiUrl}/Unit/Add`, payload)
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  updateUnit(payload: UnitPayload & { id: number }): Observable<void> {
+    return this.http
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/Unit/Update`, payload)
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  deleteUnit(id: number): Observable<void> {
+    return this.http
+      .delete<ApiEnvelope<object>>(`${this.apiUrl}/Unit/Delete`, { params: { Id: String(id) } })
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  // ---- Systems ----------------------------------------------------------
+
+  getAllSystems(): Observable<AssetSystem[]> {
+    return this.http
+      .get<ApiEnvelope<PaginatedResult<AssetSystem>>>(`${this.apiUrl}/System/GetAll`, { params: ALL_ROWS_PARAMS })
+      .pipe(map((response) => this.unwrapPage(response)));
+  }
+
+  createSystem(payload: SystemPayload): Observable<void> {
+    return this.http
+      .post<ApiEnvelope<object>>(`${this.apiUrl}/System/Add`, payload)
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  updateSystem(payload: SystemPayload & { id: number }): Observable<void> {
+    return this.http
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/System/Update`, payload)
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  deleteSystem(id: number): Observable<void> {
+    return this.http
+      .delete<ApiEnvelope<object>>(`${this.apiUrl}/System/Delete`, { params: { Id: String(id) } })
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  // ---- Assets ---------------------------------------------------------
+
+  getAllAssets(): Observable<Asset[]> {
+    return this.http
+      .get<ApiEnvelope<PaginatedResult<Asset>>>(`${this.apiUrl}/Asset/GetAll`, { params: ALL_ROWS_PARAMS })
+      .pipe(map((response) => this.unwrapPage(response)));
+  }
+
+  createAsset(payload: AssetPayload): Observable<void> {
+    return this.http
+      .post<ApiEnvelope<object>>(`${this.apiUrl}/Asset/Add`, payload)
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  updateAsset(payload: AssetPayload & { id: number }): Observable<void> {
+    return this.http
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/Asset/Update`, payload)
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  deleteAsset(id: number): Observable<void> {
+    return this.http
+      .delete<ApiEnvelope<object>>(`${this.apiUrl}/Asset/Delete`, { params: { Id: String(id) } })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 

@@ -4,7 +4,8 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { AssetApiService } from '../services/asset-api.service';
 import { ClientTable } from '../client-table';
-import { EMPLOYERS, assignEmployer, employerOf } from '../employers';
+import { EMPLOYERS, employerOf } from '../employers';
+import { RoleUser } from 'src/app/core/models/asset.model';
 
 interface PlantRow extends Record<string, string> {
   id: string;
@@ -14,6 +15,7 @@ interface PlantRow extends Record<string, string> {
   plantTypeId: string;
   siteId: string;
   employer: string;
+  employerId: string;
 }
 
 interface TypeRow extends Record<string, string> {
@@ -26,7 +28,7 @@ interface PlantFormModel {
   name: string;
   plantTypeId: number | null;
   siteId: number | null;
-  employer: string | null;
+  employerId: string | null;
 }
 
 interface TypeFormModel {
@@ -70,6 +72,9 @@ export class PlantComponent implements OnInit {
   employers = EMPLOYERS;
   employerFilter: string | null = null;
 
+  // Identity users carrying the Employer role — the only valid assignments.
+  employerUsers: { id: string; name: string }[] = [];
+
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
@@ -79,6 +84,7 @@ export class PlantComponent implements OnInit {
   ngOnInit(): void {
     this.plants.onConfirmedDelete = (row) => this.deletePlantConfirmed(row);
     this.types.onConfirmedDelete = (row) => this.deleteTypeConfirmed(row);
+    this.loadEmployerUsers();
     this.loadAll();
   }
 
@@ -118,6 +124,19 @@ export class PlantComponent implements OnInit {
     });
   }
 
+  loadEmployerUsers(): void {
+    this.apiService.getUsersByRole('Employer').subscribe({
+      next: (users) => {
+        this.employerUsers = users.map((user) => ({
+          id: user.id,
+          name: [user.firstName, user.lastName].filter((part) => !!part).join(' ').trim() || user.userName,
+        }));
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load employer users.'),
+    });
+  }
+
   loadPlants(): void {
     this.apiService.getAllPlants().subscribe({
       next: (plants) => {
@@ -128,9 +147,13 @@ export class PlantComponent implements OnInit {
           site: plant.siteLabel,
           plantTypeId: String(plant.plantTypeId),
           siteId: String(plant.siteId),
-          employer: employerOf(plant.name),
+          employer: plant.employerName || employerOf(plant.name),
+          employerId: String(plant.employerId ?? ''),
         }));
         this.plants.page = 1;
+        this.employers = [...new Set([...EMPLOYERS, ...this.plants.rows.map((row) => row.employer)])]
+          .filter(Boolean)
+          .sort();
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load plants.'),
@@ -150,7 +173,7 @@ export class PlantComponent implements OnInit {
       name: plant.name,
       plantTypeId: Number(plant.plantTypeId),
       siteId: Number(plant.siteId),
-      employer: plant.employer,
+      employerId: plant.employerId || null,
     };
     this.modalService.open(content, this.modalConfig);
   }
@@ -159,19 +182,21 @@ export class PlantComponent implements OnInit {
     if (this.saving) {
       return;
     }
-    if (form.invalid || !this.plantFormModel.plantTypeId || !this.plantFormModel.siteId || !this.plantFormModel.employer) {
+    if (form.invalid || !this.plantFormModel.plantTypeId || !this.plantFormModel.siteId || !this.plantFormModel.employerId) {
       form.control.markAllAsTouched();
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
 
     this.saving = true;
+    const employer = this.employerUsers.find((user) => user.id === this.plantFormModel.employerId);
     const payload = {
       name: this.plantFormModel.name,
       siteId: this.plantFormModel.siteId,
       plantTypeId: this.plantFormModel.plantTypeId,
+      employerId: this.plantFormModel.employerId,
+      employerName: employer?.name || '',
     };
-    const employer = this.plantFormModel.employer;
     const isEdit = !!this.plantFormModel.id;
     const request$ = isEdit
       ? this.apiService.updatePlant({ id: this.plantFormModel.id!, ...payload })
@@ -179,7 +204,6 @@ export class PlantComponent implements OnInit {
 
     request$.subscribe({
       next: () => {
-        assignEmployer(payload.name, employer);
         this.saving = false;
         modal.dismiss('saved');
         this.showAlert('success', 'Success!', isEdit ? 'Plant updated successfully!' : 'Plant created successfully!');
@@ -269,7 +293,7 @@ export class PlantComponent implements OnInit {
   // ---- Helpers --------------------------------------------------------
 
   private emptyPlantForm(): PlantFormModel {
-    return { name: '', plantTypeId: null, siteId: null, employer: null };
+    return { name: '', plantTypeId: null, siteId: null, employerId: null };
   }
 
   private emptyTypeForm(): TypeFormModel {

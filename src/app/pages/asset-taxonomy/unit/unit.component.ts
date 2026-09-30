@@ -1,71 +1,37 @@
-import { Component, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
+import { UnitPayload } from 'src/app/core/models/asset.model';
+import { AssetApiService } from '../services/asset-api.service';
 import { ClientTable } from '../client-table';
 import { EMPLOYERS, employerOf } from '../employers';
 
 interface UnitRow extends Record<string, string> {
+  id: string;
   employer: string;
   plant: string;
   unit: string;
 }
 
 interface UnitFormModel {
+  id?: number;
   plant: string | null;
   unit: string;
 }
 
-/**
- * Port of Mapna-UIUX customize/unit.html. The backend has no Unit endpoints
- * yet, so the rows and the plant options are the design's static data;
- * add / edit / delete only change the in-memory rows.
- */
 @Component({
   selector: 'app-unit',
   templateUrl: './unit.component.html',
   styleUrls: ['./unit.component.scss'],
 })
-export class UnitComponent {
+export class UnitComponent implements OnInit {
   modalConfig: NgbModalOptions = {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
 
-  plantOptions = [
-    'Parand Combined Cycle Power Plant - Tehran - Combined Cycle',
-    'Mapna Turbine Engineering (TUGA) - Karaj - Manufacturing',
-    'Pars Generator Plant - Karaj - Manufacturing',
-    'Isfahan Combined Cycle Power Plant - Isfahan - Combined Cycle',
-    'Mashhad Gas Power Plant - Mashhad - Gas Turbine',
-    'Fars Combined Cycle Power Plant - Shiraz - Combined Cycle',
-    'Tabriz Thermal Power Plant - Tabriz - Steam',
-    'Ahvaz Zargan Power Plant - Ahvaz - Gas Turbine',
-    'Bandar Abbas Steam Power Plant - Bandar Abbas - Steam',
-    'Asaluyeh Combined Cycle Power Plant - Asaluyeh - Combined Cycle',
-    'Yazd Solar Power Plant - Yazd - Solar',
-    'Kerman Combined Cycle Power Plant - Kerman - Combined Cycle',
-    'Shazand Power Plant - Arak - Steam',
-    'Qom Combined Cycle Power Plant - Qom - Combined Cycle',
-    'Manjil Wind Farm - Rasht - Wind',
-  ];
-
   table = new ClientTable<UnitRow>(
-    [
-      { plant: 'Parand Combined Cycle Power Plant - Tehran - Combined Cycle', unit: 'Unit 1' },
-      { plant: 'Parand Combined Cycle Power Plant - Tehran - Combined Cycle', unit: 'Unit 2' },
-      { plant: 'Isfahan Combined Cycle Power Plant - Isfahan - Combined Cycle', unit: 'Unit 1' },
-      { plant: 'Mashhad Gas Power Plant - Mashhad - Gas Turbine', unit: 'Unit 1' },
-      { plant: 'Fars Combined Cycle Power Plant - Shiraz - Combined Cycle', unit: 'Unit 1' },
-      { plant: 'Tabriz Thermal Power Plant - Tabriz - Steam', unit: 'Unit 1' },
-      { plant: 'Ahvaz Zargan Power Plant - Ahvaz - Gas Turbine', unit: 'Unit 1' },
-      { plant: 'Bandar Abbas Steam Power Plant - Bandar Abbas - Steam', unit: 'Unit 1' },
-      { plant: 'Asaluyeh Combined Cycle Power Plant - Asaluyeh - Combined Cycle', unit: 'Unit 1' },
-      { plant: 'Yazd Solar Power Plant - Yazd - Solar', unit: 'Unit 1' },
-      { plant: 'Kerman Combined Cycle Power Plant - Kerman - Combined Cycle', unit: 'Unit 1' },
-      { plant: 'Shazand Power Plant - Arak - Steam', unit: 'Unit 1' },
-      { plant: 'Qom Combined Cycle Power Plant - Qom - Combined Cycle', unit: 'Unit 1' },
-      { plant: 'Manjil Wind Farm - Rasht - Wind', unit: 'Unit 1' },
-    ].map((r) => ({ ...r, employer: employerOf(r.plant) })),
+    [],
     [
       { key: 'unit', title: 'Name', class: 'min-w-125px min-w-md-200px' },
       { key: 'plant', title: 'Plant Name', class: 'min-w-175px min-w-md-250px' },
@@ -73,14 +39,30 @@ export class UnitComponent {
     ]
   );
 
-  unitForm: UnitFormModel = this.emptyUnitForm();
-  plantFilter: string | null = null;
-  private editing: UnitRow | null = null;
-
-  employers = EMPLOYERS;
+  // Dropdown options are the display labels; ids are resolved through the
+  // label -> id map filled when the plants load.
+  plantOptions: string[] = [];
+  employers: string[] = EMPLOYERS;
   employerFilter: string | null = null;
+  plantFilter: string | null = null;
 
-  constructor(private modalService: NgbModal) {}
+  unitForm: UnitFormModel = this.emptyForm();
+  saving = false;
+
+  private plantIdByLabel: Record<string, number> = {};
+  // plant id -> employer display name (backend value or placeholder fallback)
+  private employerByPlantId: Record<number, string> = {};
+
+  constructor(
+    private modalService: NgbModal,
+    private apiService: AssetApiService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.table.onConfirmedDelete = (row) => this.deleteUnitConfirmed(row);
+    this.refresh();
+  }
 
   filterByEmployer(employer: string | null): void {
     this.employerFilter = employer;
@@ -92,35 +74,139 @@ export class UnitComponent {
     this.table.setFilter('plant', plant);
   }
 
+  refresh(): void {
+    this.loadPlants();
+  }
+
+  private loadPlants(): void {
+    this.apiService.getAllPlants().subscribe({
+      next: (plants) => {
+        this.plantOptions = [];
+        this.plantIdByLabel = {};
+        this.employerByPlantId = {};
+
+        for (const plant of plants) {
+          const city = (plant.siteLabel || '').replace(/\s*\(.*\)\s*$/, '');
+          const label = `${plant.name} - ${city} - ${plant.typeName}`;
+          this.plantOptions.push(label);
+          this.plantIdByLabel[label] = plant.id;
+          this.employerByPlantId[plant.id] = plant.employerName || employerOf(plant.name);
+        }
+        this.plantOptions.sort();
+
+        this.loadUnits();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load plants.'),
+    });
+  }
+
+  private loadUnits(): void {
+    this.apiService.getAllUnits().subscribe({
+      next: (units) => {
+        this.table.rows = units.map((unit) => ({
+          id: String(unit.id),
+          unit: unit.name,
+          plant: unit.plantLabel,
+          plantId: String(unit.plantId),
+          employer: this.employerByPlantId[unit.plantId] || employerOf(unit.plantLabel),
+        }));
+        this.table.page = 1;
+        this.refreshEmployers();
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load units.'),
+    });
+  }
+
+  private refreshEmployers(): void {
+    this.employers = [...new Set([...EMPLOYERS, ...this.table.rows.map((row) => row.employer)])]
+      .filter(Boolean)
+      .sort();
+  }
+
   openAddModal(content: TemplateRef<any>): void {
-    this.editing = null;
-    this.unitForm = this.emptyUnitForm();
+    this.unitForm = this.emptyForm();
     this.modalService.open(content, this.modalConfig);
   }
 
   openEditModal(content: TemplateRef<any>, unit: UnitRow): void {
-    this.editing = unit;
-    this.unitForm = { plant: unit.plant, unit: unit.unit };
+    this.unitForm = { id: Number(unit.id), plant: unit.plant, unit: unit.unit };
     this.modalService.open(content, this.modalConfig);
   }
 
   submit(form: NgForm, modal: { dismiss: (reason: string) => void }): void {
+    if (this.saving) {
+      return;
+    }
     if (form.invalid || !this.unitForm.plant) {
       form.control.markAllAsTouched();
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
 
-    const row: UnitRow = { plant: this.unitForm.plant, unit: this.unitForm.unit, employer: employerOf(this.unitForm.plant) };
-    const isEdit = !!this.editing;
-    this.table.rows = isEdit
-      ? this.table.rows.map((r) => (r === this.editing ? row : r))
-      : [...this.table.rows, row];
-    modal.dismiss('saved');
-    this.showAlert('success', 'Success!', isEdit ? 'Unit updated successfully!' : 'Unit created successfully!');
+    const plantId = this.plantIdByLabel[this.unitForm.plant];
+    if (!plantId) {
+      this.showAlert('error', 'Error!', 'The selected plant is no longer available. Please pick it again.');
+      return;
+    }
+
+    this.saving = true;
+    const payload: UnitPayload = { name: this.unitForm.unit, plantId };
+    const isEdit = !!this.unitForm.id;
+    const request$ = isEdit
+      ? this.apiService.updateUnit({ id: this.unitForm.id!, ...payload })
+      : this.apiService.createUnit(payload);
+
+    request$.subscribe({
+      next: () => {
+        this.saving = false;
+        modal.dismiss('saved');
+        this.showAlert('success', 'Success!', isEdit ? 'Unit updated successfully!' : 'Unit created successfully!');
+        this.loadUnitsOnly();
+      },
+      error: (error) => {
+        this.saving = false;
+        this.cdr.detectChanges();
+        this.showAlert('error', 'Error!', error?.message || 'The request failed.');
+      },
+    });
   }
 
-  private emptyUnitForm(): UnitFormModel {
+  // Opens the Metronic confirmation dialog; the API delete only runs from
+  // the onConfirmedDelete callback after the admin confirms.
+  deleteUnit(unit: UnitRow): void {
+    this.table.confirmDelete(unit, unit.unit);
+  }
+
+  private deleteUnitConfirmed(unit: UnitRow): void {
+    this.apiService.deleteUnit(Number(unit.id)).subscribe({
+      next: () => {
+        this.showAlert('success', 'Deleted!', 'You have deleted ' + unit.unit + '!.');
+        this.loadUnitsOnly();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the unit.'),
+    });
+  }
+
+  // After a mutation only the unit list changes; the plant maps are current.
+  private loadUnitsOnly(): void {
+    this.apiService.getAllUnits().subscribe({
+      next: (units) => {
+        this.table.rows = units.map((unit) => ({
+          id: String(unit.id),
+          unit: unit.name,
+          plant: unit.plantLabel,
+          plantId: String(unit.plantId),
+          employer: this.employerByPlantId[unit.plantId] || employerOf(unit.plantLabel),
+        }));
+        this.table.page = 1;
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load units.'),
+    });
+  }
+
+  private emptyForm(): UnitFormModel {
     return { plant: null, unit: '' };
   }
 

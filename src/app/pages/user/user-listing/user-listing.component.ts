@@ -17,7 +17,7 @@ interface UserFormModel {
   email: string;
   phoneNumber: string;
   password: string;
-  roles: string[];
+  role: string | null;
 }
 
 @Component({
@@ -202,7 +202,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
         email: user.email,
         phoneNumber: user.phoneNumber || '',
         password: '',
-        roles: (user.roles || []).map(role => role.name),
+        role: (user.roles || [])[0]?.name ?? null,
       };
       this.cdr.detectChanges();
     });
@@ -212,24 +212,13 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userModel = this.emptyUserModel();
   }
 
-  onRoleToggle(roleName: string, event: any) {
-    const checked = event.target?.checked;
-    if (checked) {
-      if (!this.userModel.roles.includes(roleName)) {
-        this.userModel.roles = [...this.userModel.roles, roleName];
-      }
-    } else {
-      this.userModel.roles = this.userModel.roles.filter(role => role !== roleName);
-    }
-  }
-
   onSubmit(event: Event, myForm: NgForm) {
     if (myForm && myForm.invalid) {
       return;
     }
 
-    if (this.userModel.roles.length === 0) {
-      this.showAlert({ icon: 'error', title: 'Error!', text: 'Please assign at least one role.' });
+    if (!this.userModel.role) {
+      this.showAlert({ icon: 'error', title: 'Error!', text: 'Role is required.' });
       return;
     }
 
@@ -254,7 +243,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
         lastName: this.userModel.lastName,
         email: this.userModel.email,
         phoneNumber: this.userModel.phoneNumber,
-        roles: this.userModel.roles,
+        role: this.userModel.role,
       } as EditUserPayload).subscribe({
         next: () => {
           this.isLoading = false;
@@ -273,7 +262,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       userName: this.userModel.email,
       phoneNumber: this.userModel.phoneNumber,
       password: this.userModel.password,
-      roles: this.userModel.roles,
+      role: this.userModel.role,
     };
 
     this.apiService.createUser(createPayload).subscribe({
@@ -321,7 +310,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private emptyUserModel(): UserFormModel {
-    return { firstName: '', lastName: '', email: '', phoneNumber: '', password: '', roles: [] };
+    return { firstName: '', lastName: '', email: '', phoneNumber: '', password: '', role: null };
   }
 
   private errorMessage(error: any): string {

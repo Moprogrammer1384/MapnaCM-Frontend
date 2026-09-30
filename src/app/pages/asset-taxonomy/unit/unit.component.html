@@ -69,7 +69,7 @@
               <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openEditModal(editUnitModal, unit)">
                 <app-keenicon name="pencil" class="fs-2"></app-keenicon>
               </a>
-              <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" data-kt-site-table-filter="delete_row" (click)="table.confirmDelete(unit, unit.plant)">
+              <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" data-kt-site-table-filter="delete_row" (click)="table.confirmDelete(unit, unit.unit)">
                 <app-keenicon name="trash" class="fs-2"></app-keenicon>
               </a>
             </td>
@@ -173,7 +173,7 @@
       <!--begin::Actions-->
       <div class="text-center">
         <button type="reset" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Cancel</button>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary" [attr.data-kt-indicator]="saving ? 'on' : 'off'">
           <span class="indicator-label">{{ submitLabel }}</span>
           <span class="indicator-progress">Please wait...
           <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>

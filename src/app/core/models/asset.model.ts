@@ -37,6 +37,10 @@ export interface Plant {
   name: string;
   siteId: number;
   plantTypeId: number;
+  /** Identity user id carrying the Employer role (one employer per plant). */
+  employerId?: string | null;
+  /** Display snapshot of the employer user's name. */
+  employerName?: string | null;
   /** "City (lat, lng)" display label resolved by the backend. */
   siteLabel: string;
   typeName: string;
@@ -48,4 +52,65 @@ export interface PlantPayload {
   name: string;
   siteId: number;
   plantTypeId: number;
+  employerId: string;
+  employerName: string;
+}
+
+/** One unit of a plant (Unit -> Plant). */
+export interface Unit {
+  id: number;
+  name: string;
+  plantId: number;
+  plantName: string;
+  /** "Plant - City - Type" display label resolved by the backend. */
+  plantLabel: string;
+  createdAtUtc?: string | null;
+  lastModifiedAtUtc?: string | null;
+}
+
+export interface UnitPayload {
+  name: string;
+  plantId: number;
+}
+
+/** The UI's "System" taxonomy level (System -> Unit -> Plant). */
+export interface AssetSystem {
+  id: number;
+  name: string;
+  unitId: number;
+  unitName: string;
+  /** "Unit - Plant" display label resolved by the backend. */
+  unitLabel: string;
+  createdAtUtc?: string | null;
+  lastModifiedAtUtc?: string | null;
+}
+
+export interface SystemPayload {
+  name: string;
+  unitId: number;
+}
+
+/** The leaf of the taxonomy (Asset -> System -> Unit -> Plant). */
+export interface Asset {
+  id: number;
+  name: string;
+  systemId: number;
+  systemName: string;
+  /** "System - Unit - Plant" display label resolved by the backend. */
+  systemLabel: string;
+  createdAtUtc?: string | null;
+  lastModifiedAtUtc?: string | null;
+}
+
+export interface AssetPayload {
+  name: string;
+  systemId: number;
+}
+
+/** Row of GET /User/GetUsersByRole (Identity users carrying a role). */
+export interface RoleUser {
+  id: string;
+  userName: string;
+  firstName?: string | null;
+  lastName?: string | null;
 }

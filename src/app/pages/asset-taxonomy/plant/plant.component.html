@@ -305,9 +305,9 @@
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-15 fv-row">
         <label class="required fs-6 fw-semibold mb-2" [for]="formId + '_employer'">Assign Employer</label>
-        <select [id]="formId + '_employer'" aria-label="Assign Employer" class="form-select form-select-solid" data-control="select2" data-placeholder="Select an Employer" name="employer" [(ngModel)]="plantFormModel.employer" required>
+        <select [id]="formId + '_employer'" aria-label="Assign Employer" class="form-select form-select-solid" data-control="select2" data-placeholder="Select an Employer" name="employer" [(ngModel)]="plantFormModel.employerId" required>
           <option [ngValue]="null" disabled>Select employer...</option>
-          <option *ngFor="let e of employers" [ngValue]="e">{{ e }}</option>
+          <option *ngFor="let u of employerUsers" [ngValue]="u.id">{{ u.name }}</option>
         </select>
       </div>
       <!--end::Input group-->

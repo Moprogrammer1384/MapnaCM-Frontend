@@ -173,7 +173,7 @@
       <!--begin::Actions-->
       <div class="text-center">
         <button type="reset" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Cancel</button>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary" [attr.data-kt-indicator]="saving ? 'on' : 'off'">
           <span class="indicator-label">{{ submitLabel }}</span>
           <span class="indicator-progress">Please wait...
           <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>

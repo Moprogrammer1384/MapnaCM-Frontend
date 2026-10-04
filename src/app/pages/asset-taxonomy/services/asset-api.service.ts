@@ -129,6 +129,22 @@ export class AssetApiService {
       );
   }
 
+  /**
+   * Selectable employer options (users carrying the Employer role), with a
+   * display name. Single source for the plant form select and every employer
+   * filter in the taxonomy pages.
+   */
+  getEmployerOptions(): Observable<{ id: string; name: string }[]> {
+    return this.getUsersByRole('Employer').pipe(
+      map((users) =>
+        users.map((user) => ({
+          id: user.id,
+          name: [user.firstName, user.lastName].filter((part) => !!part).join(' ').trim() || user.userName,
+        }))
+      )
+    );
+  }
+
   // ---- Units ----------------------------------------------------------
 
   getAllUnits(): Observable<Unit[]> {

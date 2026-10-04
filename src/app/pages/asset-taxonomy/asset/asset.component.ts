@@ -2,10 +2,9 @@ import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
-import { AssetPayload } from 'src/app/core/models/asset.model';
+import { Asset, AssetPayload, AssetSystem } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
 import { ClientTable } from '../client-table';
-import { EMPLOYERS, employerOf } from '../employers';
 
 interface AssetRow extends Record<string, string> {
   id: string;
@@ -42,7 +41,8 @@ export class AssetComponent implements OnInit {
   // Dropdown options are the display labels; ids are resolved through the
   // label -> id map filled when the systems load.
   systemOptions: string[] = [];
-  employers: string[] = EMPLOYERS;
+  // Employer filter options (names of the Employer-role users, from the API).
+  employers: string[] = [];
   employerFilter: string | null = null;
   systemFilter: string | null = null;
 
@@ -65,7 +65,18 @@ export class AssetComponent implements OnInit {
 
   ngOnInit(): void {
     this.table.onConfirmedDelete = (row) => this.deleteAssetConfirmed(row);
+    this.loadEmployerOptions();
     this.refresh();
+  }
+
+  private loadEmployerOptions(): void {
+    this.apiService.getEmployerOptions().subscribe({
+      next: (users) => {
+        this.employers = users.map((user) => user.name);
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load employer users.'),
+    });
   }
 
   filterByEmployer(employer: string | null): void {
@@ -84,13 +95,14 @@ export class AssetComponent implements OnInit {
 
   private loadSystems(): void {
     this.apiService.getAllSystems().subscribe({
-      next: (systems) => {
+      next: (systems: AssetSystem[]) => {
         this.systemOptions = [];
         this.systemIdByLabel = {};
         this.unitIdBySystemId = {};
 
         for (const system of systems) {
-          const label = `${system.name} - ${system.unitLabel}`;
+          // Backend hierarchy label: "City - Plant - Unit - System" (top-down).
+          const label = system.hierarchyLabel;
           this.systemOptions.push(label);
           this.systemIdByLabel[label] = system.id;
           this.unitIdBySystemId[system.id] = system.unitId;
@@ -122,7 +134,7 @@ export class AssetComponent implements OnInit {
       next: (plants) => {
         this.employerByPlantId = {};
         for (const plant of plants) {
-          this.employerByPlantId[plant.id] = plant.employerName || employerOf(plant.name);
+          this.employerByPlantId[plant.id] = plant.employerName || '—';
         }
 
         this.loadAssets();
@@ -131,26 +143,27 @@ export class AssetComponent implements OnInit {
     });
   }
 
-  private employerOfSystem(systemId: number, fallbackLabel: string): string {
+  private toAssetRow(asset: Asset): AssetRow {
+    return {
+      id: String(asset.id),
+      asset: asset.name,
+      system: asset.systemLabel,
+      systemId: String(asset.systemId),
+      employer: this.employerOfSystem(asset.systemId),
+    };
+  }
+
+  private employerOfSystem(systemId: number): string {
     const unitId = this.unitIdBySystemId[systemId];
     const plantId = unitId !== undefined ? this.plantIdByUnitId[unitId] : undefined;
-    return (plantId && this.employerByPlantId[plantId]) || employerOf(fallbackLabel);
+    return (plantId && this.employerByPlantId[plantId]) || '—';
   }
 
   private loadAssets(): void {
     this.apiService.getAllAssets().subscribe({
       next: (assets) => {
-        this.table.rows = assets.map((asset) => ({
-          id: String(asset.id),
-          asset: asset.name,
-          system: asset.systemLabel,
-          systemId: String(asset.systemId),
-          employer: this.employerOfSystem(asset.systemId, asset.systemLabel),
-        }));
+        this.table.rows = assets.map((asset) => this.toAssetRow(asset));
         this.table.page = 1;
-        this.employers = [...new Set([...EMPLOYERS, ...this.table.rows.map((row) => row.employer)])]
-          .filter(Boolean)
-          .sort();
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load assets.'),

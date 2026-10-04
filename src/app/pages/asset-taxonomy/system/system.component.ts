@@ -2,10 +2,9 @@ import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
-import { SystemPayload } from 'src/app/core/models/asset.model';
+import { AssetSystem, SystemPayload, Unit } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
 import { ClientTable } from '../client-table';
-import { EMPLOYERS, employerOf } from '../employers';
 
 interface SystemRow extends Record<string, string> {
   id: string;
@@ -42,7 +41,8 @@ export class SystemComponent implements OnInit {
   // Dropdown options are the display labels; ids are resolved through the
   // label -> id map filled when the units load.
   unitOptions: string[] = [];
-  employers: string[] = EMPLOYERS;
+  // Employer filter options (names of the Employer-role users, from the API).
+  employers: string[] = [];
   employerFilter: string | null = null;
   unitFilter: string | null = null;
 
@@ -63,7 +63,18 @@ export class SystemComponent implements OnInit {
 
   ngOnInit(): void {
     this.table.onConfirmedDelete = (row) => this.deleteSystemConfirmed(row);
+    this.loadEmployerOptions();
     this.refresh();
+  }
+
+  private loadEmployerOptions(): void {
+    this.apiService.getEmployerOptions().subscribe({
+      next: (users) => {
+        this.employers = users.map((user) => user.name);
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load employer users.'),
+    });
   }
 
   filterByEmployer(employer: string | null): void {
@@ -82,12 +93,13 @@ export class SystemComponent implements OnInit {
 
   private loadUnits(): void {
     this.apiService.getAllUnits().subscribe({
-      next: (units) => {
+      next: (units: Unit[]) => {
         this.unitOptions = [];
         this.unitIdByLabel = {};
 
         for (const unit of units) {
-          const label = `${unit.name} - ${unit.plantName}`;
+          // Backend hierarchy label: "City - Plant - Unit" (top-down).
+          const label = unit.hierarchyLabel;
           this.unitOptions.push(label);
           this.unitIdByLabel[label] = unit.id;
           this.plantIdByUnitId[unit.id] = unit.plantId;
@@ -105,7 +117,7 @@ export class SystemComponent implements OnInit {
       next: (plants) => {
         this.employerByPlantId = {};
         for (const plant of plants) {
-          this.employerByPlantId[plant.id] = plant.employerName || employerOf(plant.name);
+          this.employerByPlantId[plant.id] = plant.employerName || '—';
         }
 
         this.loadSystems();
@@ -114,25 +126,26 @@ export class SystemComponent implements OnInit {
     });
   }
 
-  private employerOfUnit(unitId: number, fallbackLabel: string): string {
+  private toSystemRow(system: AssetSystem): SystemRow {
+    return {
+      id: String(system.id),
+      system: system.name,
+      unit: system.unitLabel,
+      unitId: String(system.unitId),
+      employer: this.employerOfUnit(system.unitId),
+    };
+  }
+
+  private employerOfUnit(unitId: number): string {
     const plantId = this.plantIdByUnitId[unitId];
-    return (plantId && this.employerByPlantId[plantId]) || employerOf(fallbackLabel);
+    return (plantId && this.employerByPlantId[plantId]) || '—';
   }
 
   private loadSystems(): void {
     this.apiService.getAllSystems().subscribe({
       next: (systems) => {
-        this.table.rows = systems.map((system) => ({
-          id: String(system.id),
-          system: system.name,
-          unit: system.unitLabel,
-          unitId: String(system.unitId),
-          employer: this.employerOfUnit(system.unitId, system.unitLabel),
-        }));
+        this.table.rows = systems.map((system) => this.toSystemRow(system));
         this.table.page = 1;
-        this.employers = [...new Set([...EMPLOYERS, ...this.table.rows.map((row) => row.employer)])]
-          .filter(Boolean)
-          .sort();
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load systems.'),

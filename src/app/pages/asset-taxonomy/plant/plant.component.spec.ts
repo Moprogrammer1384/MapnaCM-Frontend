@@ -28,7 +28,7 @@ describe('Plant Select2 integration', () => {
 
   beforeEach(async () => {
     api = jasmine.createSpyObj<AssetApiService>('AssetApiService', [
-      'getAllSites', 'getAllPlantTypes', 'getAllPlants', 'createPlant', 'updatePlant',
+      'getAllSites', 'getAllPlantTypes', 'getAllPlants', 'createPlant', 'updatePlant', 'getEmployerOptions',
     ]);
     api.getAllSites.and.returnValue(of([
       { id: 11, city: 'Tehran', latitude: '35', longitude: '51', address: '', location: '', elevation: '' },
@@ -36,7 +36,11 @@ describe('Plant Select2 integration', () => {
     ]));
     api.getAllPlantTypes.and.returnValue(of([{ id: 3, name: 'Thermal' }]));
     api.getAllPlants.and.returnValue(of([
-      { id: 7, name: 'Existing plant', plantTypeId: 3, siteId: 22, typeName: 'Thermal', siteLabel: 'Shiraz (29, 52)' },
+      { id: 7, name: 'Existing plant', plantTypeId: 3, siteId: 22, typeName: 'Thermal', siteLabel: 'Shiraz (29, 52)', employerId: 'e2', employerName: 'Sara Ahmadi' },
+    ]));
+    api.getEmployerOptions.and.returnValue(of([
+      { id: 'e1', name: 'Ali Akbari' },
+      { id: 'e2', name: 'Sara Ahmadi' },
     ]));
     api.createPlant.and.returnValue(of(undefined));
     api.updatePlant.and.returnValue(of(undefined));
@@ -53,7 +57,6 @@ describe('Plant Select2 integration', () => {
   });
 
   afterEach(() => {
-    localStorage.removeItem('asset-taxonomy-plant-employers');
     modals.dismissAll();
     fixture.destroy();
   });
@@ -107,8 +110,13 @@ describe('Plant Select2 integration', () => {
     }
     await settle();
     modal().querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    expect(api.createPlant).toHaveBeenCalledOnceWith({ name: 'New plant', plantTypeId: 3, siteId: 11 });
-    expect(JSON.parse(localStorage.getItem('asset-taxonomy-plant-employers')!)['New plant']).toBe('Tehran Power Generation Co.');
+    expect(api.createPlant).toHaveBeenCalledOnceWith({
+      name: 'New plant',
+      plantTypeId: 3,
+      siteId: 11,
+      employerId: 'e1',
+      employerName: 'Ali Akbari',
+    });
   });
 
   it('shows edit selections, then restores placeholders when reopened for adding', async () => {
@@ -124,7 +132,7 @@ describe('Plant Select2 integration', () => {
     await openAdd();
     expect(field('plantTypeId').nextElementSibling!.textContent).toContain('Select a Type');
     expect(field('siteId').nextElementSibling!.textContent).toContain('Select a Site');
-    expect(field('employer').nextElementSibling!.textContent).toContain('Select an Employer');
+    expect(field('employer').nextElementSibling!.textContent).toContain('No Employer');
     expect(modal().querySelectorAll('.select2-container').length).toBe(3);
   });
 

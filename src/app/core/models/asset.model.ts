@@ -37,12 +37,14 @@ export interface Plant {
   name: string;
   siteId: number;
   plantTypeId: number;
-  /** Identity user id carrying the Employer role (one employer per plant). */
+  /** Identity user id carrying the Employer role; null = no employer. */
   employerId?: string | null;
-  /** Display snapshot of the employer user's name. */
+  /** Display snapshot of the employer user's name; null = no employer. */
   employerName?: string | null;
   /** "City (lat, lng)" display label resolved by the backend. */
   siteLabel: string;
+  /** Full hierarchy top-down incl. self: "City - PlantName". */
+  hierarchyLabel: string;
   typeName: string;
   createdAtUtc?: string | null;
   lastModifiedAtUtc?: string | null;
@@ -52,8 +54,9 @@ export interface PlantPayload {
   name: string;
   siteId: number;
   plantTypeId: number;
-  employerId: string;
-  employerName: string;
+  /** Null clears the assignment (plants may have no employer). */
+  employerId?: string | null;
+  employerName?: string | null;
 }
 
 /** One unit of a plant (Unit -> Plant). */
@@ -62,8 +65,10 @@ export interface Unit {
   name: string;
   plantId: number;
   plantName: string;
-  /** "Plant - City - Type" display label resolved by the backend. */
+  /** Full ancestor chain top-down: "City - PlantName". */
   plantLabel: string;
+  /** Ancestor chain + self: "City - PlantName - UnitName". */
+  hierarchyLabel: string;
   createdAtUtc?: string | null;
   lastModifiedAtUtc?: string | null;
 }
@@ -79,8 +84,10 @@ export interface AssetSystem {
   name: string;
   unitId: number;
   unitName: string;
-  /** "Unit - Plant" display label resolved by the backend. */
+  /** Full ancestor chain top-down: "City - PlantName - UnitName". */
   unitLabel: string;
+  /** Ancestor chain + self: "City - PlantName - UnitName - SystemName". */
+  hierarchyLabel: string;
   createdAtUtc?: string | null;
   lastModifiedAtUtc?: string | null;
 }
@@ -96,8 +103,10 @@ export interface Asset {
   name: string;
   systemId: number;
   systemName: string;
-  /** "System - Unit - Plant" display label resolved by the backend. */
+  /** Full ancestor chain top-down: "City - PlantName - UnitName - SystemName". */
   systemLabel: string;
+  /** Ancestor chain + self: "City - PlantName - UnitName - SystemName - AssetName". */
+  hierarchyLabel: string;
   createdAtUtc?: string | null;
   lastModifiedAtUtc?: string | null;
 }

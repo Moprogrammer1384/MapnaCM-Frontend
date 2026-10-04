@@ -4,8 +4,6 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { AssetApiService } from '../services/asset-api.service';
 import { ClientTable } from '../client-table';
-import { EMPLOYERS, employerOf } from '../employers';
-import { RoleUser } from 'src/app/core/models/asset.model';
 
 interface PlantRow extends Record<string, string> {
   id: string;
@@ -69,7 +67,8 @@ export class PlantComponent implements OnInit {
   plantFormModel: PlantFormModel = this.emptyPlantForm();
   typeFormModel: TypeFormModel = this.emptyTypeForm();
   saving = false;
-  employers = EMPLOYERS;
+  // Employer filter options (names of the Employer-role users, from the API).
+  employers: string[] = [];
   employerFilter: string | null = null;
 
   // Identity users carrying the Employer role — the only valid assignments.
@@ -125,12 +124,10 @@ export class PlantComponent implements OnInit {
   }
 
   loadEmployerUsers(): void {
-    this.apiService.getUsersByRole('Employer').subscribe({
+    this.apiService.getEmployerOptions().subscribe({
       next: (users) => {
-        this.employerUsers = users.map((user) => ({
-          id: user.id,
-          name: [user.firstName, user.lastName].filter((part) => !!part).join(' ').trim() || user.userName,
-        }));
+        this.employerUsers = users;
+        this.employers = users.map((user) => user.name);
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load employer users.'),
@@ -147,13 +144,10 @@ export class PlantComponent implements OnInit {
           site: plant.siteLabel,
           plantTypeId: String(plant.plantTypeId),
           siteId: String(plant.siteId),
-          employer: plant.employerName || employerOf(plant.name),
+          employer: plant.employerName || '—',
           employerId: String(plant.employerId ?? ''),
         }));
         this.plants.page = 1;
-        this.employers = [...new Set([...EMPLOYERS, ...this.plants.rows.map((row) => row.employer)])]
-          .filter(Boolean)
-          .sort();
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load plants.'),
@@ -182,20 +176,21 @@ export class PlantComponent implements OnInit {
     if (this.saving) {
       return;
     }
-    if (form.invalid || !this.plantFormModel.plantTypeId || !this.plantFormModel.siteId || !this.plantFormModel.employerId) {
+    if (form.invalid || !this.plantFormModel.plantTypeId || !this.plantFormModel.siteId) {
       form.control.markAllAsTouched();
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
 
     this.saving = true;
+    // Employer is optional: a null id clears the assignment.
     const employer = this.employerUsers.find((user) => user.id === this.plantFormModel.employerId);
     const payload = {
       name: this.plantFormModel.name,
       siteId: this.plantFormModel.siteId,
       plantTypeId: this.plantFormModel.plantTypeId,
-      employerId: this.plantFormModel.employerId,
-      employerName: employer?.name || '',
+      employerId: this.plantFormModel.employerId ?? null,
+      employerName: employer?.name ?? null,
     };
     const isEdit = !!this.plantFormModel.id;
     const request$ = isEdit

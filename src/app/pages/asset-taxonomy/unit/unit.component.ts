@@ -2,10 +2,9 @@ import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
-import { UnitPayload } from 'src/app/core/models/asset.model';
+import { Unit, UnitPayload } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
 import { ClientTable } from '../client-table';
-import { EMPLOYERS, employerOf } from '../employers';
 
 interface UnitRow extends Record<string, string> {
   id: string;
@@ -42,7 +41,8 @@ export class UnitComponent implements OnInit {
   // Dropdown options are the display labels; ids are resolved through the
   // label -> id map filled when the plants load.
   plantOptions: string[] = [];
-  employers: string[] = EMPLOYERS;
+  // Employer filter options (names of the Employer-role users, from the API).
+  employers: string[] = [];
   employerFilter: string | null = null;
   plantFilter: string | null = null;
 
@@ -61,7 +61,18 @@ export class UnitComponent implements OnInit {
 
   ngOnInit(): void {
     this.table.onConfirmedDelete = (row) => this.deleteUnitConfirmed(row);
+    this.loadEmployerOptions();
     this.refresh();
+  }
+
+  private loadEmployerOptions(): void {
+    this.apiService.getEmployerOptions().subscribe({
+      next: (users) => {
+        this.employers = users.map((user) => user.name);
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load employer users.'),
+    });
   }
 
   filterByEmployer(employer: string | null): void {
@@ -86,11 +97,11 @@ export class UnitComponent implements OnInit {
         this.employerByPlantId = {};
 
         for (const plant of plants) {
-          const city = (plant.siteLabel || '').replace(/\s*\(.*\)\s*$/, '');
-          const label = `${plant.name} - ${city} - ${plant.typeName}`;
+          // Backend hierarchy label: "City - PlantName" (top-down).
+          const label = plant.hierarchyLabel;
           this.plantOptions.push(label);
           this.plantIdByLabel[label] = plant.id;
-          this.employerByPlantId[plant.id] = plant.employerName || employerOf(plant.name);
+          this.employerByPlantId[plant.id] = plant.employerName || '—';
         }
         this.plantOptions.sort();
 
@@ -100,28 +111,25 @@ export class UnitComponent implements OnInit {
     });
   }
 
+  private toUnitRow(unit: Unit): UnitRow {
+    return {
+      id: String(unit.id),
+      unit: unit.name,
+      plant: unit.plantLabel,
+      plantId: String(unit.plantId),
+      employer: this.employerByPlantId[unit.plantId] || '—',
+    };
+  }
+
   private loadUnits(): void {
     this.apiService.getAllUnits().subscribe({
       next: (units) => {
-        this.table.rows = units.map((unit) => ({
-          id: String(unit.id),
-          unit: unit.name,
-          plant: unit.plantLabel,
-          plantId: String(unit.plantId),
-          employer: this.employerByPlantId[unit.plantId] || employerOf(unit.plantLabel),
-        }));
+        this.table.rows = units.map((unit) => this.toUnitRow(unit));
         this.table.page = 1;
-        this.refreshEmployers();
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load units.'),
     });
-  }
-
-  private refreshEmployers(): void {
-    this.employers = [...new Set([...EMPLOYERS, ...this.table.rows.map((row) => row.employer)])]
-      .filter(Boolean)
-      .sort();
   }
 
   openAddModal(content: TemplateRef<any>): void {
@@ -192,13 +200,7 @@ export class UnitComponent implements OnInit {
   private loadUnitsOnly(): void {
     this.apiService.getAllUnits().subscribe({
       next: (units) => {
-        this.table.rows = units.map((unit) => ({
-          id: String(unit.id),
-          unit: unit.name,
-          plant: unit.plantLabel,
-          plantId: String(unit.plantId),
-          employer: this.employerByPlantId[unit.plantId] || employerOf(unit.plantLabel),
-        }));
+        this.table.rows = units.map((unit) => this.toUnitRow(unit));
         this.table.page = 1;
         this.cdr.detectChanges();
       },

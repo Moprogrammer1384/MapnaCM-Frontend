@@ -1,5 +1,24 @@
 # Repository Guidelines
 
+## Project Memory
+
+- At the start of each task, read [agent.md](agent.md) for the project map, established decisions, and current validation notes, then inspect the live source relevant to the request.
+- Keep `agent.md` current after development or a project study: update changed architecture, API contracts, storage decisions, and validation results. Date the entry and distinguish verified behavior from assumptions and untested integrations.
+- `CLAUDE.md` is historical guidance. Where it differs from current source, use the verified corrections recorded in `agent.md`. Preserve the user's existing work and keep changes focused on the requested task.
+
+## Development Scope
+
+- The user's explicit scope is Angular UI: build complete, polished components and pages. Other team members implement the backend and database afterward.
+- Missing backend endpoints must not block UI work or trigger backend implementation or database changes. Do not ask the user to choose a backend approach for a UI-only request.
+- Reuse existing frontend integrations where relevant. For new UI without an API, use frontend state or clearly separated mock data, following the established page pattern. Keep models and data access easy for the backend team to connect later; do not invent an API contract or add persistent browser storage unless requested or established for that page.
+
+## UI Source and Metronic Requirements
+
+- Most page requests port an existing HTML design from `C:/Users/hafez/Documents/Mapna/Mapna-UIUX/customize`. Read the specified HTML and its existing CSS/JS dependencies before converting it into an Angular component. Build a page from scratch only when the user requests that.
+- Use existing Metronic content, layout primitives, utility classes, CSS, JavaScript behavior, and dependencies. Preserve the reference design and interactions while adapting markup, bindings, forms, and lifecycle integration to Angular.
+- Do not author custom CSS/SCSS, inline styles, or new handwritten JavaScript for UI design or theme behavior. This is a standing user restriction, including requests that mention styling or JavaScript. Implement the UI with existing theme capabilities and assets.
+- Port page content only; the Angular layout supplies the shared chrome. Reuse already loaded dependencies and existing theme scripts without duplicate plugin initialization. Angular TypeScript for component state, bindings, validation, and integration is part of the conversion; it must not replace existing theme behavior with a newly invented implementation.
+
 ## Project Structure & Module Organization
 This is an Angular 18 application using TypeScript, SCSS, and the Metronic UI framework.
 - `src/app/pages/`: page features, including user, role, and permission management.

@@ -97,7 +97,7 @@ export interface SystemPayload {
   unitId: number;
 }
 
-/** The leaf of the taxonomy (Asset -> System -> Unit -> Plant). */
+/** An asset in the taxonomy (Asset -> System -> Unit -> Plant). */
 export interface Asset {
   id: number;
   name: string;
@@ -114,6 +114,30 @@ export interface Asset {
 export interface AssetPayload {
   name: string;
   systemId: number;
+}
+
+/** A component belonging to an asset (Component -> Asset -> System -> Unit -> Plant). */
+export interface TaxonomyComponent {
+  id: number;
+  name: string;
+  assetId: number;
+}
+
+export interface ComponentPayload {
+  name: string;
+  assetId: number;
+}
+
+/** A measurement belonging to a component. Stored locally until an API is available. */
+export interface TaxonomyMeasurement {
+  id: number;
+  name: string;
+  componentId: number;
+}
+
+export interface MeasurementPayload {
+  name: string;
+  componentId: number;
 }
 
 /** Row of GET /User/GetUsersByRole (Identity users carrying a role). */

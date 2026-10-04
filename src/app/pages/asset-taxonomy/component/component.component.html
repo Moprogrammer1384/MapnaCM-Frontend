@@ -1,0 +1,187 @@
+<!--begin::Table-->
+<div class="card card-flush mt-6 mt-xl-9">
+  <!--begin::Card header-->
+  <div class="card-header mt-5">
+    <!--begin::Card title-->
+    <div class="card-title flex-column">
+      <h3 class="fw-bold mb-1">Component</h3>
+    </div>
+    <!--begin::Card title-->
+    <!--begin::Card toolbar-->
+    <div class="card-toolbar my-1 w-100 w-md-auto gap-3 gap-md-0">
+      <!--begin::Search-->
+      <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
+        <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
+        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Component" (input)="table.search($any($event.target).value)" />
+      </div>
+      <!--end::Search-->
+      <!--begin::Employer filter-->
+      <div class="my-1 me-md-4 w-100 w-md-250px">
+        <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by employer" [ngModel]="employerFilter" (ngModelChange)="filterByEmployer($event)">
+          <option [ngValue]="null">All Employers</option>
+          <option *ngFor="let e of employers" [ngValue]="e">{{ e }}</option>
+        </select>
+      </div>
+      <!--end::Employer filter-->
+      <!--begin::Asset filter-->
+      <div class="my-1 me-md-4 w-100 w-md-250px">
+        <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by asset" [ngModel]="assetFilter" (ngModelChange)="filterByAsset($event)">
+          <option [ngValue]="null">All Assets</option>
+          <option *ngFor="let s of assetOptions" [ngValue]="s">{{ s }}</option>
+        </select>
+      </div>
+      <!--end::Asset filter-->
+      <!--begin::Button-->
+      <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(addComponentModal)">Add Component</a>
+      <!--end::Button-->
+    </div>
+    <!--begin::Card toolbar-->
+  </div>
+  <!--end::Card header-->
+  <!--begin::Card body-->
+  <div class="card-body pt-0">
+    <!--begin::Table container-->
+    <div class="table-responsive dataTables_wrapper dt-bootstrap5 no-footer">
+      <!--begin::Table-->
+      <table id="kt_profile_overview_table" class="table table-row-bordered table-row-dashed gy-4 align-middle fw-bold dataTable no-footer">
+        <thead class="fs-7 text-gray-500 text-uppercase">
+          <tr>
+            <th *ngFor="let col of table.columns" [class]="col.class + ' dt-orderable-asc dt-orderable-desc'" [ngClass]="table.sortClass(col.key)" (click)="table.sortBy(col.key)">
+              <div class="dt-column-header">
+                <span class="dt-column-title" role="button">{{ col.title }}</span>
+                <span class="dt-column-order"></span>
+              </div>
+            </th>
+            <th class="min-w-100px text-end dt-orderable-none">
+              <div class="dt-column-header">
+                <span class="dt-column-title">Actions</span>
+                <span class="dt-column-order"></span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="fs-6">
+          <tr *ngFor="let component of table.paged">
+            <td>{{ component.component }}</td>
+            <td>{{ component.asset }}</td>
+            <td>{{ component.employer }}</td>
+            <td class="text-end text-nowrap">
+              <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openEditModal(editComponentModal, component)">
+                <app-keenicon name="pencil" class="fs-2"></app-keenicon>
+              </a>
+              <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" data-kt-site-table-filter="delete_row" (click)="table.confirmDelete(component, component.component)">
+                <app-keenicon name="trash" class="fs-2"></app-keenicon>
+              </a>
+            </td>
+          </tr>
+          <tr *ngIf="table.filtered.length === 0">
+            <td colspan="4" class="text-center text-gray-500">No matching records found</td>
+          </tr>
+        </tbody>
+      </table>
+      <!--end::Table-->
+      <!--begin::Table footer-->
+      <div class="d-flex flex-column flex-md-row flex-stack flex-wrap gap-3">
+        <div class="d-flex align-items-center">
+          <div class="dataTables_length">
+            <label>
+              <select class="form-select form-select-sm form-select-solid" data-control="select2" data-hide-search="true" data-width="fit-content" aria-label="Page size" [value]="table.pageSize" (change)="table.setPageSize($any($event.target).value)">
+                <option *ngFor="let size of table.pageSizes" [value]="size">{{ size }}</option>
+              </select>
+            </label>
+          </div>
+          <div class="dataTables_info" role="status" aria-live="polite">
+            {{ table.infoStart }} to {{ table.infoEnd }} of {{ table.filtered.length }} entries
+          </div>
+        </div>
+        <div class="dataTables_paginate paging_simple_numbers">
+          <ul class="pagination">
+            <li class="paginate_button page-item previous" [class.disabled]="table.page === 1">
+              <a href="javascript:;" class="page-link" (click)="table.goToPage(table.page - 1)"><i class="previous"></i></a>
+            </li>
+            <li *ngFor="let p of table.pages" class="paginate_button page-item" [class.active]="p === table.page">
+              <a href="javascript:;" class="page-link" (click)="table.goToPage(p)">{{ p }}</a>
+            </li>
+            <li class="paginate_button page-item next" [class.disabled]="table.page === table.totalPages">
+              <a href="javascript:;" class="page-link" (click)="table.goToPage(table.page + 1)"><i class="next"></i></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!--end::Table footer-->
+    </div>
+    <!--end::Table container-->
+  </div>
+  <!--end::Card body-->
+</div>
+<!--end::Card-->
+
+<!--begin::Modal - Add Component-->
+<ng-template #addComponentModal let-modal>
+  <ng-container *ngTemplateOutlet="componentFormTpl; context: { modal: modal, title: 'Add Component', formId: 'kt_modal_add_component_form', submitLabel: 'Submit' }"></ng-container>
+</ng-template>
+<!--end::Modal - Add Component-->
+<!--begin::Modal - Edit Component-->
+<ng-template #editComponentModal let-modal>
+  <ng-container *ngTemplateOutlet="componentFormTpl; context: { modal: modal, title: 'Edit Component', formId: 'kt_modal_edit_component_form', submitLabel: 'Save' }"></ng-container>
+</ng-template>
+<!--end::Modal - Edit Component-->
+<ng-template #componentFormTpl let-modal="modal" let-title="title" let-formId="formId" let-submitLabel="submitLabel">
+  <!--begin::Modal header-->
+  <div class="modal-header pb-0 border-0 justify-content-end">
+    <!--begin::Close-->
+    <div class="btn btn-sm btn-icon btn-active-color-primary" (click)="modal.dismiss('Cross click')">
+      <app-keenicon name="cross" class="fs-1"></app-keenicon>
+    </div>
+    <!--end::Close-->
+  </div>
+  <!--begin::Modal header-->
+  <!--begin::Modal body-->
+  <div class="modal-body scroll-y px-5 px-md-10 px-lg-15 pt-0 pb-10 pb-md-15">
+    <!--begin:Form-->
+    <form [id]="formId" class="form" (ngSubmit)="submit(componentNgForm, modal)" #componentNgForm="ngForm" novalidate>
+      <!--begin::Heading-->
+      <div class="mb-8 mb-md-13 text-center">
+        <!--begin::Title-->
+        <h1 class="mb-3">{{ title }}</h1>
+        <!--end::Title-->
+      </div>
+      <!--end::Heading-->
+      <!--begin::Input group-->
+      <div class="d-flex flex-column mb-8 fv-row">
+        <!--begin::Label-->
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+          <span class="required">Component Name</span>
+        </label>
+        <!--end::Label-->
+        <input type="text" class="form-control form-control-solid" placeholder="Enter Component Name" name="component" [(ngModel)]="componentForm.component" required />
+      </div>
+      <!--end::Input group-->
+      <!--begin::Input group-->
+      <div class="d-flex flex-column mb-15 fv-row">
+        <!--begin::Label-->
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+          <span class="required">Asset Name</span>
+        </label>
+        <!--end::Label-->
+        <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select an Asset" name="asset" [(ngModel)]="componentForm.asset" required>
+          <option [ngValue]="null">Select asset...</option>
+          <option *ngFor="let s of assetOptions" [ngValue]="s">{{ s }}</option>
+        </select>
+      </div>
+      <!--end::Input group-->
+      <!--begin::Actions-->
+      <div class="text-center">
+        <button type="reset" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Cancel</button>
+        <button type="submit" class="btn btn-primary" [attr.data-kt-indicator]="saving ? 'on' : 'off'">
+          <span class="indicator-label">{{ submitLabel }}</span>
+          <span class="indicator-progress">Please wait...
+          <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+        </button>
+      </div>
+      <!--end::Actions-->
+    </form>
+    <!--end:Form-->
+  </div>
+  <!--end::Modal body-->
+</ng-template>

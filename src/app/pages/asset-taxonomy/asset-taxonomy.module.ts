@@ -8,9 +8,10 @@ import { PlantComponent } from './plant/plant.component';
 import { UnitComponent } from './unit/unit.component';
 import { SystemComponent } from './system/system.component';
 import { AssetComponent } from './asset/asset.component';
+import { ComponentComponent } from './component/component.component';
 
 @NgModule({
-  declarations: [SiteComponent, PlantComponent, UnitComponent, SystemComponent, AssetComponent],
+  declarations: [SiteComponent, PlantComponent, UnitComponent, SystemComponent, AssetComponent, ComponentComponent],
   imports: [
     CommonModule,
     SharedModule,
@@ -35,6 +36,10 @@ import { AssetComponent } from './asset/asset.component';
       {
         path: 'asset',
         component: AssetComponent,
+      },
+      {
+        path: 'component',
+        component: ComponentComponent,
       },
       { path: '', redirectTo: 'site', pathMatch: 'full' },
     ]),

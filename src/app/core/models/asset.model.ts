@@ -43,7 +43,7 @@ export interface Plant {
   employerName?: string | null;
   /** "City (lat, lng)" display label resolved by the backend. */
   siteLabel: string;
-  /** Full hierarchy top-down incl. self: "City - PlantName". */
+  /** Full hierarchy top-down incl. self: "City - TypeName - PlantName". */
   hierarchyLabel: string;
   typeName: string;
   createdAtUtc?: string | null;
@@ -65,9 +65,9 @@ export interface Unit {
   name: string;
   plantId: number;
   plantName: string;
-  /** Full ancestor chain top-down: "City - PlantName". */
+  /** Full ancestor chain top-down: "City - TypeName - PlantName". */
   plantLabel: string;
-  /** Ancestor chain + self: "City - PlantName - UnitName". */
+  /** Ancestor chain + self: "City - TypeName - PlantName - UnitName". */
   hierarchyLabel: string;
   createdAtUtc?: string | null;
   lastModifiedAtUtc?: string | null;
@@ -84,9 +84,9 @@ export interface AssetSystem {
   name: string;
   unitId: number;
   unitName: string;
-  /** Full ancestor chain top-down: "City - PlantName - UnitName". */
+  /** Full ancestor chain top-down: "City - TypeName - PlantName - UnitName". */
   unitLabel: string;
-  /** Ancestor chain + self: "City - PlantName - UnitName - SystemName". */
+  /** Ancestor chain + self: "City - TypeName - PlantName - UnitName - SystemName". */
   hierarchyLabel: string;
   createdAtUtc?: string | null;
   lastModifiedAtUtc?: string | null;
@@ -103,9 +103,9 @@ export interface Asset {
   name: string;
   systemId: number;
   systemName: string;
-  /** Full ancestor chain top-down: "City - PlantName - UnitName - SystemName". */
+  /** Full ancestor chain top-down: "City - TypeName - PlantName - UnitName - SystemName". */
   systemLabel: string;
-  /** Ancestor chain + self: "City - PlantName - UnitName - SystemName - AssetName". */
+  /** Ancestor chain + self: "City - TypeName - PlantName - UnitName - SystemName - AssetName". */
   hierarchyLabel: string;
   createdAtUtc?: string | null;
   lastModifiedAtUtc?: string | null;
@@ -122,9 +122,9 @@ export interface TaxonomyComponent {
   name: string;
   assetId: number;
   assetName: string;
-  /** Full ancestor chain top-down: "City - Plant - Unit - System - AssetName". */
+  /** Full ancestor chain top-down: "City - TypeName - Plant - Unit - System - AssetName". */
   assetLabel: string;
-  /** Ancestor chain + self: "City - Plant - Unit - System - Asset - ComponentName". */
+  /** Ancestor chain + self: "City - TypeName - Plant - Unit - System - Asset - ComponentName". */
   hierarchyLabel: string;
   createdAtUtc?: string | null;
   lastModifiedAtUtc?: string | null;
@@ -141,7 +141,7 @@ export interface TaxonomyMeasurement {
   name: string;
   componentId: number;
   componentName: string;
-  /** Full ancestor chain top-down: "City - Plant - Unit - System - Asset - ComponentName". */
+  /** Full ancestor chain top-down: "City - TypeName - Plant - Unit - System - Asset - ComponentName". */
   componentLabel: string;
   /** Ancestor chain + self: "... - Component - MeasurementName". */
   hierarchyLabel: string;

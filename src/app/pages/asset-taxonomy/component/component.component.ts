@@ -4,9 +4,7 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { ComponentPayload } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
-import { ComponentStorageService } from '../services/component-storage.service';
 import { ClientTable } from '../client-table';
-import { EMPLOYERS, employerOf } from '../employers';
 
 interface ComponentRow extends Record<string, string> {
   id: string;
@@ -40,15 +38,17 @@ export class ComponentComponent implements OnInit {
     ]
   );
 
+  // Dropdown options are the backend hierarchy labels ("City - Plant - Unit -
+  // System - Asset"); ids resolve through the label -> id map.
   assetOptions: string[] = [];
-  employers: string[] = EMPLOYERS;
+  // Employer filter options (names of the Employer-role users, from the API).
+  employers: string[] = [];
   employerFilter: string | null = null;
   assetFilter: string | null = null;
   componentForm: ComponentFormModel = this.emptyForm();
   saving = false;
 
   private assetIdByLabel: Record<string, number> = {};
-  private assetLabelById: Record<number, string> = {};
   private systemIdByAssetId: Record<number, number> = {};
   private unitIdBySystemId: Record<number, number> = {};
   private plantIdByUnitId: Record<number, number> = {};
@@ -57,13 +57,23 @@ export class ComponentComponent implements OnInit {
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
-    private componentStorage: ComponentStorageService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.table.onConfirmedDelete = (row) => this.deleteComponentConfirmed(row);
+    this.loadEmployerOptions();
     this.refresh();
+  }
+
+  private loadEmployerOptions(): void {
+    this.apiService.getEmployerOptions().subscribe({
+      next: (users) => {
+        this.employers = users.map((user) => user.name);
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load employer users.'),
+    });
   }
 
   filterByEmployer(employer: string | null): void {
@@ -85,13 +95,12 @@ export class ComponentComponent implements OnInit {
       next: (assets) => {
         this.assetOptions = [];
         this.assetIdByLabel = {};
-        this.assetLabelById = {};
         this.systemIdByAssetId = {};
         for (const asset of assets) {
-          const label = `${asset.name} - ${asset.systemLabel}`;
+          // Backend hierarchy label: "City - Plant - Unit - System - Asset".
+          const label = asset.hierarchyLabel;
           this.assetOptions.push(label);
           this.assetIdByLabel[label] = asset.id;
-          this.assetLabelById[asset.id] = label;
           this.systemIdByAssetId[asset.id] = asset.systemId;
         }
         this.assetOptions.sort();
@@ -132,7 +141,7 @@ export class ComponentComponent implements OnInit {
       next: (plants) => {
         this.employerByPlantId = {};
         for (const plant of plants) {
-          this.employerByPlantId[plant.id] = plant.employerName || employerOf(plant.name);
+          this.employerByPlantId[plant.id] = plant.employerName || '—';
         }
         this.loadComponents();
       },
@@ -140,30 +149,30 @@ export class ComponentComponent implements OnInit {
     });
   }
 
-  private employerOfAsset(assetId: number, fallbackLabel: string): string {
+  private employerOfAsset(assetId: number): string {
     const systemId = this.systemIdByAssetId[assetId];
     const unitId = systemId !== undefined ? this.unitIdBySystemId[systemId] : undefined;
     const plantId = unitId !== undefined ? this.plantIdByUnitId[unitId] : undefined;
-    return (plantId !== undefined && this.employerByPlantId[plantId]) || employerOf(fallbackLabel);
+    return (plantId !== undefined && this.employerByPlantId[plantId]) || '—';
+  }
+
+  private toComponentRow(component: { id: number; name: string; assetId: number; assetLabel: string }): ComponentRow {
+    return {
+      id: String(component.id),
+      component: component.name,
+      // Backend canonical label — identical to the select options, so the
+      // edit prefill matches by string.
+      asset: component.assetLabel,
+      assetId: String(component.assetId),
+      employer: this.employerOfAsset(component.assetId),
+    };
   }
 
   private loadComponents(): void {
-    this.componentStorage.getAllComponents().subscribe({
+    this.apiService.getAllComponents().subscribe({
       next: (components) => {
-        this.table.rows = components.map((component) => {
-          const assetLabel = this.assetLabelById[component.assetId] || `Asset #${component.assetId}`;
-          return {
-            id: String(component.id),
-            component: component.name,
-            asset: assetLabel,
-            assetId: String(component.assetId),
-            employer: this.employerOfAsset(component.assetId, assetLabel),
-          };
-        });
+        this.table.rows = components.map((component) => this.toComponentRow(component));
         this.table.page = 1;
-        this.employers = [...new Set([...EMPLOYERS, ...this.table.rows.map((row) => row.employer)])]
-          .filter(Boolean)
-          .sort();
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load components.'),
@@ -199,8 +208,8 @@ export class ComponentComponent implements OnInit {
     const payload: ComponentPayload = { name: this.componentForm.component, assetId };
     const isEdit = !!this.componentForm.id;
     const request$ = isEdit
-      ? this.componentStorage.updateComponent({ id: this.componentForm.id!, ...payload })
-      : this.componentStorage.createComponent(payload);
+      ? this.apiService.updateComponent({ id: this.componentForm.id!, ...payload })
+      : this.apiService.createComponent(payload);
     request$.subscribe({
       next: () => {
         this.saving = false;
@@ -217,7 +226,7 @@ export class ComponentComponent implements OnInit {
   }
 
   private deleteComponentConfirmed(component: ComponentRow): void {
-    this.componentStorage.deleteComponent(Number(component.id)).subscribe({
+    this.apiService.deleteComponent(Number(component.id)).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + component.component + '!.');
         this.loadComponents();

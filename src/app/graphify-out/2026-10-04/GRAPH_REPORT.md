@@ -1,16 +1,16 @@
-# Graph Report - app  (2026-10-01)
+# Graph Report - app  (2026-10-04)
 
 ## Corpus Check
-- 722 files · ~138,373 words
+- 721 files · ~138,173 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3318 nodes · 6258 edges · 514 communities (110 shown, 404 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 102 edges (avg confidence: 0.8)
+- 3317 nodes · 6257 edges · 510 communities (110 shown, 400 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 105 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f2a9fa3e`
+- Built from commit: `ad5238e5`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -29,9 +29,9 @@
 - widgets-examples.module.ts
 - UserModel
 - PageInfoService
-- .trigger
+- ToggleComponent
 - drawers.module.ts
-- layout.module.ts
+- ContentComponent
 - PlantComponent
 - cards.module.ts
 - ILayout
@@ -39,15 +39,15 @@
 - dropdown-menus.module.ts
 - PasswordMeterComponent
 - auth.module.ts
-- auth.service.ts
-- error404.component.ts
+- getAttributeValueByBreakpoint
+- ThemeModeService
 - config.ts
 - Select2Directive
 - engages.module.ts
 - StickyComponent
 - candlestick-sh-2015-apache-widget.component.ts
 - AuthService
-- ElementAnimateUtil
+- ScrollTopComponent
 - UserInnerComponent
 - account.module.ts
 - ProfileDetailsComponent
@@ -55,35 +55,35 @@
 - SplashScreenService
 - CrudComponent
 - RoleListingComponent
-- ApacheWidgetViewportComponent
+- apache-charts.component.ts
 - UserDetailsComponent
 - extras.module.ts
 - UserListingComponent
 - ApacheEchartsComponent
 - charts-widget5.component.ts
 - getCSSVariableValue
-- UserType
-- errors.component.ts
 - user-inner.component.ts
+- error500.component.ts
+- asset-api.service.ts
 - wizards.module.ts
 - ThemeMode
 - EventHandlerUtil
 - ClientTable
-- ThemeModeSwitcherComponent
+- theme-mode.service.ts
 - RegistrationComponent
 - SwapperComponent
 - ToolbarComponent
-- modals.module.ts
+- LayoutType
 - SignInMethodComponent
-- UserListComponent
+- notifications-inner.component.ts
 - KeeniconComponent
 - app.component.ts
-- ThemeModeService
-- shared.module.ts
+- SaasComponent
+- layout.module.ts
 - wizards-routing.module.ts
 - SystemComponent
 - SiteComponent
-- SidebarLogoComponent
+- layout.service.ts
 - ClassicComponent
 - MixedWidget8Component
 - MixedWidget9Component
@@ -102,14 +102,14 @@
 - Step3Component
 - Step4Component
 - VerticalComponent
-- error500.component.ts
+- ApacheWidgetViewportComponent
 - ReportsComponent
 - BaseTablesWidget1Component
 - BaseTablesWidget2Component
 - BaseTablesWidget6Component
 - MixedWidget10Component
 - MixedWidget11Component
-- theme-mode.service.ts
+- query-params.ts
 - MixedWidget3Component
 - MixedWidget6Component
 - MixedWidget7Component
@@ -125,13 +125,13 @@
 - Step1Component
 - UnitComponent
 - SidebarMenuComponent
-- Card4Component
+- FooterComponent
 - Apache ECharts integration
 - AdvanceTablesWidget2Component
 - AdvanceTablesWidget7Component
 - area-basic-apache-widget.component.ts
 - area-pieces-apache-widget.component.ts
-- StatisticsComponent
+- SidebarFooterComponent
 - area-rainfall-apache-widget.component.ts
 - sidebar.component.ts
 - area-simple-apache-widget.component.ts
@@ -170,7 +170,7 @@
 - bar-gradient-apache-widget.component.ts
 - _utils/index.ts
 - bar-histogram-apache-widget.component.ts
-- apache-echarts-demo.registry.ts
+- bar-dataZoom-filterMode-apache-widget.component.ts
 - Step5Component
 - Apache-Widgets/bar-large/bar-large-apache-widget.component.ts
 - bar-multi-drilldown-apache-widget.component.ts
@@ -210,12 +210,12 @@
 - candlestick-brush-apache-widget.component.ts
 - candlestick-large-apache-widget.component.ts
 - pictorialBar-spirit-apache-widget.component.ts
-- candlestick-sh-apache-widget.component.ts
+- apache-echarts-demo.registry.ts
 - candlestick-simple-apache-widget.component.ts
 - candlestick-touch-apache-widget.component.ts
 - chord-lineStyle-color-apache-widget.component.ts
 - chord-minAngle-apache-widget.component.ts
-- chord-simple-apache-widget.component.ts
+- AccountingComponent
 - chord-style-apache-widget.component.ts
 - circle-packing-with-d3-apache-widget.component.ts
 - confidence-band-apache-widget.component.ts
@@ -246,12 +246,12 @@
 - dataset-simple0-apache-widget.component.ts
 - dataset-simple1-apache-widget.component.ts
 - aria-decal-apache-widget.component.ts
-- GroupChatComponent
+- ExtendedComponent
 - aria-decal-simple-apache-widget.component.ts
 - scatter-weight-apache-widget.component.ts
 - axis-label-align-min-max-apache-widget.component.ts
-- axisPointer-handle-image-apache-widget.component.ts
-- WidgetsExamplesComponent
+- map-visualMap-piecewise-text-apache-widget.component.ts
+- grid-multiple-apache-widget.component.ts
 - doc-example/bar-large/bar-large-apache-widget.component.ts
 - bar-media-timeline-apache-widget.component.ts
 - barGrid-barGap-apache-widget.component.ts
@@ -275,14 +275,14 @@
 - map-visualMap-continuous-apache-widget.component.ts
 - map-visualMap-continuous-text-apache-widget.component.ts
 - map-visualMap-pieces-apache-widget.component.ts
-- ApiEnvelope
+- line-polar2-apache-widget.component.ts
 - matrix-graph-box-apache-widget.component.ts
 - mix-timeline-all-apache-widget.component.ts
 - pictorialBar-clip-apache-widget.component.ts
 - pictorialBar-graphicType-apache-widget.component.ts
 - pictorialBar-patternSize-apache-widget.component.ts
 - pictorialBar-position-apache-widget.component.ts
-- PrivateChatComponent
+- parallel-simple-apache-widget.component.ts
 - pictorialBar-repeatDirection-apache-widget.component.ts
 - pictorialBar-repeatLayout-apache-widget.component.ts
 - pictorialBar-symbolBoundingDataArray-apache-widget.component.ts
@@ -354,7 +354,7 @@
 - geo-svg-custom-effect-apache-widget.component.ts
 - geo-svg-lines-apache-widget.component.ts
 - geo-svg-map-apache-widget.component.ts
-- geo-svg-scatter-simple-apache-widget.component.ts
+- pie-nest-apache-widget.component.ts
 - geo-svg-traffic-apache-widget.component.ts
 - charts-widget3.component.ts
 - graph-force2-apache-widget.component.ts
@@ -370,7 +370,6 @@
 - graphic-loading-apache-widget.component.ts
 - graphic-stroke-animation-apache-widget.component.ts
 - graphic-wave-animation-apache-widget.component.ts
-- ProjectsComponent
 - heatmap-cartesian-apache-widget.component.ts
 - heatmap-large-apache-widget.component.ts
 - heatmap-large-piecewise-apache-widget.component.ts
@@ -390,7 +389,6 @@
 - line-pen-apache-widget.component.ts
 - bar-label-rotation-apache-widget.component.ts
 - line-polar-apache-widget.component.ts
-- line-race-apache-widget.component.ts
 - line-sections-apache-widget.component.ts
 - line-simple-apache-widget.component.ts
 - line-smooth-apache-widget.component.ts
@@ -404,7 +402,6 @@
 - map-bar-morph-apache-widget.component.ts
 - map-HK-apache-widget.component.ts
 - map-iceland-pie-apache-widget.component.ts
-- map-usa-apache-widget.component.ts
 - map-usa-projection-apache-widget.component.ts
 - matrix-confusion-apache-widget.component.ts
 - matrix-correlation-heatmap-apache-widget.component.ts
@@ -448,7 +445,6 @@
 - pie-rich-text-apache-widget.component.ts
 - pie-roseType-apache-widget.component.ts
 - pie-roseType-simple-apache-widget.component.ts
-- pie-simple-apache-widget.component.ts
 - polar-endAngle-apache-widget.component.ts
 - polar-roundCap-apache-widget.component.ts
 - radar2-apache-widget.component.ts
@@ -534,7 +530,7 @@
 2. `MenuComponent` - 61 edges
 3. `getCSSVariableValue()` - 43 edges
 4. `LayoutService` - 43 edges
-5. `AssetApiService` - 41 edges
+5. `AssetApiService` - 42 edges
 6. `AuthService` - 40 edges
 7. `DrawerComponent` - 33 edges
 8. `StepperComponent` - 31 edges
@@ -546,22 +542,22 @@
   modules/profile/projects/projects.component.ts → _metronic/partials/content/cards/icon-user.model.ts
 - `ChatInnerComponent` --references--> `UserType`  [EXTRACTED]
   _metronic/partials/content/chat-inner/chat-inner.component.ts → modules/auth/services/auth.service.ts
+- `ApacheWidgetViewportComponent` --references--> `ApacheEchartsDemo`  [EXTRACTED]
+  modules/widgets-examples/apache-charts/apache-widget-viewport.component.ts → _metronic/partials/content/widgets/charts/Apache-Widgets/apache-echarts-demo.registry.ts
 - `UserInnerComponent` --references--> `UserType`  [EXTRACTED]
   _metronic/partials/layout/extras/dropdown-inner/user-inner/user-inner.component.ts → modules/auth/services/auth.service.ts
 - `UserListingComponent` --references--> `RoleModel`  [EXTRACTED]
   pages/user/user-listing/user-listing.component.ts → core/models/user-management.model.ts
-- `PermissionListingComponent` --references--> `DataTablesResponse`  [EXTRACTED]
-  pages/permission/permission-listing/permission-listing.component.ts → _fake/services/permission.service.ts
 
 ## Import Cycles
 - 4-file cycle: `_metronic/layout/index.ts -> _metronic/layout/layout.module.ts -> _metronic/partials/layout/extras/extras.module.ts -> _metronic/partials/layout/extras/dropdown-inner/notifications-inner/notifications-inner.component.ts -> _metronic/layout/index.ts`
-- 5-file cycle: `_metronic/layout/index.ts -> _metronic/layout/layout.module.ts -> _metronic/partials/index.ts -> _metronic/partials/layout/extras/extras.module.ts -> _metronic/partials/layout/extras/dropdown-inner/notifications-inner/notifications-inner.component.ts -> _metronic/layout/index.ts`
 - 5-file cycle: `_metronic/layout/index.ts -> _metronic/layout/layout.module.ts -> _metronic/partials/index.ts -> _metronic/partials/content/widgets/widgets.module.ts -> _metronic/partials/content/widgets/tiles/tiles-widget1/tiles-widget1.component.ts -> _metronic/layout/index.ts`
+- 5-file cycle: `_metronic/layout/index.ts -> _metronic/layout/layout.module.ts -> _metronic/partials/index.ts -> _metronic/partials/layout/extras/extras.module.ts -> _metronic/partials/layout/extras/dropdown-inner/notifications-inner/notifications-inner.component.ts -> _metronic/layout/index.ts`
 
-## Communities (514 total, 404 thin omitted)
+## Communities (510 total, 400 thin omitted)
 
 ### Community 0 - "MenuComponent"
-Cohesion: 0.09
+Cohesion: 0.10
 Nodes (3): MenuComponent, DataUtil, getElementChild()
 
 ### Community 3 - "widgets.module.ts"
@@ -577,72 +573,72 @@ Cohesion: 0.05
 Nodes (17): DataTablesResponse, IPermissionModel, PermissionService, Injectable, DataTablesResponse, IRoleModel, RoleService, Injectable (+9 more)
 
 ### Community 6 - "chat.module.ts"
-Cohesion: 0.16
-Nodes (9): ChatComponent, Component, ChatModule, NgModule, ChatRoutingModule, routes, NgModule, DrawerChatComponent (+1 more)
+Cohesion: 0.09
+Nodes (15): ChatComponent, Component, ChatModule, NgModule, ChatRoutingModule, routes, NgModule, DrawerChatComponent (+7 more)
 
 ### Community 7 - "partials/index.ts"
-Cohesion: 0.08
-Nodes (12): NgModule, WidgetsModule, ModalConfig, ModalComponent, Component, Input, ViewChild, DashboardComponent (+4 more)
+Cohesion: 0.06
+Nodes (20): NgModule, WidgetsModule, InviteUsersModalComponent, Component, MainModalComponent, Component, ModalConfig, ModalComponent (+12 more)
 
 ### Community 10 - "profile.module.ts"
-Cohesion: 0.11
-Nodes (15): CampaignsComponent, Component, ConnectionsComponent, Component, DocumentsComponent, Component, OverviewComponent, Component (+7 more)
+Cohesion: 0.10
+Nodes (17): CampaignsComponent, Component, ConnectionsComponent, Component, DocumentsComponent, Component, OverviewComponent, Component (+9 more)
 
 ### Community 11 - "widgets-examples.module.ts"
-Cohesion: 0.11
-Nodes (15): ChartsComponent, Component, FeedsComponent, Component, ListsComponent, Component, MixedComponent, Component (+7 more)
+Cohesion: 0.08
+Nodes (19): ChartsComponent, Component, FeedsComponent, Component, ListsComponent, Component, MixedComponent, Component (+11 more)
 
 ### Community 12 - "UserModel"
-Cohesion: 0.11
-Nodes (10): UsersTable, AddressModel, AuthModel, SocialNetworksModel, UserModel, AuthenticationResponse, AuthHTTPService, Injectable (+2 more)
+Cohesion: 0.07
+Nodes (18): appInitializer(), AppModule, NgModule, AuthInterceptor, Injectable, FakeAPIService, Injectable, UsersTable (+10 more)
 
 ### Community 13 - "PageInfoService"
 Cohesion: 0.13
 Nodes (7): PageTitleComponent, Component, Input, PageInfo, PageInfoService, PageLink, Injectable
 
-### Community 14 - ".trigger"
-Cohesion: 0.19
-Nodes (4): ToggleComponent, components, KTHelpers, KTUtil
+### Community 14 - "ToggleComponent"
+Cohesion: 0.09
+Nodes (11): CookieComponent, defaultPasswordMeterOptions, defaultPasswordMeterQueires, IPasswordMeterOptions, IPasswordMeterQueries, defaultToggleOptions, ToggleComponent, ToggleOptions (+3 more)
 
 ### Community 15 - "drawers.module.ts"
 Cohesion: 0.15
 Nodes (8): ChatInnerModule, NgModule, ActivityDrawerComponent, Component, DrawersModule, NgModule, MessengerDrawerComponent, Component
 
-### Community 16 - "layout.module.ts"
-Cohesion: 0.06
-Nodes (19): ContentComponent, Component, Input, FooterComponent, Component, Input, SidebarFooterComponent, Component (+11 more)
+### Community 16 - "ContentComponent"
+Cohesion: 0.29
+Nodes (3): ContentComponent, Component, Input
 
 ### Community 18 - "cards.module.ts"
-Cohesion: 0.10
-Nodes (14): Card1Component, Component, HostBinding, Input, Card3Component, Component, HostBinding, Input (+6 more)
+Cohesion: 0.06
+Nodes (25): Card1Component, Component, HostBinding, Input, Card2Component, Component, Input, Card3Component (+17 more)
 
 ### Community 19 - "ILayout"
-Cohesion: 0.17
+Cohesion: 0.19
 Nodes (6): HeaderComponent, Component, ILayout, LayoutComponent, Component, ViewChild
 
 ### Community 20 - "LayoutService"
-Cohesion: 0.11
-Nodes (9): LayoutType, LayoutInitService, Injectable, LayoutService, Injectable, BuilderComponent, Tabs, Component (+1 more)
+Cohesion: 0.12
+Nodes (6): LayoutService, Injectable, BuilderComponent, Tabs, Component, ViewChild
 
 ### Community 21 - "dropdown-menus.module.ts"
 Cohesion: 0.11
 Nodes (11): DropdownMenu1Component, Component, HostBinding, DropdownMenu2Component, Component, HostBinding, DropdownMenu3Component, Component (+3 more)
 
 ### Community 23 - "auth.module.ts"
-Cohesion: 0.08
-Nodes (14): AuthComponent, Component, AuthModule, NgModule, AuthRoutingModule, routes, NgModule, ErrorStates (+6 more)
+Cohesion: 0.07
+Nodes (16): AuthComponent, Component, AuthModule, NgModule, AuthRoutingModule, routes, NgModule, ErrorStates (+8 more)
 
-### Community 24 - "auth.service.ts"
+### Community 24 - "getAttributeValueByBreakpoint"
 Cohesion: 0.11
-Nodes (13): appInitializer(), AppModule, NgModule, AppRoutingModule, routes, NgModule, AuthInterceptor, Injectable (+5 more)
+Nodes (22): defaultDrawerOptions, DrawerOptions, defaultScrollOptions, ScrollOptions, defaultScrollTopOptions, IScrollTopOptions, defaultStickyOptions, StickyOptions (+14 more)
 
-### Community 25 - "error404.component.ts"
-Cohesion: 0.18
-Nodes (7): Error404Component, Component, ErrorsModule, NgModule, ErrorsRoutingModule, routes, NgModule
+### Community 25 - "ThemeModeService"
+Cohesion: 0.17
+Nodes (4): ThemeModeService, Injectable, Error404Component, Component
 
 ### Community 26 - "config.ts"
-Cohesion: 0.12
-Nodes (24): CSSClassesType, HTMLAttributesType, IApp, IContent, IEngage, IFooter, IGeneral, IHeader (+16 more)
+Cohesion: 0.19
+Nodes (18): IApp, IContent, IEngage, IFooter, IGeneral, IHeader, IIllustrations, ILayoutComponent (+10 more)
 
 ### Community 27 - "Select2Directive"
 Cohesion: 0.27
@@ -653,12 +649,16 @@ Cohesion: 0.13
 Nodes (8): EngagesModule, NgModule, ExploreMainDrawerComponent, Component, HelpDrawerComponent, Component, PurchaseToolbarComponent, Component
 
 ### Community 29 - "StickyComponent"
-Cohesion: 0.08
-Nodes (7): ScrollTopComponent, StickyComponent, ScriptsInitComponent, Component, LayoutScrollTopComponent, Component, HostBinding
+Cohesion: 0.09
+Nodes (7): StickyComponent, menuReinitialization(), ScriptsInitComponent, Component, LayoutScrollTopComponent, Component, HostBinding
+
+### Community 31 - "AuthService"
+Cohesion: 0.15
+Nodes (7): AppRoutingModule, routes, NgModule, AuthGuard, Injectable, AuthService, Injectable
 
 ### Community 33 - "UserInnerComponent"
-Cohesion: 0.17
-Nodes (5): Component, HostBinding, UserInnerComponent, TranslationService, Injectable
+Cohesion: 0.15
+Nodes (6): Component, HostBinding, UserInnerComponent, Locale, TranslationService, Injectable
 
 ### Community 34 - "account.module.ts"
 Cohesion: 0.06
@@ -684,17 +684,17 @@ Nodes (5): CrudComponent, Component, Input, Output, ViewChild
 Cohesion: 0.16
 Nodes (6): RoleModel, RoleListingComponent, Component, ViewChild, RolesApiService, Injectable
 
-### Community 40 - "ApacheWidgetViewportComponent"
-Cohesion: 0.17
-Nodes (8): APACHE_ECHARTS_DEMOS, ApacheEchartsDemo, ApacheChartsComponent, Component, ApacheWidgetViewportComponent, Component, Input, ViewChild
+### Community 40 - "apache-charts.component.ts"
+Cohesion: 0.33
+Nodes (4): APACHE_ECHARTS_DEMOS, ApacheEchartsDemo, ApacheChartsComponent, Component
 
 ### Community 41 - "UserDetailsComponent"
 Cohesion: 0.14
 Nodes (4): AdminUserDetail, USER_AUDIT_ACTION_LABELS, Component, UserDetailsComponent
 
 ### Community 42 - "extras.module.ts"
-Cohesion: 0.07
-Nodes (19): AlertModel, defaultAlerts, defaultLogs, LogModel, NotificationsInnerComponent, NotificationsTabsType, Component, HostBinding (+11 more)
+Cohesion: 0.11
+Nodes (11): QuickLinksInnerComponent, Component, HostBinding, recentlySearchedModels, ResultModel, resultModels, SearchResultInnerComponent, Component (+3 more)
 
 ### Community 43 - "UserListingComponent"
 Cohesion: 0.23
@@ -712,29 +712,29 @@ Nodes (3): ChartsWidget5Component, getChartOptions(), Component
 Cohesion: 0.08
 Nodes (19): getCSSVariableValue(), ChartsWidget1Component, getChartOptions(), Component, ChartsWidget2Component, getChartOptions(), Component, ChartsWidget4Component (+11 more)
 
-### Community 47 - "UserType"
-Cohesion: 0.15
-Nodes (7): menuReinitialization(), NavbarComponent, Component, Input, TopbarComponent, Component, UserType
+### Community 47 - "user-inner.component.ts"
+Cohesion: 0.14
+Nodes (8): NavbarComponent, Component, Input, TopbarComponent, Component, LanguageFlag, languages, UserType
 
-### Community 48 - "errors.component.ts"
-Cohesion: 0.22
-Nodes (4): BODY_CLASSES, ErrorsComponent, Component, HostBinding
+### Community 48 - "error500.component.ts"
+Cohesion: 0.12
+Nodes (11): Error500Component, Component, BODY_CLASSES, ErrorsComponent, Component, HostBinding, ErrorsModule, NgModule (+3 more)
 
-### Community 49 - "user-inner.component.ts"
-Cohesion: 0.22
-Nodes (5): LanguageFlag, languages, TranslationModule, NgModule, Locale
+### Community 49 - "asset-api.service.ts"
+Cohesion: 0.16
+Nodes (19): Asset, AssetPayload, AssetSystem, Plant, PlantType, RoleUser, Site, SystemPayload (+11 more)
 
 ### Community 50 - "wizards.module.ts"
 Cohesion: 0.36
 Nodes (4): ICreateAccount, inits, NgModule, WizardsModule
 
 ### Community 53 - "ClientTable"
-Cohesion: 0.06
-Nodes (17): AssetFormModel, AssetRow, ClientTable, ClientTableColumn, assigned, EMPLOYERS, PLANT_EMPLOYERS, PlantFormModel (+9 more)
+Cohesion: 0.09
+Nodes (6): ClientTable, ClientTableColumn, PlantFormModel, PlantRow, TypeFormModel, TypeRow
 
-### Community 54 - "ThemeModeSwitcherComponent"
-Cohesion: 0.21
-Nodes (6): ThemeModeModule, NgModule, ThemeModeType, ThemeModeSwitcherComponent, Component, Input
+### Community 54 - "theme-mode.service.ts"
+Cohesion: 0.17
+Nodes (6): Mode, ThemeModeComponent, ThemeModeType, ThemeModeSwitcherComponent, Component, Input
 
 ### Community 55 - "RegistrationComponent"
 Cohesion: 0.20
@@ -744,37 +744,41 @@ Nodes (3): ConfirmPasswordValidator, RegistrationComponent, Component
 Cohesion: 0.24
 Nodes (3): ToolbarComponent, Component, Input
 
-### Community 58 - "modals.module.ts"
-Cohesion: 0.16
-Nodes (8): InviteUsersModalComponent, Component, MainModalComponent, Component, ModalsModule, NgModule, Component, UpgradePlanModalComponent
+### Community 58 - "LayoutType"
+Cohesion: 0.24
+Nodes (3): LayoutType, LayoutInitService, Injectable
 
-### Community 60 - "UserListComponent"
-Cohesion: 0.20
-Nodes (7): Card2Component, Component, Input, IconUserModel, Component, Input, UserListComponent
+### Community 60 - "notifications-inner.component.ts"
+Cohesion: 0.17
+Nodes (8): AlertModel, defaultAlerts, defaultLogs, LogModel, NotificationsInnerComponent, NotificationsTabsType, Component, HostBinding
 
 ### Community 61 - "KeeniconComponent"
 Cohesion: 0.25
 Nodes (4): KeeniconComponent, Component, HostBinding, Input
 
 ### Community 62 - "app.component.ts"
-Cohesion: 0.23
-Nodes (6): locale, locale, locale, locale, locale, locale
+Cohesion: 0.17
+Nodes (8): AppComponent, Component, locale, locale, locale, locale, locale, locale
 
-### Community 63 - "ThemeModeService"
-Cohesion: 0.28
-Nodes (4): AppComponent, Component, ThemeModeService, Injectable
+### Community 63 - "SaasComponent"
+Cohesion: 0.33
+Nodes (3): SaasComponent, Component, Input
 
-### Community 64 - "shared.module.ts"
-Cohesion: 0.11
-Nodes (18): TestHostComponent, Component, SharedModule, NgModule, CrudModule, NgModule, AssetTaxonomyModule, NgModule (+10 more)
+### Community 64 - "layout.module.ts"
+Cohesion: 0.09
+Nodes (22): LayoutModule, routes, NgModule, ThemeModeModule, NgModule, TestHostComponent, Component, SharedModule (+14 more)
 
 ### Community 65 - "wizards-routing.module.ts"
 Cohesion: 0.25
 Nodes (5): Component, WizardsComponent, routes, NgModule, WizardsRoutingModule
 
-### Community 68 - "SidebarLogoComponent"
-Cohesion: 0.29
-Nodes (3): SidebarLogoComponent, Component, Input
+### Community 67 - "SiteComponent"
+Cohesion: 0.16
+Nodes (5): SitePayload, SiteComponent, SiteFormModel, SiteRow, Component
+
+### Community 68 - "layout.service.ts"
+Cohesion: 0.14
+Nodes (9): SidebarLogoComponent, Component, Input, CSSClassesType, HTMLAttributesType, DarkSidebarConfig, LightSidebarConfig, getEmptyCssClasses() (+1 more)
 
 ### Community 70 - "MixedWidget8Component"
 Cohesion: 0.32
@@ -813,12 +817,12 @@ Cohesion: 0.25
 Nodes (3): TablesWidget8Component, Tabs, Component
 
 ### Community 79 - "AssetApiService"
-Cohesion: 0.10
-Nodes (16): Asset, AssetPayload, AssetSystem, Plant, PlantPayload, PlantType, RoleUser, Site (+8 more)
+Cohesion: 0.12
+Nodes (4): PlantPayload, PaginatedResult, AssetApiService, Injectable
 
 ### Community 80 - "user-management.model.ts"
-Cohesion: 0.18
-Nodes (10): AdminUser, CreateUserPayload, QueryCriteria, QueryFilter, QuerySort, UserAuditEntry, criteriaToHttpParams(), DataTablesResponse (+2 more)
+Cohesion: 0.23
+Nodes (9): ApiEnvelope, AdminUser, CreateUserPayload, QueryFilter, QuerySort, UserAuditEntry, DataTablesResponse, SEARCHABLE_COLUMNS (+1 more)
 
 ### Community 81 - "UserManagementService"
 Cohesion: 0.32
@@ -835,6 +839,10 @@ Nodes (3): Step3Component, Component, Input
 ### Community 85 - "Step4Component"
 Cohesion: 0.36
 Nodes (3): Step4Component, Component, Input
+
+### Community 87 - "ApacheWidgetViewportComponent"
+Cohesion: 0.29
+Nodes (4): ApacheWidgetViewportComponent, Component, Input, ViewChild
 
 ### Community 88 - "ReportsComponent"
 Cohesion: 0.33
@@ -893,7 +901,7 @@ Cohesion: 0.29
 Nodes (3): TablesWidget4Component, Tabs, Component
 
 ### Community 103 - "TilesWidget1Component"
-Cohesion: 0.28
+Cohesion: 0.38
 Nodes (3): TilesWidget1Component, Component, Input
 
 ### Community 104 - "apache-echarts.component.ts"
@@ -908,9 +916,9 @@ Nodes (3): StatsWidget6Component, Component, Input
 Cohesion: 0.33
 Nodes (3): Step1Component, Component, Input
 
-### Community 111 - "Card4Component"
-Cohesion: 0.33
-Nodes (4): Card4Component, Component, HostBinding, Input
+### Community 111 - "FooterComponent"
+Cohesion: 0.40
+Nodes (3): FooterComponent, Component, Input
 
 ### Community 114 - "AdvanceTablesWidget7Component"
 Cohesion: 0.33
@@ -952,29 +960,17 @@ Nodes (3): StatsWidget5Component, Component, Input
 Cohesion: 0.40
 Nodes (3): TilesWidget13Component, Component, Input
 
-### Community 151 - "AssetComponent"
-Cohesion: 0.19
-Nodes (3): AssetComponent, Component, employerOf()
-
 ### Community 154 - "_utils/index.ts"
-Cohesion: 0.05
-Nodes (56): defaultDrawerOptions, DrawerOptions, defaultFeedbackOptions, FeedbackOptions, defaultMenuOptions, MenuOptions, PopperPlacement, TODO: not done (+48 more)
-
-### Community 156 - "apache-echarts-demo.registry.ts"
-Cohesion: 0.14
-Nodes (12): DocExampleBarDataZoomFilterModeApacheWidgetComponent, Component, DocExampleMapVisualMapPiecewiseTextApacheWidgetComponent, Component, GridMultipleApacheWidgetComponent, Component, LinePolar2ApacheWidgetComponent, Component (+4 more)
+Cohesion: 0.08
+Nodes (28): defaultFeedbackOptions, FeedbackOptions, defaultMenuOptions, MenuOptions, PopperPlacement, TODO: not done, defaultStepperOptions, IStepperOptions (+20 more)
 
 ### Community 180 - "MixedWidget2Component"
 Cohesion: 0.33
 Nodes (4): getChartOptions(), MixedWidget2Component, Component, Input
 
-### Community 232 - "GroupChatComponent"
-Cohesion: 0.33
-Nodes (3): GroupChatComponent, Component, HostBinding
-
-### Community 268 - "PrivateChatComponent"
-Cohesion: 0.33
-Nodes (3): PrivateChatComponent, Component, HostBinding
+### Community 196 - "apache-echarts-demo.registry.ts"
+Cohesion: 0.12
+Nodes (14): CandlestickShApacheWidgetComponent, Component, ChordSimpleApacheWidgetComponent, Component, DocExampleAxisPointerHandleImageApacheWidgetComponent, Component, GeoSvgScatterSimpleApacheWidgetComponent, Component (+6 more)
 
 ### Community 342 - "charts-widget3.component.ts"
 Cohesion: 0.40
@@ -997,24 +993,24 @@ Cohesion: 0.40
 Nodes (3): TilesWidget3Component, Component, Input
 
 ## Knowledge Gaps
-- **95 isolated node(s):** `DataTablesResponse`, `DataTablesResponse`, `EventMeta`, `MenuOptions`, `defaultMenuOptions` (+90 more)
+- **93 isolated node(s):** `DataTablesResponse`, `DataTablesResponse`, `EventMeta`, `MenuOptions`, `defaultMenuOptions` (+88 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **404 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **400 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `SharedModule` connect `shared.module.ts` to `account.module.ts`, `widgets.module.ts`, `vibration.module.ts`, `chat.module.ts`, `extras.module.ts`, `profile.module.ts`, `StatsWidget5Component`, `drawers.module.ts`, `layout.module.ts`, `cards.module.ts`, `wizards.module.ts`, `dropdown-menus.module.ts`, `ThemeModeSwitcherComponent`, `modals.module.ts`, `engages.module.ts`?**
-  _High betweenness centrality (0.256) - this node is a cross-community bridge._
-- **Why does `ApacheEchartsComponent` connect `ApacheEchartsComponent` to `candlestick-sh-2015-apache-widget.component.ts`, `vibration.module.ts`, `apache-echarts.component.ts`, `.initializeChart`, `pictorialBar-repeat-apache-widget.component.ts`, `area-basic-apache-widget.component.ts`, `area-pieces-apache-widget.component.ts`, `area-rainfall-apache-widget.component.ts`, `area-simple-apache-widget.component.ts`, `area-stack-apache-widget.component.ts`, `area-stack-gradient-apache-widget.component.ts`, `area-time-axis-apache-widget.component.ts`, `bar1-apache-widget.component.ts`, `bar-animation-delay-apache-widget.component.ts`, `line-stack-apache-widget.component.ts`, `bar-background-apache-widget.component.ts`, `pictorialBar-body-fill-apache-widget.component.ts`, `bar-breaks-brush-apache-widget.component.ts`, `bar-breaks-simple-apache-widget.component.ts`, `bar-brush-apache-widget.component.ts`, `bar-data-color-apache-widget.component.ts`, `bar-drilldown-apache-widget.component.ts`, `bar-gradient-apache-widget.component.ts`, `bar-histogram-apache-widget.component.ts`, `apache-echarts-demo.registry.ts`, `Apache-Widgets/bar-large/bar-large-apache-widget.component.ts`, `bar-multi-drilldown-apache-widget.component.ts`, `bar-negative2-apache-widget.component.ts`, `bar-negative-apache-widget.component.ts`, `bar-polar-label-radial-apache-widget.component.ts`, `bar-polar-label-tangential-apache-widget.component.ts`, `bar-polar-real-estate-apache-widget.component.ts`, `bar-polar-stack-apache-widget.component.ts`, `bar-polar-stack-radial-apache-widget.component.ts`, `bar-race-apache-widget.component.ts`, `bar-race-country-apache-widget.component.ts`, `bar-rich-text-apache-widget.component.ts`, `bar-simple-apache-widget.component.ts`, `bar-stack-apache-widget.component.ts`, `bar-stack-borderRadius-apache-widget.component.ts`, `bar-stack-normalization-and-variation-apache-widget.component.ts`, `bar-stack-normalization-apache-widget.component.ts`, `bar-tick-align-apache-widget.component.ts`, `bar-waterfall2-apache-widget.component.ts`, `bar-waterfall-apache-widget.component.ts`, `bar-y-category-apache-widget.component.ts`, `bar-y-category-stack-apache-widget.component.ts`, `boxplot-light-velocity-apache-widget.component.ts`, `boxplot-multi-apache-widget.component.ts`, `bubble-gradient-apache-widget.component.ts`, `bump-chart-apache-widget.component.ts`, `calendar-charts-apache-widget.component.ts`, `calendar-effectscatter-apache-widget.component.ts`, `calendar-graph-apache-widget.component.ts`, `calendar-heatmap-apache-widget.component.ts`, `calendar-horizontal-apache-widget.component.ts`, `calendar-pie-apache-widget.component.ts`, `calendar-simple-apache-widget.component.ts`, `calendar-vertical-apache-widget.component.ts`, `candlestick-brush-apache-widget.component.ts`, `candlestick-large-apache-widget.component.ts`, `pictorialBar-spirit-apache-widget.component.ts`, `candlestick-sh-apache-widget.component.ts`, `candlestick-simple-apache-widget.component.ts`, `candlestick-touch-apache-widget.component.ts`, `chord-lineStyle-color-apache-widget.component.ts`, `chord-minAngle-apache-widget.component.ts`, `chord-simple-apache-widget.component.ts`, `chord-style-apache-widget.component.ts`, `circle-packing-with-d3-apache-widget.component.ts`, `confidence-band-apache-widget.component.ts`, `custom-bar-trend-apache-widget.component.ts`, `custom-calendar-icon-apache-widget.component.ts`, `custom-cartesian-polygon-apache-widget.component.ts`, `custom-error-bar-apache-widget.component.ts`, `custom-error-scatter-apache-widget.component.ts`, `custom-gantt-flight-apache-widget.component.ts`, `custom-gauge-apache-widget.component.ts`, `custom-hexbin-apache-widget.component.ts`, `custom-ohlc-apache-widget.component.ts`, `custom-polar-heatmap-apache-widget.component.ts`, `custom-profile-apache-widget.component.ts`, `custom-profit-apache-widget.component.ts`, `custom-spiral-race-apache-widget.component.ts`, `custom-wind-apache-widget.component.ts`, `cycle-plot-apache-widget.component.ts`, `data-transform-aggregate-apache-widget.component.ts`, `data-transform-filter-apache-widget.component.ts`, `data-transform-multiple-pie-apache-widget.component.ts`, `data-transform-sort-bar-apache-widget.component.ts`, `dataset-default-apache-widget.component.ts`, `dataset-encode0-apache-widget.component.ts`, `dataset-encode1-apache-widget.component.ts`, `dataset-link-apache-widget.component.ts`, `dataset-series-layout-by-apache-widget.component.ts`, `dataset-simple0-apache-widget.component.ts`, `dataset-simple1-apache-widget.component.ts`, `aria-decal-apache-widget.component.ts`, `aria-decal-simple-apache-widget.component.ts`, `scatter-weight-apache-widget.component.ts`, `axis-label-align-min-max-apache-widget.component.ts`, `axisPointer-handle-image-apache-widget.component.ts`, `doc-example/bar-large/bar-large-apache-widget.component.ts`, `bar-media-timeline-apache-widget.component.ts`, `barGrid-barGap-apache-widget.component.ts`, `candlestick-axisPointer-apache-widget.component.ts`, `canvas-vs-svg-apache-widget.component.ts`, `canvas-vs-svg-en-apache-widget.component.ts`, `custom-transition-simple-apache-widget.component.ts`, `data-transform-multiple-sort-bar-apache-widget.component.ts`, `dataset-encode-simple0-apache-widget.component.ts`, `geo-roam-indicator-apache-widget.component.ts`, `geo-svg-label-basic-apache-widget.component.ts`, `geo-svg-layout-basic-apache-widget.component.ts`, `geo-svg-named-basic-apache-widget.component.ts`, `getting-started-apache-widget.component.ts`, `graph-roam-indicator-apache-widget.component.ts`, `graphic-bounding-apache-widget.component.ts`, `grid-outerBounds-apache-widget.component.ts`, `label-position-apache-widget.component.ts`, `line-stack-tiled-apache-widget.component.ts`, `map-example-apache-widget.component.ts`, `map-visualMap-continuous-apache-widget.component.ts`, `map-visualMap-continuous-text-apache-widget.component.ts`, `map-visualMap-pieces-apache-widget.component.ts`, `matrix-graph-box-apache-widget.component.ts`, `mix-timeline-all-apache-widget.component.ts`, `pictorialBar-clip-apache-widget.component.ts`, `pictorialBar-graphicType-apache-widget.component.ts`, `pictorialBar-patternSize-apache-widget.component.ts`, `pictorialBar-position-apache-widget.component.ts`, `pictorialBar-repeatDirection-apache-widget.component.ts`, `pictorialBar-repeatLayout-apache-widget.component.ts`, `pictorialBar-symbolBoundingDataArray-apache-widget.component.ts`, `pictorialBar-symbolSize-apache-widget.component.ts`, `pie-highlight-apache-widget.component.ts`, `pie-label-bleedMargin-apache-widget.component.ts`, `pie-label-distanceToLabelLine-apache-widget.component.ts`, `pie-label-margin-apache-widget.component.ts`, `pie-media-apache-widget.component.ts`, `polar-anticlockwise-apache-widget.component.ts`, `polar-end-angle-apache-widget.component.ts`, `polar-start-angle-apache-widget.component.ts`, `doc-example/radar/radar-apache-widget.component.ts`, `scatter-dataZoom-all-apache-widget.component.ts`, `scatter-jitter-avoidOverlap-apache-widget.component.ts`, `scatter-tutorial-dataZoom-1-apache-widget.component.ts`, `scatter-tutorial-dataZoom-2-apache-widget.component.ts`, `scatter-tutorial-dataZoom-3-apache-widget.component.ts`, `scatter-visualMap-categories-apache-widget.component.ts`, `scatter-visualMap-piecewise-apache-widget.component.ts`, `sunburst-color-apache-widget.component.ts`, `sunburst-highlight-ancestor-apache-widget.component.ts`, `sunburst-highlight-descendant-apache-widget.component.ts`, `sunburst-label-align-apache-widget.component.ts`, `doc-example/sunburst-simple/sunburst-simple-apache-widget.component.ts`, `text-block-fragment-apache-widget.component.ts`, `text-fregment-align-apache-widget.component.ts`, `text-options-apache-widget.component.ts`, `timeline-dynamic-series-apache-widget.component.ts`, `title-block-apache-widget.component.ts`, `treemap-borderColor-apache-widget.component.ts`, `tutorial-async-apache-widget.component.ts`, `tutorial-dynamic-data-apache-widget.component.ts`, `tutorial-loading-apache-widget.component.ts`, `tutorial-styling-step0-apache-widget.component.ts`, `tutorial-styling-step1-apache-widget.component.ts`, `tutorial-styling-step2-apache-widget.component.ts`, `tutorial-styling-step3-apache-widget.component.ts`, `tutorial-styling-step4-apache-widget.component.ts`, `tutorial-styling-step5-apache-widget.component.ts`, `value-animation-simple-apache-widget.component.ts`, `dynamic-data2-apache-widget.component.ts`, `dynamic-data-apache-widget.component.ts`, `effectScatter-map-apache-widget.component.ts`, `flame-graph-apache-widget.component.ts`, `funnel-align-apache-widget.component.ts`, `funnel-customize-apache-widget.component.ts`, `funnel-apache-widget.component.ts`, `funnel-mutiple-apache-widget.component.ts`, `gauge-barometer-apache-widget.component.ts`, `gauge-car-apache-widget.component.ts`, `gauge-clock-apache-widget.component.ts`, `gauge-apache-widget.component.ts`, `gauge-grade-apache-widget.component.ts`, `gauge-multi-title-apache-widget.component.ts`, `gauge-progress-apache-widget.component.ts`, `gauge-ring-apache-widget.component.ts`, `gauge-simple-apache-widget.component.ts`, `gauge-speed-apache-widget.component.ts`, `gauge-stage-apache-widget.component.ts`, `gauge-temperature-apache-widget.component.ts`, `geo-beef-cuts-apache-widget.component.ts`, `geo-choropleth-scatter-apache-widget.component.ts`, `geo-graph-apache-widget.component.ts`, `geo-lines-apache-widget.component.ts`, `geo-map-scatter-apache-widget.component.ts`, `geo-organ-apache-widget.component.ts`, `geo-seatmap-flight-apache-widget.component.ts`, `geo-svg-custom-effect-apache-widget.component.ts`, `geo-svg-lines-apache-widget.component.ts`, `geo-svg-map-apache-widget.component.ts`, `geo-svg-scatter-simple-apache-widget.component.ts`, `geo-svg-traffic-apache-widget.component.ts`, `graph-force2-apache-widget.component.ts`, `graph-force-dynamic-apache-widget.component.ts`, `graph-force-apache-widget.component.ts`, `graph-apache-widget.component.ts`, `graph-label-overlap-apache-widget.component.ts`, `graph-life-expectancy-apache-widget.component.ts`, `graph-npm-apache-widget.component.ts`, `graph-simple-apache-widget.component.ts`, `graph-webkit-dep-apache-widget.component.ts`, `graphic-loading-apache-widget.component.ts`, `graphic-stroke-animation-apache-widget.component.ts`, `graphic-wave-animation-apache-widget.component.ts`, `heatmap-cartesian-apache-widget.component.ts`, `heatmap-large-apache-widget.component.ts`, `heatmap-large-piecewise-apache-widget.component.ts`, `heatmap-map-apache-widget.component.ts`, `intraday-breaks-1-apache-widget.component.ts`, `intraday-breaks-2-apache-widget.component.ts`, `line-aqi-apache-widget.component.ts`, `line-draggable-apache-widget.component.ts`, `line-easing-apache-widget.component.ts`, `line-function-apache-widget.component.ts`, `line-gradient-apache-widget.component.ts`, `line-graphic-apache-widget.component.ts`, `line-in-cartesian-coordinate-system-apache-widget.component.ts`, `line-log-apache-widget.component.ts`, `line-marker-apache-widget.component.ts`, `line-pen-apache-widget.component.ts`, `bar-label-rotation-apache-widget.component.ts`, `line-polar-apache-widget.component.ts`, `line-race-apache-widget.component.ts`, `line-sections-apache-widget.component.ts`, `line-simple-apache-widget.component.ts`, `line-smooth-apache-widget.component.ts`, `line-step-apache-widget.component.ts`, `line-style-apache-widget.component.ts`, `line-tooltip-touch-apache-widget.component.ts`, `line-y-category-apache-widget.component.ts`, `lines-airline-apache-widget.component.ts`, `lines-ny-apache-widget.component.ts`, `map-bar-morph-apache-widget.component.ts`, `map-HK-apache-widget.component.ts`, `map-iceland-pie-apache-widget.component.ts`, `map-usa-apache-widget.component.ts`, `map-usa-projection-apache-widget.component.ts`, `matrix-confusion-apache-widget.component.ts`, `matrix-correlation-heatmap-apache-widget.component.ts`, `matrix-correlation-scatter-apache-widget.component.ts`, `matrix-covariance-apache-widget.component.ts`, `matrix-graph-apache-widget.component.ts`, `matrix-grid-layout-apache-widget.component.ts`, `matrix-mbti-apache-widget.component.ts`, `matrix-mini-bar-data-collection-apache-widget.component.ts`, `matrix-mini-bar-geo-apache-widget.component.ts`, `matrix-periodic-table-apache-widget.component.ts`, `matrix-pie-apache-widget.component.ts`, `matrix-simple-apache-widget.component.ts`, `matrix-sparkline-apache-widget.component.ts`, `matrix-stock-apache-widget.component.ts`, `mix-line-bar-apache-widget.component.ts`, `mix-timeline-finance-apache-widget.component.ts`, `multiple-x-axis-apache-widget.component.ts`, `multiple-y-axis-apache-widget.component.ts`, `parallel-aqi-apache-widget.component.ts`, `parallel-nutrients-apache-widget.component.ts`, `aria-pie-apache-widget.component.ts`, `pictorialBar-dotted-apache-widget.component.ts`, `pictorialBar-forest-apache-widget.component.ts`, `pictorialBar-hill-apache-widget.component.ts`, `pictorialBar-vehicle-apache-widget.component.ts`, `pictorialBar-velocity-apache-widget.component.ts`, `pie-alignTo-apache-widget.component.ts`, `pie-borderRadius-apache-widget.component.ts`, `pie-custom-apache-widget.component.ts`, `pie-doughnut-apache-widget.component.ts`, `pie-half-donut-apache-widget.component.ts`, `pie-labelLine-adjust-apache-widget.component.ts`, `pie-legend-apache-widget.component.ts`, `boxplot-light-velocity2-apache-widget.component.ts`, `pie-padAngle-apache-widget.component.ts`, `pie-parliament-transition-apache-widget.component.ts`, `pie-pattern-apache-widget.component.ts`, `pie-rich-text-apache-widget.component.ts`, `pie-roseType-apache-widget.component.ts`, `pie-roseType-simple-apache-widget.component.ts`, `pie-simple-apache-widget.component.ts`, `polar-endAngle-apache-widget.component.ts`, `polar-roundCap-apache-widget.component.ts`, `radar2-apache-widget.component.ts`, `radar-aqi-apache-widget.component.ts`, `radar-custom-apache-widget.component.ts`, `radar-multiple-apache-widget.component.ts`, `Apache-Widgets/radar/radar-apache-widget.component.ts`, `sankey-energy-apache-widget.component.ts`, `sankey-itemstyle-apache-widget.component.ts`, `sankey-levels-apache-widget.component.ts`, `sankey-nodeAlign-left-apache-widget.component.ts`, `sankey-nodeAlign-right-apache-widget.component.ts`, `sankey-simple-apache-widget.component.ts`, `sankey-vertical-apache-widget.component.ts`, `scatter-aggregate-bar-apache-widget.component.ts`, `scatter-anscombe-quartet-apache-widget.component.ts`, `scatter-aqi-color-apache-widget.component.ts`, `scatter-clustering-process-apache-widget.component.ts`, `scatter-clustering-apache-widget.component.ts`, `scatter-effect-apache-widget.component.ts`, `scatter-exponential-regression-apache-widget.component.ts`, `scatter-jitter-apache-widget.component.ts`, `scatter-label-align-right-apache-widget.component.ts`, `scatter-label-align-top-apache-widget.component.ts`, `scatter-large-apache-widget.component.ts`, `scatter-life-expectancy-timeline-apache-widget.component.ts`, `scatter-linear-regression-apache-widget.component.ts`, `scatter-logarithmic-regression-apache-widget.component.ts`, `scatter-map-brush-apache-widget.component.ts`, `scatter-map-apache-widget.component.ts`, `scatter-matrix-apache-widget.component.ts`, `scatter-nebula-apache-widget.component.ts`, `scatter-nutrients-matrix-apache-widget.component.ts`, `scatter-nutrients-apache-widget.component.ts`, `scatter-painter-choice-apache-widget.component.ts`, `scatter-polar-punchCard-apache-widget.component.ts`, `scatter-polynomial-regression-apache-widget.component.ts`, `scatter-punchCard-apache-widget.component.ts`, `scatter-simple-apache-widget.component.ts`, `scatter-single-axis-apache-widget.component.ts`, `scatter-stream-visual-apache-widget.component.ts`, `scatter-symbol-morph-apache-widget.component.ts`, `scatter-weibo-apache-widget.component.ts`, `scatter-world-population-apache-widget.component.ts`, `graph-circular-layout-apache-widget.component.ts`, `sunburst-borderRadius-apache-widget.component.ts`, `sunburst-drink-apache-widget.component.ts`, `sunburst-label-rotate-apache-widget.component.ts`, `sunburst-monochrome-apache-widget.component.ts`, `Apache-Widgets/sunburst-simple/sunburst-simple-apache-widget.component.ts`, `sunburst-visualMap-apache-widget.component.ts`, `themeRiver-basic-apache-widget.component.ts`, `themeRiver-lastfm-apache-widget.component.ts`, `tree-basic-apache-widget.component.ts`, `tree-legend-apache-widget.component.ts`, `tree-orient-bottom-top-apache-widget.component.ts`, `tree-orient-right-left-apache-widget.component.ts`, `tree-polyline-apache-widget.component.ts`, `tree-radial-apache-widget.component.ts`, `tree-vertical-apache-widget.component.ts`, `treemap-disk-apache-widget.component.ts`, `treemap-drill-down-apache-widget.component.ts`, `treemap-obama-apache-widget.component.ts`, `treemap-show-parent-apache-widget.component.ts`, `treemap-simple-apache-widget.component.ts`, `treemap-sunburst-transition-apache-widget.component.ts`, `treemap-visual-apache-widget.component.ts`, `watermark-apache-widget.component.ts`, `wind-barb-apache-widget.component.ts`, `mix-zoom-on-value-apache-widget.component.ts`, `pictorialBar-bar-transition-apache-widget.component.ts`, `sunburst-book-apache-widget.component.ts`, `aria-decal-newspaper-apache-widget.component.ts`, `graph-grid-apache-widget.component.ts`, `line-markline-apache-widget.component.ts`, `calendar-lunar-apache-widget.component.ts`, `parallel-all-apache-widget.component.ts`, `line-fisheye-lens-apache-widget.component.ts`?**
+- **Why does `SharedModule` connect `layout.module.ts` to `account.module.ts`, `widgets.module.ts`, `vibration.module.ts`, `chat.module.ts`, `partials/index.ts`, `extras.module.ts`, `profile.module.ts`, `StatsWidget5Component`, `drawers.module.ts`, `asset-api.service.ts`, `cards.module.ts`, `wizards.module.ts`, `dropdown-menus.module.ts`, `engages.module.ts`?**
+  _High betweenness centrality (0.255) - this node is a cross-community bridge._
+- **Why does `ApacheEchartsComponent` connect `ApacheEchartsComponent` to `candlestick-sh-2015-apache-widget.component.ts`, `vibration.module.ts`, `apache-echarts.component.ts`, `.initializeChart`, `pictorialBar-repeat-apache-widget.component.ts`, `area-basic-apache-widget.component.ts`, `area-pieces-apache-widget.component.ts`, `area-rainfall-apache-widget.component.ts`, `area-simple-apache-widget.component.ts`, `area-stack-apache-widget.component.ts`, `area-stack-gradient-apache-widget.component.ts`, `area-time-axis-apache-widget.component.ts`, `bar1-apache-widget.component.ts`, `bar-animation-delay-apache-widget.component.ts`, `line-stack-apache-widget.component.ts`, `bar-background-apache-widget.component.ts`, `pictorialBar-body-fill-apache-widget.component.ts`, `bar-breaks-brush-apache-widget.component.ts`, `bar-breaks-simple-apache-widget.component.ts`, `bar-brush-apache-widget.component.ts`, `bar-data-color-apache-widget.component.ts`, `bar-drilldown-apache-widget.component.ts`, `bar-gradient-apache-widget.component.ts`, `bar-histogram-apache-widget.component.ts`, `bar-dataZoom-filterMode-apache-widget.component.ts`, `Apache-Widgets/bar-large/bar-large-apache-widget.component.ts`, `bar-multi-drilldown-apache-widget.component.ts`, `bar-negative2-apache-widget.component.ts`, `bar-negative-apache-widget.component.ts`, `bar-polar-label-radial-apache-widget.component.ts`, `bar-polar-label-tangential-apache-widget.component.ts`, `bar-polar-real-estate-apache-widget.component.ts`, `bar-polar-stack-apache-widget.component.ts`, `bar-polar-stack-radial-apache-widget.component.ts`, `bar-race-apache-widget.component.ts`, `bar-race-country-apache-widget.component.ts`, `bar-rich-text-apache-widget.component.ts`, `bar-simple-apache-widget.component.ts`, `bar-stack-apache-widget.component.ts`, `bar-stack-borderRadius-apache-widget.component.ts`, `bar-stack-normalization-and-variation-apache-widget.component.ts`, `bar-stack-normalization-apache-widget.component.ts`, `bar-tick-align-apache-widget.component.ts`, `bar-waterfall2-apache-widget.component.ts`, `bar-waterfall-apache-widget.component.ts`, `bar-y-category-apache-widget.component.ts`, `bar-y-category-stack-apache-widget.component.ts`, `boxplot-light-velocity-apache-widget.component.ts`, `boxplot-multi-apache-widget.component.ts`, `bubble-gradient-apache-widget.component.ts`, `bump-chart-apache-widget.component.ts`, `calendar-charts-apache-widget.component.ts`, `calendar-effectscatter-apache-widget.component.ts`, `calendar-graph-apache-widget.component.ts`, `calendar-heatmap-apache-widget.component.ts`, `calendar-horizontal-apache-widget.component.ts`, `calendar-pie-apache-widget.component.ts`, `calendar-simple-apache-widget.component.ts`, `calendar-vertical-apache-widget.component.ts`, `candlestick-brush-apache-widget.component.ts`, `candlestick-large-apache-widget.component.ts`, `pictorialBar-spirit-apache-widget.component.ts`, `apache-echarts-demo.registry.ts`, `candlestick-simple-apache-widget.component.ts`, `candlestick-touch-apache-widget.component.ts`, `chord-lineStyle-color-apache-widget.component.ts`, `chord-minAngle-apache-widget.component.ts`, `chord-style-apache-widget.component.ts`, `circle-packing-with-d3-apache-widget.component.ts`, `confidence-band-apache-widget.component.ts`, `custom-bar-trend-apache-widget.component.ts`, `custom-calendar-icon-apache-widget.component.ts`, `custom-cartesian-polygon-apache-widget.component.ts`, `custom-error-bar-apache-widget.component.ts`, `custom-error-scatter-apache-widget.component.ts`, `custom-gantt-flight-apache-widget.component.ts`, `custom-gauge-apache-widget.component.ts`, `custom-hexbin-apache-widget.component.ts`, `custom-ohlc-apache-widget.component.ts`, `custom-polar-heatmap-apache-widget.component.ts`, `custom-profile-apache-widget.component.ts`, `custom-profit-apache-widget.component.ts`, `custom-spiral-race-apache-widget.component.ts`, `custom-wind-apache-widget.component.ts`, `cycle-plot-apache-widget.component.ts`, `data-transform-aggregate-apache-widget.component.ts`, `data-transform-filter-apache-widget.component.ts`, `data-transform-multiple-pie-apache-widget.component.ts`, `data-transform-sort-bar-apache-widget.component.ts`, `dataset-default-apache-widget.component.ts`, `dataset-encode0-apache-widget.component.ts`, `dataset-encode1-apache-widget.component.ts`, `dataset-link-apache-widget.component.ts`, `dataset-series-layout-by-apache-widget.component.ts`, `dataset-simple0-apache-widget.component.ts`, `dataset-simple1-apache-widget.component.ts`, `aria-decal-apache-widget.component.ts`, `aria-decal-simple-apache-widget.component.ts`, `scatter-weight-apache-widget.component.ts`, `axis-label-align-min-max-apache-widget.component.ts`, `map-visualMap-piecewise-text-apache-widget.component.ts`, `grid-multiple-apache-widget.component.ts`, `doc-example/bar-large/bar-large-apache-widget.component.ts`, `bar-media-timeline-apache-widget.component.ts`, `barGrid-barGap-apache-widget.component.ts`, `candlestick-axisPointer-apache-widget.component.ts`, `canvas-vs-svg-apache-widget.component.ts`, `canvas-vs-svg-en-apache-widget.component.ts`, `custom-transition-simple-apache-widget.component.ts`, `data-transform-multiple-sort-bar-apache-widget.component.ts`, `dataset-encode-simple0-apache-widget.component.ts`, `geo-roam-indicator-apache-widget.component.ts`, `geo-svg-label-basic-apache-widget.component.ts`, `geo-svg-layout-basic-apache-widget.component.ts`, `geo-svg-named-basic-apache-widget.component.ts`, `getting-started-apache-widget.component.ts`, `graph-roam-indicator-apache-widget.component.ts`, `graphic-bounding-apache-widget.component.ts`, `grid-outerBounds-apache-widget.component.ts`, `label-position-apache-widget.component.ts`, `line-stack-tiled-apache-widget.component.ts`, `map-example-apache-widget.component.ts`, `map-visualMap-continuous-apache-widget.component.ts`, `map-visualMap-continuous-text-apache-widget.component.ts`, `map-visualMap-pieces-apache-widget.component.ts`, `line-polar2-apache-widget.component.ts`, `matrix-graph-box-apache-widget.component.ts`, `mix-timeline-all-apache-widget.component.ts`, `pictorialBar-clip-apache-widget.component.ts`, `pictorialBar-graphicType-apache-widget.component.ts`, `pictorialBar-patternSize-apache-widget.component.ts`, `pictorialBar-position-apache-widget.component.ts`, `parallel-simple-apache-widget.component.ts`, `pictorialBar-repeatDirection-apache-widget.component.ts`, `pictorialBar-repeatLayout-apache-widget.component.ts`, `pictorialBar-symbolBoundingDataArray-apache-widget.component.ts`, `pictorialBar-symbolSize-apache-widget.component.ts`, `pie-highlight-apache-widget.component.ts`, `pie-label-bleedMargin-apache-widget.component.ts`, `pie-label-distanceToLabelLine-apache-widget.component.ts`, `pie-label-margin-apache-widget.component.ts`, `pie-media-apache-widget.component.ts`, `polar-anticlockwise-apache-widget.component.ts`, `polar-end-angle-apache-widget.component.ts`, `polar-start-angle-apache-widget.component.ts`, `doc-example/radar/radar-apache-widget.component.ts`, `scatter-dataZoom-all-apache-widget.component.ts`, `scatter-jitter-avoidOverlap-apache-widget.component.ts`, `scatter-tutorial-dataZoom-1-apache-widget.component.ts`, `scatter-tutorial-dataZoom-2-apache-widget.component.ts`, `scatter-tutorial-dataZoom-3-apache-widget.component.ts`, `scatter-visualMap-categories-apache-widget.component.ts`, `scatter-visualMap-piecewise-apache-widget.component.ts`, `sunburst-color-apache-widget.component.ts`, `sunburst-highlight-ancestor-apache-widget.component.ts`, `sunburst-highlight-descendant-apache-widget.component.ts`, `sunburst-label-align-apache-widget.component.ts`, `doc-example/sunburst-simple/sunburst-simple-apache-widget.component.ts`, `text-block-fragment-apache-widget.component.ts`, `text-fregment-align-apache-widget.component.ts`, `text-options-apache-widget.component.ts`, `timeline-dynamic-series-apache-widget.component.ts`, `title-block-apache-widget.component.ts`, `treemap-borderColor-apache-widget.component.ts`, `tutorial-async-apache-widget.component.ts`, `tutorial-dynamic-data-apache-widget.component.ts`, `tutorial-loading-apache-widget.component.ts`, `tutorial-styling-step0-apache-widget.component.ts`, `tutorial-styling-step1-apache-widget.component.ts`, `tutorial-styling-step2-apache-widget.component.ts`, `tutorial-styling-step3-apache-widget.component.ts`, `tutorial-styling-step4-apache-widget.component.ts`, `tutorial-styling-step5-apache-widget.component.ts`, `value-animation-simple-apache-widget.component.ts`, `dynamic-data2-apache-widget.component.ts`, `dynamic-data-apache-widget.component.ts`, `effectScatter-map-apache-widget.component.ts`, `flame-graph-apache-widget.component.ts`, `funnel-align-apache-widget.component.ts`, `funnel-customize-apache-widget.component.ts`, `funnel-apache-widget.component.ts`, `funnel-mutiple-apache-widget.component.ts`, `gauge-barometer-apache-widget.component.ts`, `gauge-car-apache-widget.component.ts`, `gauge-clock-apache-widget.component.ts`, `gauge-apache-widget.component.ts`, `gauge-grade-apache-widget.component.ts`, `gauge-multi-title-apache-widget.component.ts`, `gauge-progress-apache-widget.component.ts`, `gauge-ring-apache-widget.component.ts`, `gauge-simple-apache-widget.component.ts`, `gauge-speed-apache-widget.component.ts`, `gauge-stage-apache-widget.component.ts`, `gauge-temperature-apache-widget.component.ts`, `geo-beef-cuts-apache-widget.component.ts`, `geo-choropleth-scatter-apache-widget.component.ts`, `geo-graph-apache-widget.component.ts`, `geo-lines-apache-widget.component.ts`, `geo-map-scatter-apache-widget.component.ts`, `geo-organ-apache-widget.component.ts`, `geo-seatmap-flight-apache-widget.component.ts`, `geo-svg-custom-effect-apache-widget.component.ts`, `geo-svg-lines-apache-widget.component.ts`, `geo-svg-map-apache-widget.component.ts`, `pie-nest-apache-widget.component.ts`, `geo-svg-traffic-apache-widget.component.ts`, `graph-force2-apache-widget.component.ts`, `graph-force-dynamic-apache-widget.component.ts`, `graph-force-apache-widget.component.ts`, `graph-apache-widget.component.ts`, `graph-label-overlap-apache-widget.component.ts`, `graph-life-expectancy-apache-widget.component.ts`, `graph-npm-apache-widget.component.ts`, `graph-simple-apache-widget.component.ts`, `graph-webkit-dep-apache-widget.component.ts`, `graphic-loading-apache-widget.component.ts`, `graphic-stroke-animation-apache-widget.component.ts`, `graphic-wave-animation-apache-widget.component.ts`, `heatmap-cartesian-apache-widget.component.ts`, `heatmap-large-apache-widget.component.ts`, `heatmap-large-piecewise-apache-widget.component.ts`, `heatmap-map-apache-widget.component.ts`, `intraday-breaks-1-apache-widget.component.ts`, `intraday-breaks-2-apache-widget.component.ts`, `line-aqi-apache-widget.component.ts`, `line-draggable-apache-widget.component.ts`, `line-easing-apache-widget.component.ts`, `line-function-apache-widget.component.ts`, `line-gradient-apache-widget.component.ts`, `line-graphic-apache-widget.component.ts`, `line-in-cartesian-coordinate-system-apache-widget.component.ts`, `line-log-apache-widget.component.ts`, `line-marker-apache-widget.component.ts`, `line-pen-apache-widget.component.ts`, `bar-label-rotation-apache-widget.component.ts`, `line-polar-apache-widget.component.ts`, `line-sections-apache-widget.component.ts`, `line-simple-apache-widget.component.ts`, `line-smooth-apache-widget.component.ts`, `line-step-apache-widget.component.ts`, `line-style-apache-widget.component.ts`, `line-tooltip-touch-apache-widget.component.ts`, `line-y-category-apache-widget.component.ts`, `lines-airline-apache-widget.component.ts`, `lines-ny-apache-widget.component.ts`, `map-bar-morph-apache-widget.component.ts`, `map-HK-apache-widget.component.ts`, `map-iceland-pie-apache-widget.component.ts`, `map-usa-projection-apache-widget.component.ts`, `matrix-confusion-apache-widget.component.ts`, `matrix-correlation-heatmap-apache-widget.component.ts`, `matrix-correlation-scatter-apache-widget.component.ts`, `matrix-covariance-apache-widget.component.ts`, `matrix-graph-apache-widget.component.ts`, `matrix-grid-layout-apache-widget.component.ts`, `matrix-mbti-apache-widget.component.ts`, `matrix-mini-bar-data-collection-apache-widget.component.ts`, `matrix-mini-bar-geo-apache-widget.component.ts`, `matrix-periodic-table-apache-widget.component.ts`, `matrix-pie-apache-widget.component.ts`, `matrix-simple-apache-widget.component.ts`, `matrix-sparkline-apache-widget.component.ts`, `matrix-stock-apache-widget.component.ts`, `mix-line-bar-apache-widget.component.ts`, `mix-timeline-finance-apache-widget.component.ts`, `multiple-x-axis-apache-widget.component.ts`, `multiple-y-axis-apache-widget.component.ts`, `parallel-aqi-apache-widget.component.ts`, `parallel-nutrients-apache-widget.component.ts`, `aria-pie-apache-widget.component.ts`, `pictorialBar-dotted-apache-widget.component.ts`, `pictorialBar-forest-apache-widget.component.ts`, `pictorialBar-hill-apache-widget.component.ts`, `pictorialBar-vehicle-apache-widget.component.ts`, `pictorialBar-velocity-apache-widget.component.ts`, `pie-alignTo-apache-widget.component.ts`, `pie-borderRadius-apache-widget.component.ts`, `pie-custom-apache-widget.component.ts`, `pie-doughnut-apache-widget.component.ts`, `pie-half-donut-apache-widget.component.ts`, `pie-labelLine-adjust-apache-widget.component.ts`, `pie-legend-apache-widget.component.ts`, `boxplot-light-velocity2-apache-widget.component.ts`, `pie-padAngle-apache-widget.component.ts`, `pie-parliament-transition-apache-widget.component.ts`, `pie-pattern-apache-widget.component.ts`, `pie-rich-text-apache-widget.component.ts`, `pie-roseType-apache-widget.component.ts`, `pie-roseType-simple-apache-widget.component.ts`, `polar-endAngle-apache-widget.component.ts`, `polar-roundCap-apache-widget.component.ts`, `radar2-apache-widget.component.ts`, `radar-aqi-apache-widget.component.ts`, `radar-custom-apache-widget.component.ts`, `radar-multiple-apache-widget.component.ts`, `Apache-Widgets/radar/radar-apache-widget.component.ts`, `sankey-energy-apache-widget.component.ts`, `sankey-itemstyle-apache-widget.component.ts`, `sankey-levels-apache-widget.component.ts`, `sankey-nodeAlign-left-apache-widget.component.ts`, `sankey-nodeAlign-right-apache-widget.component.ts`, `sankey-simple-apache-widget.component.ts`, `sankey-vertical-apache-widget.component.ts`, `scatter-aggregate-bar-apache-widget.component.ts`, `scatter-anscombe-quartet-apache-widget.component.ts`, `scatter-aqi-color-apache-widget.component.ts`, `scatter-clustering-process-apache-widget.component.ts`, `scatter-clustering-apache-widget.component.ts`, `scatter-effect-apache-widget.component.ts`, `scatter-exponential-regression-apache-widget.component.ts`, `scatter-jitter-apache-widget.component.ts`, `scatter-label-align-right-apache-widget.component.ts`, `scatter-label-align-top-apache-widget.component.ts`, `scatter-large-apache-widget.component.ts`, `scatter-life-expectancy-timeline-apache-widget.component.ts`, `scatter-linear-regression-apache-widget.component.ts`, `scatter-logarithmic-regression-apache-widget.component.ts`, `scatter-map-brush-apache-widget.component.ts`, `scatter-map-apache-widget.component.ts`, `scatter-matrix-apache-widget.component.ts`, `scatter-nebula-apache-widget.component.ts`, `scatter-nutrients-matrix-apache-widget.component.ts`, `scatter-nutrients-apache-widget.component.ts`, `scatter-painter-choice-apache-widget.component.ts`, `scatter-polar-punchCard-apache-widget.component.ts`, `scatter-polynomial-regression-apache-widget.component.ts`, `scatter-punchCard-apache-widget.component.ts`, `scatter-simple-apache-widget.component.ts`, `scatter-single-axis-apache-widget.component.ts`, `scatter-stream-visual-apache-widget.component.ts`, `scatter-symbol-morph-apache-widget.component.ts`, `scatter-weibo-apache-widget.component.ts`, `scatter-world-population-apache-widget.component.ts`, `graph-circular-layout-apache-widget.component.ts`, `sunburst-borderRadius-apache-widget.component.ts`, `sunburst-drink-apache-widget.component.ts`, `sunburst-label-rotate-apache-widget.component.ts`, `sunburst-monochrome-apache-widget.component.ts`, `Apache-Widgets/sunburst-simple/sunburst-simple-apache-widget.component.ts`, `sunburst-visualMap-apache-widget.component.ts`, `themeRiver-basic-apache-widget.component.ts`, `themeRiver-lastfm-apache-widget.component.ts`, `tree-basic-apache-widget.component.ts`, `tree-legend-apache-widget.component.ts`, `tree-orient-bottom-top-apache-widget.component.ts`, `tree-orient-right-left-apache-widget.component.ts`, `tree-polyline-apache-widget.component.ts`, `tree-radial-apache-widget.component.ts`, `tree-vertical-apache-widget.component.ts`, `treemap-disk-apache-widget.component.ts`, `treemap-drill-down-apache-widget.component.ts`, `treemap-obama-apache-widget.component.ts`, `treemap-show-parent-apache-widget.component.ts`, `treemap-simple-apache-widget.component.ts`, `treemap-sunburst-transition-apache-widget.component.ts`, `treemap-visual-apache-widget.component.ts`, `watermark-apache-widget.component.ts`, `wind-barb-apache-widget.component.ts`, `mix-zoom-on-value-apache-widget.component.ts`, `pictorialBar-bar-transition-apache-widget.component.ts`, `sunburst-book-apache-widget.component.ts`, `aria-decal-newspaper-apache-widget.component.ts`, `graph-grid-apache-widget.component.ts`, `line-markline-apache-widget.component.ts`, `calendar-lunar-apache-widget.component.ts`, `parallel-all-apache-widget.component.ts`, `line-fisheye-lens-apache-widget.component.ts`?**
   _High betweenness centrality (0.228) - this node is a cross-community bridge._
-- **Why does `MenuComponent` connect `MenuComponent` to `PageInfoService`, `.trigger`, `UserType`, `errors.component.ts`, `ILayout`, `EventHandlerUtil`, `error500.component.ts`, `error404.component.ts`, `_utils/index.ts`, `StickyComponent`?**
+- **Why does `MenuComponent` connect `MenuComponent` to `DrawerComponent`, `ToggleComponent`, `error500.component.ts`, `ILayout`, `EventHandlerUtil`, `ThemeModeService`, `_utils/index.ts`, `StickyComponent`?**
   _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **What connects `DataTablesResponse`, `DataTablesResponse`, `EventMeta` to the rest of the system?**
-  _95 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _93 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `MenuComponent` be split into smaller, more focused modules?**
-  _Cohesion score 0.09273182957393483 - nodes in this community are weakly interconnected._
-- **Should `ScrollComponent` be split into smaller, more focused modules?**
-  _Cohesion score 0.14333333333333334 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09586466165413533 - nodes in this community are weakly interconnected._
 - **Should `widgets.module.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.031784005468216 - nodes in this community are weakly interconnected._
+- **Should `PermissionListingComponent` be split into smaller, more focused modules?**
+  _Cohesion score 0.05200501253132832 - nodes in this community are weakly interconnected._

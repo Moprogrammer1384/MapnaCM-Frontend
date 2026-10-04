@@ -4,10 +4,7 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { MeasurementPayload } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
-import { MeasurementStorageService } from '../services/measurement-storage.service';
-import { ComponentStorageService } from '../services/component-storage.service';
 import { ClientTable } from '../client-table';
-import { EMPLOYERS, employerOf } from '../employers';
 
 interface MeasurementRow extends Record<string, string> {
   id: string;
@@ -42,16 +39,17 @@ export class MeasurementComponent implements OnInit {
     ]
   );
 
+  // Options carry the backend hierarchy labels ("City - Plant - Unit -
+  // System - Asset - Component"); the select binds the numeric component id.
   componentOptions: { id: number; label: string }[] = [];
-  employers: string[] = EMPLOYERS;
+  // Employer filter options (names of the Employer-role users, from the API).
+  employers: string[] = [];
   employerFilter: string | null = null;
   componentFilter: number | null = null;
   measurementForm: MeasurementFormModel = this.emptyForm();
   saving = false;
 
-  private componentLabelById: Record<number, string> = {};
   private assetIdByComponentId: Record<number, number> = {};
-  private assetLabelById: Record<number, string> = {};
   private systemIdByAssetId: Record<number, number> = {};
   private unitIdBySystemId: Record<number, number> = {};
   private plantIdByUnitId: Record<number, number> = {};
@@ -60,14 +58,23 @@ export class MeasurementComponent implements OnInit {
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
-    private measurementStorage: MeasurementStorageService,
-    private componentStorage: ComponentStorageService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.table.onConfirmedDelete = (row) => this.deleteMeasurementConfirmed(row);
+    this.loadEmployerOptions();
     this.refresh();
+  }
+
+  private loadEmployerOptions(): void {
+    this.apiService.getEmployerOptions().subscribe({
+      next: (users) => {
+        this.employers = users.map((user) => user.name);
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load employer users.'),
+    });
   }
 
   filterByEmployer(employer: string | null): void {
@@ -87,11 +94,8 @@ export class MeasurementComponent implements OnInit {
   private loadAssets(): void {
     this.apiService.getAllAssets().subscribe({
       next: (assets) => {
-        this.assetLabelById = {};
         this.systemIdByAssetId = {};
         for (const asset of assets) {
-          const label = `${asset.name} - ${asset.systemLabel}`;
-          this.assetLabelById[asset.id] = label;
           this.systemIdByAssetId[asset.id] = asset.systemId;
         }
         this.loadSystems();
@@ -131,7 +135,7 @@ export class MeasurementComponent implements OnInit {
       next: (plants) => {
         this.employerByPlantId = {};
         for (const plant of plants) {
-          this.employerByPlantId[plant.id] = plant.employerName || employerOf(plant.name);
+          this.employerByPlantId[plant.id] = plant.employerName || '—';
         }
         this.loadComponents();
       },
@@ -139,49 +143,56 @@ export class MeasurementComponent implements OnInit {
     });
   }
 
-  private employerOfAsset(assetId: number, fallbackLabel: string): string {
-    const systemId = this.systemIdByAssetId[assetId];
-    const unitId = systemId !== undefined ? this.unitIdBySystemId[systemId] : undefined;
-    const plantId = unitId !== undefined ? this.plantIdByUnitId[unitId] : undefined;
-    return (plantId !== undefined && this.employerByPlantId[plantId]) || employerOf(fallbackLabel);
-  }
-
   private loadComponents(): void {
-    this.componentStorage.getAllComponents().subscribe({
+    this.apiService.getAllComponents().subscribe({
       next: (components) => {
-        this.componentLabelById = {};
+        this.componentOptions = [];
         this.assetIdByComponentId = {};
-        this.componentOptions = components.map((component) => {
-          const assetLabel = this.assetLabelById[component.assetId] || `Asset #${component.assetId}`;
-          const label = `${component.name} - ${assetLabel}`;
-          this.componentLabelById[component.id] = label;
+        for (const component of components) {
+          // Backend hierarchy label: "City - Plant - Unit - System - Asset - Component".
+          this.componentOptions.push({ id: component.id, label: component.hierarchyLabel });
           this.assetIdByComponentId[component.id] = component.assetId;
-          return { id: component.id, label };
-        }).sort((left, right) => left.label.localeCompare(right.label));
+        }
+        this.componentOptions.sort((left, right) => left.label.localeCompare(right.label));
         this.loadMeasurements();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load components.'),
     });
   }
 
+  private employerOfComponent(componentId: number): string {
+    const assetId = this.assetIdByComponentId[componentId];
+    if (assetId === undefined) {
+      return '—';
+    }
+    const systemId = this.systemIdByAssetId[assetId];
+    const unitId = systemId !== undefined ? this.unitIdBySystemId[systemId] : undefined;
+    const plantId = unitId !== undefined ? this.plantIdByUnitId[unitId] : undefined;
+    return (plantId !== undefined && this.employerByPlantId[plantId]) || '—';
+  }
+
+  private toMeasurementRow(measurement: {
+    id: number;
+    name: string;
+    componentId: number;
+    componentLabel: string;
+  }): MeasurementRow {
+    return {
+      id: String(measurement.id),
+      measurement: measurement.name,
+      // Backend canonical label — identical to the select options, so the
+      // edit prefill matches.
+      component: measurement.componentLabel,
+      componentId: String(measurement.componentId),
+      employer: this.employerOfComponent(measurement.componentId),
+    };
+  }
+
   private loadMeasurements(): void {
-    this.measurementStorage.getAllMeasurements().subscribe({
+    this.apiService.getAllMeasurements().subscribe({
       next: (measurements) => {
-        this.table.rows = measurements.map((measurement) => {
-          const componentLabel = this.componentLabelById[measurement.componentId] || `Component #${measurement.componentId}`;
-          const assetId = this.assetIdByComponentId[measurement.componentId];
-          return {
-            id: String(measurement.id),
-            measurement: measurement.name,
-            component: componentLabel,
-            componentId: String(measurement.componentId),
-            employer: assetId !== undefined ? this.employerOfAsset(assetId, componentLabel) : '',
-          };
-        });
+        this.table.rows = measurements.map((measurement) => this.toMeasurementRow(measurement));
         this.table.page = 1;
-        this.employers = [...new Set([...EMPLOYERS, ...this.table.rows.map((row) => row.employer)])]
-          .filter(Boolean)
-          .sort();
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load measurements.'),
@@ -221,8 +232,8 @@ export class MeasurementComponent implements OnInit {
     const payload: MeasurementPayload = { name: this.measurementForm.measurement, componentId };
     const isEdit = !!this.measurementForm.id;
     const request$ = isEdit
-      ? this.measurementStorage.updateMeasurement({ id: this.measurementForm.id!, ...payload })
-      : this.measurementStorage.createMeasurement(payload);
+      ? this.apiService.updateMeasurement({ id: this.measurementForm.id!, ...payload })
+      : this.apiService.createMeasurement(payload);
     request$.subscribe({
       next: () => {
         this.saving = false;
@@ -239,7 +250,7 @@ export class MeasurementComponent implements OnInit {
   }
 
   private deleteMeasurementConfirmed(measurement: MeasurementRow): void {
-    this.measurementStorage.deleteMeasurement(Number(measurement.id)).subscribe({
+    this.apiService.deleteMeasurement(Number(measurement.id)).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + measurement.measurement + '!.');
         this.loadMeasurements();

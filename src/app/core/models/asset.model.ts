@@ -121,6 +121,13 @@ export interface TaxonomyComponent {
   id: number;
   name: string;
   assetId: number;
+  assetName: string;
+  /** Full ancestor chain top-down: "City - Plant - Unit - System - AssetName". */
+  assetLabel: string;
+  /** Ancestor chain + self: "City - Plant - Unit - System - Asset - ComponentName". */
+  hierarchyLabel: string;
+  createdAtUtc?: string | null;
+  lastModifiedAtUtc?: string | null;
 }
 
 export interface ComponentPayload {
@@ -128,11 +135,18 @@ export interface ComponentPayload {
   assetId: number;
 }
 
-/** A measurement belonging to a component. Stored locally until an API is available. */
+/** A measurement belonging to a component (leaf of the taxonomy). */
 export interface TaxonomyMeasurement {
   id: number;
   name: string;
   componentId: number;
+  componentName: string;
+  /** Full ancestor chain top-down: "City - Plant - Unit - System - Asset - ComponentName". */
+  componentLabel: string;
+  /** Ancestor chain + self: "... - Component - MeasurementName". */
+  hierarchyLabel: string;
+  createdAtUtc?: string | null;
+  lastModifiedAtUtc?: string | null;
 }
 
 export interface MeasurementPayload {

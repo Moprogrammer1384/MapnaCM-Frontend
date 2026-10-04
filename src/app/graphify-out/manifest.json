@@ -1980,9 +1980,9 @@
     "semantic_hash": ""
   },
   "_metronic/layout/components/sidebar/sidebar-menu/sidebar-menu.component.html": {
-    "mtime": 1790790649.4864404,
-    "seen": 1790797014.001943,
-    "ast_hash": "f60b02b5ea2cd966d85e3cfef4054975",
+    "mtime": 1791102737.9842513,
+    "seen": 1791104269.6982837,
+    "ast_hash": "ed552467623c1a5913c5915e33197dec",
     "semantic_hash": ""
   },
   "_metronic/layout/components/sidebar/sidebar.component.html": {
@@ -5202,9 +5202,9 @@
     "semantic_hash": ""
   },
   "core/models/asset.model.ts": {
-    "mtime": 1791101675.7062957,
-    "seen": 1791102161.5196211,
-    "ast_hash": "99f5695323f6ee04574cb6a2d7c0fef7",
+    "mtime": 1791103933.125423,
+    "seen": 1791104269.697284,
+    "ast_hash": "46550850cf828d6ec4454ac87b672671",
     "semantic_hash": ""
   },
   "modules/widgets-examples/apache-charts/apache-charts.component.spec.ts": {
@@ -5226,9 +5226,9 @@
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/asset-taxonomy.module.ts": {
-    "mtime": 1790790649.4981215,
-    "seen": 1790797014.0009453,
-    "ast_hash": "44edc29b445af6d702ed55208126c634",
+    "mtime": 1791102737.985251,
+    "seen": 1791104269.6982837,
+    "ast_hash": "1606fe8061da43d03092a703e7392dc1",
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/client-table.ts": {
@@ -5244,9 +5244,9 @@
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/services/asset-api.service.ts": {
-    "mtime": 1791101710.1599765,
-    "seen": 1791102161.5196211,
-    "ast_hash": "9ba0a75ca659846217f778f76ec77033",
+    "mtime": 1791103978.4781485,
+    "seen": 1791104269.6982837,
+    "ast_hash": "25bf071b4b370e1b2f1fdbca5caf9adb",
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/site/site.component.ts": {
@@ -5421,6 +5421,42 @@
     "mtime": 1790802648.9880023,
     "seen": 1790803695.773393,
     "ast_hash": "67c4e4f3cb8f13315911f1928a7d228b",
+    "semantic_hash": ""
+  },
+  "pages/asset-taxonomy/component/component.component.spec.ts": {
+    "mtime": 1791104097.4959643,
+    "seen": 1791104269.6982837,
+    "ast_hash": "bfb830fbe2a75a23e0bf80b7479cab66",
+    "semantic_hash": ""
+  },
+  "pages/asset-taxonomy/component/component.component.ts": {
+    "mtime": 1791103978.5061445,
+    "seen": 1791104269.6982837,
+    "ast_hash": "6a4193a64d1d286cd4e6eed43e287b2f",
+    "semantic_hash": ""
+  },
+  "pages/asset-taxonomy/measurement/measurement.component.spec.ts": {
+    "mtime": 1791104118.116427,
+    "seen": 1791104269.6982837,
+    "ast_hash": "e241370c9bd20565853d8199a2598b62",
+    "semantic_hash": ""
+  },
+  "pages/asset-taxonomy/measurement/measurement.component.ts": {
+    "mtime": 1791104020.289654,
+    "seen": 1791104269.6982837,
+    "ast_hash": "a4ad43b72ec462db3cb9edb5b65c12d4",
+    "semantic_hash": ""
+  },
+  "pages/asset-taxonomy/component/component.component.html": {
+    "mtime": 1791102737.9862509,
+    "seen": 1791104269.6992855,
+    "ast_hash": "9e36c5f9bc327dfdbb5d2305b39ae5a3",
+    "semantic_hash": ""
+  },
+  "pages/asset-taxonomy/measurement/measurement.component.html": {
+    "mtime": 1791102737.989251,
+    "seen": 1791104269.6992855,
+    "ast_hash": "ddd5cb091990dbbb86a2f14056a82cac",
     "semantic_hash": ""
   }
 }

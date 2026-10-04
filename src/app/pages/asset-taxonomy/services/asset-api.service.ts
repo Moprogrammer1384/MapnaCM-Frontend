@@ -10,6 +10,8 @@ import {
   Asset,
   AssetPayload,
   AssetSystem,
+  ComponentPayload,
+  MeasurementPayload,
   Plant,
   PlantPayload,
   PlantType,
@@ -17,6 +19,8 @@ import {
   Site,
   SitePayload,
   SystemPayload,
+  TaxonomyComponent,
+  TaxonomyMeasurement,
   Unit,
   UnitPayload,
 } from '../../../core/models/asset.model';
@@ -220,6 +224,58 @@ export class AssetApiService {
   deleteAsset(id: number): Observable<void> {
     return this.http
       .delete<ApiEnvelope<object>>(`${this.apiUrl}/Asset/Delete`, { params: { Id: String(id) } })
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  // ---- Components -------------------------------------------------------
+
+  getAllComponents(): Observable<TaxonomyComponent[]> {
+    return this.http
+      .get<ApiEnvelope<PaginatedResult<TaxonomyComponent>>>(`${this.apiUrl}/Component/GetAll`, { params: ALL_ROWS_PARAMS })
+      .pipe(map((response) => this.unwrapPage(response)));
+  }
+
+  createComponent(payload: ComponentPayload): Observable<void> {
+    return this.http
+      .post<ApiEnvelope<object>>(`${this.apiUrl}/Component/Add`, payload)
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  updateComponent(payload: ComponentPayload & { id: number }): Observable<void> {
+    return this.http
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/Component/Update`, payload)
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  deleteComponent(id: number): Observable<void> {
+    return this.http
+      .delete<ApiEnvelope<object>>(`${this.apiUrl}/Component/Delete`, { params: { Id: String(id) } })
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  // ---- Measurements -------------------------------------------------------
+
+  getAllMeasurements(): Observable<TaxonomyMeasurement[]> {
+    return this.http
+      .get<ApiEnvelope<PaginatedResult<TaxonomyMeasurement>>>(`${this.apiUrl}/Measurement/GetAll`, { params: ALL_ROWS_PARAMS })
+      .pipe(map((response) => this.unwrapPage(response)));
+  }
+
+  createMeasurement(payload: MeasurementPayload): Observable<void> {
+    return this.http
+      .post<ApiEnvelope<object>>(`${this.apiUrl}/Measurement/Add`, payload)
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  updateMeasurement(payload: MeasurementPayload & { id: number }): Observable<void> {
+    return this.http
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/Measurement/Update`, payload)
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  deleteMeasurement(id: number): Observable<void> {
+    return this.http
+      .delete<ApiEnvelope<object>>(`${this.apiUrl}/Measurement/Delete`, { params: { Id: String(id) } })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 

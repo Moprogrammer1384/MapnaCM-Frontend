@@ -1,0 +1,467 @@
+# MapnaCM frontend: development context
+
+Last studied: **2026-10-04 (Asia/Tehran)**.
+Source snapshot: `9efe131` (`add comkponent page`).
+
+This is the project memory for development with Codex. Read it at the start of
+each task, inspect the relevant current source, and update it after meaningful
+changes or another project study. It complements [AGENTS.md](AGENTS.md).
+The user's current request and verified source take precedence over older notes.
+Never treat this file as a substitute for inspecting files that have changed.
+
+## Working agreement and maintenance
+
+- **User scope clarification (2026-10-04): Angular UI development only.** Build
+  polished components/pages and their frontend interactions. Other team members
+  implement backend services and databases after this work. Missing endpoints
+  must not block UI delivery or lead to backend/database implementation.
+- Reuse existing frontend integrations when appropriate. New pages can use
+  frontend state or isolated mock data with clear models for later integration.
+  Do not invent endpoints, require a backend/storage decision for a UI request,
+  or add persistent browser storage unless requested or already established.
+- Develop within the existing Angular and Metronic architecture. Match nearby
+  screens, forms, navigation, icons, spacing, and responsive behavior.
+- **Default design source:** `C:/Users/hafez/Documents/Mapna/Mapna-UIUX/customize`.
+  Most requests convert a supplied HTML design into Angular. Build from scratch
+  only when explicitly requested, still using existing Metronic content.
+- **Standing theme restriction:** use existing Metronic CSS, scripts, components,
+  utility classes, markup, and dependencies. Do not author custom CSS/SCSS,
+  inline styles, or new handwritten JavaScript for styling or theme behavior,
+  including when a request mentions styles/scripts. Angular component state,
+  bindings, forms, validation, and integration glue remain part of UI conversion.
+- Preserve the user's edits. Inspect `git status` and the relevant diff first.
+- Read the page, its template/styles, module/route, service/models, and relevant
+  tests before changing a feature. Follow calls into shared code when needed.
+- Reuse existing shared components and directives before adding alternatives.
+- Keep changes within the requested scope. Record unrelated findings here;
+  do not silently turn a feature request into a general rewrite.
+- Update the appropriate section of this file when a contract or decision changes.
+  Add a dated entry to the maintenance log with validation and any remaining blocker.
+- Keep credentials, tokens, personal data, and machine-specific secrets out of
+  documentation and browser environment files.
+- Do not assume a backend endpoint exists because its name fits a convention.
+  Consult an existing contract only when needed to preserve an existing frontend
+  integration; new UI does not require a backend contract before implementation.
+- Component records currently use browser storage **by the user's explicit
+  choice**. Preserve that decision until backend integration is requested.
+- Measurement follows the Component page's browser-storage pattern and links to
+  Component records. Keep this pattern until backend integration is requested.
+
+## Project identity and toolchain
+
+MapnaCM is a frontend for a .NET backend (`Global.API`), built by adapting
+Metronic 8 demo1. `package.json` still names the application `MOGSight`, version
+`8.3.0`; the Angular project is `demo1`. The old README's Angular 13 description
+is historical: current dependencies use Angular **18.1**, TypeScript **5.5**,
+RxJS **7.8**, Bootstrap **5.3**, and ng-bootstrap **17**.
+
+Most application features use NgModules. Some newer chart components and generated
+chart wrappers are standalone; do not assume standalone components are absent.
+Forms use both template-driven and reactive approaches; follow the feature's pattern.
+
+TypeScript has `strict: true`; Angular has strict template and injection checks.
+`strictPropertyInitialization` and `noImplicitReturns` are disabled. Preserve these
+settings rather than relaxing type checks to make changes compile.
+
+Conventions: UTF-8, two spaces, final newline, single quotes in TypeScript,
+kebab-case filenames, PascalCase classes, `app-` component selectors, and
+`app` camelCase directive selectors. Consult `.editorconfig` and `.eslintrc.json`.
+
+## Commands and validation
+
+Run commands from the repository root.
+
+| Command | Purpose |
+| --- | --- |
+| `npm ci` | Install the locked dependencies when needed |
+| `npm start` | Development server at `http://localhost:4200/` |
+| `npm run build` | Production build in `dist/demo1` |
+| `npm run build -- --configuration development` | Development build |
+| `npm run watch` | Rebuild with development settings |
+| `npm test -- --watch=false --browsers=ChromeHeadless` | Browser unit tests, once |
+| `npm test -- --watch=false --browsers=ChromeHeadless --include=src/path/example.spec.ts` | Select tests; see compilation caveat below |
+| `npm run lint` | Angular ESLint over TypeScript and HTML |
+| `npx tsc --project tsconfig.spec.json --noEmit` | Check test TypeScript without launching Karma |
+| `npm run verify:apache-echarts` | Verify generated charts, scripts, and resources |
+| `npm run test:apache-echarts` | Chart browser tests using their existing isolated configuration |
+| `npm run rtl` | Generate RTL theme CSS using `rtl.config.js` |
+
+Tests are adjacent Jasmine specs and Angular TestBed tests. Karma loads global
+jQuery and Select2; its test scripts do not mirror every production script.
+There is no configured end-to-end target or minimum coverage threshold.
+
+`src/test.ts` initializes Angular testing; the Angular CLI discovers specs and
+supports `--include`. It does **not** use `require.context`. However,
+`tsconfig.spec.json` includes all specs for TypeScript compilation, so an unrelated
+type error can still block an `--include` run. If necessary, use a temporary
+tsconfig extending it with only the relevant specs and `src/**/*.d.ts` in `include`,
+and pass `--ts-config=<temporary-config>`. Remove the temporary file afterward.
+Do not leave `fit`/`fdescribe` or weaken assertions to conceal failures.
+
+Production defaults: initial bundle warning/error budgets are 2 MB / 5 MB;
+component style warning/error budgets are 2 KB / 4 KB. Large styles should use
+an appropriate global partial or be split into reusable components.
+
+### Verified baseline on 2026-10-04
+
+- `npm run build`: passed. Initial bundle approximately 2.70 MB, exceeding the
+  warning budget. CSS optimization reported four skipped selector rules.
+- `npm run lint`: passed across the project.
+- `npm run verify:apache-echarts`: passed; 370 widgets/scripts, 92 local resource
+  references, and five vendor references verified.
+- `npx tsc --project tsconfig.spec.json --noEmit`: failed at
+  `plant.component.spec.ts:110`: expected `createPlant` payload lacks
+  `employerId` and `employerName` required by the current `PlantPayload`.
+- The normal Component test command earlier in this session was blocked by the
+  same Plant error. With an isolated test tsconfig, all **11** new Component page
+  and storage tests passed in ChromeHeadless.
+- No live authenticated API integration or full visual browser audit was performed
+  during this study. Build success does not establish that every API screen works.
+
+## Source map and feature status
+
+| Location | Responsibility and current state |
+| --- | --- |
+| `src/main.ts`, `src/app/app.module.ts` | Bootstrap, HTTP, translations, auth initializer, global providers |
+| `src/app/core/` | Shared API models, query serialization, auth interceptor |
+| `src/app/pages/routing.ts` | Lazy routes inside the authenticated layout |
+| `src/app/pages/asset-taxonomy/` | Site, Plant/Plant Type, Unit, System, Asset, Component, Measurement management |
+| `src/app/pages/user/` | Real MapnaCM user list, add/edit, activity toggle, delete, detail/audit view |
+| `src/app/pages/role/` | Real role list/create; role detail still uses the vendor demo API |
+| `src/app/pages/permission/` | Vendor demo API list/CRUD; detail component has no implementation logic |
+| `src/app/pages/cm/vibration/` | Five routes; Time Domain has a sample chart, other four templates are empty |
+| `src/app/pages/dashboard/`, `builder/` | Metronic demo dashboard and persisted layout builder |
+| `src/app/modules/auth/` | Real login/profile restoration/revocation; registration and forgot-password placeholders |
+| `src/app/modules/account/` | Real profile overview/update/avatar; other settings retain demo behavior |
+| `src/app/modules/crud/` | Shared DataTables, modal, and confirmation wrapper |
+| `src/app/modules/apps/chat/` | Demo conversations with local message state and simulated replies |
+| `src/app/modules/profile/`, `wizards/` | Primarily template/demo screens |
+| `src/app/modules/widgets-examples/` | Widget galleries, including the standalone Apache Charts gallery |
+| `src/app/_metronic/` | Shared layout, icons, directives, theme DOM helpers, widgets |
+| `src/app/_fake/` | Mixed legacy code: in-memory demo API plus services calling Keenthemes remotely |
+| `src/app/graphify-out/` | Generated graph reports/caches; historical, not application source |
+| `src/assets/` | Theme Sass, icons, media/plugins, generated Apache chart scripts/data/vendor files |
+| `tools/` | Apache chart generation, resource download, and verification scripts |
+
+The `_metronic` tree contains custom integrations (Select2 and Apache ECharts),
+so it is not entirely untouched vendor code. Change shared theme behavior
+carefully because many features depend on it. Leave generated graph output alone.
+
+## Routing, layout, and navigation
+
+`app-routing.module.ts` defines public `/auth` and `/error` lazy modules and the
+authenticated empty-path route guarded by `AuthGuard`. `LayoutModule` supplies
+`LayoutComponent`, which consumes the routes from `pages/routing.ts`.
+
+Authenticated feature roots include `/dashboard`, `/builder`,
+`/crafted/pages/profile`, `/crafted/account`, `/crafted/pages/wizards`,
+`/crafted/widgets`, `/cm/vibration`, `/apps/chat`, `/apps/users`, `/apps/roles`,
+`/apps/permissions`, and `/asset-taxonomy`.
+
+Add a new feature root in `pages/routing.ts`; add pages within an existing
+feature in that feature's child routes. The sidebar is hardcoded in
+`_metronic/layout/components/sidebar/sidebar-menu/sidebar-menu.component.html`.
+Login response `menus` are not currently used to generate navigation.
+
+`LayoutService` and `LayoutInitService` use dark/light sidebar configurations,
+CSS classes, and HTML attributes. A route can request a layout through route
+data. `ScriptsInitComponent` initializes/reinitializes the `kt` menu, drawer,
+toggle, sticky, and scroll helpers. Preserve required `data-kt-*` hooks.
+Page titles and breadcrumbs are calculated from active sidebar/header markup
+by `PageInfoService`; keep menu labels and `data-link` values meaningful.
+
+## Backend contracts and environment
+
+Development API base: `https://localhost:7064/api`.
+Production API base is still `http://localhost:5245/api`, marked as a deployment
+placeholder in `environment.prod.ts`. Production builds replace the development
+environment. Both configurations set `isMockEnabled: false`.
+
+Related local projects are outside this frontend repository:
+
+- Backend: `../../BackEnd` (`Global.API/Modules/Identity` and `Modules/Asset`
+  contain the relevant controllers).
+- Static UI references: `../../Mapna-UIUX/customize`.
+
+MapnaCM endpoints use `ApiEnvelope<T>` (`success`, optional `message`, `errors`,
+and `data`). Business failures may be HTTP 200 with `success: false`.
+Unwrap/check in services and surface failures through the observable error path.
+User creation has an intentional exception: `data.canRedefine` lets the page
+request confirmation and retry with `redefineIfExists: true`.
+
+| Operation | Current frontend contract |
+| --- | --- |
+| Login/revoke | POST `/Authentication/Login`, `/Authentication/RevokeToken` |
+| User list/detail | GET `/User/Get`, `/User/GetById?UserId=...` |
+| User create/edit | POST `/User/Create`, PUT `/User/Edit` |
+| Activity/password | POST `/User/SetActive`, `/User/ResetPassword` |
+| User delete | DELETE `/User/Delete?Id=...` |
+| Profile | GET `/User/Profile`, PUT `/User/UpdateProfile` with multipart `FormData` |
+| Remove avatar | POST `/User/RemoveAvatar` |
+| Employer candidates | GET `/User/GetUsersByRole?RoleId=Employer` |
+| Roles | GET `/Role/GetAll`, POST `/Role/Add` with `roleName` |
+| Taxonomy entities | GET `/<Entity>/GetAll`, POST `/<Entity>/Add`, PUT `/<Entity>/Update`, DELETE `/<Entity>/Delete?Id=...` |
+
+Taxonomy entities with API CRUD are `Site`, `PlantType`, `Plant`, `Unit`, `System`,
+and `Asset`. Component and Measurement use browser storage rather than API endpoints.
+
+`criteriaToHttpParams` serializes `QueryCriteria` to PascalCase query keys:
+`Skip`, `Take`, `Filters[i].PropertyName/Operation/Value/LogicalOperator`, and
+`Sorts[i].PropertyName/IsAscending`. The backend's contains enum spelling is
+`Conatains`; preserve that wire spelling. Paginated data is `{ items, totalCount }`.
+Identity IDs are strings; taxonomy IDs are numbers. Some older template models
+(such as `UserModel.id`) still declare numeric IDs; check actual wire models
+when extending them.
+
+The backend enforces authorization. Asset mutations use
+`MapnaSuperAdmin,MapnaAdmin`; the frontend sidebar and buttons are not currently
+a complete role-based authorization UI.
+
+## Authentication and session behavior
+
+Reference files: `modules/auth/services/auth.service.ts`,
+`services/auth-http/auth-http.service.ts`, `services/auth.guard.ts`, and
+`core/interceptors/auth.interceptor.ts`.
+
+- Auth storage key: `${environment.appVersion}-${environment.USERDATA_KEY}`.
+  Current `appVersion` is `v8.2.4`. Changing it also changes the versioned layout keys.
+- Login maps the backend token, refresh token, and access-token expiry into
+  `AuthModel`, stores it, and fetches `/User/Profile` to populate the current user.
+- `AuthService` performs token restoration in its constructor; the app initializer
+  also waits for `getUserByToken()` before completing bootstrap.
+- `AuthGuard` checks expiry, uses the current user when present, or restores the
+  user asynchronously. Session watch automatically logs out at expiry.
+- Logout stops the timer, removes stored auth, makes a best-effort token revocation
+  request, and navigates to login with an optional return URL.
+- The interceptor reads the token through `getStoredAuthToken()` without injecting
+  `AuthService`. It resolves the service lazily through `Injector` on an API 401.
+  Preserve this arrangement to avoid the documented NG0200 circular dependency.
+- Bearer tokens are attached only to URLs starting with `environment.apiUrl`;
+  external vendor API and asset requests do not receive them.
+- Refresh tokens are stored/revoked; there is no automatic refresh-token renewal
+  flow in the current frontend service.
+
+## Two table patterns
+
+### User management and legacy permission/role details
+
+`<app-crud>` wraps `angular-datatables`, ng-bootstrap modals, and SweetAlert2.
+Inputs include `datatableConfig`, route, modal `TemplateRef`, and reload emitter;
+outputs include create/edit/delete. Action cells contain raw HTML and use
+document-level event delegation with `data-action` and `data-id`.
+Action buttons depend on whether outputs are observed. Search uses
+`data-action="filter"`. Parent pages own form state and API mutations.
+
+Users use server-side DataTables. `UserManagementService` maps pagination,
+column sorting, and OR search across UserName, Email, FirstName, and LastName into
+backend query criteria. User forms assign exactly one role **by role name**.
+User detail displays real role information and audit actions. Role list instead
+uses cards with a create modal; it does not use the table wrapper.
+
+### Asset taxonomy
+
+Taxonomy pages use `ClientTable<T>` and Angular-rendered tables. They do not use
+`<app-crud>`, despite matching DataTables styling/classes. Reuse this pattern
+for taxonomy pages. `AssetApiService` requests up to 10,000 rows for client-side
+search/filter/sort/paging; this is a current limit, not unlimited pagination.
+
+`ClientTable` searches string-valued rows, combines exact column filters, supports
+page sizes 10/25/50/100, and cycles default -> ascending -> descending -> default.
+Sorting preserves the original row array. New searches/filters/sorts reset page 1.
+Deletion prompts first; `onConfirmedDelete` delegates the mutation to the host.
+
+Taxonomy forms use `NgForm`, required fields, `saving` guards, ng-bootstrap modal
+templates, Metronic alerts, and refresh after successful mutation. Async updates
+often call `ChangeDetectorRef.detectChanges()` to repaint within the shared layout.
+
+## Taxonomy and employer inheritance
+
+Navigation order: **Site -> Plant -> Unit -> System -> Asset -> Component -> Measurement**.
+The relationship chain is Measurement -> Component -> Asset -> System -> Unit -> Plant -> Site.
+Plant Type is managed as a second table on the Plant page.
+
+- Site stores city/address/coordinates/location/elevation as strings.
+- Plant selects numeric Site and Plant Type IDs and an Identity Employer user.
+  Its payload contains `employerId` and the employer display-name snapshot.
+- Plant candidate employers come from `getUsersByRole('Employer')`.
+- Unit/System/Asset/Component/Measurement inherit the Plant employer via parent-ID maps.
+- Employer filters combine actual row employers with `EMPLOYERS` fallback labels.
+  `employers.ts` still contains legacy name matching, deterministic fallback
+  employers, and the old `asset-taxonomy-plant-employers` storage support. Its
+  comment saying the backend cannot store employers is outdated.
+- Unit/System/Asset dropdowns use display-label-to-numeric-ID maps. Keep loaded
+  row labels and option labels consistent; duplicate/renamed labels need care.
+- Component displays name, Asset label, and inherited employer. It loads real
+  Asset/System/Unit/Plant metadata before loading saved component rows.
+
+`ComponentStorageService` uses `asset-taxonomy-components` with records
+`{ id: number, name: string, assetId: number }`. Each operation rereads storage;
+creation chooses the next numeric ID from current records. It rejects malformed
+data and stale update/delete IDs and reports storage failures through observables.
+Data persists in the current browser origin; it is not synchronized to the backend
+or keyed per account. Missing parent assets display `Asset #<id>`.
+
+`MeasurementComponent` is routed at `/asset-taxonomy/measurement`, immediately
+after Component in the sidebar. It matches the Component table/modals with Name,
+Component Name, and Employer columns, search, filters, sorting, and pagination.
+Its Component form selection and filter use numeric IDs, preserving distinct
+components even when their display labels match. Parent labels include Asset
+and System context, and employer information is inherited from the Plant.
+
+`MeasurementStorageService` uses `asset-taxonomy-measurements`, storing records
+`{ id: number, name: string, componentId: number }` independently of Component data.
+It follows the same persistence and error handling as `ComponentStorageService`.
+Saved measurements with a missing Component display `Component #<id>` and an empty
+employer; editing requires an available Component. Measurement defines a named
+taxonomy record, not a live numeric reading or sensor data stream.
+
+## Profile and demo boundaries
+
+Account overview and Profile Details use `ProfileService`. Profile editing sends
+`FirstName`, `LastName`, `Email`, `PhoneNumber`, `Address`, and optional `Avatar`
+in `FormData`. Avatar checks allow JPEG/PNG/WEBP up to 2 MB; save/removal refreshes
+the shared auth user so the header updates.
+
+Other account settings are template behavior: sign-in-method saves use timers,
+and the deactivate component displays an alert rather than calling the backend.
+Chat uses demo data and simulated replies. Permissions and role detail use
+`_fake/services` pointing to `preview.keenthemes.com/starterkit/metronic/laravel/api/v1`.
+Those services are real outgoing HTTP calls, not local canned responses.
+Do not assume screens are integrated based solely on where their files live.
+
+## Select2, styles, theme, and localization
+
+`SharedModule` exports Keenicons and `Select2Directive`. Selects with
+`data-control="select2"`, `data-kt-select2="true"`, or `appSelect2` are automatically
+enhanced. The directive preserves Angular value accessors, numeric `[ngValue]`,
+validation, model changes, and asynchronously loaded options.
+
+It uses global `window.jQuery`, attaches dropdowns within nearby modals/menus,
+syncs selection changes, observes option changes, and cleans up on destroy.
+Do not initialize those selects again in page code or use another jQuery instance
+for the plugin. See `_metronic/shared/select2/README.md` for attributes and examples.
+
+`angular.json` loads Select2/DataTables CSS and global jQuery/Select2/DataTables JS.
+`src/styles.scss` imports theme Sass, plugins, Angular vendor styles, and three
+Keenicon font styles. Use `<app-keenicon>` and existing Metronic utility classes.
+RTL CSS is generated separately and enabled by changing the stylesheet imports.
+
+Theme mode uses `data-bs-theme` and storage keys `kt_theme_mode_value` and
+`kt_theme_mode_menu`. Layout config uses versioned `layoutConfig` and
+`baseLayoutType` keys. Translations use ngx-translate with en/ch/es/jp/de/fr vocabularies;
+selected language uses `language`. Many custom page labels are currently English.
+
+## Apache ECharts and vibration
+
+Reusable chart host:
+`_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component.ts`.
+It is standalone; import it in NgModule `imports` or a standalone component's
+`imports`. Supports `options`, `initializer`, `demoId`, canvas/SVG renderer, height,
+theme, and chart init/render/error events.
+
+The host runs chart work outside Angular, observes resize, loads demo scripts and
+required local dependencies, renders example controls, and disposes charts,
+listeners, timers, and initializer cleanup on destruction/reinitialization.
+Keep this lifecycle intact when changing chart behavior.
+
+The `/crafted/widgets/apache-charts` gallery uses a generated registry and
+370 standalone wrappers under `Apache-Widgets`. IntersectionObserver delays
+chart activation until near the viewport. Generated JS/catalog/data/vendor assets
+live in `src/assets/apache-echarts`. Seven Baidu Maps examples are excluded.
+Source examples are pinned to commit `aebd221b302308af240b90267fd43b81657099a1`.
+
+Regenerate with `tools/generate-apache-echarts.mjs` and the matching source/data;
+use `tools/fetch-apache-echarts-assets.ps1` for resource acquisition. Follow the
+chart README and run verification/browser checks when changing the integration.
+Do not manually rewrite generated wrappers for a new application chart; pass
+application `EChartsOption` data to the reusable host.
+
+Vibration routes: overview, time-domain, frequency-domain, bode-analysis,
+rotor-position. Only Time Domain currently has content: a synthetic 10 Hz + 25 Hz
+velocity signal over two seconds with tooltip and zoom. It is sample data,
+not a connected condition-monitoring backend feed.
+
+## Porting a static Mapna-UIUX page
+
+This is the normal workflow for this project. The default reference directory is
+`C:/Users/hafez/Documents/Mapna/Mapna-UIUX/customize` (`../../Mapna-UIUX/customize`
+from this repository). It uses `customize/<page>.html`, `_template.html`, and
+occasionally matching JavaScript (currently `siteplant.js` is present).
+
+1. Read the requested design and compare its dependencies with `_template.html`.
+2. Port only page content inside `#kt_app_content_container`; Angular supplies
+   the header/sidebar/footer. Content markers vary, so inspect the actual HTML.
+3. Reuse the design's existing Metronic styles, scripts, content, and dependencies.
+   Preserve required existing assets and load them only when needed; do not
+   introduce a new styling system, UI library, custom styles, or handwritten JS.
+4. Convert icon markup to Keenicons components and preserve required theme hooks.
+5. Adapt markup, state, bindings, forms, and validation to Angular. Integrate
+   existing theme behavior through lifecycle hooks with cleanup; do not rewrite
+   it with newly invented JavaScript or initialize a plugin twice.
+6. A request for a blank page means route/module/menu scaffolding and empty content;
+   add design content only when requested. Build a page from scratch only when
+   the user explicitly requests it, using the same existing theme capabilities.
+
+Read the sibling project's own instructions before editing it; this frontend
+study does not authorize unrelated changes in that project or the backend.
+
+## Corrections to older guidance
+
+- `CLAUDE.md`: "most reads are POST" is outdated for User/Profile and taxonomy.
+  Use the endpoint table and actual services/controllers.
+- `CLAUDE.md`: `_fake` services do not all return canned data; several call a
+  remote vendor API even with `isMockEnabled: false`.
+- `CLAUDE.md`: tests no longer use `require.context`; CLI `--include` exists,
+  with the separate TypeScript compilation caveat above.
+- `CLAUDE.md`: "no standalone components" predates the ECharts integration.
+- `README.md`: Angular 13 and end-to-end instructions do not describe current setup.
+- `employers.ts`: employer persistence is now supported in Plant API payloads;
+  legacy fallback helpers remain in use.
+
+## Study coverage and maintenance log
+
+The review covered root guidance/configuration, bootstrap/auth/session handling,
+route/layout/navigation, shared models/services, user/role/permission behavior,
+all taxonomy levels, profile editing, demo modules, Select2, the ECharts host and
+gallery/generator boundaries, styles/localization, test setup, and sibling backend
+controller/design references. Vendor/demo screens were inspected by structure and
+representative implementation; generated chart files were validated by the
+repository verifier. This is development context, not a line-by-line audit of
+every vendored asset or generated graph report.
+
+### 2026-10-04 — initial project study
+
+- Read `CLAUDE.md` and compared its guidance with current source.
+- Created this file and added the read/update rule to `AGENTS.md`.
+- Recorded the explicit browser-storage decision for Component.
+- Verified build, lint, chart generation consistency, and the existing test
+  compilation blocker. See the baseline section for exact results.
+- Application source and backend code were not changed during this study.
+
+### 2026-10-04 - Measurement page
+
+- Added `/asset-taxonomy/measurement` after Component in the module and sidebar.
+- Reused the Component page layout, table, Select2, form, alert, and confirmation
+  patterns; Measurement links to Component and uses separate browser storage.
+- Component selections and filters use IDs to handle identical display labels.
+- Production build and project lint passed. Existing bundle/CSS warnings remain.
+- All 24 focused tests passed in ChromeHeadless: 13 Measurement page/storage tests
+  and 11 Component regression tests. Used an isolated temporary test tsconfig to
+  avoid the previously verified unrelated Plant test compilation error, then
+  removed that configuration. Live authenticated API integration was not tested.
+
+### 2026-10-04 - UI development scope clarified
+
+- The user specified that this agent builds Angular UI components/pages;
+  backend and database implementation follow separately with other team members.
+- Updated this working agreement and `AGENTS.md` so future UI tasks proceed
+  without depending on backend availability or requesting backend decisions.
+- Existing Component/Measurement storage was not changed by this clarification.
+
+### 2026-10-04 - Template conversion and theme restrictions clarified
+
+- The user established `Mapna-UIUX/customize` as the usual source of HTML designs
+  to convert to Angular; building pages from scratch is the less common explicit request.
+- Reuse existing Metronic content, CSS, JS behavior, and dependencies. Do not write
+  custom styles or handwritten JavaScript for UI/theme behavior.
+- Updated `AGENTS.md`, the working agreement, and the page-porting workflow.

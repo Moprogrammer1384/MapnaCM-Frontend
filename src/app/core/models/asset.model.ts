@@ -119,6 +119,18 @@ export interface ComponentPayload {
   assetId: number;
 }
 
+/** A measurement belonging to a component. Stored locally until an API is available. */
+export interface TaxonomyMeasurement {
+  id: number;
+  name: string;
+  componentId: number;
+}
+
+export interface MeasurementPayload {
+  name: string;
+  componentId: number;
+}
+
 /** Row of GET /User/GetUsersByRole (Identity users carrying a role). */
 export interface RoleUser {
   id: string;

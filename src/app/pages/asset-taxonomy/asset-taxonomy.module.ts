@@ -9,9 +9,18 @@ import { UnitComponent } from './unit/unit.component';
 import { SystemComponent } from './system/system.component';
 import { AssetComponent } from './asset/asset.component';
 import { ComponentComponent } from './component/component.component';
+import { MeasurementComponent } from './measurement/measurement.component';
 
 @NgModule({
-  declarations: [SiteComponent, PlantComponent, UnitComponent, SystemComponent, AssetComponent, ComponentComponent],
+  declarations: [
+    SiteComponent,
+    PlantComponent,
+    UnitComponent,
+    SystemComponent,
+    AssetComponent,
+    ComponentComponent,
+    MeasurementComponent,
+  ],
   imports: [
     CommonModule,
     SharedModule,
@@ -40,6 +49,10 @@ import { ComponentComponent } from './component/component.component';
       {
         path: 'component',
         component: ComponentComponent,
+      },
+      {
+        path: 'measurement',
+        component: MeasurementComponent,
       },
       { path: '', redirectTo: 'site', pathMatch: 'full' },
     ]),

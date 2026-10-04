@@ -103,7 +103,7 @@ describe('Component page', () => {
     window.jQuery(asset).val(asset.options[1].value).trigger('change');
     await settle();
     await submit();
-    expect(api.createComponent).toHaveBeenCalledOnceWith({ name: 'Seal', assetId: 7 });
+    expect(api.createComponent).toHaveBeenCalledOnceWith({ name: 'Seal', tag: '', assetId: 7 });
   });
 
   it('restores edit values and saves the existing component ID', async () => {
@@ -112,7 +112,7 @@ describe('Component page', () => {
     expect(modal().querySelector<HTMLInputElement>('input[name="component"]')!.value).toBe('Bearing');
     expect(fixture.componentInstance.componentForm.asset).toBe(assetLabel);
     await submit();
-    expect(api.updateComponent).toHaveBeenCalledOnceWith({ id: 12, name: 'Bearing', assetId: 7 });
+    expect(api.updateComponent).toHaveBeenCalledOnceWith({ id: 12, name: 'Bearing', tag: '', assetId: 7 });
   });
 
   it('keeps the dialog open and clears saving when the API fails', async () => {

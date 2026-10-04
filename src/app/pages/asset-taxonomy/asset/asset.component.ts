@@ -11,12 +11,14 @@ interface AssetRow extends Record<string, string> {
   employer: string;
   system: string;
   asset: string;
+  tag: string;
 }
 
 interface AssetFormModel {
   id?: number;
   system: string | null;
   asset: string;
+  tag: string;
 }
 
 @Component({
@@ -33,6 +35,7 @@ export class AssetComponent implements OnInit {
     [],
     [
       { key: 'asset', title: 'Name', class: 'min-w-125px min-w-md-200px' },
+      { key: 'tag', title: 'Tag', class: 'min-w-125px' },
       { key: 'system', title: 'System Name', class: 'min-w-175px min-w-md-250px' },
       { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
     ]
@@ -147,6 +150,7 @@ export class AssetComponent implements OnInit {
     return {
       id: String(asset.id),
       asset: asset.name,
+      tag: asset.tag ?? '',
       system: asset.systemLabel,
       systemId: String(asset.systemId),
       employer: this.employerOfSystem(asset.systemId),
@@ -176,7 +180,7 @@ export class AssetComponent implements OnInit {
   }
 
   openEditModal(content: TemplateRef<any>, asset: AssetRow): void {
-    this.assetForm = { id: Number(asset.id), system: asset.system, asset: asset.asset };
+    this.assetForm = { id: Number(asset.id), system: asset.system, asset: asset.asset, tag: asset.tag };
     this.modalService.open(content, this.modalConfig);
   }
 
@@ -197,7 +201,7 @@ export class AssetComponent implements OnInit {
     }
 
     this.saving = true;
-    const payload: AssetPayload = { name: this.assetForm.asset, systemId };
+    const payload: AssetPayload = { name: this.assetForm.asset, tag: this.assetForm.tag, systemId };
     const isEdit = !!this.assetForm.id;
     const request$ = isEdit
       ? this.apiService.updateAsset({ id: this.assetForm.id!, ...payload })
@@ -235,7 +239,7 @@ export class AssetComponent implements OnInit {
   }
 
   private emptyForm(): AssetFormModel {
-    return { system: null, asset: '' };
+    return { system: null, asset: '', tag: '' };
   }
 
   private showAlert(icon: 'success' | 'error', title: string, text: string): void {

@@ -101,6 +101,7 @@ export interface SystemPayload {
 export interface Asset {
   id: number;
   name: string;
+  tag?: string | null;
   systemId: number;
   systemName: string;
   /** Full ancestor chain top-down: "City - TypeName - PlantName - UnitName - SystemName". */
@@ -113,6 +114,7 @@ export interface Asset {
 
 export interface AssetPayload {
   name: string;
+  tag?: string;
   systemId: number;
 }
 
@@ -120,6 +122,7 @@ export interface AssetPayload {
 export interface TaxonomyComponent {
   id: number;
   name: string;
+  tag?: string | null;
   assetId: number;
   assetName: string;
   /** Full ancestor chain top-down: "City - TypeName - Plant - Unit - System - AssetName". */
@@ -132,6 +135,7 @@ export interface TaxonomyComponent {
 
 export interface ComponentPayload {
   name: string;
+  tag?: string;
   assetId: number;
 }
 
@@ -139,6 +143,7 @@ export interface ComponentPayload {
 export interface TaxonomyMeasurement {
   id: number;
   name: string;
+  tag?: string | null;
   componentId: number;
   componentName: string;
   /** Full ancestor chain top-down: "City - TypeName - Plant - Unit - System - Asset - ComponentName". */
@@ -151,6 +156,7 @@ export interface TaxonomyMeasurement {
 
 export interface MeasurementPayload {
   name: string;
+  tag?: string;
   componentId: number;
 }
 

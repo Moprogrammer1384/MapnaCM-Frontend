@@ -12,12 +12,14 @@ interface MeasurementRow extends Record<string, string> {
   component: string;
   componentId: string;
   measurement: string;
+  tag: string;
 }
 
 interface MeasurementFormModel {
   id?: number;
   componentId: number | null;
   measurement: string;
+  tag: string;
 }
 
 @Component({
@@ -34,6 +36,7 @@ export class MeasurementComponent implements OnInit {
     [],
     [
       { key: 'measurement', title: 'Name', class: 'min-w-125px min-w-md-200px' },
+      { key: 'tag', title: 'Tag', class: 'min-w-125px' },
       { key: 'component', title: 'Component Name', class: 'min-w-175px min-w-md-250px' },
       { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
     ]
@@ -174,12 +177,14 @@ export class MeasurementComponent implements OnInit {
   private toMeasurementRow(measurement: {
     id: number;
     name: string;
+    tag?: string | null;
     componentId: number;
     componentLabel: string;
   }): MeasurementRow {
     return {
       id: String(measurement.id),
       measurement: measurement.name,
+      tag: measurement.tag ?? '',
       // Backend canonical label — identical to the select options, so the
       // edit prefill matches.
       component: measurement.componentLabel,
@@ -209,6 +214,7 @@ export class MeasurementComponent implements OnInit {
       id: Number(measurement.id),
       componentId: Number(measurement.componentId),
       measurement: measurement.measurement,
+      tag: measurement.tag,
     };
     this.modalService.open(content, this.modalConfig);
   }
@@ -229,7 +235,7 @@ export class MeasurementComponent implements OnInit {
     }
 
     this.saving = true;
-    const payload: MeasurementPayload = { name: this.measurementForm.measurement, componentId };
+    const payload: MeasurementPayload = { name: this.measurementForm.measurement, tag: this.measurementForm.tag, componentId };
     const isEdit = !!this.measurementForm.id;
     const request$ = isEdit
       ? this.apiService.updateMeasurement({ id: this.measurementForm.id!, ...payload })
@@ -260,7 +266,7 @@ export class MeasurementComponent implements OnInit {
   }
 
   private emptyForm(): MeasurementFormModel {
-    return { componentId: null, measurement: '' };
+    return { componentId: null, measurement: '', tag: '' };
   }
 
   private showAlert(icon: 'success' | 'error', title: string, text: string): void {

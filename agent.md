@@ -1,7 +1,7 @@
 # MapnaCM frontend: development context
 
 Last studied: **2026-10-04 (Asia/Tehran)**.
-Source snapshot: `9efe131` (`add comkponent page`).
+Latest source reviewed: `52233c9` (`Plant type fix`), plus the Tag UI changes below.
 
 This is the project memory for development with Codex. Read it at the start of
 each task, inspect the relevant current source, and update it after meaningful
@@ -42,10 +42,9 @@ Never treat this file as a substitute for inspecting files that have changed.
 - Do not assume a backend endpoint exists because its name fits a convention.
   Consult an existing contract only when needed to preserve an existing frontend
   integration; new UI does not require a backend contract before implementation.
-- Component records currently use browser storage **by the user's explicit
-  choice**. Preserve that decision until backend integration is requested.
-- Measurement follows the Component page's browser-storage pattern and links to
-  Component records. Keep this pattern until backend integration is requested.
+- Component and Measurement now use the existing `AssetApiService`, following
+  later repository changes. Their original browser-storage implementation has
+  been removed. Preserve current frontend wiring; focus new work on Angular UI.
 
 ## Project identity and toolchain
 
@@ -102,7 +101,7 @@ Production defaults: initial bundle warning/error budgets are 2 MB / 5 MB;
 component style warning/error budgets are 2 KB / 4 KB. Large styles should use
 an appropriate global partial or be split into reusable components.
 
-### Verified baseline on 2026-10-04
+### Original study baseline on 2026-10-04
 
 - `npm run build`: passed. Initial bundle approximately 2.70 MB, exceeding the
   warning budget. CSS optimization reported four skipped selector rules.
@@ -117,6 +116,10 @@ an appropriate global partial or be split into reusable components.
   and storage tests passed in ChromeHeadless.
 - No live authenticated API integration or full visual browser audit was performed
   during this study. Build success does not establish that every API screen works.
+
+The later Tag change passed build/lint and 27 focused UI tests. The current normal
+test compilation blocker is instead `plant.component.spec.ts:38-40`: its Plant
+fixtures lack the required `hierarchyLabel`. See the latest maintenance entry.
 
 ## Source map and feature status
 
@@ -202,8 +205,9 @@ request confirmation and retry with `redefineIfExists: true`.
 | Roles | GET `/Role/GetAll`, POST `/Role/Add` with `roleName` |
 | Taxonomy entities | GET `/<Entity>/GetAll`, POST `/<Entity>/Add`, PUT `/<Entity>/Update`, DELETE `/<Entity>/Delete?Id=...` |
 
-Taxonomy entities with API CRUD are `Site`, `PlantType`, `Plant`, `Unit`, `System`,
-and `Asset`. Component and Measurement use browser storage rather than API endpoints.
+Taxonomy entities using frontend API services are `Site`, `PlantType`, `Plant`,
+`Unit`, `System`, `Asset`, `Component`, and `Measurement`. Component and
+Measurement were migrated from browser storage by later repository changes.
 
 `criteriaToHttpParams` serializes `QueryCriteria` to PascalCase query keys:
 `Skip`, `Take`, `Filters[i].PropertyName/Operation/Value/LogicalOperator`, and
@@ -289,31 +293,34 @@ Plant Type is managed as a second table on the Plant page.
   `employers.ts` still contains legacy name matching, deterministic fallback
   employers, and the old `asset-taxonomy-plant-employers` storage support. Its
   comment saying the backend cannot store employers is outdated.
-- Unit/System/Asset dropdowns use display-label-to-numeric-ID maps. Keep loaded
+- Unit/System/Asset/Component dropdowns use display-label-to-numeric-ID maps. Keep loaded
   row labels and option labels consistent; duplicate/renamed labels need care.
-- Component displays name, Asset label, and inherited employer. It loads real
+- Component displays name, Tag, Asset label, and inherited employer. It loads real
   Asset/System/Unit/Plant metadata before loading saved component rows.
 
-`ComponentStorageService` uses `asset-taxonomy-components` with records
-`{ id: number, name: string, assetId: number }`. Each operation rereads storage;
-creation chooses the next numeric ID from current records. It rejects malformed
-data and stale update/delete IDs and reports storage failures through observables.
-Data persists in the current browser origin; it is not synchronized to the backend
-or keyed per account. Missing parent assets display `Asset #<id>`.
+Component now loads and saves through `AssetApiService` (`getAllComponents`,
+`createComponent`, `updateComponent`, `deleteComponent`). Its parent options use
+Asset `hierarchyLabel`; rows use `assetLabel`. The former `ComponentStorageService`
+has been removed. Hierarchy labels now run top-down and include city and Plant Type.
 
 `MeasurementComponent` is routed at `/asset-taxonomy/measurement`, immediately
 after Component in the sidebar. It matches the Component table/modals with Name,
-Component Name, and Employer columns, search, filters, sorting, and pagination.
+Tag, Component Name, and Employer columns, search, filters, sorting, and pagination.
 Its Component form selection and filter use numeric IDs, preserving distinct
 components even when their display labels match. Parent labels include Asset
 and System context, and employer information is inherited from the Plant.
 
-`MeasurementStorageService` uses `asset-taxonomy-measurements`, storing records
-`{ id: number, name: string, componentId: number }` independently of Component data.
-It follows the same persistence and error handling as `ComponentStorageService`.
-Saved measurements with a missing Component display `Component #<id>` and an empty
-employer; editing requires an available Component. Measurement defines a named
+Measurement now loads and saves through `AssetApiService` (`getAllMeasurements`,
+`createMeasurement`, `updateMeasurement`, `deleteMeasurement`). Component options
+use `hierarchyLabel` and rows use `componentLabel`. The former
+`MeasurementStorageService` has been removed. Measurement defines a named
 taxonomy record, not a live numeric reading or sensor data stream.
+
+Asset, Component, and Measurement have an optional free-text Tag field in their
+shared add/edit modal and a sortable Tag column after Name. Row mapping normalizes
+missing/null tags to `''`, so existing records remain searchable and editable.
+Frontend create/update payloads include `tag`; clearing it submits `''`. These are
+frontend models/bindings only; backend/database work belongs to the other team.
 
 ## Profile and demo boundaries
 
@@ -465,3 +472,22 @@ every vendored asset or generated graph report.
 - Reuse existing Metronic content, CSS, JS behavior, and dependencies. Do not write
   custom styles or handwritten JavaScript for UI/theme behavior.
 - Updated `AGENTS.md`, the working agreement, and the page-porting workflow.
+
+### 2026-10-04 - Tags for Asset, Component, and Measurement
+
+- Added an optional Tag column after Name and a Tag Name input in each add/edit
+  modal, reusing existing Metronic markup and utility classes.
+- Tags participate in table search/sorting, populate when editing, and reset for
+  new records. Missing/null tags display as empty strings; users can clear a tag.
+- Updated frontend row/form models and create/update payloads with `tag`.
+  Backend/database files, theme styles, and theme scripts were not changed.
+- Refreshed this project map against current source: Component and Measurement
+  now use the existing API service; their earlier storage services were removed
+  by intervening repository changes.
+- Production build and project lint passed. Existing bundle/CSS warnings remain.
+- All 27 focused ChromeHeadless tests passed, including 12 Tag cases across all
+  three pages and 15 existing Component/Measurement regression cases. Used a
+  temporary isolated test tsconfig and removed it after verification.
+- The standard test compilation is blocked by existing Plant fixtures missing
+  `hierarchyLabel` in `plant.component.spec.ts:38-40`. Live API tag persistence
+  was not tested; backend integration remains with the backend team.

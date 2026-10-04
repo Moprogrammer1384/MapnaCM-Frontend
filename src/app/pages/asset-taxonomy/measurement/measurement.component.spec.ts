@@ -105,7 +105,7 @@ describe('Measurement page', () => {
     window.jQuery(component).val(component.options[1].value).trigger('change');
     await settle();
     await submit();
-    expect(api.createMeasurement).toHaveBeenCalledOnceWith({ name: 'Peak velocity', componentId: 10 });
+    expect(api.createMeasurement).toHaveBeenCalledOnceWith({ name: 'Peak velocity', tag: '', componentId: 10 });
   });
 
   it('restores edit values and saves the existing measurement ID', async () => {
@@ -114,7 +114,7 @@ describe('Measurement page', () => {
     expect(modal().querySelector<HTMLInputElement>('input[name="measurement"]')!.value).toBe('RMS velocity');
     expect(fixture.componentInstance.measurementForm.componentId).toBe(10);
     await submit();
-    expect(api.updateMeasurement).toHaveBeenCalledOnceWith({ id: 20, name: 'RMS velocity', componentId: 10 });
+    expect(api.updateMeasurement).toHaveBeenCalledOnceWith({ id: 20, name: 'RMS velocity', tag: '', componentId: 10 });
   });
 
   it('keeps the dialog open and clears saving when the API fails', async () => {
@@ -170,6 +170,6 @@ describe('Measurement page', () => {
     window.jQuery(component).val(component.options[2].value).trigger('change');
     await settle();
     await submit();
-    expect(api.createMeasurement).toHaveBeenCalledOnceWith({ name: 'Acceleration', componentId: 11 });
+    expect(api.createMeasurement).toHaveBeenCalledOnceWith({ name: 'Acceleration', tag: '', componentId: 11 });
   });
 });

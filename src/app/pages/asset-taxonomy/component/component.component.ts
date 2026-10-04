@@ -11,12 +11,14 @@ interface ComponentRow extends Record<string, string> {
   employer: string;
   asset: string;
   component: string;
+  tag: string;
 }
 
 interface ComponentFormModel {
   id?: number;
   asset: string | null;
   component: string;
+  tag: string;
 }
 
 @Component({
@@ -33,6 +35,7 @@ export class ComponentComponent implements OnInit {
     [],
     [
       { key: 'component', title: 'Name', class: 'min-w-125px min-w-md-200px' },
+      { key: 'tag', title: 'Tag', class: 'min-w-125px' },
       { key: 'asset', title: 'Asset Name', class: 'min-w-175px min-w-md-250px' },
       { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
     ]
@@ -156,10 +159,11 @@ export class ComponentComponent implements OnInit {
     return (plantId !== undefined && this.employerByPlantId[plantId]) || '—';
   }
 
-  private toComponentRow(component: { id: number; name: string; assetId: number; assetLabel: string }): ComponentRow {
+  private toComponentRow(component: { id: number; name: string; tag?: string | null; assetId: number; assetLabel: string }): ComponentRow {
     return {
       id: String(component.id),
       component: component.name,
+      tag: component.tag ?? '',
       // Backend canonical label — identical to the select options, so the
       // edit prefill matches by string.
       asset: component.assetLabel,
@@ -185,7 +189,9 @@ export class ComponentComponent implements OnInit {
   }
 
   openEditModal(content: TemplateRef<any>, component: ComponentRow): void {
-    this.componentForm = { id: Number(component.id), asset: component.asset, component: component.component };
+    this.componentForm = {
+      id: Number(component.id), asset: component.asset, component: component.component, tag: component.tag,
+    };
     this.modalService.open(content, this.modalConfig);
   }
 
@@ -205,7 +211,7 @@ export class ComponentComponent implements OnInit {
     }
 
     this.saving = true;
-    const payload: ComponentPayload = { name: this.componentForm.component, assetId };
+    const payload: ComponentPayload = { name: this.componentForm.component, tag: this.componentForm.tag, assetId };
     const isEdit = !!this.componentForm.id;
     const request$ = isEdit
       ? this.apiService.updateComponent({ id: this.componentForm.id!, ...payload })
@@ -236,7 +242,7 @@ export class ComponentComponent implements OnInit {
   }
 
   private emptyForm(): ComponentFormModel {
-    return { asset: null, component: '' };
+    return { asset: null, component: '', tag: '' };
   }
 
   private showAlert(icon: 'success' | 'error', title: string, text: string): void {

@@ -542,3 +542,29 @@ every vendored asset or generated graph report.
   as requested, so they stack at full width on every breakpoint.
 - Verified both wrapper classes in the source and passed `git diff --check`.
   This changes two layout classes only; build and behavior tests were not rerun.
+
+### 2026-10-05 - Measurement service injection review
+
+- Checked the `MeasurementComponent` constructor: `MeasurementUiStateService`
+  is imported as a class and declares `@Injectable({ providedIn: 'root' })`.
+  No additional module provider is required for the current registration.
+- `npx ngc -p tsconfig.app.json --noEmit` passed, including strict Angular
+  injection checks. No application source was changed during this review.
+  The subsequent NG2003 report and explicit token change are recorded below.
+
+### 2026-10-05 - Explicit Measurement injection token
+
+- The user supplied an IDE NG2003 diagnostic stating that `uiState` has no
+  runtime injection token. The on-disk service is a normal exported injectable
+  class with a value import; the project Angular compiler passed before the change.
+- Editor logs verified Angular Language Service 22.2.0 and TypeScript 6.0.3,
+  while installed project Angular core/compiler are 18.2.14. The editor also
+  logged failures to resolve the Measurement template's component. These
+  suggest editor resolution/state issues; their exact cause is not established.
+- Added `@Inject(MeasurementUiStateService)` to the constructor parameter and
+  split the runtime service import from `import type { MeasurementType }`.
+  Root service scope and Measurement behavior are unchanged. Restarting the
+  Angular language server may still be needed to refresh editor diagnostics.
+- `npx ngc -p tsconfig.app.json --noEmit`, project lint, and all **19** focused
+  Measurement UI/state ChromeHeadless tests passed. Removed the temporary
+  isolated test config. Editor diagnostic clearance has not been verified.

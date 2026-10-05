@@ -1,11 +1,12 @@
-import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit, TemplateRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { MeasurementPayload } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
 import { ClientTable } from '../client-table';
-import { MeasurementUiStateService, MeasurementType } from './measurement-ui-state.service';
+import { MeasurementUiStateService } from './measurement-ui-state.service';
+import type { MeasurementType } from './measurement-ui-state.service';
 
 interface MeasurementRow extends Record<string, string> {
   id: string;
@@ -91,7 +92,7 @@ export class MeasurementComponent implements OnInit {
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
-    private uiState: MeasurementUiStateService,
+    @Inject(MeasurementUiStateService) private uiState: MeasurementUiStateService,
     private cdr: ChangeDetectorRef
   ) {}
 

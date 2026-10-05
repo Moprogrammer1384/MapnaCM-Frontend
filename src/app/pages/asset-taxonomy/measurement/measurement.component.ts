@@ -4,7 +4,7 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { MeasurementPayload, MeasurementType } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
-import { ClientTable } from '../client-table';
+import { TablePagination } from 'src/app/_metronic/shared/Pagination/table-pagination';
 
 interface MeasurementRow extends Record<string, string> {
   id: string;
@@ -50,7 +50,7 @@ export class MeasurementComponent implements OnInit {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
 
-  table = new ClientTable<MeasurementRow>(
+  table = new TablePagination<MeasurementRow>(
     [],
     [
       // Widths are relaxed so the 8-column table fits the viewport like the
@@ -66,7 +66,7 @@ export class MeasurementComponent implements OnInit {
     ]
   );
 
-  types = new ClientTable<TypeRow>([], [
+  types = new TablePagination<TypeRow>([], [
     { key: 'name', title: 'Name', class: 'min-w-125px' },
     { key: 'unit', title: 'Unit', class: 'min-w-100px' },
   ]);

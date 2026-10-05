@@ -1,16 +1,16 @@
-import { ClientTable } from './client-table';
+import { TablePagination } from './table-pagination';
 
-describe('ClientTable ordering', () => {
+describe('TablePagination ordering', () => {
   const rows = [
     { name: 'Bravo', elevation: '995 m' },
     { name: 'Charlie', elevation: '1,190 m' },
     { name: 'Alpha', elevation: '200 m' },
   ];
-  let table: ClientTable<(typeof rows)[number]>;
+  let table: TablePagination<(typeof rows)[number]>;
   const names = () => table.filtered.map((row) => row.name);
 
   beforeEach(() => {
-    table = new ClientTable(rows, [
+    table = new TablePagination(rows, [
       { key: 'name', title: 'Name', class: '' },
       { key: 'elevation', title: 'Elevation', class: '' },
     ]);

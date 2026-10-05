@@ -153,3 +153,4 @@ export class ClientTable<T extends Record<string, string>> {
     return a.localeCompare(b);
   }
 }
+export { ClientTable as TablePagination };

@@ -4,7 +4,7 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { AssetSystem, SystemPayload, Unit } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
-import { ClientTable } from '../client-table';
+import { TablePagination } from 'src/app/_metronic/shared/Pagination/table-pagination';
 
 interface SystemRow extends Record<string, string> {
   id: string;
@@ -29,7 +29,7 @@ export class SystemComponent implements OnInit {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
 
-  table = new ClientTable<SystemRow>(
+  table = new TablePagination<SystemRow>(
     [],
     [
       { key: 'system', title: 'Name', class: 'min-w-125px min-w-md-200px' },

@@ -3,7 +3,7 @@ import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { AssetApiService } from '../services/asset-api.service';
-import { ClientTable } from '../client-table';
+import { TablePagination } from 'src/app/_metronic/shared/Pagination/table-pagination';
 
 interface PlantRow extends Record<string, string> {
   id: string;
@@ -44,7 +44,7 @@ export class PlantComponent implements OnInit {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
 
-  plants = new ClientTable<PlantRow>(
+  plants = new TablePagination<PlantRow>(
     [],
     [
       { key: 'name', title: 'Name', class: 'min-w-150px' },
@@ -54,7 +54,7 @@ export class PlantComponent implements OnInit {
     ]
   );
 
-  types = new ClientTable<TypeRow>(
+  types = new TablePagination<TypeRow>(
     [],
     [{ key: 'name', title: 'Name', class: 'min-w-150px' }]
   );

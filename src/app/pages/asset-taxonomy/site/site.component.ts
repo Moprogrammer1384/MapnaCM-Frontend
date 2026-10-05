@@ -4,7 +4,7 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { SitePayload } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
-import { ClientTable } from '../client-table';
+import { TablePagination } from 'src/app/_metronic/shared/Pagination/table-pagination';
 
 interface SiteRow extends Record<string, string> {
   id: string;
@@ -36,7 +36,7 @@ export class SiteComponent implements OnInit {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
 
-  table = new ClientTable<SiteRow>(
+  table = new TablePagination<SiteRow>(
     [],
     [
       { key: 'city', title: 'City', class: 'min-w-125px' },

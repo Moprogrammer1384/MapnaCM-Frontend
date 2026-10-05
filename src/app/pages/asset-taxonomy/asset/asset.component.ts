@@ -4,7 +4,7 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { Asset, AssetPayload, AssetSystem } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
-import { ClientTable } from '../client-table';
+import { TablePagination } from 'src/app/_metronic/shared/Pagination/table-pagination';
 
 interface AssetRow extends Record<string, string> {
   id: string;
@@ -31,7 +31,7 @@ export class AssetComponent implements OnInit {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
 
-  table = new ClientTable<AssetRow>(
+  table = new TablePagination<AssetRow>(
     [],
     [
       { key: 'asset', title: 'Name', class: 'min-w-125px min-w-md-200px' },

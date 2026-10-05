@@ -264,12 +264,14 @@ uses cards with a create modal; it does not use the table wrapper.
 
 ### Asset taxonomy
 
-Taxonomy pages use `ClientTable<T>` and Angular-rendered tables. They do not use
+Taxonomy pages use shared `TablePagination<T>` from
+`src/app/_metronic/shared/Pagination/table-pagination.ts` and Angular-rendered
+tables. They do not use
 `<app-crud>`, despite matching DataTables styling/classes. Reuse this pattern
 for taxonomy pages. `AssetApiService` requests up to 10,000 rows for client-side
 search/filter/sort/paging; this is a current limit, not unlimited pagination.
 
-`ClientTable` searches string-valued rows, combines exact column filters, supports
+`TablePagination` searches string-valued rows, combines exact column filters, supports
 page sizes 10/25/50/100, and cycles default -> ascending -> descending -> default.
 Sorting preserves the original row array. New searches/filters/sorts reset page 1.
 Deletion prompts first; `onConfirmedDelete` delegates the mutation to the host.

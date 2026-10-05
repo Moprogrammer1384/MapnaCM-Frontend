@@ -927,16 +927,16 @@
       "source_location": "L10"
     },
     {
-      "id": "metronic_partials_content_widgets_charts_charts_widget6_charts_widget6_component_chartswidget6component",
-      "label": "ChartsWidget6Component",
+      "id": "metronic_partials_content_widgets_charts_charts_widget8_charts_widget8_component_chartswidget8component",
+      "label": "ChartsWidget8Component",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 133,
-      "community_name": "charts-widget6.component.ts",
+      "community_name": "charts-widget8.component.ts",
       "file_type": "code",
-      "norm_label": "chartswidget6component",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget6/charts-widget6.component.ts",
+      "norm_label": "chartswidget8component",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget8/charts-widget8.component.ts",
       "source_location": "L8"
     },
     {
@@ -966,29 +966,29 @@
       "source_location": "L7"
     },
     {
-      "id": "metronic_partials_content_widgets_feeds_feeds_widget4_feeds_widget4_component_feedswidget4component",
-      "label": "FeedsWidget4Component",
+      "id": "metronic_partials_content_widgets_feeds_feeds_widget3_feeds_widget3_component_feedswidget3component",
+      "label": "FeedsWidget3Component",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 136,
-      "community_name": "FeedsWidget4Component",
+      "community_name": "FeedsWidget3Component",
       "file_type": "code",
-      "norm_label": "feedswidget4component",
-      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget4/feeds-widget4.component.ts",
+      "norm_label": "feedswidget3component",
+      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget3/feeds-widget3.component.ts",
       "source_location": "L7"
     },
     {
-      "id": "metronic_partials_content_widgets_feeds_feeds_widget5_feeds_widget5_component_feedswidget5component",
-      "label": "FeedsWidget5Component",
+      "id": "metronic_partials_content_widgets_stats_stats_widget1_stats_widget1_component_statswidget1component",
+      "label": "StatsWidget1Component",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 137,
-      "community_name": "FeedsWidget5Component",
+      "community_name": "StatsWidget1Component",
       "file_type": "code",
-      "norm_label": "feedswidget5component",
-      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget5/feeds-widget5.component.ts",
+      "norm_label": "statswidget1component",
+      "source_file": "_metronic/partials/content/widgets/stats/stats-widget1/stats-widget1.component.ts",
       "source_location": "L7"
     },
     {
@@ -1083,16 +1083,16 @@
       "source_location": "L10"
     },
     {
-      "id": "metronic_partials_content_widgets_lists_lists_widget8_lists_widget8_component_listswidget8component",
-      "label": "ListsWidget8Component",
+      "id": "metronic_partials_content_widgets_tables_tables_widget12_tables_widget12_component_tableswidget12component",
+      "label": "TablesWidget12Component",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 144,
-      "community_name": "ListsWidget8Component",
+      "community_name": "TablesWidget12Component",
       "file_type": "code",
-      "norm_label": "listswidget8component",
-      "source_file": "_metronic/partials/content/widgets/lists/lists-widget8/lists-widget8.component.ts",
+      "norm_label": "tableswidget12component",
+      "source_file": "_metronic/partials/content/widgets/tables/tables-widget12/tables-widget12.component.ts",
       "source_location": "L7"
     },
     {
@@ -4255,16 +4255,29 @@
       "source_location": "L7"
     },
     {
-      "id": "metronic_partials_content_widgets_feeds_feeds_widget3_feeds_widget3_component_feedswidget3component",
-      "label": "FeedsWidget3Component",
+      "id": "metronic_partials_content_widgets_feeds_feeds_widget4_feeds_widget4_component_feedswidget4component",
+      "label": "FeedsWidget4Component",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
       "community_name": "widgets.module.ts",
       "file_type": "code",
-      "norm_label": "feedswidget3component",
-      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget3/feeds-widget3.component.ts",
+      "norm_label": "feedswidget4component",
+      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget4/feeds-widget4.component.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "metronic_partials_content_widgets_feeds_feeds_widget5_feeds_widget5_component_feedswidget5component",
+      "label": "FeedsWidget5Component",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "widgets.module.ts",
+      "file_type": "code",
+      "norm_label": "feedswidget5component",
+      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget5/feeds-widget5.component.ts",
       "source_location": "L7"
     },
     {
@@ -4346,16 +4359,29 @@
       "source_location": "L7"
     },
     {
-      "id": "metronic_partials_content_widgets_stats_stats_widget1_stats_widget1_component_statswidget1component",
-      "label": "StatsWidget1Component",
+      "id": "metronic_partials_content_widgets_lists_lists_widget8_lists_widget8_component_listswidget8component",
+      "label": "ListsWidget8Component",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
       "community_name": "widgets.module.ts",
       "file_type": "code",
-      "norm_label": "statswidget1component",
-      "source_file": "_metronic/partials/content/widgets/stats/stats-widget1/stats-widget1.component.ts",
+      "norm_label": "listswidget8component",
+      "source_file": "_metronic/partials/content/widgets/lists/lists-widget8/lists-widget8.component.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "metronic_partials_content_widgets_mixed_mixed_widget1_mixed_widget1_component_mixedwidget1component",
+      "label": "MixedWidget1Component",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "widgets.module.ts",
+      "file_type": "code",
+      "norm_label": "mixedwidget1component",
+      "source_file": "_metronic/partials/content/widgets/mixed/mixed-widget1/mixed-widget1.component.ts",
       "source_location": "L7"
     },
     {
@@ -4372,16 +4398,16 @@
       "source_location": "L7"
     },
     {
-      "id": "metronic_partials_content_widgets_tables_tables_widget12_tables_widget12_component_tableswidget12component",
-      "label": "TablesWidget12Component",
+      "id": "metronic_partials_content_widgets_tables_tables_widget11_tables_widget11_component_tableswidget11component",
+      "label": "TablesWidget11Component",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
       "community_name": "widgets.module.ts",
       "file_type": "code",
-      "norm_label": "tableswidget12component",
-      "source_file": "_metronic/partials/content/widgets/tables/tables-widget12/tables-widget12.component.ts",
+      "norm_label": "tableswidget11component",
+      "source_file": "_metronic/partials/content/widgets/tables/tables-widget11/tables-widget11.component.ts",
       "source_location": "L7"
     },
     {
@@ -4411,19 +4437,6 @@
       "source_location": "L7"
     },
     {
-      "id": "metronic_partials_content_widgets_tables_tables_widget3_tables_widget3_component_tableswidget3component",
-      "label": "TablesWidget3Component",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "widgets.module.ts",
-      "file_type": "code",
-      "norm_label": "tableswidget3component",
-      "source_file": "_metronic/partials/content/widgets/tables/tables-widget3/tables-widget3.component.ts",
-      "source_location": "L7"
-    },
-    {
       "id": "metronic_partials_content_widgets_tables_tables_widget9_tables_widget9_component_tableswidget9component",
       "label": "TablesWidget9Component",
       "_callable": true,
@@ -4447,19 +4460,6 @@
       "file_type": "code",
       "norm_label": "tileswidget10component",
       "source_file": "_metronic/partials/content/widgets/tiles/tiles-widget10/tiles-widget10.component.ts",
-      "source_location": "L7"
-    },
-    {
-      "id": "metronic_partials_content_widgets_tiles_tiles_widget14_tiles_widget14_component_tileswidget14component",
-      "label": "TilesWidget14Component",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "widgets.module.ts",
-      "file_type": "code",
-      "norm_label": "tileswidget14component",
-      "source_file": "_metronic/partials/content/widgets/tiles/tiles-widget14/tiles-widget14.component.ts",
       "source_location": "L7"
     },
     {
@@ -5256,16 +5256,16 @@
       "source_location": "L10"
     },
     {
-      "id": "metronic_partials_content_widgets_mixed_mixed_widget1_mixed_widget1_component_mixedwidget1component",
-      "label": "MixedWidget1Component",
+      "id": "metronic_partials_content_widgets_tables_tables_widget3_tables_widget3_component_tableswidget3component",
+      "label": "TablesWidget3Component",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 347,
-      "community_name": "MixedWidget1Component",
+      "community_name": "TablesWidget3Component",
       "file_type": "code",
-      "norm_label": "mixedwidget1component",
-      "source_file": "_metronic/partials/content/widgets/mixed/mixed-widget1/mixed-widget1.component.ts",
+      "norm_label": "tableswidget3component",
+      "source_file": "_metronic/partials/content/widgets/tables/tables-widget3/tables-widget3.component.ts",
       "source_location": "L7"
     },
     {
@@ -5867,16 +5867,16 @@
       "source_location": "L16"
     },
     {
-      "id": "metronic_partials_content_widgets_tables_tables_widget11_tables_widget11_component_tableswidget11component",
-      "label": "TablesWidget11Component",
+      "id": "metronic_partials_content_widgets_tiles_tiles_widget14_tiles_widget14_component_tileswidget14component",
+      "label": "TilesWidget14Component",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 380,
-      "community_name": "TablesWidget11Component",
+      "community_name": "TilesWidget14Component",
       "file_type": "code",
-      "norm_label": "tableswidget11component",
-      "source_file": "_metronic/partials/content/widgets/tables/tables-widget11/tables-widget11.component.ts",
+      "norm_label": "tileswidget14component",
+      "source_file": "_metronic/partials/content/widgets/tiles/tiles-widget14/tiles-widget14.component.ts",
       "source_location": "L7"
     },
     {
@@ -7206,16 +7206,16 @@
       "source_location": "L8"
     },
     {
-      "id": "metronic_partials_content_widgets_charts_charts_widget8_charts_widget8_component_chartswidget8component",
-      "label": "ChartsWidget8Component",
+      "id": "metronic_partials_content_widgets_charts_charts_widget6_charts_widget6_component_chartswidget6component",
+      "label": "ChartsWidget6Component",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 46,
       "community_name": "getCSSVariableValue",
       "file_type": "code",
-      "norm_label": "chartswidget8component",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget8/charts-widget8.component.ts",
+      "norm_label": "chartswidget6component",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget6/charts-widget6.component.ts",
       "source_location": "L8"
     },
     {
@@ -12462,39 +12462,39 @@
       "source_location": "L10"
     },
     {
-      "id": "metronic_partials_content_widgets_charts_charts_widget6_charts_widget6_component_chartswidget6component_constructor",
+      "id": "metronic_partials_content_widgets_charts_charts_widget8_charts_widget8_component_chartswidget8component_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
       "community": 133,
-      "community_name": "charts-widget6.component.ts",
+      "community_name": "charts-widget8.component.ts",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget6/charts-widget6.component.ts",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget8/charts-widget8.component.ts",
       "source_location": "L11"
     },
     {
-      "id": "metronic_partials_content_widgets_charts_charts_widget6_charts_widget6_component_chartswidget6component_ngoninit",
+      "id": "metronic_partials_content_widgets_charts_charts_widget8_charts_widget8_component_chartswidget8component_ngoninit",
       "label": ".ngOnInit()",
       "_callable": true,
       "_origin": "ast",
       "community": 133,
-      "community_name": "charts-widget6.component.ts",
+      "community_name": "charts-widget8.component.ts",
       "file_type": "code",
       "norm_label": ".ngoninit()",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget6/charts-widget6.component.ts",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget8/charts-widget8.component.ts",
       "source_location": "L13"
     },
     {
-      "id": "metronic_partials_content_widgets_charts_charts_widget6_charts_widget6_component_getchartoptions",
+      "id": "metronic_partials_content_widgets_charts_charts_widget8_charts_widget8_component_getchartoptions",
       "label": "getChartOptions()",
       "_callable": true,
       "_origin": "ast",
       "community": 133,
-      "community_name": "charts-widget6.component.ts",
+      "community_name": "charts-widget8.component.ts",
       "file_type": "code",
       "norm_label": "getchartoptions()",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget6/charts-widget6.component.ts",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget8/charts-widget8.component.ts",
       "source_location": "L18"
     },
     {
@@ -12534,52 +12534,40 @@
       "source_location": "L9"
     },
     {
-      "id": "metronic_partials_content_widgets_feeds_feeds_widget4_feeds_widget4_component_feedswidget4component_constructor",
+      "id": "metronic_partials_content_widgets_feeds_feeds_widget3_feeds_widget3_component_feedswidget3component_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
       "community": 136,
-      "community_name": "FeedsWidget4Component",
+      "community_name": "FeedsWidget3Component",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget4/feeds-widget4.component.ts",
+      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget3/feeds-widget3.component.ts",
       "source_location": "L8"
     },
     {
-      "id": "metronic_partials_content_widgets_feeds_feeds_widget4_feeds_widget4_component_feedswidget4component_ngoninit",
+      "id": "metronic_partials_content_widgets_feeds_feeds_widget3_feeds_widget3_component_feedswidget3component_ngoninit",
       "label": ".ngOnInit()",
       "_callable": true,
       "_origin": "ast",
       "community": 136,
-      "community_name": "FeedsWidget4Component",
+      "community_name": "FeedsWidget3Component",
       "file_type": "code",
       "norm_label": ".ngoninit()",
-      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget4/feeds-widget4.component.ts",
+      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget3/feeds-widget3.component.ts",
       "source_location": "L10"
     },
     {
-      "id": "metronic_partials_content_widgets_feeds_feeds_widget5_feeds_widget5_component_feedswidget5component_constructor",
+      "id": "metronic_partials_content_widgets_stats_stats_widget1_stats_widget1_component_statswidget1component_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
       "community": 137,
-      "community_name": "FeedsWidget5Component",
+      "community_name": "StatsWidget1Component",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget5/feeds-widget5.component.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "metronic_partials_content_widgets_feeds_feeds_widget5_feeds_widget5_component_feedswidget5component_ngoninit",
-      "label": ".ngOnInit()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 137,
-      "community_name": "FeedsWidget5Component",
-      "file_type": "code",
-      "norm_label": ".ngoninit()",
-      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget5/feeds-widget5.component.ts",
-      "source_location": "L10"
+      "source_file": "_metronic/partials/content/widgets/stats/stats-widget1/stats-widget1.component.ts",
+      "source_location": "L12"
     },
     {
       "id": "metronic_partials_content_widgets_mixed_mixed_widget4_mixed_widget4_component_mixedwidget4component_constructor",
@@ -12846,16 +12834,28 @@
       "source_location": "L14"
     },
     {
-      "id": "metronic_partials_content_widgets_lists_lists_widget8_lists_widget8_component_listswidget8component_constructor",
+      "id": "metronic_partials_content_widgets_tables_tables_widget12_tables_widget12_component_tableswidget12component_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
       "community": 144,
-      "community_name": "ListsWidget8Component",
+      "community_name": "TablesWidget12Component",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "_metronic/partials/content/widgets/lists/lists-widget8/lists-widget8.component.ts",
-      "source_location": "L9"
+      "source_file": "_metronic/partials/content/widgets/tables/tables-widget12/tables-widget12.component.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "metronic_partials_content_widgets_tables_tables_widget12_tables_widget12_component_tableswidget12component_ngoninit",
+      "label": ".ngOnInit()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 144,
+      "community_name": "TablesWidget12Component",
+      "file_type": "code",
+      "norm_label": ".ngoninit()",
+      "source_file": "_metronic/partials/content/widgets/tables/tables-widget12/tables-widget12.component.ts",
+      "source_location": "L10"
     },
     {
       "id": "metronic_partials_content_widgets_tables_tables_widget13_tables_widget13_component_tableswidget13component_constructor",
@@ -15990,7 +15990,7 @@
       "source_location": "L9"
     },
     {
-      "id": "metronic_partials_content_widgets_feeds_feeds_widget3_feeds_widget3_component_feedswidget3component_constructor",
+      "id": "metronic_partials_content_widgets_feeds_feeds_widget4_feeds_widget4_component_feedswidget4component_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
@@ -15998,11 +15998,11 @@
       "community_name": "widgets.module.ts",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget3/feeds-widget3.component.ts",
+      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget4/feeds-widget4.component.ts",
       "source_location": "L8"
     },
     {
-      "id": "metronic_partials_content_widgets_feeds_feeds_widget3_feeds_widget3_component_feedswidget3component_ngoninit",
+      "id": "metronic_partials_content_widgets_feeds_feeds_widget4_feeds_widget4_component_feedswidget4component_ngoninit",
       "label": ".ngOnInit()",
       "_callable": true,
       "_origin": "ast",
@@ -16010,7 +16010,31 @@
       "community_name": "widgets.module.ts",
       "file_type": "code",
       "norm_label": ".ngoninit()",
-      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget3/feeds-widget3.component.ts",
+      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget4/feeds-widget4.component.ts",
+      "source_location": "L10"
+    },
+    {
+      "id": "metronic_partials_content_widgets_feeds_feeds_widget5_feeds_widget5_component_feedswidget5component_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "widgets.module.ts",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget5/feeds-widget5.component.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "metronic_partials_content_widgets_feeds_feeds_widget5_feeds_widget5_component_feedswidget5component_ngoninit",
+      "label": ".ngOnInit()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "widgets.module.ts",
+      "file_type": "code",
+      "norm_label": ".ngoninit()",
+      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget5/feeds-widget5.component.ts",
       "source_location": "L10"
     },
     {
@@ -16086,7 +16110,7 @@
       "source_location": "L8"
     },
     {
-      "id": "metronic_partials_content_widgets_stats_stats_widget1_stats_widget1_component_statswidget1component_constructor",
+      "id": "metronic_partials_content_widgets_lists_lists_widget8_lists_widget8_component_listswidget8component_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
@@ -16094,8 +16118,20 @@
       "community_name": "widgets.module.ts",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "_metronic/partials/content/widgets/stats/stats-widget1/stats-widget1.component.ts",
-      "source_location": "L12"
+      "source_file": "_metronic/partials/content/widgets/lists/lists-widget8/lists-widget8.component.ts",
+      "source_location": "L9"
+    },
+    {
+      "id": "metronic_partials_content_widgets_mixed_mixed_widget1_mixed_widget1_component_mixedwidget1component_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "widgets.module.ts",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "_metronic/partials/content/widgets/mixed/mixed-widget1/mixed-widget1.component.ts",
+      "source_location": "L9"
     },
     {
       "id": "metronic_partials_content_widgets_tables_tables_widget10_tables_widget10_component_tableswidget10component_constructor",
@@ -16122,7 +16158,7 @@
       "source_location": "L10"
     },
     {
-      "id": "metronic_partials_content_widgets_tables_tables_widget12_tables_widget12_component_tableswidget12component_constructor",
+      "id": "metronic_partials_content_widgets_tables_tables_widget11_tables_widget11_component_tableswidget11component_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
@@ -16130,11 +16166,11 @@
       "community_name": "widgets.module.ts",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "_metronic/partials/content/widgets/tables/tables-widget12/tables-widget12.component.ts",
+      "source_file": "_metronic/partials/content/widgets/tables/tables-widget11/tables-widget11.component.ts",
       "source_location": "L8"
     },
     {
-      "id": "metronic_partials_content_widgets_tables_tables_widget12_tables_widget12_component_tableswidget12component_ngoninit",
+      "id": "metronic_partials_content_widgets_tables_tables_widget11_tables_widget11_component_tableswidget11component_ngoninit",
       "label": ".ngOnInit()",
       "_callable": true,
       "_origin": "ast",
@@ -16142,7 +16178,7 @@
       "community_name": "widgets.module.ts",
       "file_type": "code",
       "norm_label": ".ngoninit()",
-      "source_file": "_metronic/partials/content/widgets/tables/tables-widget12/tables-widget12.component.ts",
+      "source_file": "_metronic/partials/content/widgets/tables/tables-widget11/tables-widget11.component.ts",
       "source_location": "L10"
     },
     {
@@ -16170,30 +16206,6 @@
       "source_location": "L8"
     },
     {
-      "id": "metronic_partials_content_widgets_tables_tables_widget3_tables_widget3_component_tableswidget3component_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "widgets.module.ts",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "_metronic/partials/content/widgets/tables/tables-widget3/tables-widget3.component.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "metronic_partials_content_widgets_tables_tables_widget3_tables_widget3_component_tableswidget3component_ngoninit",
-      "label": ".ngOnInit()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "widgets.module.ts",
-      "file_type": "code",
-      "norm_label": ".ngoninit()",
-      "source_file": "_metronic/partials/content/widgets/tables/tables-widget3/tables-widget3.component.ts",
-      "source_location": "L10"
-    },
-    {
       "id": "metronic_partials_content_widgets_tables_tables_widget9_tables_widget9_component_tableswidget9component_constructor",
       "label": ".constructor()",
       "_callable": true,
@@ -16216,18 +16228,6 @@
       "norm_label": ".constructor()",
       "source_file": "_metronic/partials/content/widgets/tiles/tiles-widget10/tiles-widget10.component.ts",
       "source_location": "L11"
-    },
-    {
-      "id": "metronic_partials_content_widgets_tiles_tiles_widget14_tiles_widget14_component_tileswidget14component_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "widgets.module.ts",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "_metronic/partials/content/widgets/tiles/tiles-widget14/tiles-widget14.component.ts",
-      "source_location": "L9"
     },
     {
       "id": "modules_auth_components_logout_logout_component_logoutcomponent_constructor",
@@ -16974,16 +16974,28 @@
       "source_location": "L18"
     },
     {
-      "id": "metronic_partials_content_widgets_mixed_mixed_widget1_mixed_widget1_component_mixedwidget1component_constructor",
+      "id": "metronic_partials_content_widgets_tables_tables_widget3_tables_widget3_component_tableswidget3component_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
       "community": 347,
-      "community_name": "MixedWidget1Component",
+      "community_name": "TablesWidget3Component",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "_metronic/partials/content/widgets/mixed/mixed-widget1/mixed-widget1.component.ts",
-      "source_location": "L9"
+      "source_file": "_metronic/partials/content/widgets/tables/tables-widget3/tables-widget3.component.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "metronic_partials_content_widgets_tables_tables_widget3_tables_widget3_component_tableswidget3component_ngoninit",
+      "label": ".ngOnInit()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 347,
+      "community_name": "TablesWidget3Component",
+      "file_type": "code",
+      "norm_label": ".ngoninit()",
+      "source_file": "_metronic/partials/content/widgets/tables/tables-widget3/tables-widget3.component.ts",
+      "source_location": "L10"
     },
     {
       "id": "modules_account_overview_overview_component_overviewcomponent_constructor",
@@ -17358,28 +17370,16 @@
       "source_location": "L163"
     },
     {
-      "id": "metronic_partials_content_widgets_tables_tables_widget11_tables_widget11_component_tableswidget11component_constructor",
+      "id": "metronic_partials_content_widgets_tiles_tiles_widget14_tiles_widget14_component_tileswidget14component_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
       "community": 380,
-      "community_name": "TablesWidget11Component",
+      "community_name": "TilesWidget14Component",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "_metronic/partials/content/widgets/tables/tables-widget11/tables-widget11.component.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "metronic_partials_content_widgets_tables_tables_widget11_tables_widget11_component_tableswidget11component_ngoninit",
-      "label": ".ngOnInit()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 380,
-      "community_name": "TablesWidget11Component",
-      "file_type": "code",
-      "norm_label": ".ngoninit()",
-      "source_file": "_metronic/partials/content/widgets/tables/tables-widget11/tables-widget11.component.ts",
-      "source_location": "L10"
+      "source_file": "_metronic/partials/content/widgets/tiles/tiles-widget14/tiles-widget14.component.ts",
+      "source_location": "L9"
     },
     {
       "id": "pages_role_role_listing_role_listing_component_rolelistingcomponent_constructor",
@@ -18234,7 +18234,7 @@
       "source_location": "L18"
     },
     {
-      "id": "metronic_partials_content_widgets_charts_charts_widget8_charts_widget8_component_chartswidget8component_constructor",
+      "id": "metronic_partials_content_widgets_charts_charts_widget6_charts_widget6_component_chartswidget6component_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
@@ -18242,11 +18242,11 @@
       "community_name": "getCSSVariableValue",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget8/charts-widget8.component.ts",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget6/charts-widget6.component.ts",
       "source_location": "L11"
     },
     {
-      "id": "metronic_partials_content_widgets_charts_charts_widget8_charts_widget8_component_chartswidget8component_ngoninit",
+      "id": "metronic_partials_content_widgets_charts_charts_widget6_charts_widget6_component_chartswidget6component_ngoninit",
       "label": ".ngOnInit()",
       "_callable": true,
       "_origin": "ast",
@@ -18254,11 +18254,11 @@
       "community_name": "getCSSVariableValue",
       "file_type": "code",
       "norm_label": ".ngoninit()",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget8/charts-widget8.component.ts",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget6/charts-widget6.component.ts",
       "source_location": "L13"
     },
     {
-      "id": "metronic_partials_content_widgets_charts_charts_widget8_charts_widget8_component_getchartoptions",
+      "id": "metronic_partials_content_widgets_charts_charts_widget6_charts_widget6_component_getchartoptions",
       "label": "getChartOptions()",
       "_callable": true,
       "_origin": "ast",
@@ -18266,7 +18266,7 @@
       "community_name": "getCSSVariableValue",
       "file_type": "code",
       "norm_label": "getchartoptions()",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget8/charts-widget8.component.ts",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget6/charts-widget6.component.ts",
       "source_location": "L18"
     },
     {
@@ -20115,7 +20115,7 @@
       "file_type": "code",
       "norm_label": ".constructor()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L93"
+      "source_location": "L90"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_deletemeasurementconfirmed",
@@ -20127,7 +20127,7 @@
       "file_type": "code",
       "norm_label": ".deletemeasurementconfirmed()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L323"
+      "source_location": "L320"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_deletetype",
@@ -20139,7 +20139,7 @@
       "file_type": "code",
       "norm_label": ".deletetype()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L395"
+      "source_location": "L392"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_deletetypeconfirmed",
@@ -20151,7 +20151,7 @@
       "file_type": "code",
       "norm_label": ".deletetypeconfirmed()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L399"
+      "source_location": "L396"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_employerofcomponent",
@@ -20163,7 +20163,7 @@
       "file_type": "code",
       "norm_label": ".employerofcomponent()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L205"
+      "source_location": "L202"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_emptyform",
@@ -20175,7 +20175,7 @@
       "file_type": "code",
       "norm_label": ".emptyform()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L333"
+      "source_location": "L330"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_filterbycomponent",
@@ -20187,7 +20187,7 @@
       "file_type": "code",
       "norm_label": ".filterbycomponent()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L122"
+      "source_location": "L119"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_filterbyemployer",
@@ -20199,7 +20199,7 @@
       "file_type": "code",
       "norm_label": ".filterbyemployer()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L117"
+      "source_location": "L114"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_filterbytype",
@@ -20211,7 +20211,7 @@
       "file_type": "code",
       "norm_label": ".filterbytype()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L127"
+      "source_location": "L124"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_loadassets",
@@ -20223,7 +20223,7 @@
       "file_type": "code",
       "norm_label": ".loadassets()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L136"
+      "source_location": "L133"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_loadcomponents",
@@ -20235,7 +20235,7 @@
       "file_type": "code",
       "norm_label": ".loadcomponents()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L188"
+      "source_location": "L185"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_loademployeroptions",
@@ -20247,7 +20247,7 @@
       "file_type": "code",
       "norm_label": ".loademployeroptions()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L107"
+      "source_location": "L104"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_loadmeasurements",
@@ -20259,7 +20259,7 @@
       "file_type": "code",
       "norm_label": ".loadmeasurements()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L243"
+      "source_location": "L240"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_loadplants",
@@ -20271,7 +20271,7 @@
       "file_type": "code",
       "norm_label": ".loadplants()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L175"
+      "source_location": "L172"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_loadsystems",
@@ -20283,7 +20283,7 @@
       "file_type": "code",
       "norm_label": ".loadsystems()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L149"
+      "source_location": "L146"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_loadtypes",
@@ -20295,7 +20295,7 @@
       "file_type": "code",
       "norm_label": ".loadtypes()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L337"
+      "source_location": "L334"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_loadunits",
@@ -20307,7 +20307,7 @@
       "file_type": "code",
       "norm_label": ".loadunits()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L162"
+      "source_location": "L159"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_ngoninit",
@@ -20319,7 +20319,7 @@
       "file_type": "code",
       "norm_label": ".ngoninit()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L99"
+      "source_location": "L96"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_openaddmodal",
@@ -20331,7 +20331,7 @@
       "file_type": "code",
       "norm_label": ".openaddmodal()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L254"
+      "source_location": "L251"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_openaddtypemodal",
@@ -20343,7 +20343,7 @@
       "file_type": "code",
       "norm_label": ".openaddtypemodal()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L353"
+      "source_location": "L350"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_openeditmodal",
@@ -20355,7 +20355,7 @@
       "file_type": "code",
       "norm_label": ".openeditmodal()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L259"
+      "source_location": "L256"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_openedittypemodal",
@@ -20367,7 +20367,7 @@
       "file_type": "code",
       "norm_label": ".openedittypemodal()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L358"
+      "source_location": "L355"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_refresh",
@@ -20379,7 +20379,7 @@
       "file_type": "code",
       "norm_label": ".refresh()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L132"
+      "source_location": "L129"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_selectedtypeunit",
@@ -20391,7 +20391,7 @@
       "file_type": "code",
       "norm_label": ".selectedtypeunit()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L349"
+      "source_location": "L346"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_showalert",
@@ -20403,7 +20403,7 @@
       "file_type": "code",
       "norm_label": ".showalert()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L414"
+      "source_location": "L411"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_submit",
@@ -20415,7 +20415,7 @@
       "file_type": "code",
       "norm_label": ".submit()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L271"
+      "source_location": "L268"
     },
     {
       "id": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_tomeasurementrow",
@@ -20427,7 +20427,7 @@
       "file_type": "code",
       "norm_label": ".tomeasurementrow()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L216"
+      "source_location": "L213"
     },
     {
       "id": "pages_asset_taxonomy_services_asset_api_service_assetapiservice_getallassets",
@@ -21807,7 +21807,7 @@
       "file_type": "code",
       "norm_label": ".submittype()",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L363"
+      "source_location": "L360"
     },
     {
       "id": "pages_asset_taxonomy_plant_plant_component_plantcomponent_submitplant",
@@ -25270,22 +25270,22 @@
       "source_location": ""
     },
     {
-      "id": "metronic_partials_content_widgets_charts_charts_widget6_charts_widget6_component",
-      "label": "charts-widget6.component.ts",
+      "id": "metronic_partials_content_widgets_charts_charts_widget8_charts_widget8_component",
+      "label": "charts-widget8.component.ts",
       "_origin": "ast",
       "community": 133,
-      "community_name": "charts-widget6.component.ts",
+      "community_name": "charts-widget8.component.ts",
       "file_type": "code",
-      "norm_label": "charts-widget6.component.ts",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget6/charts-widget6.component.ts",
+      "norm_label": "charts-widget8.component.ts",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget8/charts-widget8.component.ts",
       "source_location": "L1"
     },
     {
-      "id": "metronic_partials_content_widgets_charts_charts_widget6_charts_widget6_component_ts_component",
+      "id": "metronic_partials_content_widgets_charts_charts_widget8_charts_widget8_component_ts_component",
       "label": "Component",
       "_origin": "ast",
       "community": 133,
-      "community_name": "charts-widget6.component.ts",
+      "community_name": "charts-widget8.component.ts",
       "file_type": "code",
       "norm_label": "component",
       "source_file": "",
@@ -25347,46 +25347,57 @@
       "source_location": ""
     },
     {
-      "id": "metronic_partials_content_widgets_feeds_feeds_widget4_feeds_widget4_component",
-      "label": "feeds-widget4.component.ts",
+      "id": "metronic_partials_content_widgets_feeds_feeds_widget3_feeds_widget3_component",
+      "label": "feeds-widget3.component.ts",
       "_origin": "ast",
       "community": 136,
-      "community_name": "FeedsWidget4Component",
+      "community_name": "FeedsWidget3Component",
       "file_type": "code",
-      "norm_label": "feeds-widget4.component.ts",
-      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget4/feeds-widget4.component.ts",
+      "norm_label": "feeds-widget3.component.ts",
+      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget3/feeds-widget3.component.ts",
       "source_location": "L1"
     },
     {
-      "id": "metronic_partials_content_widgets_feeds_feeds_widget4_feeds_widget4_component_ts_component",
+      "id": "metronic_partials_content_widgets_feeds_feeds_widget3_feeds_widget3_component_ts_component",
       "label": "Component",
       "_origin": "ast",
       "community": 136,
-      "community_name": "FeedsWidget4Component",
+      "community_name": "FeedsWidget3Component",
       "file_type": "code",
       "norm_label": "component",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "metronic_partials_content_widgets_feeds_feeds_widget5_feeds_widget5_component",
-      "label": "feeds-widget5.component.ts",
+      "id": "metronic_partials_content_widgets_stats_stats_widget1_stats_widget1_component",
+      "label": "stats-widget1.component.ts",
       "_origin": "ast",
       "community": 137,
-      "community_name": "FeedsWidget5Component",
+      "community_name": "StatsWidget1Component",
       "file_type": "code",
-      "norm_label": "feeds-widget5.component.ts",
-      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget5/feeds-widget5.component.ts",
+      "norm_label": "stats-widget1.component.ts",
+      "source_file": "_metronic/partials/content/widgets/stats/stats-widget1/stats-widget1.component.ts",
       "source_location": "L1"
     },
     {
-      "id": "metronic_partials_content_widgets_feeds_feeds_widget5_feeds_widget5_component_ts_component",
+      "id": "metronic_partials_content_widgets_stats_stats_widget1_stats_widget1_component_ts_component",
       "label": "Component",
       "_origin": "ast",
       "community": 137,
-      "community_name": "FeedsWidget5Component",
+      "community_name": "StatsWidget1Component",
       "file_type": "code",
       "norm_label": "component",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "metronic_partials_content_widgets_stats_stats_widget1_stats_widget1_component_ts_input",
+      "label": "Input",
+      "_origin": "ast",
+      "community": 137,
+      "community_name": "StatsWidget1Component",
+      "file_type": "code",
+      "norm_label": "input",
       "source_file": "",
       "source_location": ""
     },
@@ -25578,35 +25589,24 @@
       "source_location": ""
     },
     {
-      "id": "metronic_partials_content_widgets_lists_lists_widget8_lists_widget8_component",
-      "label": "lists-widget8.component.ts",
+      "id": "metronic_partials_content_widgets_tables_tables_widget12_tables_widget12_component",
+      "label": "tables-widget12.component.ts",
       "_origin": "ast",
       "community": 144,
-      "community_name": "ListsWidget8Component",
+      "community_name": "TablesWidget12Component",
       "file_type": "code",
-      "norm_label": "lists-widget8.component.ts",
-      "source_file": "_metronic/partials/content/widgets/lists/lists-widget8/lists-widget8.component.ts",
+      "norm_label": "tables-widget12.component.ts",
+      "source_file": "_metronic/partials/content/widgets/tables/tables-widget12/tables-widget12.component.ts",
       "source_location": "L1"
     },
     {
-      "id": "metronic_partials_content_widgets_lists_lists_widget8_lists_widget8_component_ts_component",
+      "id": "metronic_partials_content_widgets_tables_tables_widget12_tables_widget12_component_ts_component",
       "label": "Component",
       "_origin": "ast",
       "community": 144,
-      "community_name": "ListsWidget8Component",
+      "community_name": "TablesWidget12Component",
       "file_type": "code",
       "norm_label": "component",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "metronic_partials_content_widgets_lists_lists_widget8_lists_widget8_component_ts_input",
-      "label": "Input",
-      "_origin": "ast",
-      "community": 144,
-      "community_name": "ListsWidget8Component",
-      "file_type": "code",
-      "norm_label": "input",
       "source_file": "",
       "source_location": ""
     },
@@ -30583,18 +30583,40 @@
       "source_location": ""
     },
     {
-      "id": "metronic_partials_content_widgets_feeds_feeds_widget3_feeds_widget3_component",
-      "label": "feeds-widget3.component.ts",
+      "id": "metronic_partials_content_widgets_feeds_feeds_widget4_feeds_widget4_component",
+      "label": "feeds-widget4.component.ts",
       "_origin": "ast",
       "community": 3,
       "community_name": "widgets.module.ts",
       "file_type": "code",
-      "norm_label": "feeds-widget3.component.ts",
-      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget3/feeds-widget3.component.ts",
+      "norm_label": "feeds-widget4.component.ts",
+      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget4/feeds-widget4.component.ts",
       "source_location": "L1"
     },
     {
-      "id": "metronic_partials_content_widgets_feeds_feeds_widget3_feeds_widget3_component_ts_component",
+      "id": "metronic_partials_content_widgets_feeds_feeds_widget4_feeds_widget4_component_ts_component",
+      "label": "Component",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "widgets.module.ts",
+      "file_type": "code",
+      "norm_label": "component",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "metronic_partials_content_widgets_feeds_feeds_widget5_feeds_widget5_component",
+      "label": "feeds-widget5.component.ts",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "widgets.module.ts",
+      "file_type": "code",
+      "norm_label": "feeds-widget5.component.ts",
+      "source_file": "_metronic/partials/content/widgets/feeds/feeds-widget5/feeds-widget5.component.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "metronic_partials_content_widgets_feeds_feeds_widget5_feeds_widget5_component_ts_component",
       "label": "Component",
       "_origin": "ast",
       "community": 3,
@@ -30737,18 +30759,18 @@
       "source_location": ""
     },
     {
-      "id": "metronic_partials_content_widgets_stats_stats_widget1_stats_widget1_component",
-      "label": "stats-widget1.component.ts",
+      "id": "metronic_partials_content_widgets_lists_lists_widget8_lists_widget8_component",
+      "label": "lists-widget8.component.ts",
       "_origin": "ast",
       "community": 3,
       "community_name": "widgets.module.ts",
       "file_type": "code",
-      "norm_label": "stats-widget1.component.ts",
-      "source_file": "_metronic/partials/content/widgets/stats/stats-widget1/stats-widget1.component.ts",
+      "norm_label": "lists-widget8.component.ts",
+      "source_file": "_metronic/partials/content/widgets/lists/lists-widget8/lists-widget8.component.ts",
       "source_location": "L1"
     },
     {
-      "id": "metronic_partials_content_widgets_stats_stats_widget1_stats_widget1_component_ts_component",
+      "id": "metronic_partials_content_widgets_lists_lists_widget8_lists_widget8_component_ts_component",
       "label": "Component",
       "_origin": "ast",
       "community": 3,
@@ -30759,7 +30781,40 @@
       "source_location": ""
     },
     {
-      "id": "metronic_partials_content_widgets_stats_stats_widget1_stats_widget1_component_ts_input",
+      "id": "metronic_partials_content_widgets_lists_lists_widget8_lists_widget8_component_ts_input",
+      "label": "Input",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "widgets.module.ts",
+      "file_type": "code",
+      "norm_label": "input",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "metronic_partials_content_widgets_mixed_mixed_widget1_mixed_widget1_component",
+      "label": "mixed-widget1.component.ts",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "widgets.module.ts",
+      "file_type": "code",
+      "norm_label": "mixed-widget1.component.ts",
+      "source_file": "_metronic/partials/content/widgets/mixed/mixed-widget1/mixed-widget1.component.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "metronic_partials_content_widgets_mixed_mixed_widget1_mixed_widget1_component_ts_component",
+      "label": "Component",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "widgets.module.ts",
+      "file_type": "code",
+      "norm_label": "component",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "metronic_partials_content_widgets_mixed_mixed_widget1_mixed_widget1_component_ts_input",
       "label": "Input",
       "_origin": "ast",
       "community": 3,
@@ -30792,18 +30847,18 @@
       "source_location": ""
     },
     {
-      "id": "metronic_partials_content_widgets_tables_tables_widget12_tables_widget12_component",
-      "label": "tables-widget12.component.ts",
+      "id": "metronic_partials_content_widgets_tables_tables_widget11_tables_widget11_component",
+      "label": "tables-widget11.component.ts",
       "_origin": "ast",
       "community": 3,
       "community_name": "widgets.module.ts",
       "file_type": "code",
-      "norm_label": "tables-widget12.component.ts",
-      "source_file": "_metronic/partials/content/widgets/tables/tables-widget12/tables-widget12.component.ts",
+      "norm_label": "tables-widget11.component.ts",
+      "source_file": "_metronic/partials/content/widgets/tables/tables-widget11/tables-widget11.component.ts",
       "source_location": "L1"
     },
     {
-      "id": "metronic_partials_content_widgets_tables_tables_widget12_tables_widget12_component_ts_component",
+      "id": "metronic_partials_content_widgets_tables_tables_widget11_tables_widget11_component_ts_component",
       "label": "Component",
       "_origin": "ast",
       "community": 3,
@@ -30848,28 +30903,6 @@
     },
     {
       "id": "metronic_partials_content_widgets_tables_tables_widget2_tables_widget2_component_ts_component",
-      "label": "Component",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "widgets.module.ts",
-      "file_type": "code",
-      "norm_label": "component",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "metronic_partials_content_widgets_tables_tables_widget3_tables_widget3_component",
-      "label": "tables-widget3.component.ts",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "widgets.module.ts",
-      "file_type": "code",
-      "norm_label": "tables-widget3.component.ts",
-      "source_file": "_metronic/partials/content/widgets/tables/tables-widget3/tables-widget3.component.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "metronic_partials_content_widgets_tables_tables_widget3_tables_widget3_component_ts_component",
       "label": "Component",
       "_origin": "ast",
       "community": 3,
@@ -30925,39 +30958,6 @@
     },
     {
       "id": "metronic_partials_content_widgets_tiles_tiles_widget10_tiles_widget10_component_ts_input",
-      "label": "Input",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "widgets.module.ts",
-      "file_type": "code",
-      "norm_label": "input",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "metronic_partials_content_widgets_tiles_tiles_widget14_tiles_widget14_component",
-      "label": "tiles-widget14.component.ts",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "widgets.module.ts",
-      "file_type": "code",
-      "norm_label": "tiles-widget14.component.ts",
-      "source_file": "_metronic/partials/content/widgets/tiles/tiles-widget14/tiles-widget14.component.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "metronic_partials_content_widgets_tiles_tiles_widget14_tiles_widget14_component_ts_component",
-      "label": "Component",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "widgets.module.ts",
-      "file_type": "code",
-      "norm_label": "component",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "metronic_partials_content_widgets_tiles_tiles_widget14_tiles_widget14_component_ts_input",
       "label": "Input",
       "_origin": "ast",
       "community": 3,
@@ -32277,35 +32277,24 @@
       "source_location": ""
     },
     {
-      "id": "metronic_partials_content_widgets_mixed_mixed_widget1_mixed_widget1_component",
-      "label": "mixed-widget1.component.ts",
+      "id": "metronic_partials_content_widgets_tables_tables_widget3_tables_widget3_component",
+      "label": "tables-widget3.component.ts",
       "_origin": "ast",
       "community": 347,
-      "community_name": "MixedWidget1Component",
+      "community_name": "TablesWidget3Component",
       "file_type": "code",
-      "norm_label": "mixed-widget1.component.ts",
-      "source_file": "_metronic/partials/content/widgets/mixed/mixed-widget1/mixed-widget1.component.ts",
+      "norm_label": "tables-widget3.component.ts",
+      "source_file": "_metronic/partials/content/widgets/tables/tables-widget3/tables-widget3.component.ts",
       "source_location": "L1"
     },
     {
-      "id": "metronic_partials_content_widgets_mixed_mixed_widget1_mixed_widget1_component_ts_component",
+      "id": "metronic_partials_content_widgets_tables_tables_widget3_tables_widget3_component_ts_component",
       "label": "Component",
       "_origin": "ast",
       "community": 347,
-      "community_name": "MixedWidget1Component",
+      "community_name": "TablesWidget3Component",
       "file_type": "code",
       "norm_label": "component",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "metronic_partials_content_widgets_mixed_mixed_widget1_mixed_widget1_component_ts_input",
-      "label": "Input",
-      "_origin": "ast",
-      "community": 347,
-      "community_name": "MixedWidget1Component",
-      "file_type": "code",
-      "norm_label": "input",
       "source_file": "",
       "source_location": ""
     },
@@ -33366,24 +33355,35 @@
       "source_location": ""
     },
     {
-      "id": "metronic_partials_content_widgets_tables_tables_widget11_tables_widget11_component",
-      "label": "tables-widget11.component.ts",
+      "id": "metronic_partials_content_widgets_tiles_tiles_widget14_tiles_widget14_component",
+      "label": "tiles-widget14.component.ts",
       "_origin": "ast",
       "community": 380,
-      "community_name": "TablesWidget11Component",
+      "community_name": "TilesWidget14Component",
       "file_type": "code",
-      "norm_label": "tables-widget11.component.ts",
-      "source_file": "_metronic/partials/content/widgets/tables/tables-widget11/tables-widget11.component.ts",
+      "norm_label": "tiles-widget14.component.ts",
+      "source_file": "_metronic/partials/content/widgets/tiles/tiles-widget14/tiles-widget14.component.ts",
       "source_location": "L1"
     },
     {
-      "id": "metronic_partials_content_widgets_tables_tables_widget11_tables_widget11_component_ts_component",
+      "id": "metronic_partials_content_widgets_tiles_tiles_widget14_tiles_widget14_component_ts_component",
       "label": "Component",
       "_origin": "ast",
       "community": 380,
-      "community_name": "TablesWidget11Component",
+      "community_name": "TilesWidget14Component",
       "file_type": "code",
       "norm_label": "component",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "metronic_partials_content_widgets_tiles_tiles_widget14_tiles_widget14_component_ts_input",
+      "label": "Input",
+      "_origin": "ast",
+      "community": 380,
+      "community_name": "TilesWidget14Component",
+      "file_type": "code",
+      "norm_label": "input",
       "source_file": "",
       "source_location": ""
     },
@@ -35753,18 +35753,18 @@
       "source_location": ""
     },
     {
-      "id": "metronic_partials_content_widgets_charts_charts_widget8_charts_widget8_component",
-      "label": "charts-widget8.component.ts",
+      "id": "metronic_partials_content_widgets_charts_charts_widget6_charts_widget6_component",
+      "label": "charts-widget6.component.ts",
       "_origin": "ast",
       "community": 46,
       "community_name": "getCSSVariableValue",
       "file_type": "code",
-      "norm_label": "charts-widget8.component.ts",
-      "source_file": "_metronic/partials/content/widgets/charts/charts-widget8/charts-widget8.component.ts",
+      "norm_label": "charts-widget6.component.ts",
+      "source_file": "_metronic/partials/content/widgets/charts/charts-widget6/charts-widget6.component.ts",
       "source_location": "L1"
     },
     {
-      "id": "metronic_partials_content_widgets_charts_charts_widget8_charts_widget8_component_ts_component",
+      "id": "metronic_partials_content_widgets_charts_charts_widget6_charts_widget6_component_ts_component",
       "label": "Component",
       "_origin": "ast",
       "community": 46,
@@ -47492,7 +47492,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L326",
+      "source_location": "L323",
       "weight": 1.0
     },
     {
@@ -47504,7 +47504,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L327",
+      "source_location": "L324",
       "weight": 1.0
     },
     {
@@ -47516,7 +47516,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L403",
+      "source_location": "L400",
       "weight": 1.0
     },
     {
@@ -47528,7 +47528,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L405",
+      "source_location": "L402",
       "weight": 1.0
     },
     {
@@ -47540,7 +47540,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L407",
+      "source_location": "L404",
       "weight": 1.0
     },
     {
@@ -47552,7 +47552,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L143",
+      "source_location": "L140",
       "weight": 1.0
     },
     {
@@ -47564,7 +47564,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L145",
+      "source_location": "L142",
       "weight": 1.0
     },
     {
@@ -47576,7 +47576,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L199",
+      "source_location": "L196",
       "weight": 1.0
     },
     {
@@ -47588,7 +47588,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L201",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
@@ -47600,7 +47600,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L113",
+      "source_location": "L110",
       "weight": 1.0
     },
     {
@@ -47612,7 +47612,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L246",
+      "source_location": "L243",
       "weight": 1.0
     },
     {
@@ -47624,7 +47624,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L250",
+      "source_location": "L247",
       "weight": 1.0
     },
     {
@@ -47636,7 +47636,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L182",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
@@ -47648,7 +47648,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L184",
+      "source_location": "L181",
       "weight": 1.0
     },
     {
@@ -47660,7 +47660,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L156",
+      "source_location": "L153",
       "weight": 1.0
     },
     {
@@ -47672,7 +47672,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L158",
+      "source_location": "L155",
       "weight": 1.0
     },
     {
@@ -47684,7 +47684,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L345",
+      "source_location": "L342",
       "weight": 1.0
     },
     {
@@ -47696,7 +47696,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L169",
+      "source_location": "L166",
       "weight": 1.0
     },
     {
@@ -47708,43 +47708,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L171",
-      "weight": 1.0
-    },
-    {
-      "source": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_ngoninit",
-      "target": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_deletemeasurementconfirmed",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L100",
-      "weight": 1.0
-    },
-    {
-      "source": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_ngoninit",
-      "target": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_deletetypeconfirmed",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L101",
-      "weight": 1.0
-    },
-    {
-      "source": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_ngoninit",
-      "target": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_loadtypes",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L102",
+      "source_location": "L168",
       "weight": 1.0
     },
     {
@@ -47756,7 +47720,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L103",
+      "source_location": "L100",
       "weight": 1.0
     },
     {
@@ -47768,7 +47732,43 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L104",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_ngoninit",
+      "target": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_deletemeasurementconfirmed",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_ngoninit",
+      "target": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_deletetypeconfirmed",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_ngoninit",
+      "target": "pages_asset_taxonomy_measurement_measurement_component_measurementcomponent_loadtypes",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
+      "source_location": "L99",
       "weight": 1.0
     },
     {
@@ -47780,7 +47780,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L255",
+      "source_location": "L252",
       "weight": 1.0
     },
     {
@@ -47792,7 +47792,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L133",
+      "source_location": "L130",
       "weight": 1.0
     },
     {
@@ -47804,7 +47804,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L278",
+      "source_location": "L275",
       "weight": 1.0
     },
     {
@@ -47816,7 +47816,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L313",
+      "source_location": "L310",
       "weight": 1.0
     },
     {
@@ -47828,7 +47828,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L371",
+      "source_location": "L368",
       "weight": 1.0
     },
     {
@@ -47840,7 +47840,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L383",
+      "source_location": "L380",
       "weight": 1.0
     },
     {
@@ -47852,7 +47852,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L239",
+      "source_location": "L236",
       "weight": 1.0
     },
     {
@@ -58484,7 +58484,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L73",
+      "source_location": "L70",
       "weight": 1.0
     },
     {
@@ -91880,7 +91880,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L93",
+      "source_location": "L90",
       "weight": 1.0
     },
     {
@@ -112103,7 +112103,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L107",
+      "source_location": "L104",
       "weight": 1.0
     },
     {
@@ -112114,7 +112114,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L117",
+      "source_location": "L114",
       "weight": 1.0
     },
     {
@@ -112125,7 +112125,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L122",
+      "source_location": "L119",
       "weight": 1.0
     },
     {
@@ -112136,7 +112136,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L127",
+      "source_location": "L124",
       "weight": 1.0
     },
     {
@@ -112147,7 +112147,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L132",
+      "source_location": "L129",
       "weight": 1.0
     },
     {
@@ -112158,7 +112158,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L136",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -112169,7 +112169,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L149",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -112180,7 +112180,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L162",
+      "source_location": "L159",
       "weight": 1.0
     },
     {
@@ -112191,7 +112191,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L175",
+      "source_location": "L172",
       "weight": 1.0
     },
     {
@@ -112202,7 +112202,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L188",
+      "source_location": "L185",
       "weight": 1.0
     },
     {
@@ -112213,7 +112213,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L205",
+      "source_location": "L202",
       "weight": 1.0
     },
     {
@@ -112224,7 +112224,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L216",
+      "source_location": "L213",
       "weight": 1.0
     },
     {
@@ -112235,7 +112235,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L243",
+      "source_location": "L240",
       "weight": 1.0
     },
     {
@@ -112246,7 +112246,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L254",
+      "source_location": "L251",
       "weight": 1.0
     },
     {
@@ -112257,7 +112257,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L259",
+      "source_location": "L256",
       "weight": 1.0
     },
     {
@@ -112268,7 +112268,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L271",
+      "source_location": "L268",
       "weight": 1.0
     },
     {
@@ -112279,7 +112279,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L323",
+      "source_location": "L320",
       "weight": 1.0
     },
     {
@@ -112290,7 +112290,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L333",
+      "source_location": "L330",
       "weight": 1.0
     },
     {
@@ -112301,7 +112301,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L337",
+      "source_location": "L334",
       "weight": 1.0
     },
     {
@@ -112312,7 +112312,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L349",
+      "source_location": "L346",
       "weight": 1.0
     },
     {
@@ -112323,7 +112323,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L353",
+      "source_location": "L350",
       "weight": 1.0
     },
     {
@@ -112334,7 +112334,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L358",
+      "source_location": "L355",
       "weight": 1.0
     },
     {
@@ -112345,7 +112345,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L363",
+      "source_location": "L360",
       "weight": 1.0
     },
     {
@@ -112356,7 +112356,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L395",
+      "source_location": "L392",
       "weight": 1.0
     },
     {
@@ -112367,7 +112367,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L399",
+      "source_location": "L396",
       "weight": 1.0
     },
     {
@@ -112378,7 +112378,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L414",
+      "source_location": "L411",
       "weight": 1.0
     },
     {
@@ -112389,7 +112389,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L93",
+      "source_location": "L90",
       "weight": 1.0
     },
     {
@@ -112400,7 +112400,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L99",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -115026,7 +115026,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L324",
+      "source_location": "L321",
       "weight": 1.0
     },
     {
@@ -115038,7 +115038,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L400",
+      "source_location": "L397",
       "weight": 1.0
     },
     {
@@ -115050,7 +115050,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L137",
+      "source_location": "L134",
       "weight": 1.0
     },
     {
@@ -115062,7 +115062,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L189",
+      "source_location": "L186",
       "weight": 1.0
     },
     {
@@ -115074,7 +115074,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L108",
+      "source_location": "L105",
       "weight": 1.0
     },
     {
@@ -115086,7 +115086,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L244",
+      "source_location": "L241",
       "weight": 1.0
     },
     {
@@ -115098,7 +115098,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L176",
+      "source_location": "L173",
       "weight": 1.0
     },
     {
@@ -115110,7 +115110,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L150",
+      "source_location": "L147",
       "weight": 1.0
     },
     {
@@ -115122,7 +115122,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L338",
+      "source_location": "L335",
       "weight": 1.0
     },
     {
@@ -115134,7 +115134,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L163",
+      "source_location": "L160",
       "weight": 1.0
     },
     {
@@ -115146,7 +115146,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L306",
+      "source_location": "L303",
       "weight": 1.0
     },
     {
@@ -115158,7 +115158,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L307",
+      "source_location": "L304",
       "weight": 1.0
     },
     {
@@ -115170,7 +115170,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L378",
+      "source_location": "L375",
       "weight": 1.0
     },
     {
@@ -115182,7 +115182,7 @@
       "confidence_score": 0.8,
       "context": "call",
       "source_file": "pages/asset-taxonomy/measurement/measurement.component.ts",
-      "source_location": "L379",
+      "source_location": "L376",
       "weight": 1.0
     },
     {

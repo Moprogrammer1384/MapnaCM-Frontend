@@ -1,7 +1,7 @@
 # Graph Report - app  (2026-10-05)
 
 ## Corpus Check
-- 726 files · ~145,473 words
+- 726 files · ~145,443 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -147,18 +147,18 @@
 - FeedsWidget2Component
 - bar-animation-delay-apache-widget.component.ts
 - line-stack-apache-widget.component.ts
-- charts-widget6.component.ts
+- charts-widget8.component.ts
 - FeedsWidget6Component
 - ListsWidget4Component
-- FeedsWidget4Component
-- FeedsWidget5Component
+- FeedsWidget3Component
+- StatsWidget1Component
 - MixedWidget4Component
 - MixedWidget5Component
 - bar-background-apache-widget.component.ts
 - barGrid-barGap-apache-widget.component.ts
 - StatsWidget5Component
 - bar-breaks-brush-apache-widget.component.ts
-- ListsWidget8Component
+- TablesWidget12Component
 - bar-breaks-simple-apache-widget.component.ts
 - TablesWidget13Component
 - bar-brush-apache-widget.component.ts
@@ -361,7 +361,7 @@
 - graph-force-dynamic-apache-widget.component.ts
 - graph-force-apache-widget.component.ts
 - graph-apache-widget.component.ts
-- MixedWidget1Component
+- TablesWidget3Component
 - graph-label-overlap-apache-widget.component.ts
 - graph-life-expectancy-apache-widget.component.ts
 - graph-npm-apache-widget.component.ts
@@ -394,7 +394,7 @@
 - line-sections-apache-widget.component.ts
 - line-simple-apache-widget.component.ts
 - line-smooth-apache-widget.component.ts
-- TablesWidget11Component
+- TilesWidget14Component
 - line-step-apache-widget.component.ts
 - line-style-apache-widget.component.ts
 - line-tooltip-touch-apache-widget.component.ts
@@ -563,7 +563,7 @@ Nodes (8): ScrollComponent, components, KTHelpers, KTUtil, menuReinitialization(
 
 ### Community 3 - "widgets.module.ts"
 Cohesion: 0.03
-Nodes (38): AdvanceTablesWidget1Component, Component, Input, FeedsWidget3Component, Component, ListsWidget1Component, Component, ListsWidget2Component (+30 more)
+Nodes (38): AdvanceTablesWidget1Component, Component, Input, FeedsWidget4Component, Component, FeedsWidget5Component, Component, ListsWidget1Component (+30 more)
 
 ### Community 4 - "ChatInnerComponent"
 Cohesion: 0.18
@@ -913,13 +913,17 @@ Nodes (3): TilesWidget11Component, Component, Input
 Cohesion: 0.33
 Nodes (3): TilesWidget12Component, Component, Input
 
-### Community 133 - "charts-widget6.component.ts"
+### Community 133 - "charts-widget8.component.ts"
 Cohesion: 0.40
-Nodes (3): ChartsWidget6Component, getChartOptions(), Component
+Nodes (3): ChartsWidget8Component, getChartOptions(), Component
 
 ### Community 135 - "ListsWidget4Component"
 Cohesion: 0.40
 Nodes (3): ListsWidget4Component, Component, Input
+
+### Community 137 - "StatsWidget1Component"
+Cohesion: 0.40
+Nodes (3): StatsWidget1Component, Component, Input
 
 ### Community 138 - "MixedWidget4Component"
 Cohesion: 0.40
@@ -932,10 +936,6 @@ Nodes (3): MixedWidget5Component, Component, Input
 ### Community 142 - "StatsWidget5Component"
 Cohesion: 0.40
 Nodes (3): StatsWidget5Component, Component, Input
-
-### Community 144 - "ListsWidget8Component"
-Cohesion: 0.40
-Nodes (3): ListsWidget8Component, Component, Input
 
 ### Community 149 - "TilesWidget13Component"
 Cohesion: 0.40
@@ -957,13 +957,13 @@ Nodes (12): CirclePackingWithD3ApacheWidgetComponent, Component, DocExampleGeoSv
 Cohesion: 0.40
 Nodes (3): ChartsWidget3Component, getChartOptions(), Component
 
-### Community 347 - "MixedWidget1Component"
-Cohesion: 0.40
-Nodes (3): MixedWidget1Component, Component, Input
-
 ### Community 372 - "charts-widget7.component.ts"
 Cohesion: 0.40
 Nodes (3): ChartsWidget7Component, getChartOptions(), Component
+
+### Community 380 - "TilesWidget14Component"
+Cohesion: 0.40
+Nodes (3): TilesWidget14Component, Component, Input
 
 ### Community 408 - "StatsWidget2Component"
 Cohesion: 0.40

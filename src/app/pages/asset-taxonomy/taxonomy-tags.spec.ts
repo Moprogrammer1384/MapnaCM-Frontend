@@ -9,7 +9,6 @@ import { SharedModule } from '../../_metronic/shared/shared.module';
 import { AssetComponent } from './asset/asset.component';
 import { ComponentComponent } from './component/component.component';
 import { MeasurementComponent } from './measurement/measurement.component';
-import { MeasurementUiStateService } from './measurement/measurement-ui-state.service';
 import { AssetApiService } from './services/asset-api.service';
 
 type TaxonomyPage = AssetComponent | ComponentComponent | MeasurementComponent;
@@ -73,6 +72,7 @@ for (const page of pages) {
         'getAllAssets', 'getAllComponents', 'getAllMeasurements',
         'createAsset', 'updateAsset', 'createComponent', 'updateComponent',
         'createMeasurement', 'updateMeasurement',
+        'getAllMeasurementTypes',
       ]);
       const systemLabel = 'Tehran - Plant - Unit 1 - Cooling';
       const assetLabel = `${systemLabel} - Pump`;
@@ -87,9 +87,12 @@ for (const page of pages) {
       api.getAllSystems.and.returnValue(of([
         { id: 3, name: 'Cooling', unitId: 2, unitName: 'Unit 1', unitLabel: 'Tehran - Plant - Unit 1', hierarchyLabel: systemLabel },
       ]));
+      api.getAllMeasurementTypes.and.returnValue(of([
+        { id: 1, name: 'Velocity', unit: 'mm/s' },
+      ]));
       const asset = { id: 7, name: 'Pump', tag: 'TAG-A', systemId: 3, systemName: 'Cooling', systemLabel, hierarchyLabel: assetLabel };
       const component = { id: 10, name: 'Bearing', tag: 'TAG-A', assetId: 7, assetName: 'Pump', assetLabel, hierarchyLabel: componentLabel };
-      const measurement = { id: 20, name: 'Velocity', tag: 'TAG-A', componentId: 10, componentName: 'Bearing', componentLabel, hierarchyLabel: `${componentLabel} - Velocity` };
+      const measurement = { id: 20, name: 'Velocity', tag: 'TAG-A', measurementTypeId: 1, typeName: 'Velocity', unit: 'mm/s', sensitivity: 0.25, componentId: 10, componentName: 'Bearing', componentLabel, hierarchyLabel: `${componentLabel} - Velocity` };
       api.getAllAssets.and.returnValue(of([asset, { ...asset, id: 8, name: 'Untagged', tag: undefined, hierarchyLabel: `${systemLabel} - Untagged` }]));
       api.getAllComponents.and.returnValue(of([component, { ...component, id: 11, name: 'Untagged', tag: null, hierarchyLabel: `${assetLabel} - Untagged` }]));
       api.getAllMeasurements.and.returnValue(of([measurement, { ...measurement, id: 21, name: 'Untagged', tag: undefined }]));
@@ -105,11 +108,6 @@ for (const page of pages) {
         imports: [CommonModule, FormsModule, SharedModule, NgbModalModule],
         providers: [{ provide: AssetApiService, useValue: api }],
       }).compileComponents();
-      if (page.component === MeasurementComponent) {
-        const state = TestBed.inject(MeasurementUiStateService);
-        state.saveType({ name: 'Velocity', unit: 'mm/s' });
-        state.setConfiguration(20, { measurementTypeId: 1, sensitivity: 0.25 });
-      }
       fixture = TestBed.createComponent(page.component);
       fixture.componentInstance.modalConfig.animation = false;
       modals = TestBed.inject(NgbModal);

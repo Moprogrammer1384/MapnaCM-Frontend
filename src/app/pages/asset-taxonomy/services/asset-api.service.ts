@@ -12,6 +12,8 @@ import {
   AssetSystem,
   ComponentPayload,
   MeasurementPayload,
+  MeasurementType,
+  MeasurementTypePayload,
   Plant,
   PlantPayload,
   PlantType,
@@ -276,6 +278,32 @@ export class AssetApiService {
   deleteMeasurement(id: number): Observable<void> {
     return this.http
       .delete<ApiEnvelope<object>>(`${this.apiUrl}/Measurement/Delete`, { params: { Id: String(id) } })
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  // ---- Measurement types -------------------------------------------------
+
+  getAllMeasurementTypes(): Observable<MeasurementType[]> {
+    return this.http
+      .get<ApiEnvelope<PaginatedResult<MeasurementType>>>(`${this.apiUrl}/MeasurementType/GetAll`, { params: ALL_ROWS_PARAMS })
+      .pipe(map((response) => this.unwrapPage(response)));
+  }
+
+  createMeasurementType(payload: MeasurementTypePayload): Observable<void> {
+    return this.http
+      .post<ApiEnvelope<object>>(`${this.apiUrl}/MeasurementType/Add`, payload)
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  updateMeasurementType(payload: MeasurementTypePayload & { id: number }): Observable<void> {
+    return this.http
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/MeasurementType/Update`, payload)
+      .pipe(map((response) => this.unwrapVoid(response)));
+  }
+
+  deleteMeasurementType(id: number): Observable<void> {
+    return this.http
+      .delete<ApiEnvelope<object>>(`${this.apiUrl}/MeasurementType/Delete`, { params: { Id: String(id) } })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 

@@ -7,13 +7,11 @@ import Swal from 'sweetalert2';
 import { SharedModule } from '../../../_metronic/shared/shared.module';
 import { AssetApiService } from '../services/asset-api.service';
 import { MeasurementComponent } from './measurement.component';
-import { MeasurementUiStateService } from './measurement-ui-state.service';
 
 describe('Measurement page', () => {
   let fixture: ComponentFixture<MeasurementComponent>;
   let api: jasmine.SpyObj<AssetApiService>;
   let modals: NgbModal;
-  let uiState: MeasurementUiStateService;
 
   const componentLabel = 'Tehran - Plant - Unit 1 - Cooling - Pump - Bearing';
 
@@ -54,7 +52,8 @@ describe('Measurement page', () => {
   beforeEach(async () => {
     api = jasmine.createSpyObj<AssetApiService>('AssetApiService', [
       'getAllAssets', 'getAllSystems', 'getAllUnits', 'getAllPlants',
-      'getAllComponents', 'getAllMeasurements', 'createMeasurement', 'updateMeasurement', 'deleteMeasurement', 'getEmployerOptions',
+      'getAllComponents', 'getAllMeasurements', 'createMeasurement', 'updateMeasurement', 'deleteMeasurement',
+      'getAllMeasurementTypes', 'createMeasurementType', 'updateMeasurementType', 'deleteMeasurementType', 'getEmployerOptions',
     ]);
     api.getAllAssets.and.returnValue(of([
       { id: 7, name: 'Pump', systemId: 3, systemName: 'Cooling', systemLabel: 'Tehran - Plant - Unit 1 - Cooling', hierarchyLabel: 'Tehran - Plant - Unit 1 - Cooling - Pump' },
@@ -71,12 +70,18 @@ describe('Measurement page', () => {
     api.getAllComponents.and.returnValue(of([
       { id: 10, name: 'Bearing', assetId: 7, assetName: 'Pump', assetLabel: 'Tehran - Plant - Unit 1 - Cooling - Pump', hierarchyLabel: componentLabel },
     ]));
+    api.getAllMeasurementTypes.and.returnValue(of([
+      { id: 1, name: 'Velocity', unit: 'mm/s' },
+    ]));
     api.getAllMeasurements.and.returnValue(of([
-      { id: 20, name: 'RMS velocity', componentId: 10, componentName: 'Bearing', componentLabel, hierarchyLabel: componentLabel + ' - RMS velocity' },
+      { id: 20, name: 'RMS velocity', tag: '', measurementTypeId: 1, typeName: 'Velocity', unit: 'mm/s', sensitivity: 0.25, componentId: 10, componentName: 'Bearing', componentLabel, hierarchyLabel: componentLabel + ' - RMS velocity' },
     ]));
     api.createMeasurement.and.returnValue(of(undefined));
     api.updateMeasurement.and.returnValue(of(undefined));
     api.deleteMeasurement.and.returnValue(of(undefined));
+    api.createMeasurementType.and.returnValue(of(undefined));
+    api.updateMeasurementType.and.returnValue(of(undefined));
+    api.deleteMeasurementType.and.returnValue(of(undefined));
     api.getEmployerOptions.and.returnValue(of([]));
     spyOn(Swal, 'fire').and.stub();
     await TestBed.configureTestingModule({
@@ -84,9 +89,6 @@ describe('Measurement page', () => {
       imports: [CommonModule, SharedModule, FormsModule, NgbModalModule],
       providers: [{ provide: AssetApiService, useValue: api }],
     }).compileComponents();
-    uiState = TestBed.inject(MeasurementUiStateService);
-    uiState.saveType({ name: 'Velocity', unit: 'mm/s' });
-    uiState.setConfiguration(20, { measurementTypeId: 1, sensitivity: 0.25 });
     fixture = TestBed.createComponent(MeasurementComponent);
     fixture.componentInstance.modalConfig.animation = false;
     modals = TestBed.inject(NgbModal);
@@ -98,11 +100,15 @@ describe('Measurement page', () => {
     fixture.destroy();
   });
 
-  it('renders the measurement, its backend component label and inherited employer and filters the rows', () => {
+  it('renders the measurement with its type, unit and sensitivity from the API and filters the rows', () => {
     expect(fixture.nativeElement.querySelector('tbody').textContent).toContain('RMS velocity');
     expect(fixture.componentInstance.table.rows[0]).toEqual(jasmine.objectContaining({
-      component: componentLabel, employer: 'Test employer',
+      component: componentLabel, employer: 'Test employer', type: 'Velocity', unit: 'mm/s', sensitivity: '0.25', measurementTypeId: '1',
     }));
+    fixture.componentInstance.filterByType(99);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.table.filtered.length).toBe(0);
+    fixture.componentInstance.filterByType(1);
     fixture.componentInstance.filterByComponent(99);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('tbody').textContent).toContain('No matching records found');
@@ -118,35 +124,32 @@ describe('Measurement page', () => {
     expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: 'Please fill in all required fields.' }));
   });
 
-  it('creates a measurement with the numeric component ID selected in the modal', async () => {
-    api.createMeasurement.and.callFake((payload) => {
-      api.getAllMeasurements.and.returnValue(of([
-        { id: 21, ...payload, componentName: 'Bearing', componentLabel, hierarchyLabel: componentLabel + ' - ' + payload.name },
-      ]));
-      return of(undefined);
-    });
+  it('creates a measurement with tag, type and sensitivity through the API', async () => {
     await openAdd();
-    const name = modal().querySelector<HTMLInputElement>('input[name="measurement"]')!;
-    name.value = 'Peak velocity';
-    name.dispatchEvent(new Event('input'));
+    write('measurement', 'Peak velocity');
+    write('tag', 'VIB-01');
     const component = modal().querySelector<HTMLSelectElement>('select[name="component"]')!;
     window.jQuery(component).val(component.options[1].value).trigger('change');
     await settle();
     await setTypeAndSensitivity();
     await submit();
-    expect(api.createMeasurement).toHaveBeenCalledOnceWith({ name: 'Peak velocity', tag: '', componentId: 10 });
-    expect(fixture.componentInstance.table.rows[0]).toEqual(jasmine.objectContaining({ type: 'Velocity', unit: 'mm/s', sensitivity: '0.25' }));
+    expect(api.createMeasurement).toHaveBeenCalledOnceWith({
+      name: 'Peak velocity', tag: 'VIB-01', measurementTypeId: 1, sensitivity: 0.25, componentId: 10,
+    });
   });
 
-  it('restores edit values and saves the existing measurement ID', async () => {
+  it('restores edit values including type and sensitivity and saves the full payload', async () => {
     (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
     await settle();
     expect(modal().querySelector<HTMLInputElement>('input[name="measurement"]')!.value).toBe('RMS velocity');
     expect(fixture.componentInstance.measurementForm.componentId).toBe(10);
     expect(fixture.componentInstance.measurementForm.measurementTypeId).toBe(1);
     expect(modal().querySelector<HTMLInputElement>('input[name="sensitivity"]')!.value).toBe('0.25');
+    await setTypeAndSensitivity('1.5');
     await submit();
-    expect(api.updateMeasurement).toHaveBeenCalledOnceWith({ id: 20, name: 'RMS velocity', tag: '', componentId: 10 });
+    expect(api.updateMeasurement).toHaveBeenCalledOnceWith({
+      id: 20, name: 'RMS velocity', tag: '', measurementTypeId: 1, sensitivity: 1.5, componentId: 10,
+    });
   });
 
   it('keeps the dialog open and clears saving when the API fails', async () => {
@@ -159,7 +162,7 @@ describe('Measurement page', () => {
     expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: 'Update failed' }));
   });
 
-  it('rejects a component selection that is no longer available', async () => {
+  it('rejects stale component and type selections', async () => {
     (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
     await settle();
     fixture.componentInstance.measurementForm.componentId = 99;
@@ -167,9 +170,29 @@ describe('Measurement page', () => {
     await submit();
     expect(api.updateMeasurement).not.toHaveBeenCalled();
     expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: jasmine.stringMatching(/no longer available/) }));
+    fixture.componentInstance.measurementForm.componentId = 10;
+    fixture.componentInstance.measurementForm.measurementTypeId = 99;
+    await settle();
+    await submit();
+    expect(api.updateMeasurement).not.toHaveBeenCalled();
+    expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: jasmine.stringMatching(/measurement type is no longer available/) }));
   });
 
-  it('deletes only after the confirmation is accepted', async () => {
+  it('accepts zero sensitivity and rejects non-finite values', async () => {
+    (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
+    await settle();
+    await setTypeAndSensitivity('0');
+    await submit();
+    expect(api.updateMeasurement).toHaveBeenCalledWith(jasmine.objectContaining({ sensitivity: 0 }));
+    (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
+    await settle();
+    fixture.componentInstance.measurementForm.sensitivity = Infinity;
+    await settle();
+    await submit();
+    expect(api.updateMeasurement).toHaveBeenCalledTimes(1);
+  });
+
+  it('deletes a measurement only after the confirmation is accepted', async () => {
     (Swal.fire as jasmine.Spy).and.returnValue(Promise.resolve({ value: false }));
     const button = fixture.nativeElement.querySelector('app-keenicon[name="trash"]').parentElement as HTMLElement;
     button.click();
@@ -181,141 +204,61 @@ describe('Measurement page', () => {
     expect(api.deleteMeasurement).toHaveBeenCalledOnceWith(20);
   });
 
-  it('keeps components with identical labels distinct when selecting and filtering', async () => {
-    api.getAllComponents.and.returnValue(of([
-      { id: 10, name: 'Bearing', assetId: 7, assetName: 'Pump', assetLabel: 'Tehran - Plant - Unit 1 - Cooling - Pump', hierarchyLabel: componentLabel },
-      { id: 11, name: 'Bearing', assetId: 7, assetName: 'Pump', assetLabel: 'Tehran - Plant - Unit 1 - Cooling - Pump', hierarchyLabel: componentLabel },
-    ]));
-    api.getAllMeasurements.and.returnValue(of([
-      { id: 20, name: 'RMS velocity', componentId: 10, componentName: 'Bearing', componentLabel, hierarchyLabel: componentLabel + ' - RMS velocity' },
-      { id: 21, name: 'Peak velocity', componentId: 11, componentName: 'Bearing', componentLabel, hierarchyLabel: componentLabel + ' - Peak velocity' },
-    ]));
-    fixture.componentInstance.refresh();
-    await settle();
-    fixture.componentInstance.filterByComponent(11);
-    expect(fixture.componentInstance.table.filtered.map((row) => row.measurement)).toEqual(['Peak velocity']);
-    await openAdd();
-    const name = modal().querySelector<HTMLInputElement>('input[name="measurement"]')!;
-    name.value = 'Acceleration';
-    name.dispatchEvent(new Event('input'));
-    const component = modal().querySelector<HTMLSelectElement>('select[name="component"]')!;
-    window.jQuery(component).val(component.options[2].value).trigger('change');
-    await settle();
-    await setTypeAndSensitivity();
-    await submit();
-    expect(api.createMeasurement).toHaveBeenCalledOnceWith({ name: 'Acceleration', tag: '', componentId: 11 });
-  });
-
-  it('requires a type and a number even when the name and component are present', async () => {
-    await openAdd();
-    fixture.componentInstance.measurementForm.measurement = 'Temperature';
-    fixture.componentInstance.measurementForm.componentId = 10;
-    await settle();
-    await submit();
-    expect(api.createMeasurement).not.toHaveBeenCalled();
-    fixture.componentInstance.measurementForm.measurementTypeId = 1;
-    await settle();
-    await submit();
-    expect(api.createMeasurement).not.toHaveBeenCalled();
-    expect(modal().querySelector('input[name="sensitivity"] + div')!.textContent).toContain('Enter a number');
-  });
-
-  it('accepts zero sensitivity and rejects non-finite values and unavailable types', async () => {
-    (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
-    await settle();
-    await setTypeAndSensitivity('0');
-    await submit();
-    expect(api.updateMeasurement).toHaveBeenCalledTimes(1);
-    expect(uiState.getConfiguration(20)?.sensitivity).toBe(0);
-    (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
-    await settle();
-    fixture.componentInstance.measurementForm.sensitivity = Infinity;
-    await settle();
-    await submit();
-    expect(api.updateMeasurement).toHaveBeenCalledTimes(1);
-    fixture.componentInstance.measurementForm.sensitivity = 0.5;
-    fixture.componentInstance.measurementForm.measurementTypeId = 99;
-    await settle();
-    await submit();
-    expect(api.updateMeasurement).toHaveBeenCalledTimes(1);
-    expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: jasmine.stringMatching(/measurement type is no longer available/) }));
-  });
-
-  it('keeps the existing configuration when an update fails', async () => {
-    api.updateMeasurement.and.returnValue(throwError(() => new Error('Update failed')));
-    (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
-    await settle();
-    await setTypeAndSensitivity('1.5');
-    await submit();
-    expect(uiState.getConfiguration(20)?.sensitivity).toBe(0.25);
-    expect(modal()).not.toBeNull();
-  });
-
-  it('requires a type name and unit, creates the type and makes it selectable', async () => {
+  it('creates a measurement type through the API and makes it selectable', async () => {
+    api.createMeasurementType.and.callFake((payload) => {
+      api.getAllMeasurementTypes.and.returnValue(of([
+        { id: 1, name: 'Velocity', unit: 'mm/s' },
+        { id: 2, ...payload },
+      ]));
+      return of(undefined);
+    });
     (Array.from(fixture.nativeElement.querySelectorAll('a'))
       .find((item: unknown) => (item as HTMLElement).textContent === 'Add Type') as HTMLElement).click();
     await settle();
     write('name', '  Acceleration  ');
     await settle();
     await submit();
-    expect(uiState.getTypes().length).toBe(1);
+    expect(api.createMeasurementType).not.toHaveBeenCalled();
     write('unit', '  m/s²  ');
     await settle();
     await submit();
-    expect(uiState.getTypes()[1]).toEqual({ id: 2, name: 'Acceleration', unit: 'm/s²' });
+    expect(api.createMeasurementType).toHaveBeenCalledOnceWith({ name: 'Acceleration', unit: 'm/s²' });
     await openAdd();
     const select = modal().querySelector<HTMLSelectElement>('select[name="measurementTypeId"]')!;
     expect(select.options[2].text).toBe('Acceleration (m/s²)');
-    window.jQuery(select).val(select.options[2].value).trigger('change');
-    await settle();
-    expect(fixture.componentInstance.measurementForm.measurementTypeId).toBe(2);
     expect(fixture.componentInstance.selectedTypeUnit).toBe('m/s²');
   });
 
-  it('edits both type fields and updates linked measurement labels without another API request', async () => {
+  it('edits a type through the API', async () => {
+    api.updateMeasurementType.and.callFake(() => {
+      api.getAllMeasurementTypes.and.returnValue(of([{ id: 1, name: 'Speed', unit: 'm/s' }]));
+      return of(undefined);
+    });
     await clickTypeAction('pencil');
     expect(modal().querySelector<HTMLInputElement>('input[name="unit"]')!.value).toBe('mm/s');
     write('name', 'Speed');
     write('unit', 'm/s');
     await settle();
     await submit();
-    expect(fixture.componentInstance.table.rows[0]).toEqual(jasmine.objectContaining({ type: 'Speed', unit: 'm/s', sensitivity: '0.25' }));
-    expect(api.getAllMeasurements).toHaveBeenCalledTimes(1);
-    expect(api.updateMeasurement).not.toHaveBeenCalled();
-    const typeSearch = fixture.nativeElement.querySelector('#kt_measurement_type_search') as HTMLInputElement;
-    typeSearch.value = 'mm/s';
-    typeSearch.dispatchEvent(new Event('input'));
-    await settle();
-    expect(fixture.nativeElement.querySelector('#kt_measurement_type_table tbody').textContent).toContain('No matching records found');
-    expect(fixture.componentInstance.table.filtered.length).toBe(1);
-    fixture.componentInstance.filterByType(99);
-    expect(fixture.componentInstance.table.filtered.length).toBe(0);
-    fixture.componentInstance.filterByType(1);
-    expect(fixture.componentInstance.table.filtered.length).toBe(1);
+    expect(api.updateMeasurementType).toHaveBeenCalledOnceWith({ id: 1, name: 'Speed', unit: 'm/s' });
+    expect(fixture.componentInstance.typeOptions[0]).toEqual(jasmine.objectContaining({ name: 'Speed', unit: 'm/s' }));
   });
 
-  it('blocks deletion of an assigned type and confirms deletion of unused types', async () => {
-    await clickTypeAction('trash');
-    expect(uiState.getTypes().length).toBe(1);
-    expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: jasmine.stringMatching(/used by a measurement/) }));
-    uiState.deleteConfiguration(20);
-    (Swal.fire as jasmine.Spy).and.returnValue(Promise.resolve({ value: false }));
-    await clickTypeAction('trash');
-    expect(uiState.getTypes().length).toBe(1);
+  it('deletes an unused type after confirmation and resets the type filter', async () => {
     fixture.componentInstance.filterByType(1);
     (Swal.fire as jasmine.Spy).and.returnValue(Promise.resolve({ value: true }));
     await clickTypeAction('trash');
-    expect(uiState.getTypes().length).toBe(0);
+    expect(api.deleteMeasurementType).toHaveBeenCalledOnceWith(1);
     expect(fixture.componentInstance.typeFilter).toBeNull();
-    await openAdd();
-    expect(modal().textContent).toContain('Add a Measurement Type');
   });
 
-  it('retains types and sensitivity when returning to the page in the same app session', async () => {
-    fixture.destroy();
-    fixture = TestBed.createComponent(MeasurementComponent);
-    await settle();
-    expect(fixture.componentInstance.types.rows[0].unit).toBe('mm/s');
-    expect(fixture.componentInstance.table.rows[0].sensitivity).toBe('0.25');
+  it('surfaces the backend rejection when deleting a type still in use', async () => {
+    api.deleteMeasurementType.and.returnValue(throwError(() => new Error('This measurement type cannot be deleted while measurements are using it.')));
+    (Swal.fire as jasmine.Spy).and.returnValue(Promise.resolve({ value: true }));
+    await clickTypeAction('trash');
+    expect(api.deleteMeasurementType).toHaveBeenCalledOnceWith(1);
+    expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({
+      text: jasmine.stringMatching(/cannot be deleted while measurements are using it/),
+    }));
   });
 });

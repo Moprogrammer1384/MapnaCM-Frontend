@@ -1,12 +1,10 @@
-import { ChangeDetectorRef, Component, Inject, OnInit, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
-import { MeasurementPayload } from 'src/app/core/models/asset.model';
+import { MeasurementPayload, MeasurementType } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
 import { ClientTable } from '../client-table';
-import { MeasurementUiStateService } from './measurement-ui-state.service';
-import type { MeasurementType } from './measurement-ui-state.service';
 
 interface MeasurementRow extends Record<string, string> {
   id: string;
@@ -55,13 +53,16 @@ export class MeasurementComponent implements OnInit {
   table = new ClientTable<MeasurementRow>(
     [],
     [
-      { key: 'measurement', title: 'Name', class: 'min-w-125px min-w-md-200px' },
-      { key: 'tag', title: 'Tag', class: 'min-w-125px' },
-      { key: 'type', title: 'Type', class: 'min-w-125px' },
-      { key: 'unit', title: 'Unit', class: 'min-w-100px' },
-      { key: 'sensitivity', title: 'Sensitivity', class: 'min-w-125px' },
-      { key: 'component', title: 'Component Name', class: 'min-w-175px min-w-md-250px' },
-      { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
+      // Widths are relaxed so the 8-column table fits the viewport like the
+      // other taxonomy tables and the Actions column stays visible; long
+      // hierarchy labels wrap instead of forcing horizontal overflow.
+      { key: 'measurement', title: 'Name', class: 'min-w-100px' },
+      { key: 'tag', title: 'Tag', class: '' },
+      { key: 'type', title: 'Type', class: '' },
+      { key: 'unit', title: 'Unit', class: '' },
+      { key: 'sensitivity', title: 'Sensitivity', class: '' },
+      { key: 'component', title: 'Component Name', class: 'min-w-150px' },
+      { key: 'employer', title: 'Employer', class: 'min-w-125px' },
     ]
   );
 
@@ -92,7 +93,6 @@ export class MeasurementComponent implements OnInit {
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
-    @Inject(MeasurementUiStateService) private uiState: MeasurementUiStateService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -217,19 +217,21 @@ export class MeasurementComponent implements OnInit {
     id: number;
     name: string;
     tag?: string | null;
+    measurementTypeId: number | null;
+    typeName: string | null;
+    unit: string | null;
+    sensitivity: number | null;
     componentId: number;
     componentLabel: string;
   }): MeasurementRow {
-    const configuration = this.uiState.getConfiguration(measurement.id);
-    const type = this.typeOptions.find((option) => option.id === configuration?.measurementTypeId);
     return {
       id: String(measurement.id),
       measurement: measurement.name,
       tag: measurement.tag ?? '',
-      type: type?.name ?? '',
-      unit: type?.unit ?? '',
-      measurementTypeId: configuration ? String(configuration.measurementTypeId) : '',
-      sensitivity: configuration ? String(configuration.sensitivity) : '',
+      type: measurement.typeName ?? '',
+      unit: measurement.unit ?? '',
+      measurementTypeId: measurement.measurementTypeId ? String(measurement.measurementTypeId) : '',
+      sensitivity: measurement.sensitivity !== null && measurement.sensitivity !== undefined ? String(measurement.sensitivity) : '',
       // Backend canonical label — identical to the select options, so the
       // edit prefill matches.
       component: measurement.componentLabel,
@@ -241,7 +243,6 @@ export class MeasurementComponent implements OnInit {
   private loadMeasurements(): void {
     this.apiService.getAllMeasurements().subscribe({
       next: (measurements) => {
-        this.uiState.reconcile(measurements);
         this.table.rows = measurements.map((measurement) => this.toMeasurementRow(measurement));
         this.table.page = 1;
         this.cdr.detectChanges();
@@ -293,21 +294,19 @@ export class MeasurementComponent implements OnInit {
     }
 
     this.saving = true;
-    const payload: MeasurementPayload = { name: this.measurementForm.measurement.trim(), tag: this.measurementForm.tag, componentId };
-    const configuration = { measurementTypeId, sensitivity: this.measurementForm.sensitivity };
-    const measurementId = this.measurementForm.id;
-    const existingIds = this.table.rows.map((row) => Number(row.id));
-    const isEdit = !!measurementId;
+    const payload: MeasurementPayload = {
+      name: this.measurementForm.measurement.trim(),
+      tag: this.measurementForm.tag,
+      measurementTypeId,
+      sensitivity: this.measurementForm.sensitivity,
+      componentId,
+    };
+    const isEdit = !!this.measurementForm.id;
     const request$ = isEdit
       ? this.apiService.updateMeasurement({ id: this.measurementForm.id!, ...payload })
       : this.apiService.createMeasurement(payload);
     request$.subscribe({
       next: () => {
-        if (measurementId !== undefined) {
-          this.uiState.setConfiguration(measurementId, configuration);
-        } else {
-          this.uiState.queueCreatedConfiguration(payload, existingIds, configuration);
-        }
         this.saving = false;
         modal.dismiss('saved');
         this.showAlert('success', 'Success!', isEdit ? 'Measurement updated successfully!' : 'Measurement created successfully!');
@@ -324,7 +323,6 @@ export class MeasurementComponent implements OnInit {
   private deleteMeasurementConfirmed(measurement: MeasurementRow): void {
     this.apiService.deleteMeasurement(Number(measurement.id)).subscribe({
       next: () => {
-        this.uiState.deleteConfiguration(Number(measurement.id));
         this.showAlert('success', 'Deleted!', 'You have deleted ' + measurement.measurement + '!.');
         this.loadMeasurements();
       },
@@ -337,14 +335,15 @@ export class MeasurementComponent implements OnInit {
   }
 
   private loadTypes(): void {
-    this.typeOptions = this.uiState.getTypes();
-    this.types.rows = this.typeOptions.map((type) => ({ id: String(type.id), name: type.name, unit: type.unit }));
-    this.types.page = Math.min(this.types.page, this.types.totalPages);
-    this.table.rows = this.table.rows.map((row) => {
-      const type = this.typeOptions.find((option) => String(option.id) === row.measurementTypeId);
-      return { ...row, type: type?.name ?? '', unit: type?.unit ?? '' };
+    this.apiService.getAllMeasurementTypes().subscribe({
+      next: (types) => {
+        this.typeOptions = types;
+        this.types.rows = types.map((type) => ({ id: String(type.id), name: type.name, unit: type.unit }));
+        this.types.page = Math.min(this.types.page, this.types.totalPages);
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load measurement types.'),
     });
-    this.table.page = Math.min(this.table.page, this.table.totalPages);
   }
 
   get selectedTypeUnit(): string {
@@ -372,32 +371,44 @@ export class MeasurementComponent implements OnInit {
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
+    this.saving = true;
     const isEdit = this.typeFormModel.id !== undefined;
-    this.uiState.saveType({ ...this.typeFormModel, name, unit });
-    this.loadTypes();
-    modal.dismiss('saved');
-    this.showAlert('success', 'Success!', isEdit ? 'Type updated successfully!' : 'Type created successfully!');
+    const payload = { name, unit };
+    const request$ = isEdit
+      ? this.apiService.updateMeasurementType({ id: this.typeFormModel.id!, ...payload })
+      : this.apiService.createMeasurementType(payload);
+    request$.subscribe({
+      next: () => {
+        this.saving = false;
+        this.loadTypes();
+        modal.dismiss('saved');
+        this.showAlert('success', 'Success!', isEdit ? 'Type updated successfully!' : 'Type created successfully!');
+      },
+      error: (error) => {
+        this.saving = false;
+        this.cdr.detectChanges();
+        this.showAlert('error', 'Error!', error?.message || 'The request failed.');
+      },
+    });
   }
 
   deleteType(type: TypeRow): void {
-    if (this.uiState.isTypeInUse(Number(type.id))) {
-      this.showAlert('error', 'Error!', 'This type is used by a measurement. Change or delete the measurement first.');
-      return;
-    }
     this.types.confirmDelete(type, type.name);
   }
 
   private deleteTypeConfirmed(type: TypeRow): void {
-    if (!this.uiState.deleteType(Number(type.id))) {
-      this.showAlert('error', 'Error!', 'This type is used by a measurement. Change or delete the measurement first.');
-      return;
-    }
-    if (this.typeFilter === Number(type.id)) {
-      this.filterByType(null);
-    }
-    this.loadTypes();
-    this.cdr.detectChanges();
-    this.showAlert('success', 'Deleted!', 'You have deleted ' + type.name + '!.');
+    this.apiService.deleteMeasurementType(Number(type.id)).subscribe({
+      next: () => {
+        if (this.typeFilter === Number(type.id)) {
+          this.filterByType(null);
+        }
+        this.loadTypes();
+        this.cdr.detectChanges();
+        this.showAlert('success', 'Deleted!', 'You have deleted ' + type.name + '!.');
+      },
+      // The backend rejects types still used by measurements.
+      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the measurement type.'),
+    });
   }
 
   private showAlert(icon: 'success' | 'error', title: string, text: string): void {

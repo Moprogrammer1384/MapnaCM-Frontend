@@ -266,8 +266,7 @@ uses cards with a create modal; it does not use the table wrapper.
 
 Taxonomy pages use shared `TablePagination<T>` from
 `src/app/_metronic/shared/Pagination/table-pagination.ts` and Angular-rendered
-tables. They do not use
-`<app-crud>`, despite matching DataTables styling/classes. Reuse this pattern
+tables. They do not use `<app-crud>`, despite matching DataTables styling/classes. Reuse this pattern
 for taxonomy pages. `AssetApiService` requests up to 10,000 rows for client-side
 search/filter/sort/paging; this is a current limit, not unlimited pagination.
 
@@ -570,3 +569,25 @@ every vendored asset or generated graph report.
 - `npx ngc -p tsconfig.app.json --noEmit`, project lint, and all **19** focused
   Measurement UI/state ChromeHeadless tests passed. Removed the temporary
   isolated test config. Editor diagnostic clearance has not been verified.
+
+### 2026-10-05 - Shared table pagination helper
+
+- Studied `ClientTable`: it owns in-memory pagination, case-insensitive search,
+  exact column filters, three-state sorting, column metadata and SweetAlert2
+  delete confirmation/delegation. It is a TypeScript helper, not an Angular component.
+- Renamed it to `TablePagination` and its column interface to
+  `TablePaginationColumn`; moved implementation and adjacent tests into
+  `src/app/_metronic/shared/Pagination/`. Updated all seven page imports and
+  nine table instances: Site, Plant/Plant Type, Unit, System, Asset, Component,
+  and Measurement/Measurement Type. Behavior and template bindings are unchanged.
+- Production build and project lint passed. Existing 2.70 MB bundle-budget and
+  four CSS selector warnings remain. No stale imports remain in application source;
+  historical generated graph reports were left intact.
+- Isolated ChromeHeadless validation: **35 of 36 tests passed**, including all
+  five helper tests plus Component, Measurement and Tag checks. The Measurement
+  type-creation test at `measurement.component.spec.ts:229` expects a selected
+  unit after opening a blank form without selecting a type; the same failure
+  was reproduced by mapping page imports to the original pre-refactor helper.
+- Full test TypeScript compilation still fails on the existing Plant fixture
+  missing `hierarchyLabel`. Temporary baseline source/configuration were removed.
+  Live API integration and manual browser verification were not performed.

@@ -1,7 +1,7 @@
 # MapnaCM frontend: development context
 
-Last studied: **2026-10-04 (Asia/Tehran)**.
-Latest source reviewed: `52233c9` (`Plant type fix`), plus the Tag UI changes below.
+Last studied: **2026-10-05 (Asia/Tehran)**.
+Latest source reviewed: `52233c9` (`Plant type fix`), plus the Tag and Measurement Type UI changes below.
 
 This is the project memory for development with Codex. Read it at the start of
 each task, inspect the relevant current source, and update it after meaningful
@@ -316,6 +316,28 @@ use `hierarchyLabel` and rows use `componentLabel`. The former
 `MeasurementStorageService` has been removed. Measurement defines a named
 taxonomy record, not a live numeric reading or sensor data stream.
 
+Measurement also manages **Measurement Types** in a second table, reusing the
+Plant page's table/modal pattern. Both table containers use `col-12`, stacked
+at full width on every breakpoint. Types have required Name and Unit fields
+and support add/edit, search, sorting, pagination, and confirmed deletion. Each
+Measurement add/edit form requires a numeric type ID and finite numeric Sensitivity
+(zero, negative numbers, and decimals are accepted; no range was specified).
+The main table displays Type, Unit, and Sensitivity after Tag and filters types by ID.
+Editing a type immediately updates the labels/unit shown on its Measurements.
+Assigned types cannot be deleted until their Measurements change type or are deleted.
+
+`measurement/measurement-ui-state.service.ts` owns the new frontend-only models,
+types, and per-Measurement configurations. Its root-scoped memory survives page
+navigation within the app session and clears on browser reload. No browser storage,
+Measurement Type endpoints, or extra Measurement wire fields were added. Existing
+Measurement CRUD remains on the existing API. Configuration is saved locally only
+after the existing API mutation succeeds. Since Add returns void, newly created
+Measurements are associated with their configuration on reload only when one unique
+new ID matches the submitted name/tag/component, excluding previously loaded IDs.
+Delayed or ambiguous responses remain pending; ambiguous identities are not guessed.
+Older records have blank Type/Unit/Sensitivity until configured in the current session.
+The backend team must connect type/configuration persistence later.
+
 Asset, Component, and Measurement have an optional free-text Tag field in their
 shared add/edit modal and a sortable Tag column after Name. Row mapping normalizes
 missing/null tags to `''`, so existing records remain searchable and editable.
@@ -491,3 +513,32 @@ every vendored asset or generated graph report.
 - The standard test compilation is blocked by existing Plant fixtures missing
   `hierarchyLabel` in `plant.component.spec.ts:38-40`. Live API tag persistence
   was not tested; backend integration remains with the backend team.
+
+### 2026-10-05 - Measurement Types and Sensitivity
+
+- Reused the Plant reference/table/modal layout and existing Metronic utilities,
+  Select2 integration, and `ClientTable`. Added a second Measurement Type table
+  with required Name and Unit, plus the Measurement Type selection and required
+  numeric Sensitivity in the shared Measurement modal.
+- Added Type, Unit, and Sensitivity columns, a type filter, read-only selected Unit,
+  immediate label updates when editing types, and deletion protection for used types.
+- New data uses isolated session memory as described above; retained existing
+  Measurement API payloads/operations. Backend/database, styles, theme scripts,
+  routes, and browser storage were not changed.
+- Production build and project lint passed. Existing initial bundle warning
+  (approximately 2.70 MB against 2 MB) and four CSS selector warnings remain.
+- All **43 focused ChromeHeadless tests passed**: Measurement UI/state, Component
+  regression, Tag regression for all three pages, and ClientTable behavior.
+  Used an isolated temporary test tsconfig to bypass the existing Plant fixtures
+  missing `hierarchyLabel`, then removed it. Full test TypeScript compilation
+  still reproduces that unrelated Plant error.
+- Verified dialog/template behavior with mocked APIs in ChromeHeadless. Live
+  authenticated API integration and a manual visual browser audit were not performed.
+  New Type/Sensitivity persistence remains frontend session memory, not backend storage.
+
+### 2026-10-05 - Measurement tables at full width
+
+- Changed both Measurement and Measurement Type table containers to `col-12`,
+  as requested, so they stack at full width on every breakpoint.
+- Verified both wrapper classes in the source and passed `git diff --check`.
+  This changes two layout classes only; build and behavior tests were not rerun.

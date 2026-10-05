@@ -9,6 +9,7 @@ import { SharedModule } from '../../_metronic/shared/shared.module';
 import { AssetComponent } from './asset/asset.component';
 import { ComponentComponent } from './component/component.component';
 import { MeasurementComponent } from './measurement/measurement.component';
+import { MeasurementUiStateService } from './measurement/measurement-ui-state.service';
 import { AssetApiService } from './services/asset-api.service';
 
 type TaxonomyPage = AssetComponent | ComponentComponent | MeasurementComponent;
@@ -50,6 +51,12 @@ for (const page of pages) {
         .find((item) => item.textContent === `Add ${page.title}`)!;
       button.click();
       await settle();
+      if (fixture.componentInstance instanceof MeasurementComponent) {
+        const type = modal().querySelector<HTMLSelectElement>('select[name="measurementTypeId"]')!;
+        window.jQuery(type).val(type.options[1].value).trigger('change');
+        write('sensitivity', '0.25');
+        await settle();
+      }
     };
     const edit = async () => {
       (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
@@ -98,6 +105,11 @@ for (const page of pages) {
         imports: [CommonModule, FormsModule, SharedModule, NgbModalModule],
         providers: [{ provide: AssetApiService, useValue: api }],
       }).compileComponents();
+      if (page.component === MeasurementComponent) {
+        const state = TestBed.inject(MeasurementUiStateService);
+        state.saveType({ name: 'Velocity', unit: 'mm/s' });
+        state.setConfiguration(20, { measurementTypeId: 1, sensitivity: 0.25 });
+      }
       fixture = TestBed.createComponent(page.component);
       fixture.componentInstance.modalConfig.animation = false;
       modals = TestBed.inject(NgbModal);
@@ -113,12 +125,13 @@ for (const page of pages) {
       const rows = fixture.nativeElement.querySelectorAll('tbody tr') as NodeListOf<HTMLTableRowElement>;
       expect(rows[0].cells[1].textContent).toBe('TAG-A');
       expect(rows[1].cells[1].textContent).toBe('');
-      expect(fixture.nativeElement.querySelectorAll('thead th').length).toBe(5);
+      const table = fixture.nativeElement.querySelector('table');
+      expect(table.querySelectorAll('thead th').length).toBe(page.component === MeasurementComponent ? 8 : 5);
       const search = fixture.nativeElement.querySelector(`input[placeholder="Search ${page.title}"]`) as HTMLInputElement;
       search.value = 'tag-a';
       search.dispatchEvent(new Event('input'));
       await settle();
-      expect(fixture.nativeElement.querySelectorAll('tbody tr').length).toBe(1);
+      expect(table.querySelectorAll('tbody tr').length).toBe(1);
       expect(fixture.nativeElement.querySelector('tbody').textContent).toContain('TAG-A');
     });
 

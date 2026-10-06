@@ -65,7 +65,7 @@ describe('Measurement page', () => {
       { id: 2, name: 'Unit 1', plantId: 1, plantName: 'Plant', plantLabel: 'Tehran - Plant', hierarchyLabel: 'Tehran - Plant - Unit 1' },
     ]));
     api.getAllPlants.and.returnValue(of([
-      { id: 1, name: 'Plant', siteId: 1, plantTypeId: 1, siteLabel: 'Tehran', hierarchyLabel: 'Tehran - Plant', typeName: 'Thermal', employerName: 'Test employer' },
+      { id: 1, name: 'Plant', siteId: 1, plantTypeId: 1, siteLabel: 'Tehran', hierarchyLabel: 'Tehran - Plant', typeName: 'Thermal', employerId: 'e1', employerName: 'Test employer' },
     ]));
     api.getAllComponents.and.returnValue(of([
       { id: 10, name: 'Bearing', assetId: 7, assetName: 'Pump', assetLabel: 'Tehran - Plant - Unit 1 - Cooling - Pump', hierarchyLabel: componentLabel },
@@ -113,7 +113,7 @@ describe('Measurement page', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('tbody').textContent).toContain('No matching records found');
     fixture.componentInstance.filterByComponent(null);
-    fixture.componentInstance.filterByEmployer('Test employer');
+    fixture.componentInstance.filterByEmployer('e1');
     expect(fixture.componentInstance.table.filtered.length).toBe(1);
   });
 
@@ -226,6 +226,9 @@ describe('Measurement page', () => {
     await openAdd();
     const select = modal().querySelector<HTMLSelectElement>('select[name="measurementTypeId"]')!;
     expect(select.options[2].text).toBe('Acceleration (m/s²)');
+    expect(fixture.componentInstance.selectedTypeUnit).toBe('');
+    window.jQuery(select).val(select.options[2].value).trigger('change');
+    await settle();
     expect(fixture.componentInstance.selectedTypeUnit).toBe('m/s²');
   });
 

@@ -19,7 +19,7 @@
       <div class="my-1 me-md-4 w-100 w-md-250px">
         <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by employer" [ngModel]="employerFilter" (ngModelChange)="filterByEmployer($event)">
           <option [ngValue]="null">All Employers</option>
-          <option *ngFor="let e of employers" [ngValue]="e">{{ e }}</option>
+          <option *ngFor="let e of employers" [ngValue]="e.id">{{ e.name }}</option>
         </select>
       </div>
       <!--end::Employer filter-->
@@ -27,7 +27,7 @@
       <div class="my-1 me-md-4 w-100 w-md-250px">
         <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by plant" [ngModel]="plantFilter" (ngModelChange)="filterByPlant($event)">
           <option [ngValue]="null">All Plants</option>
-          <option *ngFor="let p of plantOptions" [ngValue]="p">{{ p }}</option>
+          <option *ngFor="let p of plantOptions" [ngValue]="p.id">{{ p.label }}</option>
         </select>
       </div>
       <!--end::Plant filter-->
@@ -164,9 +164,9 @@
           <span class="required">Plant Name</span>
         </label>
         <!--end::Label-->
-        <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Plant" name="plant" [(ngModel)]="unitForm.plant" required>
+        <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Plant" name="plant" [(ngModel)]="unitForm.plantId" required>
           <option [ngValue]="null">Select plant...</option>
-          <option *ngFor="let p of plantOptions" [ngValue]="p">{{ p }}</option>
+          <option *ngFor="let p of plantOptions" [ngValue]="p.id">{{ p.label }}</option>
         </select>
       </div>
       <!--end::Input group-->

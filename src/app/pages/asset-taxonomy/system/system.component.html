@@ -19,7 +19,7 @@
       <div class="my-1 me-md-4 w-100 w-md-250px">
         <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by employer" [ngModel]="employerFilter" (ngModelChange)="filterByEmployer($event)">
           <option [ngValue]="null">All Employers</option>
-          <option *ngFor="let e of employers" [ngValue]="e">{{ e }}</option>
+          <option *ngFor="let e of employers" [ngValue]="e.id">{{ e.name }}</option>
         </select>
       </div>
       <!--end::Employer filter-->
@@ -27,7 +27,7 @@
       <div class="my-1 me-md-4 w-100 w-md-250px">
         <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by unit" [ngModel]="unitFilter" (ngModelChange)="filterByUnit($event)">
           <option [ngValue]="null">All Units</option>
-          <option *ngFor="let u of unitOptions" [ngValue]="u">{{ u }}</option>
+          <option *ngFor="let u of unitOptions" [ngValue]="u.id">{{ u.label }}</option>
         </select>
       </div>
       <!--end::Unit filter-->
@@ -164,9 +164,9 @@
           <span class="required">Unit Name</span>
         </label>
         <!--end::Label-->
-        <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Unit" name="unit" [(ngModel)]="systemForm.unit" required>
+        <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Unit" name="unit" [(ngModel)]="systemForm.unitId" required>
           <option [ngValue]="null">Select unit...</option>
-          <option *ngFor="let u of unitOptions" [ngValue]="u">{{ u }}</option>
+          <option *ngFor="let u of unitOptions" [ngValue]="u.id">{{ u.label }}</option>
         </select>
       </div>
       <!--end::Input group-->

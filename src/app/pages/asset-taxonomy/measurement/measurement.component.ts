@@ -9,6 +9,7 @@ import { TablePagination } from 'src/app/_metronic/shared/Pagination/table-pagin
 interface MeasurementRow extends Record<string, string> {
   id: string;
   employer: string;
+  employerId: string;
   component: string;
   componentId: string;
   measurement: string;
@@ -77,8 +78,8 @@ export class MeasurementComponent implements OnInit {
   // Options carry the backend hierarchy labels ("City - Plant - Unit -
   // System - Asset - Component"); the select binds the numeric component id.
   componentOptions: { id: number; label: string }[] = [];
-  // Employer filter options (names of the Employer-role users, from the API).
-  employers: string[] = [];
+  // Employer filter values are user IDs; names are for display only.
+  employers: { id: string; name: string }[] = [];
   employerFilter: string | null = null;
   componentFilter: number | null = null;
   measurementForm: MeasurementFormModel = this.emptyForm();
@@ -88,7 +89,7 @@ export class MeasurementComponent implements OnInit {
   private systemIdByAssetId: Record<number, number> = {};
   private unitIdBySystemId: Record<number, number> = {};
   private plantIdByUnitId: Record<number, number> = {};
-  private employerByPlantId: Record<number, string> = {};
+  private employerByPlantId: Record<number, { id: string; name: string }> = {};
 
   constructor(
     private modalService: NgbModal,
@@ -107,16 +108,16 @@ export class MeasurementComponent implements OnInit {
   private loadEmployerOptions(): void {
     this.apiService.getEmployerOptions().subscribe({
       next: (users) => {
-        this.employers = users.map((user) => user.name);
+        this.employers = users;
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load employer users.'),
     });
   }
 
-  filterByEmployer(employer: string | null): void {
-    this.employerFilter = employer;
-    this.table.setFilter('employer', employer);
+  filterByEmployer(employerId: string | null): void {
+    this.employerFilter = employerId;
+    this.table.setFilter('employerId', employerId);
   }
 
   filterByComponent(componentId: number | null): void {
@@ -177,7 +178,10 @@ export class MeasurementComponent implements OnInit {
       next: (plants) => {
         this.employerByPlantId = {};
         for (const plant of plants) {
-          this.employerByPlantId[plant.id] = plant.employerName || '—';
+          this.employerByPlantId[plant.id] = {
+            id: plant.employerId ?? '',
+            name: plant.employerName || '—',
+          };
         }
         this.loadComponents();
       },
@@ -202,15 +206,15 @@ export class MeasurementComponent implements OnInit {
     });
   }
 
-  private employerOfComponent(componentId: number): string {
+  private employerOfComponent(componentId: number): { id: string; name: string } | undefined {
     const assetId = this.assetIdByComponentId[componentId];
     if (assetId === undefined) {
-      return '—';
+      return undefined;
     }
     const systemId = this.systemIdByAssetId[assetId];
     const unitId = systemId !== undefined ? this.unitIdBySystemId[systemId] : undefined;
     const plantId = unitId !== undefined ? this.plantIdByUnitId[unitId] : undefined;
-    return (plantId !== undefined && this.employerByPlantId[plantId]) || '—';
+    return plantId !== undefined ? this.employerByPlantId[plantId] : undefined;
   }
 
   private toMeasurementRow(measurement: {
@@ -224,6 +228,7 @@ export class MeasurementComponent implements OnInit {
     componentId: number;
     componentLabel: string;
   }): MeasurementRow {
+    const employer = this.employerOfComponent(measurement.componentId);
     return {
       id: String(measurement.id),
       measurement: measurement.name,
@@ -232,11 +237,11 @@ export class MeasurementComponent implements OnInit {
       unit: measurement.unit ?? '',
       measurementTypeId: measurement.measurementTypeId ? String(measurement.measurementTypeId) : '',
       sensitivity: measurement.sensitivity !== null && measurement.sensitivity !== undefined ? String(measurement.sensitivity) : '',
-      // Backend canonical label — identical to the select options, so the
-      // edit prefill matches.
+      // Parent labels are displayed independently of the selected component ID.
       component: measurement.componentLabel,
       componentId: String(measurement.componentId),
-      employer: this.employerOfComponent(measurement.componentId),
+      employer: employer?.name || '—',
+      employerId: employer?.id ?? '',
     };
   }
 

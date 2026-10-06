@@ -36,7 +36,7 @@ describe('Plant Select2 integration', () => {
     ]));
     api.getAllPlantTypes.and.returnValue(of([{ id: 3, name: 'Thermal' }]));
     api.getAllPlants.and.returnValue(of([
-      { id: 7, name: 'Existing plant', plantTypeId: 3, siteId: 22, typeName: 'Thermal', siteLabel: 'Shiraz (29, 52)', employerId: 'e2', employerName: 'Sara Ahmadi' },
+      { id: 7, name: 'Existing plant', plantTypeId: 3, siteId: 22, typeName: 'Thermal', siteLabel: 'Shiraz (29, 52)', hierarchyLabel: 'Shiraz - Thermal - Existing plant', employerId: 'e2', employerName: 'Sara Ahmadi' },
     ]));
     api.getEmployerOptions.and.returnValue(of([
       { id: 'e1', name: 'Ali Akbari' },

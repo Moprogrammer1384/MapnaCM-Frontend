@@ -117,9 +117,10 @@ an appropriate global partial or be split into reusable components.
 - No live authenticated API integration or full visual browser audit was performed
   during this study. Build success does not establish that every API screen works.
 
-The later Tag change passed build/lint and 27 focused UI tests. The current normal
-test compilation blocker is instead `plant.component.spec.ts:38-40`: its Plant
-fixtures lack the required `hierarchyLabel`. See the latest maintenance entry.
+The later Tag change passed build/lint and 27 focused UI tests. The missing
+`hierarchyLabel` in the Plant test fixture was corrected during the relationship-ID
+change on 2026-10-05. Normal test TypeScript compilation now passes; see the latest
+maintenance entry for focused browser validation.
 
 ## Source map and feature status
 
@@ -290,12 +291,15 @@ Plant Type is managed as a second table on the Plant page.
   Its payload contains `employerId` and the employer display-name snapshot.
 - Plant candidate employers come from `getUsersByRole('Employer')`.
 - Unit/System/Asset/Component/Measurement inherit the Plant employer via parent-ID maps.
-- Employer filters combine actual row employers with `EMPLOYERS` fallback labels.
-  `employers.ts` still contains legacy name matching, deterministic fallback
-  employers, and the old `asset-taxonomy-plant-employers` storage support. Its
-  comment saying the backend cannot store employers is outdated.
-- Unit/System/Asset/Component dropdowns use display-label-to-numeric-ID maps. Keep loaded
-  row labels and option labels consistent; duplicate/renamed labels need care.
+- Employer options come from `AssetApiService.getEmployerOptions()` as `{ id, name }`.
+  All six employer filters compare Identity user IDs with row `employerId`,
+  retaining the Plant's employer-name snapshot for display. Missing employer IDs
+  remain unassigned; names do not establish relationships.
+- Unit/System/Asset/Component parent options use `{ id: number, label: string }`.
+  Forms, edit restoration, and parent filters bind numeric IDs; labels are displayed
+  and sorted only. Duplicate or changed labels do not change relationships.
+  TablePagination currently requires string rows, so row IDs and filter comparison
+  values are serialized strings; numeric form values go directly into API payloads.
 - Component displays name, Tag, Asset label, and inherited employer. It loads real
   Asset/System/Unit/Plant metadata before loading saved component rows.
 
@@ -591,3 +595,27 @@ every vendored asset or generated graph report.
 - Full test TypeScript compilation still fails on the existing Plant fixture
   missing `hierarchyLabel`. Temporary baseline source/configuration were removed.
   Live API integration and manual browser verification were not performed.
+
+### 2026-10-05 - Taxonomy relationships use IDs
+
+- Implemented the first clean-code review recommendation only: Unit, System,
+  Asset, and Component form selections/edit restoration and parent filters now
+  bind numeric IDs. Removed all four label-to-ID lookup maps; option labels and
+  backend parent labels remain presentation data. Unavailable IDs are rejected.
+- Plant through Measurement employer filters now bind Identity user IDs. Parent
+  traversal carries both employer ID and display name, preserving the Plant's
+  name snapshot without inferring an assignment from its text.
+- Existing numeric Site/Plant Type and Measurement Component/Type selections,
+  API endpoints/payload contracts, shared Select2 and TablePagination behavior,
+  theme markup/styles and storage choices were retained.
+- Added 32 template/Select2 regression checks across six pages for duplicate
+  parent/employer labels, differing saved/current labels, filter clearing,
+  numeric create/update IDs, unavailable parents, and missing employer IDs.
+  Updated existing Component/Measurement assertions to use employer IDs.
+- Corrected two pre-existing test issues: added required Plant `hierarchyLabel`
+  fixture data and selected the new Measurement Type before asserting its unit.
+- Verified: production build, project lint, normal test TypeScript compilation,
+  and all **73** focused taxonomy/pagination ChromeHeadless tests passed. Existing
+  2.70 MB initial bundle-budget and four CSS selector warnings remain.
+  Live authenticated backend integration was not tested; API calls were mocked
+  in browser tests. Full heterogeneous table-row typing is a separate follow-up.

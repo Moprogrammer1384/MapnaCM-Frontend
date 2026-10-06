@@ -9,14 +9,16 @@ import { TablePagination } from 'src/app/_metronic/shared/Pagination/table-pagin
 interface AssetRow extends Record<string, string> {
   id: string;
   employer: string;
+  employerId: string;
   system: string;
+  systemId: string;
   asset: string;
   tag: string;
 }
 
 interface AssetFormModel {
   id?: number;
-  system: string | null;
+  systemId: number | null;
   asset: string;
   tag: string;
 }
@@ -41,24 +43,20 @@ export class AssetComponent implements OnInit {
     ]
   );
 
-  // Dropdown options are the display labels; ids are resolved through the
-  // label -> id map filled when the systems load.
-  systemOptions: string[] = [];
-  // Employer filter options (names of the Employer-role users, from the API).
-  employers: string[] = [];
+  // Select values are IDs; hierarchy labels are for display only.
+  systemOptions: { id: number; label: string }[] = [];
+  employers: { id: string; name: string }[] = [];
   employerFilter: string | null = null;
-  systemFilter: string | null = null;
+  systemFilter: number | null = null;
 
   assetForm: AssetFormModel = this.emptyForm();
   saving = false;
 
-  private systemIdByLabel: Record<string, number> = {};
   // unit id -> plant id (to inherit the plant's employer)
   private plantIdByUnitId: Record<number, number> = {};
   // system id -> unit id (to reach the plant's employer)
   private unitIdBySystemId: Record<number, number> = {};
-  // plant id -> employer display name (backend value or placeholder fallback)
-  private employerByPlantId: Record<number, string> = {};
+  private employerByPlantId: Record<number, { id: string; name: string }> = {};
 
   constructor(
     private modalService: NgbModal,
@@ -75,21 +73,21 @@ export class AssetComponent implements OnInit {
   private loadEmployerOptions(): void {
     this.apiService.getEmployerOptions().subscribe({
       next: (users) => {
-        this.employers = users.map((user) => user.name);
+        this.employers = users;
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load employer users.'),
     });
   }
 
-  filterByEmployer(employer: string | null): void {
-    this.employerFilter = employer;
-    this.table.setFilter('employer', employer);
+  filterByEmployer(employerId: string | null): void {
+    this.employerFilter = employerId;
+    this.table.setFilter('employerId', employerId);
   }
 
-  filterBySystem(system: string | null): void {
-    this.systemFilter = system;
-    this.table.setFilter('system', system);
+  filterBySystem(systemId: number | null): void {
+    this.systemFilter = systemId;
+    this.table.setFilter('systemId', systemId === null ? null : String(systemId));
   }
 
   refresh(): void {
@@ -100,17 +98,13 @@ export class AssetComponent implements OnInit {
     this.apiService.getAllSystems().subscribe({
       next: (systems: AssetSystem[]) => {
         this.systemOptions = [];
-        this.systemIdByLabel = {};
         this.unitIdBySystemId = {};
 
         for (const system of systems) {
-          // Backend hierarchy label: "City - Plant - Unit - System" (top-down).
-          const label = system.hierarchyLabel;
-          this.systemOptions.push(label);
-          this.systemIdByLabel[label] = system.id;
+          this.systemOptions.push({ id: system.id, label: system.hierarchyLabel });
           this.unitIdBySystemId[system.id] = system.unitId;
         }
-        this.systemOptions.sort();
+        this.systemOptions.sort((left, right) => left.label.localeCompare(right.label));
 
         this.loadUnits();
       },
@@ -137,7 +131,10 @@ export class AssetComponent implements OnInit {
       next: (plants) => {
         this.employerByPlantId = {};
         for (const plant of plants) {
-          this.employerByPlantId[plant.id] = plant.employerName || '—';
+          this.employerByPlantId[plant.id] = {
+            id: plant.employerId ?? '',
+            name: plant.employerName || '—',
+          };
         }
 
         this.loadAssets();
@@ -147,20 +144,22 @@ export class AssetComponent implements OnInit {
   }
 
   private toAssetRow(asset: Asset): AssetRow {
+    const employer = this.employerOfSystem(asset.systemId);
     return {
       id: String(asset.id),
       asset: asset.name,
       tag: asset.tag ?? '',
       system: asset.systemLabel,
       systemId: String(asset.systemId),
-      employer: this.employerOfSystem(asset.systemId),
+      employer: employer?.name || '—',
+      employerId: employer?.id ?? '',
     };
   }
 
-  private employerOfSystem(systemId: number): string {
+  private employerOfSystem(systemId: number): { id: string; name: string } | undefined {
     const unitId = this.unitIdBySystemId[systemId];
     const plantId = unitId !== undefined ? this.plantIdByUnitId[unitId] : undefined;
-    return (plantId && this.employerByPlantId[plantId]) || '—';
+    return plantId !== undefined ? this.employerByPlantId[plantId] : undefined;
   }
 
   private loadAssets(): void {
@@ -180,7 +179,7 @@ export class AssetComponent implements OnInit {
   }
 
   openEditModal(content: TemplateRef<any>, asset: AssetRow): void {
-    this.assetForm = { id: Number(asset.id), system: asset.system, asset: asset.asset, tag: asset.tag };
+    this.assetForm = { id: Number(asset.id), systemId: Number(asset.systemId), asset: asset.asset, tag: asset.tag };
     this.modalService.open(content, this.modalConfig);
   }
 
@@ -188,14 +187,14 @@ export class AssetComponent implements OnInit {
     if (this.saving) {
       return;
     }
-    if (form.invalid || !this.assetForm.system) {
+    if (form.invalid || this.assetForm.systemId === null) {
       form.control.markAllAsTouched();
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
 
-    const systemId = this.systemIdByLabel[this.assetForm.system];
-    if (!systemId) {
+    const systemId = this.assetForm.systemId;
+    if (!this.systemOptions.some((system) => system.id === systemId)) {
       this.showAlert('error', 'Error!', 'The selected system is no longer available. Please pick it again.');
       return;
     }
@@ -239,7 +238,7 @@ export class AssetComponent implements OnInit {
   }
 
   private emptyForm(): AssetFormModel {
-    return { system: null, asset: '', tag: '' };
+    return { systemId: null, asset: '', tag: '' };
   }
 
   private showAlert(icon: 'success' | 'error', title: string, text: string): void {

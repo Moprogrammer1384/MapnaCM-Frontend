@@ -19,7 +19,7 @@
       <div class="my-1 me-md-4 w-100 w-md-250px">
         <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by employer" [ngModel]="employerFilter" (ngModelChange)="filterByEmployer($event)">
           <option [ngValue]="null">All Employers</option>
-          <option *ngFor="let e of employers" [ngValue]="e">{{ e }}</option>
+          <option *ngFor="let e of employers" [ngValue]="e.id">{{ e.name }}</option>
         </select>
       </div>
       <!--end::Employer filter-->
@@ -27,7 +27,7 @@
       <div class="my-1 me-md-4 w-100 w-md-250px">
         <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by system" [ngModel]="systemFilter" (ngModelChange)="filterBySystem($event)">
           <option [ngValue]="null">All Systems</option>
-          <option *ngFor="let s of systemOptions" [ngValue]="s">{{ s }}</option>
+          <option *ngFor="let s of systemOptions" [ngValue]="s.id">{{ s.label }}</option>
         </select>
       </div>
       <!--end::System filter-->
@@ -169,9 +169,9 @@
           <span class="required">System Name</span>
         </label>
         <!--end::Label-->
-        <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a System" name="system" [(ngModel)]="assetForm.system" required>
+        <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a System" name="system" [(ngModel)]="assetForm.systemId" required>
           <option [ngValue]="null">Select system...</option>
-          <option *ngFor="let s of systemOptions" [ngValue]="s">{{ s }}</option>
+          <option *ngFor="let s of systemOptions" [ngValue]="s.id">{{ s.label }}</option>
         </select>
       </div>
       <!--end::Input group-->

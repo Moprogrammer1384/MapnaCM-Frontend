@@ -9,13 +9,15 @@ import { TablePagination } from 'src/app/_metronic/shared/Pagination/table-pagin
 interface UnitRow extends Record<string, string> {
   id: string;
   employer: string;
+  employerId: string;
   plant: string;
+  plantId: string;
   unit: string;
 }
 
 interface UnitFormModel {
   id?: number;
-  plant: string | null;
+  plantId: number | null;
   unit: string;
 }
 
@@ -38,20 +40,16 @@ export class UnitComponent implements OnInit {
     ]
   );
 
-  // Dropdown options are the display labels; ids are resolved through the
-  // label -> id map filled when the plants load.
-  plantOptions: string[] = [];
-  // Employer filter options (names of the Employer-role users, from the API).
-  employers: string[] = [];
+  // Select values are IDs; hierarchy labels are for display only.
+  plantOptions: { id: number; label: string }[] = [];
+  employers: { id: string; name: string }[] = [];
   employerFilter: string | null = null;
-  plantFilter: string | null = null;
+  plantFilter: number | null = null;
 
   unitForm: UnitFormModel = this.emptyForm();
   saving = false;
 
-  private plantIdByLabel: Record<string, number> = {};
-  // plant id -> employer display name (backend value or placeholder fallback)
-  private employerByPlantId: Record<number, string> = {};
+  private employerByPlantId: Record<number, { id: string; name: string }> = {};
 
   constructor(
     private modalService: NgbModal,
@@ -68,21 +66,21 @@ export class UnitComponent implements OnInit {
   private loadEmployerOptions(): void {
     this.apiService.getEmployerOptions().subscribe({
       next: (users) => {
-        this.employers = users.map((user) => user.name);
+        this.employers = users;
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load employer users.'),
     });
   }
 
-  filterByEmployer(employer: string | null): void {
-    this.employerFilter = employer;
-    this.table.setFilter('employer', employer);
+  filterByEmployer(employerId: string | null): void {
+    this.employerFilter = employerId;
+    this.table.setFilter('employerId', employerId);
   }
 
-  filterByPlant(plant: string | null): void {
-    this.plantFilter = plant;
-    this.table.setFilter('plant', plant);
+  filterByPlant(plantId: number | null): void {
+    this.plantFilter = plantId;
+    this.table.setFilter('plantId', plantId === null ? null : String(plantId));
   }
 
   refresh(): void {
@@ -93,17 +91,16 @@ export class UnitComponent implements OnInit {
     this.apiService.getAllPlants().subscribe({
       next: (plants) => {
         this.plantOptions = [];
-        this.plantIdByLabel = {};
         this.employerByPlantId = {};
 
         for (const plant of plants) {
-          // Backend hierarchy label: "City - PlantName" (top-down).
-          const label = plant.hierarchyLabel;
-          this.plantOptions.push(label);
-          this.plantIdByLabel[label] = plant.id;
-          this.employerByPlantId[plant.id] = plant.employerName || '—';
+          this.plantOptions.push({ id: plant.id, label: plant.hierarchyLabel });
+          this.employerByPlantId[plant.id] = {
+            id: plant.employerId ?? '',
+            name: plant.employerName || '—',
+          };
         }
-        this.plantOptions.sort();
+        this.plantOptions.sort((left, right) => left.label.localeCompare(right.label));
 
         this.loadUnits();
       },
@@ -112,12 +109,14 @@ export class UnitComponent implements OnInit {
   }
 
   private toUnitRow(unit: Unit): UnitRow {
+    const employer = this.employerByPlantId[unit.plantId];
     return {
       id: String(unit.id),
       unit: unit.name,
       plant: unit.plantLabel,
       plantId: String(unit.plantId),
-      employer: this.employerByPlantId[unit.plantId] || '—',
+      employer: employer?.name || '—',
+      employerId: employer?.id ?? '',
     };
   }
 
@@ -138,7 +137,7 @@ export class UnitComponent implements OnInit {
   }
 
   openEditModal(content: TemplateRef<any>, unit: UnitRow): void {
-    this.unitForm = { id: Number(unit.id), plant: unit.plant, unit: unit.unit };
+    this.unitForm = { id: Number(unit.id), plantId: Number(unit.plantId), unit: unit.unit };
     this.modalService.open(content, this.modalConfig);
   }
 
@@ -146,14 +145,14 @@ export class UnitComponent implements OnInit {
     if (this.saving) {
       return;
     }
-    if (form.invalid || !this.unitForm.plant) {
+    if (form.invalid || this.unitForm.plantId === null) {
       form.control.markAllAsTouched();
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
 
-    const plantId = this.plantIdByLabel[this.unitForm.plant];
-    if (!plantId) {
+    const plantId = this.unitForm.plantId;
+    if (!this.plantOptions.some((plant) => plant.id === plantId)) {
       this.showAlert('error', 'Error!', 'The selected plant is no longer available. Please pick it again.');
       return;
     }
@@ -209,7 +208,7 @@ export class UnitComponent implements OnInit {
   }
 
   private emptyForm(): UnitFormModel {
-    return { plant: null, unit: '' };
+    return { plantId: null, unit: '' };
   }
 
   private showAlert(icon: 'success' | 'error', title: string, text: string): void {

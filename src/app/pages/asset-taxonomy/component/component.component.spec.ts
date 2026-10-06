@@ -48,7 +48,7 @@ describe('Component page', () => {
       { id: 2, name: 'Unit 1', plantId: 1, plantName: 'Plant', plantLabel: 'Tehran - Plant', hierarchyLabel: 'Tehran - Plant - Unit 1' },
     ]));
     api.getAllPlants.and.returnValue(of([
-      { id: 1, name: 'Plant', siteId: 1, plantTypeId: 1, siteLabel: 'Tehran', hierarchyLabel: 'Tehran - Plant', typeName: 'Thermal', employerName: 'Test employer' },
+      { id: 1, name: 'Plant', siteId: 1, plantTypeId: 1, siteLabel: 'Tehran', hierarchyLabel: 'Tehran - Plant', typeName: 'Thermal', employerId: 'e1', employerName: 'Test employer' },
     ]));
     api.getAllComponents.and.returnValue(of([
       { id: 12, name: 'Bearing', assetId: 7, assetName: 'Pump', assetLabel, hierarchyLabel: componentLabel },
@@ -79,11 +79,11 @@ describe('Component page', () => {
     expect(fixture.componentInstance.table.rows[0]).toEqual(jasmine.objectContaining({
       asset: assetLabel, employer: 'Test employer',
     }));
-    fixture.componentInstance.filterByAsset('Other asset');
+    fixture.componentInstance.filterByAsset(99);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('tbody').textContent).toContain('No matching records found');
     fixture.componentInstance.filterByAsset(null);
-    fixture.componentInstance.filterByEmployer('Test employer');
+    fixture.componentInstance.filterByEmployer('e1');
     expect(fixture.componentInstance.table.filtered.length).toBe(1);
   });
 
@@ -110,7 +110,7 @@ describe('Component page', () => {
     (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
     await settle();
     expect(modal().querySelector<HTMLInputElement>('input[name="component"]')!.value).toBe('Bearing');
-    expect(fixture.componentInstance.componentForm.asset).toBe(assetLabel);
+    expect(fixture.componentInstance.componentForm.assetId).toBe(7);
     await submit();
     expect(api.updateComponent).toHaveBeenCalledOnceWith({ id: 12, name: 'Bearing', tag: '', assetId: 7 });
   });
@@ -128,7 +128,7 @@ describe('Component page', () => {
   it('rejects an asset selection that is no longer available', async () => {
     (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
     await settle();
-    fixture.componentInstance.componentForm.asset = 'Gone - from - the - list';
+    fixture.componentInstance.componentForm.assetId = 99;
     await settle();
     await submit();
     expect(api.updateComponent).not.toHaveBeenCalled();

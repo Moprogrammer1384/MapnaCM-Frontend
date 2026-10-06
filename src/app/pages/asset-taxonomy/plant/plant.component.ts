@@ -67,8 +67,8 @@ export class PlantComponent implements OnInit {
   plantFormModel: PlantFormModel = this.emptyPlantForm();
   typeFormModel: TypeFormModel = this.emptyTypeForm();
   saving = false;
-  // Employer filter options (names of the Employer-role users, from the API).
-  employers: string[] = [];
+  // Employer filter values are user IDs; names are for display only.
+  employers: { id: string; name: string }[] = [];
   employerFilter: string | null = null;
 
   // Identity users carrying the Employer role — the only valid assignments.
@@ -87,9 +87,9 @@ export class PlantComponent implements OnInit {
     this.loadAll();
   }
 
-  filterByEmployer(employer: string | null): void {
-    this.employerFilter = employer;
-    this.plants.setFilter('employer', employer);
+  filterByEmployer(employerId: string | null): void {
+    this.employerFilter = employerId;
+    this.plants.setFilter('employerId', employerId);
   }
 
   loadAll(): void {
@@ -127,7 +127,7 @@ export class PlantComponent implements OnInit {
     this.apiService.getEmployerOptions().subscribe({
       next: (users) => {
         this.employerUsers = users;
-        this.employers = users.map((user) => user.name);
+        this.employers = users;
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load employer users.'),

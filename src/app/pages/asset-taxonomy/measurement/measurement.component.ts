@@ -2,26 +2,26 @@ import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
-import { MeasurementPayload, MeasurementType } from 'src/app/core/models/asset.model';
+import { MeasurementPayload, MeasurementType, TaxonomyMeasurement } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
-import { TablePagination } from 'src/app/_metronic/shared/Pagination/table-pagination';
+import { TablePagination, TablePaginationColumn } from 'src/app/_metronic/shared/Pagination/table-pagination';
 
-interface MeasurementRow extends Record<string, string> {
-  id: string;
+interface MeasurementRow {
+  id: number;
   employer: string;
-  employerId: string;
+  employerId: string | null;
   component: string;
-  componentId: string;
+  componentId: number;
   measurement: string;
-  tag: string;
-  type: string;
-  unit: string;
-  measurementTypeId: string;
-  sensitivity: string;
+  tag: string | null;
+  type: string | null;
+  unit: string | null;
+  measurementTypeId: number | null;
+  sensitivity: number | null;
 }
 
-interface TypeRow extends Record<string, string> {
-  id: string;
+interface TypeRow {
+  id: number;
   name: string;
   unit: string;
 }
@@ -64,13 +64,16 @@ export class MeasurementComponent implements OnInit {
       { key: 'sensitivity', title: 'Sensitivity', class: '' },
       { key: 'component', title: 'Component Name', class: 'min-w-150px' },
       { key: 'employer', title: 'Employer', class: 'min-w-125px' },
-    ]
+    ] satisfies readonly TablePaginationColumn<MeasurementRow>[]
   );
 
-  types = new TablePagination<TypeRow>([], [
-    { key: 'name', title: 'Name', class: 'min-w-125px' },
-    { key: 'unit', title: 'Unit', class: 'min-w-100px' },
-  ]);
+  types = new TablePagination<TypeRow>(
+    [],
+    [
+      { key: 'name', title: 'Name', class: 'min-w-125px' },
+      { key: 'unit', title: 'Unit', class: 'min-w-100px' },
+    ] satisfies readonly TablePaginationColumn<TypeRow>[]
+  );
   typeOptions: MeasurementType[] = [];
   typeFormModel: TypeFormModel = { name: '', unit: '' };
   typeFilter: number | null = null;
@@ -89,7 +92,7 @@ export class MeasurementComponent implements OnInit {
   private systemIdByAssetId: Record<number, number> = {};
   private unitIdBySystemId: Record<number, number> = {};
   private plantIdByUnitId: Record<number, number> = {};
-  private employerByPlantId: Record<number, { id: string; name: string }> = {};
+  private employerByPlantId: Record<number, { id: string | null; name: string }> = {};
 
   constructor(
     private modalService: NgbModal,
@@ -122,12 +125,12 @@ export class MeasurementComponent implements OnInit {
 
   filterByComponent(componentId: number | null): void {
     this.componentFilter = componentId;
-    this.table.setFilter('componentId', componentId === null ? null : String(componentId));
+    this.table.setFilter('componentId', componentId);
   }
 
   filterByType(typeId: number | null): void {
     this.typeFilter = typeId;
-    this.table.setFilter('measurementTypeId', typeId === null ? null : String(typeId));
+    this.table.setFilter('measurementTypeId', typeId);
   }
 
   refresh(): void {
@@ -179,7 +182,7 @@ export class MeasurementComponent implements OnInit {
         this.employerByPlantId = {};
         for (const plant of plants) {
           this.employerByPlantId[plant.id] = {
-            id: plant.employerId ?? '',
+            id: plant.employerId ?? null,
             name: plant.employerName || '—',
           };
         }
@@ -206,7 +209,7 @@ export class MeasurementComponent implements OnInit {
     });
   }
 
-  private employerOfComponent(componentId: number): { id: string; name: string } | undefined {
+  private employerOfComponent(componentId: number): { id: string | null; name: string } | undefined {
     const assetId = this.assetIdByComponentId[componentId];
     if (assetId === undefined) {
       return undefined;
@@ -217,31 +220,21 @@ export class MeasurementComponent implements OnInit {
     return plantId !== undefined ? this.employerByPlantId[plantId] : undefined;
   }
 
-  private toMeasurementRow(measurement: {
-    id: number;
-    name: string;
-    tag?: string | null;
-    measurementTypeId: number | null;
-    typeName: string | null;
-    unit: string | null;
-    sensitivity: number | null;
-    componentId: number;
-    componentLabel: string;
-  }): MeasurementRow {
+  private toMeasurementRow(measurement: TaxonomyMeasurement): MeasurementRow {
     const employer = this.employerOfComponent(measurement.componentId);
     return {
-      id: String(measurement.id),
+      id: measurement.id,
       measurement: measurement.name,
-      tag: measurement.tag ?? '',
-      type: measurement.typeName ?? '',
-      unit: measurement.unit ?? '',
-      measurementTypeId: measurement.measurementTypeId ? String(measurement.measurementTypeId) : '',
-      sensitivity: measurement.sensitivity !== null && measurement.sensitivity !== undefined ? String(measurement.sensitivity) : '',
+      tag: measurement.tag ?? null,
+      type: measurement.typeName,
+      unit: measurement.unit,
+      measurementTypeId: measurement.measurementTypeId,
+      sensitivity: measurement.sensitivity,
       // Parent labels are displayed independently of the selected component ID.
       component: measurement.componentLabel,
-      componentId: String(measurement.componentId),
+      componentId: measurement.componentId,
       employer: employer?.name || '—',
-      employerId: employer?.id ?? '',
+      employerId: employer?.id ?? null,
     };
   }
 
@@ -263,12 +256,12 @@ export class MeasurementComponent implements OnInit {
 
   openEditModal(content: TemplateRef<any>, measurement: MeasurementRow): void {
     this.measurementForm = {
-      id: Number(measurement.id),
-      componentId: Number(measurement.componentId),
+      id: measurement.id,
+      componentId: measurement.componentId,
       measurement: measurement.measurement,
-      tag: measurement.tag,
-      measurementTypeId: measurement.measurementTypeId ? Number(measurement.measurementTypeId) : null,
-      sensitivity: measurement.sensitivity !== '' ? Number(measurement.sensitivity) : null,
+      tag: measurement.tag ?? '',
+      measurementTypeId: measurement.measurementTypeId,
+      sensitivity: measurement.sensitivity,
     };
     this.modalService.open(content, this.modalConfig);
   }
@@ -326,7 +319,7 @@ export class MeasurementComponent implements OnInit {
   }
 
   private deleteMeasurementConfirmed(measurement: MeasurementRow): void {
-    this.apiService.deleteMeasurement(Number(measurement.id)).subscribe({
+    this.apiService.deleteMeasurement(measurement.id).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + measurement.measurement + '!.');
         this.loadMeasurements();
@@ -343,7 +336,7 @@ export class MeasurementComponent implements OnInit {
     this.apiService.getAllMeasurementTypes().subscribe({
       next: (types) => {
         this.typeOptions = types;
-        this.types.rows = types.map((type) => ({ id: String(type.id), name: type.name, unit: type.unit }));
+        this.types.rows = types.map((type) => ({ id: type.id, name: type.name, unit: type.unit }));
         this.types.page = Math.min(this.types.page, this.types.totalPages);
         this.cdr.detectChanges();
       },
@@ -361,7 +354,7 @@ export class MeasurementComponent implements OnInit {
   }
 
   openEditTypeModal(content: TemplateRef<any>, type: TypeRow): void {
-    this.typeFormModel = { id: Number(type.id), name: type.name, unit: type.unit };
+    this.typeFormModel = { id: type.id, name: type.name, unit: type.unit };
     this.modalService.open(content, this.modalConfig);
   }
 
@@ -402,9 +395,9 @@ export class MeasurementComponent implements OnInit {
   }
 
   private deleteTypeConfirmed(type: TypeRow): void {
-    this.apiService.deleteMeasurementType(Number(type.id)).subscribe({
+    this.apiService.deleteMeasurementType(type.id).subscribe({
       next: () => {
-        if (this.typeFilter === Number(type.id)) {
+        if (this.typeFilter === type.id) {
           this.filterByType(null);
         }
         this.loadTypes();

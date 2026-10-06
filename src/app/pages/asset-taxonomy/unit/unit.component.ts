@@ -4,14 +4,14 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { Unit, UnitPayload } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
-import { TablePagination } from 'src/app/_metronic/shared/Pagination/table-pagination';
+import { TablePagination, TablePaginationColumn } from 'src/app/_metronic/shared/Pagination/table-pagination';
 
-interface UnitRow extends Record<string, string> {
-  id: string;
+interface UnitRow {
+  id: number;
   employer: string;
-  employerId: string;
+  employerId: string | null;
   plant: string;
-  plantId: string;
+  plantId: number;
   unit: string;
 }
 
@@ -37,7 +37,7 @@ export class UnitComponent implements OnInit {
       { key: 'unit', title: 'Name', class: 'min-w-125px min-w-md-200px' },
       { key: 'plant', title: 'Plant Name', class: 'min-w-175px min-w-md-250px' },
       { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
-    ]
+    ] satisfies readonly TablePaginationColumn<UnitRow>[]
   );
 
   // Select values are IDs; hierarchy labels are for display only.
@@ -49,7 +49,7 @@ export class UnitComponent implements OnInit {
   unitForm: UnitFormModel = this.emptyForm();
   saving = false;
 
-  private employerByPlantId: Record<number, { id: string; name: string }> = {};
+  private employerByPlantId: Record<number, { id: string | null; name: string }> = {};
 
   constructor(
     private modalService: NgbModal,
@@ -80,7 +80,7 @@ export class UnitComponent implements OnInit {
 
   filterByPlant(plantId: number | null): void {
     this.plantFilter = plantId;
-    this.table.setFilter('plantId', plantId === null ? null : String(plantId));
+    this.table.setFilter('plantId', plantId);
   }
 
   refresh(): void {
@@ -96,7 +96,7 @@ export class UnitComponent implements OnInit {
         for (const plant of plants) {
           this.plantOptions.push({ id: plant.id, label: plant.hierarchyLabel });
           this.employerByPlantId[plant.id] = {
-            id: plant.employerId ?? '',
+            id: plant.employerId ?? null,
             name: plant.employerName || '—',
           };
         }
@@ -111,12 +111,12 @@ export class UnitComponent implements OnInit {
   private toUnitRow(unit: Unit): UnitRow {
     const employer = this.employerByPlantId[unit.plantId];
     return {
-      id: String(unit.id),
+      id: unit.id,
       unit: unit.name,
       plant: unit.plantLabel,
-      plantId: String(unit.plantId),
+      plantId: unit.plantId,
       employer: employer?.name || '—',
-      employerId: employer?.id ?? '',
+      employerId: employer?.id ?? null,
     };
   }
 
@@ -137,7 +137,7 @@ export class UnitComponent implements OnInit {
   }
 
   openEditModal(content: TemplateRef<any>, unit: UnitRow): void {
-    this.unitForm = { id: Number(unit.id), plantId: Number(unit.plantId), unit: unit.unit };
+    this.unitForm = { id: unit.id, plantId: unit.plantId, unit: unit.unit };
     this.modalService.open(content, this.modalConfig);
   }
 
@@ -186,7 +186,7 @@ export class UnitComponent implements OnInit {
   }
 
   private deleteUnitConfirmed(unit: UnitRow): void {
-    this.apiService.deleteUnit(Number(unit.id)).subscribe({
+    this.apiService.deleteUnit(unit.id).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + unit.unit + '!.');
         this.loadUnitsOnly();

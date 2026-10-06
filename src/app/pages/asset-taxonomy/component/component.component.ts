@@ -2,18 +2,18 @@ import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
-import { ComponentPayload } from 'src/app/core/models/asset.model';
+import { ComponentPayload, TaxonomyComponent } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
-import { TablePagination } from 'src/app/_metronic/shared/Pagination/table-pagination';
+import { TablePagination, TablePaginationColumn } from 'src/app/_metronic/shared/Pagination/table-pagination';
 
-interface ComponentRow extends Record<string, string> {
-  id: string;
+interface ComponentRow {
+  id: number;
   employer: string;
-  employerId: string;
+  employerId: string | null;
   asset: string;
-  assetId: string;
+  assetId: number;
   component: string;
-  tag: string;
+  tag: string | null;
 }
 
 interface ComponentFormModel {
@@ -40,7 +40,7 @@ export class ComponentComponent implements OnInit {
       { key: 'tag', title: 'Tag', class: 'min-w-125px' },
       { key: 'asset', title: 'Asset Name', class: 'min-w-175px min-w-md-250px' },
       { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
-    ]
+    ] satisfies readonly TablePaginationColumn<ComponentRow>[]
   );
 
   // Select values are IDs; hierarchy labels are for display only.
@@ -54,7 +54,7 @@ export class ComponentComponent implements OnInit {
   private systemIdByAssetId: Record<number, number> = {};
   private unitIdBySystemId: Record<number, number> = {};
   private plantIdByUnitId: Record<number, number> = {};
-  private employerByPlantId: Record<number, { id: string; name: string }> = {};
+  private employerByPlantId: Record<number, { id: string | null; name: string }> = {};
 
   constructor(
     private modalService: NgbModal,
@@ -85,7 +85,7 @@ export class ComponentComponent implements OnInit {
 
   filterByAsset(assetId: number | null): void {
     this.assetFilter = assetId;
-    this.table.setFilter('assetId', assetId === null ? null : String(assetId));
+    this.table.setFilter('assetId', assetId);
   }
 
   refresh(): void {
@@ -140,7 +140,7 @@ export class ComponentComponent implements OnInit {
         this.employerByPlantId = {};
         for (const plant of plants) {
           this.employerByPlantId[plant.id] = {
-            id: plant.employerId ?? '',
+            id: plant.employerId ?? null,
             name: plant.employerName || '—',
           };
         }
@@ -150,24 +150,24 @@ export class ComponentComponent implements OnInit {
     });
   }
 
-  private employerOfAsset(assetId: number): { id: string; name: string } | undefined {
+  private employerOfAsset(assetId: number): { id: string | null; name: string } | undefined {
     const systemId = this.systemIdByAssetId[assetId];
     const unitId = systemId !== undefined ? this.unitIdBySystemId[systemId] : undefined;
     const plantId = unitId !== undefined ? this.plantIdByUnitId[unitId] : undefined;
     return plantId !== undefined ? this.employerByPlantId[plantId] : undefined;
   }
 
-  private toComponentRow(component: { id: number; name: string; tag?: string | null; assetId: number; assetLabel: string }): ComponentRow {
+  private toComponentRow(component: TaxonomyComponent): ComponentRow {
     const employer = this.employerOfAsset(component.assetId);
     return {
-      id: String(component.id),
+      id: component.id,
       component: component.name,
-      tag: component.tag ?? '',
+      tag: component.tag ?? null,
       // Parent labels are displayed independently of the selected asset ID.
       asset: component.assetLabel,
-      assetId: String(component.assetId),
+      assetId: component.assetId,
       employer: employer?.name || '—',
-      employerId: employer?.id ?? '',
+      employerId: employer?.id ?? null,
     };
   }
 
@@ -189,7 +189,7 @@ export class ComponentComponent implements OnInit {
 
   openEditModal(content: TemplateRef<any>, component: ComponentRow): void {
     this.componentForm = {
-      id: Number(component.id), assetId: Number(component.assetId), component: component.component, tag: component.tag,
+      id: component.id, assetId: component.assetId, component: component.component, tag: component.tag ?? '',
     };
     this.modalService.open(content, this.modalConfig);
   }
@@ -231,7 +231,7 @@ export class ComponentComponent implements OnInit {
   }
 
   private deleteComponentConfirmed(component: ComponentRow): void {
-    this.apiService.deleteComponent(Number(component.id)).subscribe({
+    this.apiService.deleteComponent(component.id).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + component.component + '!.');
         this.loadComponents();

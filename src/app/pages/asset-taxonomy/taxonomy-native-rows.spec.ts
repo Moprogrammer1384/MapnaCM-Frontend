@@ -1,0 +1,137 @@
+import { CommonModule } from '@angular/common';
+import { Type } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { of } from 'rxjs';
+import Swal from 'sweetalert2';
+import { TablePagination } from '../../_metronic/shared/Pagination/table-pagination';
+import { SharedModule } from '../../_metronic/shared/shared.module';
+import { AssetComponent } from './asset/asset.component';
+import { AssetApiService } from './services/asset-api.service';
+import { SiteComponent } from './site/site.component';
+import { SystemComponent } from './system/system.component';
+import { UnitComponent } from './unit/unit.component';
+
+function verifyPage<C, R extends object>(
+  name: string,
+  componentType: Type<C>,
+  tableOf: (component: C) => TablePagination<R>,
+  expectedRow: Partial<R>,
+  verifySubmission: (api: jasmine.SpyObj<AssetApiService>) => void,
+  filterParent?: (component: C, id: number | null) => void
+): void {
+  describe(`${name} native table rows`, () => {
+    let fixture: ComponentFixture<C>;
+    let api: jasmine.SpyObj<AssetApiService>;
+    let modals: NgbModal;
+    let root: HTMLElement;
+    const settle = async () => {
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+    };
+
+    beforeEach(async () => {
+      api = jasmine.createSpyObj<AssetApiService>('AssetApiService', [
+        'getAllSites', 'getAllPlants', 'getAllUnits', 'getAllSystems', 'getAllAssets',
+        'getEmployerOptions', 'updateSite', 'updateUnit', 'updateSystem', 'updateAsset',
+      ]);
+      api.getAllSites.and.returnValue(of([{
+        id: 11, city: 'Tehran', address: 'Address', latitude: '35', longitude: '51', location: 'Location', elevation: '995 m',
+      }]));
+      api.getAllPlants.and.returnValue(of([{
+        id: 1, name: 'Plant', siteId: 11, plantTypeId: 2, siteLabel: 'Tehran', typeName: 'Thermal',
+        hierarchyLabel: 'Tehran - Plant', employerId: 'e1', employerName: 'Employer',
+      }]));
+      api.getAllUnits.and.returnValue(of([{
+        id: 5, name: 'Unit', plantId: 1, plantName: 'Plant', plantLabel: 'Tehran - Plant', hierarchyLabel: 'Tehran - Plant - Unit',
+      }]));
+      api.getAllSystems.and.returnValue(of([{
+        id: 3, name: 'System', unitId: 5, unitName: 'Unit', unitLabel: 'Tehran - Plant - Unit', hierarchyLabel: 'Tehran - Plant - Unit - System',
+      }]));
+      api.getAllAssets.and.returnValue(of([{
+        id: 7, name: 'Asset', tag: null, systemId: 3, systemName: 'System',
+        systemLabel: 'Tehran - Plant - Unit - System', hierarchyLabel: 'Tehran - Plant - Unit - System - Asset',
+      }]));
+      api.getEmployerOptions.and.returnValue(of([{ id: 'e1', name: 'Employer' }]));
+      api.updateSite.and.returnValue(of(undefined));
+      api.updateUnit.and.returnValue(of(undefined));
+      api.updateSystem.and.returnValue(of(undefined));
+      api.updateAsset.and.returnValue(of(undefined));
+      spyOn(Swal, 'fire').and.stub();
+      await TestBed.configureTestingModule({
+        declarations: [componentType],
+        imports: [CommonModule, SharedModule, FormsModule, NgbModalModule],
+        providers: [{ provide: AssetApiService, useValue: api }],
+      }).compileComponents();
+      fixture = TestBed.createComponent(componentType);
+      modals = TestBed.inject(NgbModal);
+      root = fixture.nativeElement;
+      await settle();
+    });
+
+    afterEach(() => {
+      modals.dismissAll();
+      fixture.destroy();
+    });
+
+    it('retains native mapper values and resets exact numeric filters', async () => {
+      const table = tableOf(fixture.componentInstance);
+      expect(table.rows[0]).toEqual(jasmine.objectContaining(expectedRow));
+      expect(root.querySelector('tbody')!.textContent).not.toContain('null');
+      if (filterParent) {
+        filterParent(fixture.componentInstance, 999);
+        await settle();
+        expect(root.querySelector('tbody')!.textContent).toContain('No matching records found');
+        filterParent(fixture.componentInstance, null);
+        expect(table.filtered.length).toBe(1);
+      }
+    });
+
+    it('uses typed search/page-size bindings and keeps native values in edit submissions', async () => {
+      const table = tableOf(fixture.componentInstance);
+      const search = root.querySelector<HTMLInputElement>('input[id="kt_filter_search"]')!;
+      search.value = 'missing';
+      search.dispatchEvent(new Event('input'));
+      await settle();
+      expect(table.filtered).toEqual([]);
+      search.value = '';
+      search.dispatchEvent(new Event('input'));
+      await settle();
+      const size = root.querySelector<HTMLSelectElement>('select[aria-label="Page size"]')!;
+      size.value = '25';
+      size.dispatchEvent(new Event('change'));
+      await settle();
+      expect(table.pageSize).toBe(25);
+      root.querySelector('app-keenicon[name="pencil"]')!.parentElement!.click();
+      await settle();
+      const modal = document.querySelector('ngb-modal-window')!;
+      modal.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+      await settle();
+      verifySubmission(api);
+    });
+  });
+}
+
+verifyPage('Site', SiteComponent, (page) => page.table,
+  { id: 11, latitude: '35', longitude: '51', elevation: '995 m' },
+  (api) => expect(api.updateSite).toHaveBeenCalledOnceWith({
+    id: 11, city: 'Tehran', address: 'Address', latitude: '35', longitude: '51', location: 'Location', elevation: '995 m',
+  })
+);
+verifyPage('Unit', UnitComponent, (page) => page.table,
+  { id: 5, plantId: 1, employerId: 'e1' },
+  (api) => expect(api.updateUnit).toHaveBeenCalledOnceWith({ id: 5, name: 'Unit', plantId: 1 }),
+  (page, id) => page.filterByPlant(id)
+);
+verifyPage('System', SystemComponent, (page) => page.table,
+  { id: 3, unitId: 5, employerId: 'e1' },
+  (api) => expect(api.updateSystem).toHaveBeenCalledOnceWith({ id: 3, name: 'System', unitId: 5 }),
+  (page, id) => page.filterByUnit(id)
+);
+verifyPage('Asset', AssetComponent, (page) => page.table,
+  { id: 7, systemId: 3, employerId: 'e1', tag: null },
+  (api) => expect(api.updateAsset).toHaveBeenCalledOnceWith({ id: 7, name: 'Asset', tag: '', systemId: 3 }),
+  (page, id) => page.filterBySystem(id)
+);

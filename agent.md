@@ -271,10 +271,16 @@ tables. They do not use `<app-crud>`, despite matching DataTables styling/classe
 for taxonomy pages. `AssetApiService` requests up to 10,000 rows for client-side
 search/filter/sort/paging; this is a current limit, not unlimited pagination.
 
-`TablePagination` searches string-valued rows, combines exact column filters, supports
+`TablePagination<T extends object>` retains native row values, searches their text
+representations, combines exact filters typed per field, and supports
 page sizes 10/25/50/100, and cycles default -> ascending -> descending -> default.
 Sorting preserves the original row array. New searches/filters/sorts reset page 1.
 Deletion prompts first; `onConfirmedDelete` delegates the mutation to the host.
+Column keys use `Extract<keyof T, string>` and all nine column arrays use
+`satisfies readonly TablePaginationColumn<RowType>[]`. Numbers sort numerically;
+text retains numeric-aware ordering (including elevations such as `995 m`).
+Null/undefined sort as blanks, first ascending and last descending. Null, undefined,
+and empty-string filters clear a selection; zero and false are active filters.
 
 Taxonomy forms use `NgForm`, required fields, `saving` guards, ng-bootstrap modal
 templates, Metronic alerts, and refresh after successful mutation. Async updates
@@ -298,8 +304,10 @@ Plant Type is managed as a second table on the Plant page.
 - Unit/System/Asset/Component parent options use `{ id: number, label: string }`.
   Forms, edit restoration, and parent filters bind numeric IDs; labels are displayed
   and sorted only. Duplicate or changed labels do not change relationships.
-  TablePagination currently requires string rows, so row IDs and filter comparison
-  values are serialized strings; numeric form values go directly into API payloads.
+  Explicit row interfaces retain numeric entity/parent IDs (including
+  `UnitRow.plantId`) and nullable Identity employer IDs as `string | null`.
+  Filters, edit restoration and delete calls use those native values directly;
+  numeric form values go directly into API payloads.
 - Component displays name, Tag, Asset label, and inherited employer. It loads real
   Asset/System/Unit/Plant metadata before loading saved component rows.
 
@@ -328,24 +336,21 @@ and support add/edit, search, sorting, pagination, and confirmed deletion. Each
 Measurement add/edit form requires a numeric type ID and finite numeric Sensitivity
 (zero, negative numbers, and decimals are accepted; no range was specified).
 The main table displays Type, Unit, and Sensitivity after Tag and filters types by ID.
-Editing a type immediately updates the labels/unit shown on its Measurements.
-Assigned types cannot be deleted until their Measurements change type or are deleted.
-
-`measurement/measurement-ui-state.service.ts` owns the new frontend-only models,
-types, and per-Measurement configurations. Its root-scoped memory survives page
-navigation within the app session and clears on browser reload. No browser storage,
-Measurement Type endpoints, or extra Measurement wire fields were added. Existing
-Measurement CRUD remains on the existing API. Configuration is saved locally only
-after the existing API mutation succeeds. Since Add returns void, newly created
-Measurements are associated with their configuration on reload only when one unique
-new ID matches the submitted name/tag/component, excluding previously loaded IDs.
-Delayed or ambiguous responses remain pending; ambiguous identities are not guessed.
-Older records have blank Type/Unit/Sensitivity until configured in the current session.
-The backend team must connect type/configuration persistence later.
+Current source (verified 2026-10-06) uses `AssetApiService` for Measurement Types:
+GET `/MeasurementType/GetAll`, POST `/MeasurementType/Add`, PUT
+`/MeasurementType/Update`, DELETE `/MeasurementType/Delete?Id=...`.
+The former Measurement UI-state service is absent. This API migration preceded
+the native-row refactor; the session-memory notes in older log entries are historical.
+Measurement payloads already include numeric `measurementTypeId` and `sensitivity`.
+`TaxonomyMeasurement` and its row retain nullable type ID, type name, unit, and
+sensitivity for legacy records. Null cells render blank; required fields must be
+selected/filled when editing those records. Type deletion failures are surfaced from
+the API. These are verified frontend contracts, not verified live backend behavior.
 
 Asset, Component, and Measurement have an optional free-text Tag field in their
-shared add/edit modal and a sortable Tag column after Name. Row mapping normalizes
-missing/null tags to `''`, so existing records remain searchable and editable.
+shared add/edit modal and a sortable Tag column after Name. Rows retain tags as
+`string | null` (absent tags normalize to null); Angular renders them blank and
+edit forms normalize null to `''`, so existing records remain searchable and editable.
 Frontend create/update payloads include `tag`; clearing it submits `''`. These are
 frontend models/bindings only; backend/database work belongs to the other team.
 
@@ -631,3 +636,32 @@ every vendored asset or generated graph report.
   `npx ngc -p tsconfig.app.json --noEmit`, `npm run lint`, and `git diff --check`.
   No custom styles or scripts were added. Manual browser verification and a
   production build were not performed for this single-class change.
+
+### 2026-10-06 - Native taxonomy rows and typed TablePagination
+
+- Inspected all seven pages/nine table instances, row mappers, consumers,
+  templates, column definitions, API models/service and existing focused tests.
+  Replaced string-record row models with explicit interfaces. Entity and parent
+  IDs remain numbers; Identity employer IDs remain nullable strings. Measurement
+  type ID and sensitivity remain `number | null`; nullable type/unit/tag values
+  stay nullable. `UnitRow.plantId` is explicitly declared as a number.
+- Generalized the helper to object rows with string-only declared column/sort
+  keys, readonly column input and per-field filter types. All column definitions
+  use `satisfies`. Search converts to text only for comparison. Numeric sorting,
+  blank/null ordering, numeric-aware elevation ordering, three-state sorting,
+  original row order, pagination and confirmation/delegation remain covered.
+- Component and Measurement mappers use the existing `TaxonomyComponent` and
+  `TaxonomyMeasurement` contracts. Removed redundant row/filter/edit/delete ID
+  conversions; kept HTTP query serialization and DOM page-size conversion.
+  Typed search/page-size template references replace `$any` event-target access.
+  API models, endpoints and submitted payload formats were not changed.
+- Added five helper checks (including negative compile-time key/filter checks),
+  two legacy-null/zero Measurement cases and eight Site/Unit/System/Asset UI
+  regressions. Updated existing native-value expectations. No permissive row
+  index signatures, new application `any` types or unsafe type casts were added.
+- Verified: `npx ngc -p tsconfig.app.json --noEmit`, normal
+  `npx tsc -p tsconfig.spec.json --noEmit`, production build, project lint,
+  `git diff --check`, and all **54** focused ChromeHeadless tests (taxonomy,
+  TablePagination and Select2) passed. Existing 2.70 MB initial-bundle budget
+  warning and four CSS selector warnings remain. API calls were mocked in tests;
+  live backend integration and a manual browser audit were not performed.

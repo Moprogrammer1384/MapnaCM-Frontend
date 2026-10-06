@@ -103,7 +103,7 @@ describe('Measurement page', () => {
   it('renders the measurement with its type, unit and sensitivity from the API and filters the rows', () => {
     expect(fixture.nativeElement.querySelector('tbody').textContent).toContain('RMS velocity');
     expect(fixture.componentInstance.table.rows[0]).toEqual(jasmine.objectContaining({
-      component: componentLabel, employer: 'Test employer', type: 'Velocity', unit: 'mm/s', sensitivity: '0.25', measurementTypeId: '1',
+      id: 20, componentId: 10, component: componentLabel, employer: 'Test employer', type: 'Velocity', unit: 'mm/s', sensitivity: 0.25, measurementTypeId: 1,
     }));
     fixture.componentInstance.filterByType(99);
     fixture.detectChanges();
@@ -122,6 +122,53 @@ describe('Measurement page', () => {
     await submit();
     expect(api.createMeasurement).not.toHaveBeenCalled();
     expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: 'Please fill in all required fields.' }));
+  });
+
+  it('preserves legacy nulls, renders blank cells and restores an incomplete edit form', async () => {
+    api.getAllMeasurements.and.returnValue(of([{
+      id: 21, name: 'Legacy measurement', tag: null, measurementTypeId: null,
+      typeName: null, unit: null, sensitivity: null, componentId: 10,
+      componentName: 'Bearing', componentLabel, hierarchyLabel: componentLabel + ' - Legacy measurement',
+    }]));
+    fixture.componentInstance.refresh();
+    await settle();
+    expect(fixture.componentInstance.table.rows[0]).toEqual(jasmine.objectContaining({
+      id: 21, componentId: 10, measurementTypeId: null, sensitivity: null, type: null, unit: null, tag: null,
+    }));
+    const root: HTMLElement = fixture.nativeElement;
+    const cells = root.querySelectorAll('#kt_measurement_table tbody tr:first-child td');
+    expect(Array.from(cells).slice(1, 5).map((cell) => cell.textContent!.trim())).toEqual(['', '', '', '']);
+    root.querySelector<HTMLElement>('app-keenicon[name="pencil"]')!.parentElement!.click();
+    await settle();
+    expect(fixture.componentInstance.measurementForm).toEqual({
+      id: 21, componentId: 10, measurement: 'Legacy measurement', tag: '', measurementTypeId: null, sensitivity: null,
+    });
+    await submit();
+    expect(api.updateMeasurement).not.toHaveBeenCalled();
+  });
+
+  it('preserves a zero type ID and sensitivity when filtering and restoring an edit', async () => {
+    api.getAllMeasurementTypes.and.returnValue(of([{ id: 0, name: 'Zero type', unit: 'mm/s' }]));
+    api.getAllMeasurements.and.returnValue(of([{
+      id: 21, name: 'Zero measurement', tag: null, measurementTypeId: 0,
+      typeName: 'Zero type', unit: 'mm/s', sensitivity: 0, componentId: 10,
+      componentName: 'Bearing', componentLabel, hierarchyLabel: componentLabel + ' - Zero measurement',
+    }]));
+    // Reload the page's options and rows from the current API response.
+    fixture.componentInstance.ngOnInit();
+    await settle();
+    fixture.componentInstance.filterByType(0);
+    expect(fixture.componentInstance.table.filters.measurementTypeId).toBe(0);
+    expect(fixture.componentInstance.table.filtered.length).toBe(1);
+    const root: HTMLElement = fixture.nativeElement;
+    root.querySelector<HTMLElement>('app-keenicon[name="pencil"]')!.parentElement!.click();
+    await settle();
+    expect(fixture.componentInstance.measurementForm.measurementTypeId).toBe(0);
+    expect(fixture.componentInstance.measurementForm.sensitivity).toBe(0);
+    await submit();
+    expect(api.updateMeasurement).toHaveBeenCalledOnceWith({
+      id: 21, name: 'Zero measurement', tag: '', measurementTypeId: 0, sensitivity: 0, componentId: 10,
+    });
   });
 
   it('creates a measurement with tag, type and sensitivity through the API', async () => {

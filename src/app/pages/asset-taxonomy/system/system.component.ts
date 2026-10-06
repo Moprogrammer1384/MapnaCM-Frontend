@@ -4,14 +4,14 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { AssetSystem, SystemPayload, Unit } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
-import { TablePagination } from 'src/app/_metronic/shared/Pagination/table-pagination';
+import { TablePagination, TablePaginationColumn } from 'src/app/_metronic/shared/Pagination/table-pagination';
 
-interface SystemRow extends Record<string, string> {
-  id: string;
+interface SystemRow {
+  id: number;
   employer: string;
-  employerId: string;
+  employerId: string | null;
   unit: string;
-  unitId: string;
+  unitId: number;
   system: string;
 }
 
@@ -37,7 +37,7 @@ export class SystemComponent implements OnInit {
       { key: 'system', title: 'Name', class: 'min-w-125px min-w-md-200px' },
       { key: 'unit', title: 'Unit Name', class: 'min-w-175px min-w-md-250px' },
       { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
-    ]
+    ] satisfies readonly TablePaginationColumn<SystemRow>[]
   );
 
   // Select values are IDs; hierarchy labels are for display only.
@@ -49,7 +49,7 @@ export class SystemComponent implements OnInit {
   systemForm: SystemFormModel = this.emptyForm();
   saving = false;
 
-  private employerByPlantId: Record<number, { id: string; name: string }> = {};
+  private employerByPlantId: Record<number, { id: string | null; name: string }> = {};
   // unit id -> plant id (to inherit the plant's employer)
   private plantIdByUnitId: Record<number, number> = {};
 
@@ -82,7 +82,7 @@ export class SystemComponent implements OnInit {
 
   filterByUnit(unitId: number | null): void {
     this.unitFilter = unitId;
-    this.table.setFilter('unitId', unitId === null ? null : String(unitId));
+    this.table.setFilter('unitId', unitId);
   }
 
   refresh(): void {
@@ -113,7 +113,7 @@ export class SystemComponent implements OnInit {
         this.employerByPlantId = {};
         for (const plant of plants) {
           this.employerByPlantId[plant.id] = {
-            id: plant.employerId ?? '',
+            id: plant.employerId ?? null,
             name: plant.employerName || '—',
           };
         }
@@ -127,16 +127,16 @@ export class SystemComponent implements OnInit {
   private toSystemRow(system: AssetSystem): SystemRow {
     const employer = this.employerOfUnit(system.unitId);
     return {
-      id: String(system.id),
+      id: system.id,
       system: system.name,
       unit: system.unitLabel,
-      unitId: String(system.unitId),
+      unitId: system.unitId,
       employer: employer?.name || '—',
-      employerId: employer?.id ?? '',
+      employerId: employer?.id ?? null,
     };
   }
 
-  private employerOfUnit(unitId: number): { id: string; name: string } | undefined {
+  private employerOfUnit(unitId: number): { id: string | null; name: string } | undefined {
     const plantId = this.plantIdByUnitId[unitId];
     return plantId !== undefined ? this.employerByPlantId[plantId] : undefined;
   }
@@ -158,7 +158,7 @@ export class SystemComponent implements OnInit {
   }
 
   openEditModal(content: TemplateRef<any>, system: SystemRow): void {
-    this.systemForm = { id: Number(system.id), unitId: Number(system.unitId), system: system.system };
+    this.systemForm = { id: system.id, unitId: system.unitId, system: system.system };
     this.modalService.open(content, this.modalConfig);
   }
 
@@ -207,7 +207,7 @@ export class SystemComponent implements OnInit {
   }
 
   private deleteSystemConfirmed(system: SystemRow): void {
-    this.apiService.deleteSystem(Number(system.id)).subscribe({
+    this.apiService.deleteSystem(system.id).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + system.system + '!.');
         this.loadSystems();

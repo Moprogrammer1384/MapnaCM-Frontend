@@ -1,7 +1,7 @@
 import Swal from 'sweetalert2';
 
 export interface TablePaginationColumn<T> {
-  key: keyof T;
+  key: Extract<keyof T, string>;
   title: string;
   class: string;
 }
@@ -11,17 +11,17 @@ export interface TablePaginationColumn<T> {
  * sorting and Metronic-styled delete confirmation. Hosts load the rows and
  * handle API mutations through onConfirmedDelete.
  */
-export class TablePagination<T extends Record<string, string>> {
+export class TablePagination<T extends object> {
   searchText = '';
   pageSize = 10;
   pageSizes = [10, 25, 50, 100];
   page = 1;
-  sortKey: keyof T | null = null;
+  sortKey: Extract<keyof T, string> | null = null;
   sortDir: 'asc' | 'desc' | null = null;
   /** Exact-match column filters (e.g. a toolbar select); null/empty means no filter. */
-  filters: Partial<Record<keyof T, string | null>> = {};
+  filters: { [K in keyof T]?: T[K] | null } = {};
 
-  constructor(public rows: T[], public columns: TablePaginationColumn<T>[]) {}
+  constructor(public rows: T[], public columns: readonly TablePaginationColumn<T>[]) {}
 
   /** When set, deletion is delegated to the host (API call + reload); the
    * local row drop is skipped and the host owns the success feedback. */
@@ -29,12 +29,7 @@ export class TablePagination<T extends Record<string, string>> {
 
   get filtered(): T[] {
     const q = this.searchText.trim().toLowerCase();
-    const active = (Object.keys(this.filters) as (keyof T)[]).filter((k) => this.filters[k]);
-    const rows = this.rows.filter(
-      (r) =>
-        active.every((k) => r[k] === this.filters[k]) &&
-        (!q || Object.values(r).some((v) => v.toLowerCase().includes(q)))
-    );
+    const rows = this.rows.filter((row) => this.matchesFilters(row) && this.matchesSearch(row, q));
     const key = this.sortKey;
     if (key === null || this.sortDir === null) {
       return rows;
@@ -69,7 +64,7 @@ export class TablePagination<T extends Record<string, string>> {
     this.page = 1;
   }
 
-  setFilter(key: keyof T, value: string | null): void {
+  setFilter<K extends Extract<keyof T, string>>(key: K, value: T[K] | null): void {
     this.filters[key] = value;
     this.page = 1;
   }
@@ -85,7 +80,7 @@ export class TablePagination<T extends Record<string, string>> {
     }
   }
 
-  sortBy(key: keyof T): void {
+  sortBy(key: Extract<keyof T, string>): void {
     // Match the template's DataTables cycle: default -> asc -> desc -> default.
     if (this.sortKey === key && this.sortDir === 'asc') {
       this.sortDir = 'desc';
@@ -100,7 +95,7 @@ export class TablePagination<T extends Record<string, string>> {
   }
 
   // DataTables 2 header classes: dt-ordering-asc/desc highlights the active arrow.
-  sortClass(key: keyof T): string {
+  sortClass(key: Extract<keyof T, string>): string {
     return this.sortKey === key && this.sortDir !== null ? `dt-ordering-${this.sortDir}` : '';
   }
 
@@ -143,13 +138,50 @@ export class TablePagination<T extends Record<string, string>> {
     });
   }
 
-  // Numeric-aware compare so "995 m" sorts before "1,190 m".
-  private compare(a: string, b: string): number {
-    const na = parseFloat(a.replace(/,/g, ''));
-    const nb = parseFloat(b.replace(/,/g, ''));
+  private matchesFilters(row: T): boolean {
+    for (const key in this.filters) {
+      const value = this.filters[key];
+      // Zero and false are real filters; only absent/empty selections clear one.
+      if (value !== null && value !== undefined && value !== '' && row[key] !== value) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private matchesSearch(row: T, query: string): boolean {
+    if (!query) {
+      return true;
+    }
+    for (const key in row) {
+      if (Object.prototype.hasOwnProperty.call(row, key) && this.displayText(row[key]).toLowerCase().includes(query)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private displayText(value: unknown): string {
+    return value === null || value === undefined ? '' : String(value);
+  }
+
+  // Native numbers sort numerically. Keep numeric-aware text ordering for
+  // existing display values such as "995 m" and "1,190 m". Nulls are blank:
+  // first ascending and last descending, just like the previous empty strings.
+  private compare(a: unknown, b: unknown): number {
+    if (typeof a === 'number' && typeof b === 'number') {
+      return a - b;
+    }
+    const left = this.displayText(a);
+    const right = this.displayText(b);
+    if (a === null || a === undefined || b === null || b === undefined) {
+      return left === right ? 0 : left === '' ? -1 : 1;
+    }
+    const na = parseFloat(left.replace(/,/g, ''));
+    const nb = parseFloat(right.replace(/,/g, ''));
     if (!isNaN(na) && !isNaN(nb)) {
       return na - nb;
     }
-    return a.localeCompare(b);
+    return left.localeCompare(right);
   }
 }

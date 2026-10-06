@@ -4,10 +4,10 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { SitePayload } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
-import { TablePagination } from 'src/app/_metronic/shared/Pagination/table-pagination';
+import { TablePagination, TablePaginationColumn } from 'src/app/_metronic/shared/Pagination/table-pagination';
 
-interface SiteRow extends Record<string, string> {
-  id: string;
+interface SiteRow {
+  id: number;
   city: string;
   address: string;
   latitude: string;
@@ -45,7 +45,7 @@ export class SiteComponent implements OnInit {
       { key: 'longitude', title: 'Longitude', class: 'min-w-100px' },
       { key: 'location', title: 'Location', class: 'min-w-150px' },
       { key: 'elevation', title: 'Elevation above sea level', class: 'min-w-125px' },
-    ]
+    ] satisfies readonly TablePaginationColumn<SiteRow>[]
   );
 
   siteForm: SiteFormModel = this.emptySiteForm();
@@ -66,7 +66,7 @@ export class SiteComponent implements OnInit {
     this.apiService.getAllSites().subscribe({
       next: (sites) => {
         this.table.rows = sites.map((site) => ({
-          id: String(site.id),
+          id: site.id,
           city: site.city,
           address: site.address,
           latitude: site.latitude,
@@ -88,7 +88,7 @@ export class SiteComponent implements OnInit {
 
   openEditModal(content: TemplateRef<any>, site: SiteRow): void {
     this.siteForm = {
-      id: Number(site.id),
+      id: site.id,
       city: site.city,
       address: site.address,
       latitude: site.latitude,
@@ -145,7 +145,7 @@ export class SiteComponent implements OnInit {
   }
 
   private deleteSiteConfirmed(site: SiteRow): void {
-    this.apiService.deleteSite(Number(site.id)).subscribe({
+    this.apiService.deleteSite(site.id).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + site.city + '!.');
         this.loadSites();

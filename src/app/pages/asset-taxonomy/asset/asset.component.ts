@@ -4,16 +4,16 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { Asset, AssetPayload, AssetSystem } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
-import { TablePagination } from 'src/app/_metronic/shared/Pagination/table-pagination';
+import { TablePagination, TablePaginationColumn } from 'src/app/_metronic/shared/Pagination/table-pagination';
 
-interface AssetRow extends Record<string, string> {
-  id: string;
+interface AssetRow {
+  id: number;
   employer: string;
-  employerId: string;
+  employerId: string | null;
   system: string;
-  systemId: string;
+  systemId: number;
   asset: string;
-  tag: string;
+  tag: string | null;
 }
 
 interface AssetFormModel {
@@ -40,7 +40,7 @@ export class AssetComponent implements OnInit {
       { key: 'tag', title: 'Tag', class: 'min-w-125px' },
       { key: 'system', title: 'System Name', class: 'min-w-175px min-w-md-250px' },
       { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
-    ]
+    ] satisfies readonly TablePaginationColumn<AssetRow>[]
   );
 
   // Select values are IDs; hierarchy labels are for display only.
@@ -56,7 +56,7 @@ export class AssetComponent implements OnInit {
   private plantIdByUnitId: Record<number, number> = {};
   // system id -> unit id (to reach the plant's employer)
   private unitIdBySystemId: Record<number, number> = {};
-  private employerByPlantId: Record<number, { id: string; name: string }> = {};
+  private employerByPlantId: Record<number, { id: string | null; name: string }> = {};
 
   constructor(
     private modalService: NgbModal,
@@ -87,7 +87,7 @@ export class AssetComponent implements OnInit {
 
   filterBySystem(systemId: number | null): void {
     this.systemFilter = systemId;
-    this.table.setFilter('systemId', systemId === null ? null : String(systemId));
+    this.table.setFilter('systemId', systemId);
   }
 
   refresh(): void {
@@ -132,7 +132,7 @@ export class AssetComponent implements OnInit {
         this.employerByPlantId = {};
         for (const plant of plants) {
           this.employerByPlantId[plant.id] = {
-            id: plant.employerId ?? '',
+            id: plant.employerId ?? null,
             name: plant.employerName || '—',
           };
         }
@@ -146,17 +146,17 @@ export class AssetComponent implements OnInit {
   private toAssetRow(asset: Asset): AssetRow {
     const employer = this.employerOfSystem(asset.systemId);
     return {
-      id: String(asset.id),
+      id: asset.id,
       asset: asset.name,
-      tag: asset.tag ?? '',
+      tag: asset.tag ?? null,
       system: asset.systemLabel,
-      systemId: String(asset.systemId),
+      systemId: asset.systemId,
       employer: employer?.name || '—',
-      employerId: employer?.id ?? '',
+      employerId: employer?.id ?? null,
     };
   }
 
-  private employerOfSystem(systemId: number): { id: string; name: string } | undefined {
+  private employerOfSystem(systemId: number): { id: string | null; name: string } | undefined {
     const unitId = this.unitIdBySystemId[systemId];
     const plantId = unitId !== undefined ? this.plantIdByUnitId[unitId] : undefined;
     return plantId !== undefined ? this.employerByPlantId[plantId] : undefined;
@@ -179,7 +179,7 @@ export class AssetComponent implements OnInit {
   }
 
   openEditModal(content: TemplateRef<any>, asset: AssetRow): void {
-    this.assetForm = { id: Number(asset.id), systemId: Number(asset.systemId), asset: asset.asset, tag: asset.tag };
+    this.assetForm = { id: asset.id, systemId: asset.systemId, asset: asset.asset, tag: asset.tag ?? '' };
     this.modalService.open(content, this.modalConfig);
   }
 
@@ -228,7 +228,7 @@ export class AssetComponent implements OnInit {
   }
 
   private deleteAssetConfirmed(asset: AssetRow): void {
-    this.apiService.deleteAsset(Number(asset.id)).subscribe({
+    this.apiService.deleteAsset(asset.id).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + asset.asset + '!.');
         this.loadAssets();

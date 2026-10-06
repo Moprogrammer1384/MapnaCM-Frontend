@@ -12,7 +12,7 @@
       <!--begin::Search-->
       <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
         <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Site" (input)="table.search($any($event.target).value)" />
+        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Site" #tableSearch (input)="table.search(tableSearch.value)" />
       </div>
       <!--end::Search-->
       <!--begin::Button-->
@@ -74,7 +74,7 @@
         <div class="d-flex align-items-center">
           <div class="dataTables_length">
             <label>
-              <select class="form-select form-select-sm form-select-solid" data-control="select2" data-hide-search="true" data-width="fit-content" aria-label="Page size" [value]="table.pageSize" (change)="table.setPageSize($any($event.target).value)">
+              <select class="form-select form-select-sm form-select-solid" data-control="select2" data-hide-search="true" data-width="fit-content" aria-label="Page size" [value]="table.pageSize" #tablePageSize (change)="table.setPageSize(tablePageSize.value)">
                 <option *ngFor="let size of table.pageSizes" [value]="size">{{ size }}</option>
               </select>
             </label>

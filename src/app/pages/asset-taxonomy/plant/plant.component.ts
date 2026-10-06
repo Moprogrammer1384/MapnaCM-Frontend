@@ -3,21 +3,21 @@ import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { AssetApiService } from '../services/asset-api.service';
-import { TablePagination } from 'src/app/_metronic/shared/Pagination/table-pagination';
+import { TablePagination, TablePaginationColumn } from 'src/app/_metronic/shared/Pagination/table-pagination';
 
-interface PlantRow extends Record<string, string> {
-  id: string;
+interface PlantRow {
+  id: number;
   name: string;
   type: string;
   site: string;
-  plantTypeId: string;
-  siteId: string;
+  plantTypeId: number;
+  siteId: number;
   employer: string;
-  employerId: string;
+  employerId: string | null;
 }
 
-interface TypeRow extends Record<string, string> {
-  id: string;
+interface TypeRow {
+  id: number;
   name: string;
 }
 
@@ -51,12 +51,12 @@ export class PlantComponent implements OnInit {
       { key: 'type', title: 'Type', class: 'min-w-150px' },
       { key: 'site', title: 'Site', class: 'min-w-175px min-w-md-250px' },
       { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
-    ]
+    ] satisfies readonly TablePaginationColumn<PlantRow>[]
   );
 
   types = new TablePagination<TypeRow>(
     [],
-    [{ key: 'name', title: 'Name', class: 'min-w-150px' }]
+    [{ key: 'name', title: 'Name', class: 'min-w-150px' }] satisfies readonly TablePaginationColumn<TypeRow>[]
   );
 
   // Options for the Type / Site selects in the plant modals, loaded from the
@@ -115,7 +115,7 @@ export class PlantComponent implements OnInit {
     this.apiService.getAllPlantTypes().subscribe({
       next: (types) => {
         this.typeOptions = types.map((type) => ({ id: type.id, name: type.name }));
-        this.types.rows = types.map((type) => ({ id: String(type.id), name: type.name }));
+        this.types.rows = types.map((type) => ({ id: type.id, name: type.name }));
         this.types.page = 1;
         this.cdr.detectChanges();
       },
@@ -138,14 +138,14 @@ export class PlantComponent implements OnInit {
     this.apiService.getAllPlants().subscribe({
       next: (plants) => {
         this.plants.rows = plants.map((plant) => ({
-          id: String(plant.id),
+          id: plant.id,
           name: plant.name,
           type: plant.typeName,
           site: plant.siteLabel,
-          plantTypeId: String(plant.plantTypeId),
-          siteId: String(plant.siteId),
+          plantTypeId: plant.plantTypeId,
+          siteId: plant.siteId,
           employer: plant.employerName || '—',
-          employerId: String(plant.employerId ?? ''),
+          employerId: plant.employerId ?? null,
         }));
         this.plants.page = 1;
         this.cdr.detectChanges();
@@ -163,10 +163,10 @@ export class PlantComponent implements OnInit {
 
   openEditPlantModal(content: TemplateRef<any>, plant: PlantRow): void {
     this.plantFormModel = {
-      id: Number(plant.id),
+      id: plant.id,
       name: plant.name,
-      plantTypeId: Number(plant.plantTypeId),
-      siteId: Number(plant.siteId),
+      plantTypeId: plant.plantTypeId,
+      siteId: plant.siteId,
       employerId: plant.employerId || null,
     };
     this.modalService.open(content, this.modalConfig);
@@ -219,7 +219,7 @@ export class PlantComponent implements OnInit {
   }
 
   private deletePlantConfirmed(plant: PlantRow): void {
-    this.apiService.deletePlant(Number(plant.id)).subscribe({
+    this.apiService.deletePlant(plant.id).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + plant.name + '!.');
         this.loadPlants();
@@ -236,7 +236,7 @@ export class PlantComponent implements OnInit {
   }
 
   openEditTypeModal(content: TemplateRef<any>, type: TypeRow): void {
-    this.typeFormModel = { id: Number(type.id), name: type.name };
+    this.typeFormModel = { id: type.id, name: type.name };
     this.modalService.open(content, this.modalConfig);
   }
 
@@ -276,7 +276,7 @@ export class PlantComponent implements OnInit {
   }
 
   private deleteTypeConfirmed(type: TypeRow): void {
-    this.apiService.deletePlantType(Number(type.id)).subscribe({
+    this.apiService.deletePlantType(type.id).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + type.name + '!.');
         this.loadTypes();

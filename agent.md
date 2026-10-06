@@ -619,3 +619,15 @@ every vendored asset or generated graph report.
   2.70 MB initial bundle-budget and four CSS selector warnings remain.
   Live authenticated backend integration was not tested; API calls were mocked
   in browser tests. Full heterogeneous table-row typing is a separate follow-up.
+
+### 2026-10-06 - Authentication picture column on mobile
+
+- Changed the shared Auth template's picture/marketing aside from `d-flex` to
+  `d-none d-lg-flex`, reusing existing Metronic/Bootstrap display utilities.
+  It is hidden below the theme's 992px desktop breakpoint; the form remains
+  visible and the desktop two-column layout is retained. This shared template
+  also wraps registration and forgot-password pages.
+- Verified the theme breakpoint/display utility definitions and passed
+  `npx ngc -p tsconfig.app.json --noEmit`, `npm run lint`, and `git diff --check`.
+  No custom styles or scripts were added. Manual browser verification and a
+  production build were not performed for this single-class change.

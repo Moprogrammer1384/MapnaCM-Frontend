@@ -1,0 +1,12 @@
+<div class="d-flex align-items-center">
+  <div class="dataTables_length">
+    <label>
+      <select class="form-select form-select-sm form-select-solid" data-control="select2" data-hide-search="true" data-width="fit-content" aria-label="Page size" [value]="table.pageSize" #tablePageSize (change)="table.setPageSize(tablePageSize.value)">
+        <option *ngFor="let size of table.pageSizes" [value]="size">{{ size }}</option>
+      </select>
+    </label>
+  </div>
+  <div class="dataTables_info" role="status" aria-live="polite">
+    {{ table.infoStart }} to {{ table.infoEnd }} of {{ table.resultCount }} entries
+  </div>
+</div>

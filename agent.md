@@ -1,6 +1,6 @@
 # MapnaCM frontend: development context
 
-Last studied: **2026-10-05 (Asia/Tehran)**.
+Last studied: **2026-10-06 (Asia/Tehran)**.
 Latest source reviewed: `52233c9` (`Plant type fix`), plus the Tag and Measurement Type UI changes below.
 
 This is the project memory for development with Codex. Read it at the start of
@@ -271,6 +271,16 @@ tables. They do not use `<app-crud>`, despite matching DataTables styling/classe
 for taxonomy pages. `AssetApiService` requests up to 10,000 rows for client-side
 search/filter/sort/paging; this is a current limit, not unlimited pagination.
 
+All nine taxonomy table footers use `<app-paginationbar [table]="table">`
+(Plant also binds `plants`/`types`; Measurement also binds `types`). The reusable
+wrapper and its `pagination-records` and `pagination-pages` children live under
+`_metronic/shared/Pagination/paginationbar/`. Import `SharedModule` to use the
+wrapper or either child independently, passing the same required `table` input.
+The row-independent `PaginationState` interface describes readonly pagination
+metadata and `setPageSize`/`goToPage`; existing `TablePagination<T>` instances
+satisfy it directly. Components delegate state updates to the supplied table.
+The records child uses the existing Select2 directive; do not initialize it again.
+
 `TablePagination<T extends object>` retains native row values, searches the text
 representations of explicitly configured fields, combines exact filters typed per field, supports
 page sizes 10/25/50/100, and cycles default -> ascending -> descending -> default.
@@ -398,7 +408,8 @@ Do not assume screens are integrated based solely on where their files live.
 
 ## Select2, styles, theme, and localization
 
-`SharedModule` exports Keenicons and `Select2Directive`. Selects with
+`SharedModule` exports Keenicons, `Select2Directive`, `PaginationbarComponent`,
+`PaginationRecordsComponent` and `PaginationPagesComponent`. Selects with
 `data-control="select2"`, `data-kt-select2="true"`, or `appSelect2` are automatically
 enhanced. The directive preserves Angular value accessors, numeric `[ngValue]`,
 validation, model changes, and asynchronously loaded options.
@@ -753,3 +764,26 @@ every vendored asset or generated graph report.
   Existing 2.70 MB initial-bundle warning and four CSS selector warnings remain.
   API calls were mocked; live backend integration, manual visual auditing and
   browser performance benchmarking were not performed.
+
+### 2026-10-06 - Reusable pagination bar and child components
+
+- Extracted the supplied footer into `PaginationbarComponent`, composed of
+  `PaginationRecordsComponent` (size/range) and `PaginationPagesComponent`
+  (numbered navigation). All files live under the requested
+  `_metronic/shared/Pagination/paginationbar/` directory. `SharedModule` declares
+  and exports all three so either child can also be used independently.
+- Added the required typed `table` input using the row-independent
+  `PaginationState` interface. Reused the helper's metadata and methods without
+  introducing duplicate pagination state. Replaced all nine footer copies across
+  seven taxonomy templates, retaining their individual table bindings.
+- Preserved Metronic classes, responsive wrapper, live range status, current-page
+  metadata and disabled navigation. Reused the existing Select2 directive inside
+  the records child; no custom styles, new theme scripts or API/storage changes.
+- Added six browser integration checks for composition, navigation/window/range,
+  native and Select2 size changes dispatched once, external state/empty results,
+  independent tables/custom sizes, and independent child reuse/plugin cleanup.
+- Verified production build (including strict Angular template compilation),
+  normal test TypeScript compilation, project lint, `git diff --check`, and all
+  **94** focused taxonomy/pagination/Select2 ChromeHeadless tests. Existing
+  2.70 MB initial-bundle warning and four CSS selector warnings remain. API calls
+  were mocked; live backend integration and manual visual auditing were not run.

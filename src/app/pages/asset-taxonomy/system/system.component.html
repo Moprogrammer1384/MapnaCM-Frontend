@@ -81,39 +81,7 @@
       </table>
       <!--end::Table-->
       <!--begin::Table footer-->
-      <div class="d-flex flex-column flex-md-row flex-stack flex-wrap gap-3">
-        <div class="d-flex align-items-center">
-          <div class="dataTables_length">
-            <label>
-              <select class="form-select form-select-sm form-select-solid" data-control="select2" data-hide-search="true" data-width="fit-content" aria-label="Page size" [value]="table.pageSize" #tablePageSize (change)="table.setPageSize(tablePageSize.value)">
-                <option *ngFor="let size of table.pageSizes" [value]="size">{{ size }}</option>
-              </select>
-            </label>
-          </div>
-          <div class="dataTables_info" role="status" aria-live="polite">
-            {{ table.infoStart }} to {{ table.infoEnd }} of {{ table.resultCount }} entries
-          </div>
-        </div>
-        <div class="dataTables_paginate paging_simple_numbers">
-          <ul class="pagination">
-            <li class="paginate_button page-item first" [class.disabled]="table.page === 1">
-              <button type="button" class="page-link" aria-label="First page" [disabled]="table.page === 1" (click)="table.goToPage(1)">First</button>
-            </li>
-            <li class="paginate_button page-item previous" [class.disabled]="table.page === 1">
-              <button type="button" class="page-link" aria-label="Previous page" [disabled]="table.page === 1" (click)="table.goToPage(table.page - 1)"><i class="previous"></i></button>
-            </li>
-            <li *ngFor="let p of table.pages" class="paginate_button page-item" [class.active]="p === table.page">
-              <button type="button" class="page-link" [attr.aria-current]="p === table.page ? 'page' : null" (click)="table.goToPage(p)">{{ p }}</button>
-            </li>
-            <li class="paginate_button page-item next" [class.disabled]="table.page === table.totalPages">
-              <button type="button" class="page-link" aria-label="Next page" [disabled]="table.page === table.totalPages" (click)="table.goToPage(table.page + 1)"><i class="next"></i></button>
-            </li>
-            <li class="paginate_button page-item last" [class.disabled]="table.page === table.totalPages">
-              <button type="button" class="page-link" aria-label="Last page" [disabled]="table.page === table.totalPages" (click)="table.goToPage(table.totalPages)">Last</button>
-            </li>
-          </ul>
-        </div>
-      </div>
+      <app-paginationbar [table]="table"></app-paginationbar>
       <!--end::Table footer-->
     </div>
     <!--end::Table container-->

@@ -144,8 +144,7 @@ export class SystemComponent implements OnInit {
   private loadSystems(): void {
     this.apiService.getAllSystems().subscribe({
       next: (systems) => {
-        this.table.rows = systems.map((system) => this.toSystemRow(system));
-        this.table.page = 1;
+        this.table.setRows(systems.map((system) => this.toSystemRow(system)), { resetPage: true });
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load systems.'),

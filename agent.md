@@ -272,7 +272,7 @@ for taxonomy pages. `AssetApiService` requests up to 10,000 rows for client-side
 search/filter/sort/paging; this is a current limit, not unlimited pagination.
 
 `TablePagination<T extends object>` retains native row values, searches their text
-representations, combines exact filters typed per field, and supports
+representations, combines exact filters typed per field, supports
 page sizes 10/25/50/100, and cycles default -> ascending -> descending -> default.
 Sorting preserves the original row array. New searches/filters/sorts reset page 1.
 Deletion prompts first; `onConfirmedDelete` delegates the mutation to the host.
@@ -281,6 +281,18 @@ Column keys use `Extract<keyof T, string>` and all nine column arrays use
 text retains numeric-aware ordering (including elevations such as `995 m`).
 Null/undefined sort as blanks, first ascending and last descending. Null, undefined,
 and empty-string filters clear a selection; zero and false are active filters.
+
+Angular 18 computed signals cache the pipeline: row snapshots -> filtered rows ->
+sorted rows -> current-page rows. Counts derive from filtering; page count,
+page-number arrays and ranges use separate computed results. Getter `filtered`
+retains its existing sorted-result meaning. Templates use cached `resultCount`
+for counts/empty states; page/page-size changes reuse filtering and sorting.
+All state reads are getters, with updates through `setRows`, `search`, `setFilter`,
+`sortBy`, `setPageSize` and `goToPage`. `setRows` copies/freezes the scalar row
+snapshots and array, preserves/clamps the page by default, and accepts
+`{ resetPage: true }` for reloads that previously reset to page 1. Measurement
+Type reloads and local deletion preserve/clamp the page. Rows/filters/results
+are readonly to consumers; submit forms must continue using their own models.
 
 Taxonomy forms use `NgForm`, required fields, `saving` guards, ng-bootstrap modal
 templates, Metronic alerts, and refresh after successful mutation. Async updates
@@ -665,3 +677,30 @@ every vendored asset or generated graph report.
   TablePagination and Select2) passed. Existing 2.70 MB initial-bundle budget
   warning and four CSS selector warnings remain. API calls were mocked in tests;
   live backend integration and a manual browser audit were not performed.
+
+### 2026-10-06 - Cached TablePagination derivations
+
+- Inspected the plain TypeScript helper, all seven consumer pages/nine tables,
+  their table templates, state writes and focused tests. Confirmed installed
+  Angular core 18.2.14 supports `signal`/`computed` in this helper without DI.
+- Added private input signals and separate computed filtering, sorting, result
+  count, page count, valid current page, page-number array, page slice and ranges.
+  Repeated reads reuse cached results. Only the affected stages recompute;
+  metadata/count reads do not trigger sorting, and page/size changes do not
+  filter or sort. Sorting copies filtered rows rather than altering input order.
+- Replaced consumer row/page assignments with `setRows`, preserving each page's
+  reset policy. Readonly frozen scalar-row snapshots isolate input mutations;
+  filters are updated immutably through `setFilter`. Templates use cached
+  `resultCount` for entry counts and empty states. Kept typed native fields,
+  global search, exact filters, three-state sorting, confirmation callbacks,
+  and submitted API formats. Invalid page/size inputs leave state unchanged.
+- Added **11** cache regression tests for result identity and operation counters,
+  dependency invalidation, page/size-only updates, repeated equal inputs,
+  snapshot isolation, empty results, shrink/grow/reset behavior and local deletion.
+  Assertions compare identity as booleans so Jasmine's object formatting cannot
+  invoke the search/comparison probes and contaminate counters.
+- Verified strict Angular compilation, normal test TypeScript compilation,
+  production build, project lint, `git diff --check`, and all **65** focused
+  ChromeHeadless tests (taxonomy, pagination and Select2) passed. Existing initial
+  bundle warning (2.70 MB against 2 MB) and four CSS selector warnings remain.
+  No browser performance benchmark or live backend integration was performed.

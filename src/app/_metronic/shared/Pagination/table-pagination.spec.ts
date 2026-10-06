@@ -1,4 +1,5 @@
 import { TablePagination, TablePaginationColumn } from './table-pagination';
+import Swal from 'sweetalert2';
 
 describe('TablePagination ordering', () => {
   const rows = [
@@ -49,9 +50,9 @@ describe('TablePagination ordering', () => {
   });
 
   it('restores filtered API order and resets pagination when clearing the sort', () => {
-    table.rows = [rows[0], { name: 'Echo', elevation: '500 m' }, rows[1], rows[2]];
+    table.setRows([rows[0], { name: 'Echo', elevation: '500 m' }, rows[1], rows[2]]);
     table.search('a');
-    table.pageSize = 1;
+    table.setPageSize(1);
     table.sortBy('name');
     table.sortBy('name');
     table.goToPage(2);
@@ -65,11 +66,213 @@ describe('TablePagination ordering', () => {
     table.sortBy('name');
     table.sortBy('name');
     table.sortBy('name');
-    table.rows = [rows[2], rows[0]];
+    table.setRows([rows[2], rows[0]]);
     expect(names()).toEqual(['Alpha', 'Bravo']);
-    table.rows = [];
+    table.setRows([]);
     expect(table.paged).toEqual([]);
     expect(table.sortClass('name')).toBe('');
+  });
+});
+
+describe('TablePagination cached derivations', () => {
+  interface TextProbe {
+    toString(): string;
+  }
+  interface Row {
+    id: number;
+    group: number;
+    searchValue: TextProbe;
+    sortValue: TextProbe;
+  }
+  let table: TablePagination<Row>;
+  let sourceRows: Row[];
+  let searchReads: number;
+  let sortReads: number;
+  const ids = () => table.paged.map((row) => row.id);
+
+  beforeEach(() => {
+    searchReads = 0;
+    sortReads = 0;
+    // Count the actual search/comparison work without spying on private methods
+    // or global array prototypes. All rows match before reaching sortValue.
+    const searchValue = { toString: () => { searchReads++; return 'needle'; } };
+    const sortValue = (value: string): TextProbe => ({ toString: () => { sortReads++; return value; } });
+    sourceRows = [
+      { id: 1, group: 1, searchValue, sortValue: sortValue('Bravo') },
+      { id: 2, group: 2, searchValue, sortValue: sortValue('Charlie') },
+      { id: 3, group: 1, searchValue, sortValue: sortValue('Alpha') },
+    ];
+    table = new TablePagination<Row>(sourceRows, [
+      { key: 'sortValue', title: 'Sort', class: '' },
+    ] satisfies readonly TablePaginationColumn<Row>[]);
+    table.search('needle');
+    table.sortBy('sortValue');
+    table.setPageSize(1);
+    expect(ids()).toEqual([3]);
+  });
+
+  it('reuses result arrays, page numbers and metadata on repeated reads', () => {
+    const filtered = table.filtered;
+    const paged = table.paged;
+    const pages = table.pages;
+    const work = [searchReads, sortReads];
+    for (let i = 0; i < 5; i++) {
+      expect(table.filtered === filtered).toBeTrue();
+      expect(table.paged === paged).toBeTrue();
+      expect(table.pages === pages).toBeTrue();
+      expect([table.resultCount, table.totalPages, table.page, table.infoStart, table.infoEnd]).toEqual([3, 3, 1, 1, 1]);
+    }
+    expect([searchReads, sortReads]).toEqual(work);
+  });
+
+  it('changes only the slice/range on page changes and reuses page numbers', () => {
+    const filtered = table.filtered;
+    const paged = table.paged;
+    const pages = table.pages;
+    const work = [searchReads, sortReads];
+    table.goToPage(2);
+    expect(ids()).toEqual([1]);
+    expect(table.paged === paged).toBeFalse();
+    expect(table.filtered === filtered).toBeTrue();
+    expect(table.pages === pages).toBeTrue();
+    expect([table.infoStart, table.infoEnd]).toEqual([2, 2]);
+    expect([searchReads, sortReads]).toEqual(work);
+  });
+
+  it('updates page-size metadata and resets the page without filtering or sorting', () => {
+    const filtered = table.filtered;
+    const work = [searchReads, sortReads];
+    table.goToPage(3);
+    table.setPageSize('2');
+    expect(ids()).toEqual([3, 1]);
+    expect(table.filtered === filtered).toBeTrue();
+    expect(table.pages).toEqual([1, 2]);
+    expect([table.page, table.infoStart, table.infoEnd]).toEqual([1, 1, 2]);
+    expect([searchReads, sortReads]).toEqual(work);
+  });
+
+  it('refreshes only ordering on sort changes and preserves cached filtering/counts', () => {
+    const filtered = table.filtered;
+    const searchWork = searchReads;
+    const sortWork = sortReads;
+    table.goToPage(3);
+    table.sortBy('sortValue');
+    expect([table.resultCount, table.totalPages, table.infoStart]).toEqual([3, 3, 1]);
+    expect(sortReads).toBe(sortWork); // Count/metadata do not trigger sorting.
+    expect(ids()).toEqual([2]);
+    expect(table.filtered === filtered).toBeFalse();
+    expect(searchReads).toBe(searchWork);
+    expect(sortReads).toBeGreaterThan(sortWork);
+    const descendingWork = sortReads;
+    table.sortBy('sortValue');
+    expect(table.filtered.map((row) => row.id)).toEqual([1, 2, 3]);
+    expect([searchReads, sortReads]).toEqual([searchWork, descendingWork]);
+    expect(sourceRows.map((row) => row.id)).toEqual([1, 2, 3]);
+  });
+
+  it('refreshes filtering on search/filter updates and sorts the new results lazily', () => {
+    const filtered = table.filtered;
+    const searchWork = searchReads;
+    const sortWork = sortReads;
+    table.goToPage(3);
+    table.search(' needle ');
+    expect(table.resultCount).toBe(3);
+    expect(table.page).toBe(1);
+    expect(searchReads).toBeGreaterThan(searchWork);
+    expect(sortReads).toBe(sortWork);
+    expect(table.filtered === filtered).toBeFalse();
+    const filteredWork = searchReads;
+    const sortedWork = sortReads;
+    table.setFilter('group', 1);
+    expect(table.resultCount).toBe(2);
+    expect(searchReads).toBeGreaterThan(filteredWork);
+    expect(sortReads).toBe(sortedWork);
+    expect(table.filtered.map((row) => row.id)).toEqual([3, 1]);
+    table.setFilter('group', null);
+    expect(table.resultCount).toBe(3);
+  });
+
+  it('does not invalidate results for unchanged search/filter/page-size inputs', () => {
+    table.setFilter('group', 1);
+    const filtered = table.filtered;
+    const work = [searchReads, sortReads];
+    table.goToPage(2);
+    table.search('needle');
+    table.setFilter('group', 1);
+    table.setPageSize(1);
+    expect(table.page).toBe(1);
+    expect(table.filtered === filtered).toBeTrue();
+    expect([searchReads, sortReads]).toEqual(work);
+  });
+
+  it('refreshes row replacements, clamps after shrinkage, and does not resurrect an old page', () => {
+    table.goToPage(3);
+    const searchWork = searchReads;
+    table.setRows(sourceRows.slice(0, 2));
+    expect(searchReads).toBeGreaterThan(searchWork);
+    expect([table.resultCount, table.page, table.totalPages]).toEqual([2, 2, 2]);
+    expect(ids()).toEqual([2]);
+    expect([table.infoStart, table.infoEnd]).toEqual([2, 2]);
+    table.setRows(sourceRows);
+    expect(table.page).toBe(2);
+    table.setRows(sourceRows, { resetPage: true });
+    expect(table.page).toBe(1);
+  });
+
+  it('handles empty results and empty row replacements with valid ranges and controls', () => {
+    table.goToPage(3);
+    table.search('missing');
+    expect([table.resultCount, table.page, table.totalPages, table.infoStart, table.infoEnd]).toEqual([0, 1, 1, 0, 0]);
+    expect(table.paged).toEqual([]);
+    expect(table.pages).toEqual([1]);
+    table.goToPage(2);
+    expect(table.page).toBe(1);
+    table.search('needle');
+    table.goToPage(3);
+    table.setRows([]);
+    expect([table.resultCount, table.page, table.totalPages, table.infoStart, table.infoEnd]).toEqual([0, 1, 1, 0, 0]);
+    expect(table.paged).toEqual([]);
+  });
+
+  it('isolates scalar row inputs and refreshes explicit replacements of the same input array', () => {
+    table.setFilter('group', 1);
+    expect(table.resultCount).toBe(2);
+    sourceRows[0].group = 2;
+    sourceRows.push({ ...sourceRows[2], id: 4 });
+    expect(table.rows.length).toBe(3);
+    expect(table.rows[0].group).toBe(1);
+    const filtered = table.filtered;
+    table.setRows(sourceRows);
+    expect(table.filtered === filtered).toBeFalse();
+    expect(table.filtered.map((row) => row.id)).toEqual([3, 4]);
+    expect(Object.isFrozen(table.rows)).toBeTrue();
+    expect(Object.isFrozen(table.rows[0])).toBeTrue();
+    expect(Object.isFrozen(table.filters)).toBeTrue();
+  });
+
+  it('rejects invalid pages/sizes without changing valid pagination or cached results', () => {
+    const filtered = table.filtered;
+    const work = [searchReads, sortReads];
+    for (const value of [0, -1, 1.5, NaN, Infinity]) {
+      table.goToPage(value);
+      table.setPageSize(value);
+    }
+    expect([table.page, table.pageSize]).toEqual([1, 1]);
+    expect(table.filtered === filtered).toBeTrue();
+    expect([searchReads, sortReads]).toEqual(work);
+  });
+
+  it('refreshes cached results and clamps after local confirmed deletion', async () => {
+    spyOn(Swal, 'fire').and.resolveTo({ isConfirmed: true, isDenied: false, isDismissed: false, value: true });
+    table.goToPage(3);
+    const row = table.paged[0];
+    table.confirmDelete(row, 'Charlie');
+    // Confirmation and the success notification each resolve a promise.
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(table.rows.map((item) => item.id)).toEqual([1, 3]);
+    expect([table.page, table.resultCount, table.totalPages]).toEqual([2, 2, 2]);
+    expect(ids()).toEqual([1]);
   });
 });
 
@@ -112,7 +315,8 @@ describe('TablePagination native values', () => {
   });
 
   it('combines exact native filters, including zero and false, and clears selections', () => {
-    table.page = 2;
+    table.setPageSize(1);
+    table.goToPage(2);
     table.setFilter('parentId', 0);
     table.setFilter('enabled', false);
     expect(table.page).toBe(1);

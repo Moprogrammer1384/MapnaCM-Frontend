@@ -241,8 +241,7 @@ export class MeasurementComponent implements OnInit {
   private loadMeasurements(): void {
     this.apiService.getAllMeasurements().subscribe({
       next: (measurements) => {
-        this.table.rows = measurements.map((measurement) => this.toMeasurementRow(measurement));
-        this.table.page = 1;
+        this.table.setRows(measurements.map((measurement) => this.toMeasurementRow(measurement)), { resetPage: true });
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load measurements.'),
@@ -336,8 +335,7 @@ export class MeasurementComponent implements OnInit {
     this.apiService.getAllMeasurementTypes().subscribe({
       next: (types) => {
         this.typeOptions = types;
-        this.types.rows = types.map((type) => ({ id: type.id, name: type.name, unit: type.unit }));
-        this.types.page = Math.min(this.types.page, this.types.totalPages);
+        this.types.setRows(types.map((type) => ({ id: type.id, name: type.name, unit: type.unit })));
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load measurement types.'),

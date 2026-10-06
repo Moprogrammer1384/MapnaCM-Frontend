@@ -75,7 +75,7 @@
               </a>
             </td>
           </tr>
-          <tr *ngIf="table.filtered.length === 0">
+          <tr *ngIf="table.resultCount === 0">
             <td colspan="5" class="text-center text-gray-500">No matching records found</td>
           </tr>
         </tbody>
@@ -92,7 +92,7 @@
             </label>
           </div>
           <div class="dataTables_info" role="status" aria-live="polite">
-            {{ table.infoStart }} to {{ table.infoEnd }} of {{ table.filtered.length }} entries
+            {{ table.infoStart }} to {{ table.infoEnd }} of {{ table.resultCount }} entries
           </div>
         </div>
         <div class="dataTables_paginate paging_simple_numbers">

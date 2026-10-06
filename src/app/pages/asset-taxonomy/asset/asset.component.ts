@@ -165,8 +165,7 @@ export class AssetComponent implements OnInit {
   private loadAssets(): void {
     this.apiService.getAllAssets().subscribe({
       next: (assets) => {
-        this.table.rows = assets.map((asset) => this.toAssetRow(asset));
-        this.table.page = 1;
+        this.table.setRows(assets.map((asset) => this.toAssetRow(asset)), { resetPage: true });
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load assets.'),

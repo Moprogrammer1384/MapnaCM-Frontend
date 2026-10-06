@@ -1,3 +1,4 @@
+import { computed, signal } from '@angular/core';
 import Swal from 'sweetalert2';
 
 export interface TablePaginationColumn<T> {
@@ -6,92 +7,181 @@ export interface TablePaginationColumn<T> {
   class: string;
 }
 
+type TableFilters<T> = { [K in keyof T]?: T[K] | null };
+type TableSort<T> = {
+  key: Extract<keyof T, string> | null;
+  direction: 'asc' | 'desc' | null;
+};
+
 /**
  * Table pagination over an in-memory row array, with search, column filters,
  * sorting and Metronic-styled delete confirmation. Hosts load the rows and
  * handle API mutations through onConfirmedDelete.
  */
 export class TablePagination<T extends object> {
-  searchText = '';
-  pageSize = 10;
-  pageSizes = [10, 25, 50, 100];
-  page = 1;
-  sortKey: Extract<keyof T, string> | null = null;
-  sortDir: 'asc' | 'desc' | null = null;
-  /** Exact-match column filters (e.g. a toolbar select); null/empty means no filter. */
-  filters: { [K in keyof T]?: T[K] | null } = {};
+  readonly pageSizes = [10, 25, 50, 100];
+  readonly columns: readonly Readonly<TablePaginationColumn<T>>[];
+  private readonly rowsState = signal<readonly Readonly<T>[]>([]);
+  private readonly searchState = signal('');
+  private readonly filtersState = signal<TableFilters<T>>({});
+  private readonly sortState = signal<TableSort<T>>({ key: null, direction: null });
+  private readonly requestedPage = signal(1);
+  private readonly pageSizeState = signal(10);
 
-  constructor(public rows: T[], public columns: readonly TablePaginationColumn<T>[]) {}
+  // Each stage tracks only its inputs. Reading pagination never sorts; changing
+  // the page or page size never invalidates filtering or sorting.
+  private readonly filteredRows = computed(() => {
+    const rows = this.rowsState();
+    const query = this.searchState().trim().toLowerCase();
+    const filters = this.filtersState();
+    return Object.freeze(rows.filter((row) => this.matchesFilters(row, filters) && this.matchesSearch(row, query)));
+  });
+
+  private readonly sortedRows = computed(() => {
+    const rows = this.filteredRows();
+    const { key, direction } = this.sortState();
+    if (key === null || direction === null) {
+      return rows;
+    }
+    const dir = direction === 'asc' ? 1 : -1;
+    return Object.freeze([...rows].sort((left, right) => this.compare(left[key], right[key]) * dir));
+  });
+
+  private readonly resultCountState = computed(() => this.filteredRows().length);
+  private readonly totalPagesState = computed(() => Math.max(1, Math.ceil(this.resultCountState() / this.pageSizeState())));
+  private readonly currentPage = computed(() => Math.min(this.requestedPage(), this.totalPagesState()));
+  private readonly pageNumbers = computed(() => Object.freeze(Array.from({ length: this.totalPagesState() }, (_, i) => i + 1)));
+  private readonly pageRows = computed(() => {
+    const size = this.pageSizeState();
+    const start = (this.currentPage() - 1) * size;
+    return Object.freeze(this.sortedRows().slice(start, start + size));
+  });
+  private readonly range = computed(() => {
+    const count = this.resultCountState();
+    const page = this.currentPage();
+    const size = this.pageSizeState();
+    return {
+      start: count === 0 ? 0 : (page - 1) * size + 1,
+      end: Math.min(page * size, count),
+    };
+  });
+
+  constructor(rows: readonly Readonly<T>[], columns: readonly TablePaginationColumn<T>[]) {
+    this.columns = Object.freeze(columns.map((column) => Object.freeze({ ...column })));
+    Object.freeze(this.filtersState());
+    this.setRows(rows);
+  }
 
   /** When set, deletion is delegated to the host (API call + reload); the
    * local row drop is skipped and the host owns the success feedback. */
   onConfirmedDelete?: (row: T) => void;
 
-  get filtered(): T[] {
-    const q = this.searchText.trim().toLowerCase();
-    const rows = this.rows.filter((row) => this.matchesFilters(row) && this.matchesSearch(row, q));
-    const key = this.sortKey;
-    if (key === null || this.sortDir === null) {
-      return rows;
-    }
-    const dir = this.sortDir === 'asc' ? 1 : -1;
-    return rows.sort((a, b) => this.compare(a[key], b[key]) * dir);
+  get rows(): readonly Readonly<T>[] {
+    return this.rowsState();
+  }
+
+  get searchText(): string {
+    return this.searchState();
+  }
+
+  get filters(): Readonly<TableFilters<T>> {
+    return this.filtersState();
+  }
+
+  get sortKey(): Extract<keyof T, string> | null {
+    return this.sortState().key;
+  }
+
+  get sortDir(): 'asc' | 'desc' | null {
+    return this.sortState().direction;
+  }
+
+  get pageSize(): number {
+    return this.pageSizeState();
+  }
+
+  get page(): number {
+    return this.currentPage();
+  }
+
+  /** Retains the existing consumer API: filtered includes the active ordering. */
+  get filtered(): readonly Readonly<T>[] {
+    return this.sortedRows();
+  }
+
+  get resultCount(): number {
+    return this.resultCountState();
   }
 
   get totalPages(): number {
-    return Math.max(1, Math.ceil(this.filtered.length / this.pageSize));
+    return this.totalPagesState();
   }
 
-  get pages(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  get pages(): readonly number[] {
+    return this.pageNumbers();
   }
 
-  get paged(): T[] {
-    const start = (this.page - 1) * this.pageSize;
-    return this.filtered.slice(start, start + this.pageSize);
+  get paged(): readonly Readonly<T>[] {
+    return this.pageRows();
   }
 
   get infoStart(): number {
-    return this.filtered.length === 0 ? 0 : (this.page - 1) * this.pageSize + 1;
+    return this.range().start;
   }
 
   get infoEnd(): number {
-    return Math.min(this.page * this.pageSize, this.filtered.length);
+    return this.range().end;
+  }
+
+  /** Replace scalar table-row snapshots rather than mutating cached inputs.
+   * Reloading pages can explicitly reset; otherwise retain/clamp the current page. */
+  setRows(rows: readonly Readonly<T>[], options: { resetPage?: boolean } = {}): void {
+    const page = options.resetPage ? 1 : this.page;
+    this.rowsState.set(Object.freeze(rows.map((row) => Object.freeze({ ...row }))));
+    this.requestedPage.set(page);
+    this.requestedPage.set(this.page);
   }
 
   search(value: string): void {
-    this.searchText = value;
-    this.page = 1;
+    this.searchState.set(value);
+    this.requestedPage.set(1);
   }
 
   setFilter<K extends Extract<keyof T, string>>(key: K, value: T[K] | null): void {
-    this.filters[key] = value;
-    this.page = 1;
+    if (!Object.is(this.filters[key], value)) {
+      const filters: TableFilters<T> = { ...this.filtersState() };
+      filters[key] = value;
+      Object.freeze(filters);
+      this.filtersState.set(filters);
+    }
+    this.requestedPage.set(1);
   }
 
-  setPageSize(value: string): void {
-    this.pageSize = Number(value);
-    this.page = 1;
+  setPageSize(value: string | number): void {
+    const size = Number(value);
+    if (!Number.isInteger(size) || size < 1) {
+      return;
+    }
+    this.pageSizeState.set(size);
+    this.requestedPage.set(1);
   }
 
   goToPage(p: number): void {
-    if (p >= 1 && p <= this.totalPages) {
-      this.page = p;
+    if (Number.isInteger(p) && p >= 1 && p <= this.totalPages) {
+      this.requestedPage.set(p);
     }
   }
 
   sortBy(key: Extract<keyof T, string>): void {
     // Match the template's DataTables cycle: default -> asc -> desc -> default.
     if (this.sortKey === key && this.sortDir === 'asc') {
-      this.sortDir = 'desc';
+      this.sortState.set({ key, direction: 'desc' });
     } else if (this.sortKey === key && this.sortDir === 'desc') {
-      this.sortKey = null;
-      this.sortDir = null;
+      this.sortState.set({ key: null, direction: null });
     } else {
-      this.sortKey = key;
-      this.sortDir = 'asc';
+      this.sortState.set({ key, direction: 'asc' });
     }
-    this.page = 1;
+    this.requestedPage.set(1);
   }
 
   // DataTables 2 header classes: dt-ordering-asc/desc highlights the active arrow.
@@ -131,16 +221,15 @@ export class TablePagination<T extends object> {
             confirmButton: 'btn fw-bold btn-primary',
           },
         }).then(() => {
-          this.rows = this.rows.filter((r) => r !== row);
-          this.page = Math.min(this.page, this.totalPages);
+          this.setRows(this.rows.filter((r) => r !== row));
         });
       }
     });
   }
 
-  private matchesFilters(row: T): boolean {
-    for (const key in this.filters) {
-      const value = this.filters[key];
+  private matchesFilters(row: Readonly<T>, filters: TableFilters<T>): boolean {
+    for (const key in filters) {
+      const value = filters[key];
       // Zero and false are real filters; only absent/empty selections clear one.
       if (value !== null && value !== undefined && value !== '' && row[key] !== value) {
         return false;
@@ -149,7 +238,7 @@ export class TablePagination<T extends object> {
     return true;
   }
 
-  private matchesSearch(row: T, query: string): boolean {
+  private matchesSearch(row: Readonly<T>, query: string): boolean {
     if (!query) {
       return true;
     }

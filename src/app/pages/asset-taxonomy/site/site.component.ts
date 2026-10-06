@@ -65,7 +65,7 @@ export class SiteComponent implements OnInit {
   loadSites(): void {
     this.apiService.getAllSites().subscribe({
       next: (sites) => {
-        this.table.rows = sites.map((site) => ({
+        this.table.setRows(sites.map((site) => ({
           id: site.id,
           city: site.city,
           address: site.address,
@@ -73,8 +73,7 @@ export class SiteComponent implements OnInit {
           longitude: site.longitude,
           location: site.location,
           elevation: site.elevation,
-        }));
-        this.table.page = 1;
+        })), { resetPage: true });
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load sites.'),

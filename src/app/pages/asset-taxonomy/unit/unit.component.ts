@@ -123,8 +123,7 @@ export class UnitComponent implements OnInit {
   private loadUnits(): void {
     this.apiService.getAllUnits().subscribe({
       next: (units) => {
-        this.table.rows = units.map((unit) => this.toUnitRow(unit));
-        this.table.page = 1;
+        this.table.setRows(units.map((unit) => this.toUnitRow(unit)), { resetPage: true });
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load units.'),
@@ -199,8 +198,7 @@ export class UnitComponent implements OnInit {
   private loadUnitsOnly(): void {
     this.apiService.getAllUnits().subscribe({
       next: (units) => {
-        this.table.rows = units.map((unit) => this.toUnitRow(unit));
-        this.table.page = 1;
+        this.table.setRows(units.map((unit) => this.toUnitRow(unit)), { resetPage: true });
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load units.'),

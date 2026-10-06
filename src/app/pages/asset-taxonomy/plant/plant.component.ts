@@ -115,8 +115,7 @@ export class PlantComponent implements OnInit {
     this.apiService.getAllPlantTypes().subscribe({
       next: (types) => {
         this.typeOptions = types.map((type) => ({ id: type.id, name: type.name }));
-        this.types.rows = types.map((type) => ({ id: type.id, name: type.name }));
-        this.types.page = 1;
+        this.types.setRows(types.map((type) => ({ id: type.id, name: type.name })), { resetPage: true });
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load plant types.'),
@@ -137,7 +136,7 @@ export class PlantComponent implements OnInit {
   loadPlants(): void {
     this.apiService.getAllPlants().subscribe({
       next: (plants) => {
-        this.plants.rows = plants.map((plant) => ({
+        this.plants.setRows(plants.map((plant) => ({
           id: plant.id,
           name: plant.name,
           type: plant.typeName,
@@ -146,8 +145,7 @@ export class PlantComponent implements OnInit {
           siteId: plant.siteId,
           employer: plant.employerName || '—',
           employerId: plant.employerId ?? null,
-        }));
-        this.plants.page = 1;
+        })), { resetPage: true });
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load plants.'),

@@ -174,8 +174,7 @@ export class ComponentComponent implements OnInit {
   private loadComponents(): void {
     this.apiService.getAllComponents().subscribe({
       next: (components) => {
-        this.table.rows = components.map((component) => this.toComponentRow(component));
-        this.table.page = 1;
+        this.table.setRows(components.map((component) => this.toComponentRow(component)), { resetPage: true });
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load components.'),

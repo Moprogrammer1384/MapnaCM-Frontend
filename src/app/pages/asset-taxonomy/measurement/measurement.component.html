@@ -87,7 +87,7 @@
                   </a>
                 </td>
               </tr>
-              <tr *ngIf="table.filtered.length === 0">
+              <tr *ngIf="table.resultCount === 0">
                 <td colspan="8" class="text-center text-gray-500">No matching records found</td>
               </tr>
             </tbody>
@@ -104,7 +104,7 @@
                 </label>
               </div>
               <div class="dataTables_info" role="status" aria-live="polite">
-                {{ table.infoStart }} to {{ table.infoEnd }} of {{ table.filtered.length }} entries
+                {{ table.infoStart }} to {{ table.infoEnd }} of {{ table.resultCount }} entries
               </div>
             </div>
             <div class="dataTables_paginate paging_simple_numbers">
@@ -191,7 +191,7 @@
                   </a>
                 </td>
               </tr>
-              <tr *ngIf="types.filtered.length === 0">
+              <tr *ngIf="types.resultCount === 0">
                 <td colspan="3" class="text-center text-gray-500">No matching records found</td>
               </tr>
             </tbody>
@@ -208,7 +208,7 @@
                 </label>
               </div>
               <div class="dataTables_info" role="status" aria-live="polite">
-                {{ types.infoStart }} to {{ types.infoEnd }} of {{ types.filtered.length }} entries
+                {{ types.infoStart }} to {{ types.infoEnd }} of {{ types.resultCount }} entries
               </div>
             </div>
             <div class="dataTables_paginate paging_simple_numbers">

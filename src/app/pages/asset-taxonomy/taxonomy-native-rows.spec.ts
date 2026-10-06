@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { of } from 'rxjs';
 import Swal from 'sweetalert2';
-import { TablePagination } from '../../_metronic/shared/Pagination/table-pagination';
+import { TablePagination } from '../../custom-components/Pagination/table-pagination';
 import { SharedModule } from '../../_metronic/shared/shared.module';
 import { AssetComponent } from './asset/asset.component';
 import { AssetApiService } from './services/asset-api.service';
@@ -122,6 +122,23 @@ function verifyPage<C, R extends object>(
         expect(tableOf(fixture.componentInstance).resultCount).toBe(0);
         expect(root.querySelector('tbody')!.textContent).toContain('No matching records found');
       }
+    });
+
+    it('uses the shared table for columns, sorting and the existing confirmed-delete workflow', async () => {
+      const table = tableOf(fixture.componentInstance);
+      const sharedTable = root.querySelector<HTMLElement>('app-table-record')!;
+      const row = table.paged[0];
+      expect(Array.from(sharedTable.querySelectorAll('thead th'), (cell) => cell.textContent!.trim()))
+        .toEqual([...table.columns.map((column) => column.title), 'Actions']);
+      expect(Array.from(sharedTable.querySelectorAll('tbody td'), (cell) => cell.textContent!.trim()))
+        .toEqual([...table.columns.map((column) => String(row[column.key] ?? '')), '']);
+      const confirm = spyOn(table, 'confirmDelete');
+      sharedTable.querySelector<HTMLElement>('[aria-label="Delete record"]')!.click();
+      expect(confirm).toHaveBeenCalledOnceWith(row, String(row[table.columns[0].key]));
+      sharedTable.querySelector<HTMLTableCellElement>('th')!.click();
+      await settle();
+      expect(table.sortKey).toBe(table.columns[0].key);
+      expect(sharedTable.querySelector('th')!.classList.contains('dt-ordering-asc')).toBeTrue();
     });
 
     it('renders the page window and working first/last/previous/next controls', async () => {

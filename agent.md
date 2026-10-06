@@ -142,6 +142,7 @@ maintenance entry for focused browser validation.
 | `src/app/modules/profile/`, `wizards/` | Primarily template/demo screens |
 | `src/app/modules/widgets-examples/` | Widget galleries, including the standalone Apache Charts gallery |
 | `src/app/_metronic/` | Shared layout, icons, directives, theme DOM helpers, widgets |
+| `src/app/custom-components/` | Reusable table record component and pagination helper/footer components, exposed through `SharedModule` |
 | `src/app/_fake/` | Mixed legacy code: in-memory demo API plus services calling Keenthemes remotely |
 | `src/app/graphify-out/` | Generated graph reports/caches; historical, not application source |
 | `src/assets/` | Theme Sass, icons, media/plugins, generated Apache chart scripts/data/vendor files |
@@ -266,15 +267,27 @@ uses cards with a create modal; it does not use the table wrapper.
 ### Asset taxonomy
 
 Taxonomy pages use shared `TablePagination<T>` from
-`src/app/_metronic/shared/Pagination/table-pagination.ts` and Angular-rendered
+`src/app/custom-components/Pagination/table-pagination.ts` and Angular-rendered
 tables. They do not use `<app-crud>`, despite matching DataTables styling/classes. Reuse this pattern
 for taxonomy pages. `AssetApiService` requests up to 10,000 rows for client-side
 search/filter/sort/paging; this is a current limit, not unlimited pagination.
 
+All nine tables across the seven taxonomy pages use `<app-table-record>` from
+`custom-components/table-record/`, declared/exported by `SharedModule`. Its required
+typed `table: TablePagination<T>` input supplies column definitions, sorting and
+paged rows; cells render native values by each column key (null/undefined stay
+blank). The optional `tableId` input defaults to `kt_profile_overview_table`;
+existing distinct Plant Type/Measurement/Measurement Type IDs are preserved.
+Typed `editRecord` and `deleteRecord` outputs emit the readonly row snapshot.
+Pages own modal opening, delete confirmation and API mutations. The component
+renders the table only; responsive containers, toolbar/search/filter controls
+and pagination bars remain in their host pages. Empty-state colspan derives
+from the configured columns plus Actions. No DataTables plugin is initialized.
+
 All nine taxonomy table footers use `<app-paginationbar [table]="table">`
 (Plant also binds `plants`/`types`; Measurement also binds `types`). The reusable
 wrapper and its `pagination-records` and `pagination-pages` children live under
-`_metronic/shared/Pagination/paginationbar/`. Import `SharedModule` to use the
+`custom-components/Pagination/paginationbar/`. Import `SharedModule` to use the
 wrapper or either child independently, passing the same required `table` input.
 The row-independent `PaginationState` interface describes readonly pagination
 metadata and `setPageSize`/`goToPage`; existing `TablePagination<T>` instances
@@ -409,7 +422,7 @@ Do not assume screens are integrated based solely on where their files live.
 ## Select2, styles, theme, and localization
 
 `SharedModule` exports Keenicons, `Select2Directive`, `PaginationbarComponent`,
-`PaginationRecordsComponent` and `PaginationPagesComponent`. Selects with
+`PaginationRecordsComponent`, `PaginationPagesComponent` and `TableRecordComponent`. Selects with
 `data-control="select2"`, `data-kt-select2="true"`, or `appSelect2` are automatically
 enhanced. The directive preserves Angular value accessors, numeric `[ngValue]`,
 validation, model changes, and asynchronously loaded options.
@@ -787,3 +800,42 @@ every vendored asset or generated graph report.
   **94** focused taxonomy/pagination/Select2 ChromeHeadless tests. Existing
   2.70 MB initial-bundle warning and four CSS selector warnings remain. API calls
   were mocked; live backend integration and manual visual auditing were not run.
+
+### 2026-10-06 - Reusable taxonomy table record component
+
+- Extracted the supplied table into `TableRecordComponent<T>` under the requested
+  `_metronic/shared/table-record/` folder and declared/exported it in `SharedModule`.
+  Replaced all nine table copies across Site, Plant/Plant Type, Unit, System,
+  Asset, Component and Measurement/Measurement Type with `<app-table-record>`.
+- Uses the existing required `TablePagination<T>` instance and column keys for
+  headers, three-state sorting, paged cells and dynamic empty-state colspan.
+  Optional `tableId` preserves the existing DOM IDs; readonly typed row outputs
+  delegate edit/delete actions to the original page handlers. Native numbers,
+  null rendering, confirmation callbacks, search/filter/pagination state, API
+  contracts and storage decisions are retained. Added accessible action labels.
+- Preserved Metronic classes, Keenicons and existing responsive wrappers/footer
+  composition. No custom styles, theme scripts or duplicate plugin initialization.
+- Added five shared component browser tests, four page integration checks and
+  one Plant/Plant Type action-routing check, alongside existing modal, API,
+  Measurement Type and confirmation regression tests.
+- Verified strict Angular compilation, normal test TypeScript compilation,
+  production build, project lint, `git diff --check`, and all **104** focused
+  taxonomy/table/pagination/Select2 ChromeHeadless tests. Existing initial-bundle
+  warning (2.70 MB against 2 MB) and four CSS selector warnings remain. API calls
+  were mocked; live backend integration and manual visual auditing were not run.
+
+### 2026-10-06 - Move table and pagination into custom components
+
+- Moved the complete `table-record/` and `Pagination/` folders, including their
+  templates, helper/comparators, pagination children and adjacent tests, from
+  `_metronic/shared/` into `src/app/custom-components/`, preserving folder casing.
+- Updated `SharedModule` imports, all seven taxonomy page helper imports, the
+  Site comparator import and affected test imports. Existing module declarations
+  and exports continue to expose the components; their behavior is unchanged.
+- Verified both old folders are absent and no stale application imports remain
+  (historical generated graph reports are outside the application source audit).
+  Production build with strict Angular template checks, project lint, normal test
+  TypeScript compilation and all **104** focused taxonomy/table/pagination/Select2
+  ChromeHeadless tests passed. `git diff --check` passed. Existing 2.70 MB initial
+  bundle-budget warning and four CSS selector warnings remain. Tests mock APIs;
+  live backend integration and manual visual auditing were not performed.

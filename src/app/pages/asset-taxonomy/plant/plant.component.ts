@@ -3,7 +3,7 @@ import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { AssetApiService } from '../services/asset-api.service';
-import { TablePagination, TablePaginationColumn } from 'src/app/_metronic/shared/Pagination/table-pagination';
+import { TablePagination, TablePaginationColumn } from 'src/app/custom-components/Pagination/table-pagination';
 
 interface PlantRow {
   id: number;

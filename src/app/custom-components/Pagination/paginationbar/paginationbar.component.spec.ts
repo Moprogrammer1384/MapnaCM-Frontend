@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SharedModule } from '../../shared.module';
+import { SharedModule } from '../../../_metronic/shared/shared.module';
 import { TablePagination } from '../table-pagination';
 
 @Component({

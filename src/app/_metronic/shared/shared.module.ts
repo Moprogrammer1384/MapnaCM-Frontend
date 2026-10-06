@@ -2,9 +2,10 @@ import {NgModule} from '@angular/core';
 import {KeeniconComponent} from './keenicon/keenicon.component';
 import {CommonModule} from "@angular/common";
 import { Select2Directive } from './select2/select2.directive';
-import { PaginationbarComponent } from './Pagination/paginationbar/paginationbar.component';
-import { PaginationRecordsComponent } from './Pagination/paginationbar/pagination-records/pagination-records.component';
-import { PaginationPagesComponent } from './Pagination/paginationbar/pagination-pages/pagination-pages.component';
+import { PaginationbarComponent } from '../../custom-components/Pagination/paginationbar/paginationbar.component';
+import { PaginationRecordsComponent } from '../../custom-components/Pagination/paginationbar/pagination-records/pagination-records.component';
+import { PaginationPagesComponent } from '../../custom-components/Pagination/paginationbar/pagination-pages/pagination-pages.component';
+import { TableRecordComponent } from '../../custom-components/table-record/table-record.component';
 
 @NgModule({
   declarations: [
@@ -12,7 +13,8 @@ import { PaginationPagesComponent } from './Pagination/paginationbar/pagination-
     Select2Directive,
     PaginationbarComponent,
     PaginationRecordsComponent,
-    PaginationPagesComponent
+    PaginationPagesComponent,
+    TableRecordComponent
   ],
   imports: [
     CommonModule,
@@ -22,7 +24,8 @@ import { PaginationPagesComponent } from './Pagination/paginationbar/pagination-
     Select2Directive,
     PaginationbarComponent,
     PaginationRecordsComponent,
-    PaginationPagesComponent
+    PaginationPagesComponent,
+    TableRecordComponent
   ]
 })
 export class SharedModule {

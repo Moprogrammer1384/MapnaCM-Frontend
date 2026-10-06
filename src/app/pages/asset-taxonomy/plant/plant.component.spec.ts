@@ -143,6 +143,31 @@ describe('Plant Select2 integration', () => {
     expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: 'Please fill in all required fields.' }));
   });
 
+  it('routes shared plant and type actions to their own modal and confirmation handlers', async () => {
+    const page = fixture.componentInstance;
+    const root: HTMLElement = fixture.nativeElement;
+    const plant = page.plants.paged[0];
+    const type = page.types.paged[0];
+    const plantEdit = spyOn(page, 'openEditPlantModal').and.callThrough();
+    const typeEdit = spyOn(page, 'openEditTypeModal').and.callThrough();
+    const plantDelete = spyOn(page.plants, 'confirmDelete');
+    const typeDelete = spyOn(page.types, 'confirmDelete');
+    expect(root.querySelectorAll('app-table-record').length).toBe(2);
+    root.querySelector<HTMLElement>('#kt_profile_overview_table [aria-label="Edit record"]')!.click();
+    await settle();
+    expect(plantEdit).toHaveBeenCalledOnceWith(jasmine.anything(), plant);
+    expect(page.plantFormModel.id).toBe(7);
+    modals.dismissAll();
+    root.querySelector<HTMLElement>('#kt_plant_type_table [aria-label="Edit record"]')!.click();
+    await settle();
+    expect(typeEdit).toHaveBeenCalledOnceWith(jasmine.anything(), type);
+    expect(page.typeFormModel).toEqual({ id: 3, name: 'Thermal' });
+    root.querySelector<HTMLElement>('#kt_profile_overview_table [aria-label="Delete record"]')!.click();
+    root.querySelector<HTMLElement>('#kt_plant_type_table [aria-label="Delete record"]')!.click();
+    expect(plantDelete).toHaveBeenCalledOnceWith(plant, plant.name);
+    expect(typeDelete).toHaveBeenCalledOnceWith(type, type.name);
+  });
+
   it('searches visible fields while excluding plant, site, employer and type IDs', () => {
     const page = fixture.componentInstance;
     for (const query of ['7', '22', 'e2']) {

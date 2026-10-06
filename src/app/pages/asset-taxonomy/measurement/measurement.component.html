@@ -52,46 +52,12 @@
         <!--begin::Table container-->
         <div class="table-responsive dataTables_wrapper dt-bootstrap5 no-footer">
           <!--begin::Table-->
-          <table id="kt_measurement_table" class="table table-row-bordered table-row-dashed gy-4 align-middle fw-bold dataTable no-footer">
-            <thead class="fs-7 text-gray-500 text-uppercase">
-              <tr>
-                <th *ngFor="let col of table.columns" [class]="col.class + ' dt-orderable-asc dt-orderable-desc'" [ngClass]="table.sortClass(col.key)" (click)="table.sortBy(col.key)">
-                  <div class="dt-column-header">
-                    <span class="dt-column-title" role="button">{{ col.title }}</span>
-                    <span class="dt-column-order"></span>
-                  </div>
-                </th>
-                <th class="min-w-100px text-end dt-orderable-none">
-                  <div class="dt-column-header">
-                    <span class="dt-column-title">Actions</span>
-                    <span class="dt-column-order"></span>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody class="fs-6">
-              <tr *ngFor="let measurement of table.paged">
-                <td>{{ measurement.measurement }}</td>
-                <td>{{ measurement.tag }}</td>
-                <td>{{ measurement.type }}</td>
-                <td>{{ measurement.unit }}</td>
-                <td>{{ measurement.sensitivity }}</td>
-                <td>{{ measurement.component }}</td>
-                <td>{{ measurement.employer }}</td>
-                <td class="text-end text-nowrap">
-                  <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openEditModal(editMeasurementModal, measurement)">
-                    <app-keenicon name="pencil" class="fs-2"></app-keenicon>
-                  </a>
-                  <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" data-kt-site-table-filter="delete_row" (click)="table.confirmDelete(measurement, measurement.measurement)">
-                    <app-keenicon name="trash" class="fs-2"></app-keenicon>
-                  </a>
-                </td>
-              </tr>
-              <tr *ngIf="table.resultCount === 0">
-                <td colspan="8" class="text-center text-gray-500">No matching records found</td>
-              </tr>
-            </tbody>
-          </table>
+          <app-table-record
+            [table]="table"
+            tableId="kt_measurement_table"
+            (editRecord)="openEditModal(editMeasurementModal, $event)"
+            (deleteRecord)="table.confirmDelete($event, $event.measurement)">
+          </app-table-record>
           <!--end::Table-->
           <!--begin::Table footer-->
           <app-paginationbar [table]="table"></app-paginationbar>
@@ -133,43 +99,12 @@
         <!--begin::Table container-->
         <div class="table-responsive dataTables_wrapper dt-bootstrap5 no-footer">
           <!--begin::Table-->
-          <table id="kt_measurement_type_table" class="table table-row-bordered table-row-dashed gy-4 align-middle fw-bold dataTable no-footer">
-            <thead class="fs-7 text-gray-500 text-uppercase">
-              <tr>
-                <th *ngFor="let col of types.columns" [class]="col.class + ' dt-orderable-asc dt-orderable-desc'" [ngClass]="types.sortClass(col.key)" (click)="types.sortBy(col.key)">
-                  <div class="dt-column-header">
-                    <span class="dt-column-title" role="button">{{ col.title }}</span>
-                    <span class="dt-column-order"></span>
-                  </div>
-                </th>
-                <th class="min-w-100px text-end dt-orderable-none">
-                  <div class="dt-column-header">
-                    <span class="dt-column-title">Actions</span>
-                    <span class="dt-column-order"></span>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody class="fs-6">
-              <tr *ngFor="let type of types.paged">
-                <td>
-                  {{ type.name }}
-                </td>
-                <td>{{ type.unit }}</td>
-                <td class="text-end text-nowrap">
-                  <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" (click)="openEditTypeModal(editTypeModal, type)">
-                    <app-keenicon name="pencil" class="fs-2"></app-keenicon>
-                  </a>
-                  <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" data-kt-site-table-filter="delete_row" (click)="deleteType(type)">
-                    <app-keenicon name="trash" class="fs-2"></app-keenicon>
-                  </a>
-                </td>
-              </tr>
-              <tr *ngIf="types.resultCount === 0">
-                <td colspan="3" class="text-center text-gray-500">No matching records found</td>
-              </tr>
-            </tbody>
-          </table>
+          <app-table-record
+            [table]="types"
+            tableId="kt_measurement_type_table"
+            (editRecord)="openEditTypeModal(editTypeModal, $event)"
+            (deleteRecord)="deleteType($event)">
+          </app-table-record>
           <!--end::Table-->
           <!--begin::Table footer-->
           <app-paginationbar [table]="types"></app-paginationbar>

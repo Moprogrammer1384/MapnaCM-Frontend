@@ -1,0 +1,34 @@
+<table [id]="tableId" class="table table-row-bordered table-row-dashed gy-4 align-middle fw-bold dataTable no-footer">
+  <thead class="fs-7 text-gray-500 text-uppercase">
+    <tr>
+      <th *ngFor="let col of table.columns" [class]="col.class + ' dt-orderable-asc dt-orderable-desc'" [ngClass]="table.sortClass(col.key)" (click)="table.sortBy(col.key)">
+        <div class="dt-column-header">
+          <span class="dt-column-title" role="button">{{ col.title }}</span>
+          <span class="dt-column-order"></span>
+        </div>
+      </th>
+      <th class="min-w-100px text-end dt-orderable-none">
+        <div class="dt-column-header">
+          <span class="dt-column-title">Actions</span>
+          <span class="dt-column-order"></span>
+        </div>
+      </th>
+    </tr>
+  </thead>
+  <tbody class="fs-6">
+    <tr *ngFor="let record of table.paged">
+      <td *ngFor="let col of table.columns">{{ record[col.key] }}</td>
+      <td class="text-end text-nowrap">
+        <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" aria-label="Edit record" (click)="editRecord.emit(record)">
+          <app-keenicon name="pencil" class="fs-2"></app-keenicon>
+        </a>
+        <a href="javascript:;" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm" aria-label="Delete record" data-kt-site-table-filter="delete_row" (click)="deleteRecord.emit(record)">
+          <app-keenicon name="trash" class="fs-2"></app-keenicon>
+        </a>
+      </td>
+    </tr>
+    <tr *ngIf="table.resultCount === 0">
+      <td [attr.colspan]="table.columns.length + 1" class="text-center text-gray-500">No matching records found</td>
+    </tr>
+  </tbody>
+</table>

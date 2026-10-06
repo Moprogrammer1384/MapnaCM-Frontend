@@ -142,4 +142,16 @@ describe('Plant Select2 integration', () => {
     expect(api.createPlant).not.toHaveBeenCalled();
     expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: 'Please fill in all required fields.' }));
   });
+
+  it('searches visible fields while excluding plant, site, employer and type IDs', () => {
+    const page = fixture.componentInstance;
+    for (const query of ['7', '22', 'e2']) {
+      page.plants.search(query);
+      expect(page.plants.resultCount).toBe(0);
+    }
+    page.plants.search('sara');
+    expect(page.plants.resultCount).toBe(1);
+    page.types.search('3');
+    expect(page.types.resultCount).toBe(0);
+  });
 });

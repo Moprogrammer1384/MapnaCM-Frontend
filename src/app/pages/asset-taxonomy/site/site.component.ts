@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import { SitePayload } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
 import { TablePagination, TablePaginationColumn } from 'src/app/_metronic/shared/Pagination/table-pagination';
+import { compareElevationText, compareNumericText } from 'src/app/_metronic/shared/Pagination/table-pagination-comparators';
 
 interface SiteRow {
   id: number;
@@ -41,11 +42,12 @@ export class SiteComponent implements OnInit {
     [
       { key: 'city', title: 'City', class: 'min-w-125px' },
       { key: 'address', title: 'Address', class: 'min-w-200px' },
-      { key: 'latitude', title: 'Latitude', class: 'min-w-100px' },
-      { key: 'longitude', title: 'Longitude', class: 'min-w-100px' },
+      { key: 'latitude', title: 'Latitude', class: 'min-w-100px', compare: (left, right) => compareNumericText(left.latitude, right.latitude) },
+      { key: 'longitude', title: 'Longitude', class: 'min-w-100px', compare: (left, right) => compareNumericText(left.longitude, right.longitude) },
       { key: 'location', title: 'Location', class: 'min-w-150px' },
-      { key: 'elevation', title: 'Elevation above sea level', class: 'min-w-125px' },
-    ] satisfies readonly TablePaginationColumn<SiteRow>[]
+      { key: 'elevation', title: 'Elevation above sea level', class: 'min-w-125px', compare: (left, right) => compareElevationText(left.elevation, right.elevation) },
+    ] satisfies readonly TablePaginationColumn<SiteRow>[],
+    { searchKeys: ['city', 'address', 'latitude', 'longitude', 'location', 'elevation'] satisfies readonly Extract<keyof SiteRow, string>[] }
   );
 
   siteForm: SiteFormModel = this.emptySiteForm();

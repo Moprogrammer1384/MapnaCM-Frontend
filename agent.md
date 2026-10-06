@@ -271,14 +271,19 @@ tables. They do not use `<app-crud>`, despite matching DataTables styling/classe
 for taxonomy pages. `AssetApiService` requests up to 10,000 rows for client-side
 search/filter/sort/paging; this is a current limit, not unlimited pagination.
 
-`TablePagination<T extends object>` retains native row values, searches their text
-representations, combines exact filters typed per field, supports
+`TablePagination<T extends object>` retains native row values, searches the text
+representations of explicitly configured fields, combines exact filters typed per field, supports
 page sizes 10/25/50/100, and cycles default -> ascending -> descending -> default.
 Sorting preserves the original row array. New searches/filters/sorts reset page 1.
 Deletion prompts first; `onConfirmedDelete` delegates the mutation to the host.
 Column keys use `Extract<keyof T, string>` and all nine column arrays use
 `satisfies readonly TablePaginationColumn<RowType>[]`. Numbers sort numerically;
-text retains numeric-aware ordering (including elevations such as `995 m`).
+text sorts textually, including digit-prefixed names/tags. Columns may supply
+typed `(left: T, right: T) => number` comparators. Site latitude/longitude use
+explicit full-value numeric-text comparison; elevation handles comma grouping
+and an optional `m` suffix. No default numeric-prefix parsing remains. Equal
+values retain response order in both directions; clearing sorting restores
+filtered response order. Sorting ignores fields not configured as columns.
 Null/undefined sort as blanks, first ascending and last descending. Null, undefined,
 and empty-string filters clear a selection; zero and false are active filters.
 
@@ -293,6 +298,17 @@ snapshots and array, preserves/clamps the page by default, and accepts
 `{ resetPage: true }` for reloads that previously reset to page 1. Measurement
 Type reloads and local deletion preserve/clamp the page. Rows/filters/results
 are readonly to consumers; submit forms must continue using their own models.
+The constructor requires typed `searchKeys`; all nine instances explicitly
+include visible fields and exclude entity, parent, employer and type IDs.
+Case-insensitive search safely treats null/undefined as empty text. Constructor
+options can configure immutable finite positive integer `pageSizes`; the default
+is `[10, 25, 50, 100]` and only configured values are accepted by `setPageSize`.
+Invalid page/size changes leave state untouched. `clampPage` centralizes valid
+page bounds; empty results use page 1, one page, and range 0 to 0.
+`pages` exposes a cached window of at most five consecutive numbers around the
+current page, shifting near either boundary. Templates have native disabled
+First/Previous/Next/Last buttons and an `aria-current` indicator. Unchanged window
+bounds retain the page-number array even when the current page changes.
 
 Taxonomy forms use `NgForm`, required fields, `saving` guards, ng-bootstrap modal
 templates, Metronic alerts, and refresh after successful mutation. Async updates
@@ -704,3 +720,36 @@ every vendored asset or generated graph report.
   ChromeHeadless tests (taxonomy, pagination and Select2) passed. Existing initial
   bundle warning (2.70 MB against 2 MB) and four CSS selector warnings remain.
   No browser performance benchmark or live backend integration was performed.
+
+### 2026-10-06 - Pagination, search fields and column sorting safeguards
+
+- Reviewed the helper, all nine table definitions/templates, consumers and tests.
+  Existing integer/range guards, empty page handling, immutable row replacement,
+  reset policies and cached derivations were retained. Added configured-size
+  membership/finite checks and constructor validation of custom size lists.
+  Centralized clamping in `clampPage`; consumers already use `setRows` and need
+  no independent clamping. Search/filter/valid-size changes still reset page 1.
+- Added a cached five-number page window with boundary shifting. Every taxonomy
+  table now includes First/Last controls alongside Previous/Next, using existing
+  Metronic pagination classes, native disabled buttons and current-page metadata.
+  No custom styles or theme JavaScript were added.
+- Required explicit typed searchable keys in constructor options; configured
+  all seven pages/nine tables. Hidden IDs no longer participate in search.
+  Columns accept typed row comparators. Default sorting handles numbers and text
+  separately, with centralized null/undefined ordering and stable index tie-breaks.
+  Explicit Site comparators parse entire numeric coordinate strings and formatted
+  metre elevations via `table-pagination-comparators.ts`. Unparseable/blank numeric
+  text sorts before valid numbers, and unparseable pairs sort textually. API field
+  types and payloads were not changed. Cleared sorting restores filtered API order.
+- Added **23** focused regressions covering configured/invalid sizes/pages,
+  window boundaries, shrink/empty/reset behavior, custom sizing, textual versus
+  numeric ordering, nulls/ties/custom comparators, hidden-ID exclusion across all
+  nine tables, and rendered navigation/disabled/range behavior. Existing cache
+  tests still verify page/size changes do not filter or sort again. Small sizes
+  used by earlier unit tests are now explicitly configured in those tests.
+- Verified strict Angular compilation, normal test TypeScript compilation,
+  production build, project lint, `git diff --check`, and all **88** focused
+  ChromeHeadless tests (taxonomy, pagination/comparators and Select2) passed.
+  Existing 2.70 MB initial-bundle warning and four CSS selector warnings remain.
+  API calls were mocked; live backend integration, manual visual auditing and
+  browser performance benchmarking were not performed.

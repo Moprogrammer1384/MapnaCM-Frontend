@@ -5,6 +5,12 @@ export interface TablePaginationColumn<T> {
   key: Extract<keyof T, string>;
   title: string;
   class: string;
+  compare?: (left: T, right: T) => number;
+}
+
+export interface TablePaginationOptions<T> {
+  searchKeys: readonly Extract<keyof T, string>[];
+  pageSizes?: readonly number[];
 }
 
 type TableFilters<T> = { [K in keyof T]?: T[K] | null };
@@ -19,8 +25,9 @@ type TableSort<T> = {
  * handle API mutations through onConfirmedDelete.
  */
 export class TablePagination<T extends object> {
-  readonly pageSizes = [10, 25, 50, 100];
+  readonly pageSizes: readonly number[];
   readonly columns: readonly Readonly<TablePaginationColumn<T>>[];
+  readonly searchKeys: readonly Extract<keyof T, string>[];
   private readonly rowsState = signal<readonly Readonly<T>[]>([]);
   private readonly searchState = signal('');
   private readonly filtersState = signal<TableFilters<T>>({});
@@ -44,13 +51,26 @@ export class TablePagination<T extends object> {
       return rows;
     }
     const dir = direction === 'asc' ? 1 : -1;
-    return Object.freeze([...rows].sort((left, right) => this.compare(left[key], right[key]) * dir));
+    const comparator = this.columns.find((column) => column.key === key)?.compare;
+    // The index tie-breaker preserves response order in both sort directions.
+    return Object.freeze(rows.map((row, index) => ({ row, index }))
+      .sort((left, right) => this.compare(left.row, right.row, key, comparator) * dir || left.index - right.index)
+      .map(({ row }) => row));
   });
 
   private readonly resultCountState = computed(() => this.filteredRows().length);
   private readonly totalPagesState = computed(() => Math.max(1, Math.ceil(this.resultCountState() / this.pageSizeState())));
-  private readonly currentPage = computed(() => Math.min(this.requestedPage(), this.totalPagesState()));
-  private readonly pageNumbers = computed(() => Object.freeze(Array.from({ length: this.totalPagesState() }, (_, i) => i + 1)));
+  private readonly currentPage = computed(() => this.clampPage(this.requestedPage()));
+  private readonly pageWindow = computed(() => {
+    const total = this.totalPagesState();
+    const length = Math.min(5, total);
+    const start = Math.max(1, Math.min(this.currentPage() - 2, total - length + 1));
+    return { start, length };
+  }, { equal: (left, right) => left.start === right.start && left.length === right.length });
+  private readonly pageNumbers = computed(() => {
+    const { start, length } = this.pageWindow();
+    return Object.freeze(Array.from({ length }, (_, i) => start + i));
+  });
   private readonly pageRows = computed(() => {
     const size = this.pageSizeState();
     const start = (this.currentPage() - 1) * size;
@@ -66,7 +86,14 @@ export class TablePagination<T extends object> {
     };
   });
 
-  constructor(rows: readonly Readonly<T>[], columns: readonly TablePaginationColumn<T>[]) {
+  constructor(rows: readonly Readonly<T>[], columns: readonly TablePaginationColumn<T>[], options: TablePaginationOptions<T>) {
+    const sizes = options.pageSizes ?? [10, 25, 50, 100];
+    if (sizes.length === 0 || sizes.some((size) => !Number.isFinite(size) || !Number.isInteger(size) || size <= 0)) {
+      throw new Error('Page sizes must contain finite, positive integers.');
+    }
+    this.pageSizes = Object.freeze([...sizes]);
+    this.pageSizeState.set(this.pageSizes[0]);
+    this.searchKeys = Object.freeze([...options.searchKeys]);
     this.columns = Object.freeze(columns.map((column) => Object.freeze({ ...column })));
     Object.freeze(this.filtersState());
     this.setRows(rows);
@@ -138,8 +165,7 @@ export class TablePagination<T extends object> {
   setRows(rows: readonly Readonly<T>[], options: { resetPage?: boolean } = {}): void {
     const page = options.resetPage ? 1 : this.page;
     this.rowsState.set(Object.freeze(rows.map((row) => Object.freeze({ ...row }))));
-    this.requestedPage.set(page);
-    this.requestedPage.set(this.page);
+    this.requestedPage.set(this.clampPage(page));
   }
 
   search(value: string): void {
@@ -159,7 +185,7 @@ export class TablePagination<T extends object> {
 
   setPageSize(value: string | number): void {
     const size = Number(value);
-    if (!Number.isInteger(size) || size < 1) {
+    if (!Number.isFinite(size) || !Number.isInteger(size) || size < 1 || !this.pageSizes.includes(size)) {
       return;
     }
     this.pageSizeState.set(size);
@@ -173,6 +199,9 @@ export class TablePagination<T extends object> {
   }
 
   sortBy(key: Extract<keyof T, string>): void {
+    if (!this.columns.some((column) => column.key === key)) {
+      return;
+    }
     // Match the template's DataTables cycle: default -> asc -> desc -> default.
     if (this.sortKey === key && this.sortDir === 'asc') {
       this.sortState.set({ key, direction: 'desc' });
@@ -242,35 +271,35 @@ export class TablePagination<T extends object> {
     if (!query) {
       return true;
     }
-    for (const key in row) {
-      if (Object.prototype.hasOwnProperty.call(row, key) && this.displayText(row[key]).toLowerCase().includes(query)) {
-        return true;
-      }
-    }
-    return false;
+    return this.searchKeys.some((key) => this.displayText(row[key]).toLowerCase().includes(query));
+  }
+
+  private clampPage(page: number): number {
+    return Math.max(1, Math.min(page, this.totalPagesState()));
   }
 
   private displayText(value: unknown): string {
     return value === null || value === undefined ? '' : String(value);
   }
 
-  // Native numbers sort numerically. Keep numeric-aware text ordering for
-  // existing display values such as "995 m" and "1,190 m". Nulls are blank:
-  // first ascending and last descending, just like the previous empty strings.
-  private compare(a: unknown, b: unknown): number {
+  // Missing values sort first ascending/last descending. Custom comparators
+  // handle formatted columns; the default never interprets text as a number.
+  private compare(leftRow: Readonly<T>, rightRow: Readonly<T>, key: Extract<keyof T, string>, custom?: (left: T, right: T) => number): number {
+    const a = leftRow[key];
+    const b = rightRow[key];
+    const missingA = a === null || a === undefined;
+    const missingB = b === null || b === undefined;
+    if (missingA || missingB) {
+      return missingA === missingB ? 0 : missingA ? -1 : 1;
+    }
+    if (custom) {
+      return custom(leftRow, rightRow);
+    }
     if (typeof a === 'number' && typeof b === 'number') {
       return a - b;
     }
     const left = this.displayText(a);
     const right = this.displayText(b);
-    if (a === null || a === undefined || b === null || b === undefined) {
-      return left === right ? 0 : left === '' ? -1 : 1;
-    }
-    const na = parseFloat(left.replace(/,/g, ''));
-    const nb = parseFloat(right.replace(/,/g, ''));
-    if (!isNaN(na) && !isNaN(nb)) {
-      return na - nb;
-    }
     return left.localeCompare(right);
   }
 }

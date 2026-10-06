@@ -124,6 +124,18 @@ describe('Measurement page', () => {
     expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: 'Please fill in all required fields.' }));
   });
 
+  it('searches displayed values while excluding measurement, component, employer and type IDs', () => {
+    const page = fixture.componentInstance;
+    for (const query of ['20', '10', 'e1']) {
+      page.table.search(query);
+      expect(page.table.resultCount).toBe(0);
+    }
+    page.table.search('0.25');
+    expect(page.table.resultCount).toBe(1);
+    page.types.search('1');
+    expect(page.types.resultCount).toBe(0);
+  });
+
   it('preserves legacy nulls, renders blank cells and restores an incomplete edit form', async () => {
     api.getAllMeasurements.and.returnValue(of([{
       id: 21, name: 'Legacy measurement', tag: null, measurementTypeId: null,

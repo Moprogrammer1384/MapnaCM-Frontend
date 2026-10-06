@@ -94,6 +94,16 @@ describe('Component page', () => {
     expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: 'Please fill in all required fields.' }));
   });
 
+  it('searches visible fields while excluding component, asset and employer IDs', () => {
+    const table = fixture.componentInstance.table;
+    for (const query of ['12', '7', 'e1']) {
+      table.search(query);
+      expect(table.resultCount).toBe(0);
+    }
+    table.search('bearing');
+    expect(table.resultCount).toBe(1);
+  });
+
   it('creates a component with the numeric asset ID selected in the modal', async () => {
     await openAdd();
     const name = modal().querySelector<HTMLInputElement>('input[name="component"]')!;

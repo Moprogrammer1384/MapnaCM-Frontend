@@ -37,7 +37,8 @@ export class UnitComponent implements OnInit {
       { key: 'unit', title: 'Name', class: 'min-w-125px min-w-md-200px' },
       { key: 'plant', title: 'Plant Name', class: 'min-w-175px min-w-md-250px' },
       { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
-    ] satisfies readonly TablePaginationColumn<UnitRow>[]
+    ] satisfies readonly TablePaginationColumn<UnitRow>[],
+    { searchKeys: ['unit', 'plant', 'employer'] satisfies readonly Extract<keyof UnitRow, string>[] }
   );
 
   // Select values are IDs; hierarchy labels are for display only.

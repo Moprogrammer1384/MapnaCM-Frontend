@@ -19,6 +19,7 @@ function verifyPage<C, R extends object>(
   tableOf: (component: C) => TablePagination<R>,
   expectedRow: Partial<R>,
   verifySubmission: (api: jasmine.SpyObj<AssetApiService>) => void,
+  hiddenSearches: readonly string[],
   filterParent?: (component: C, id: number | null) => void
 ): void {
   describe(`${name} native table rows`, () => {
@@ -111,6 +112,51 @@ function verifyPage<C, R extends object>(
       await settle();
       verifySubmission(api);
     });
+
+    it('excludes hidden row/parent/employer IDs from the search input', async () => {
+      const search = root.querySelector<HTMLInputElement>('input[id="kt_filter_search"]')!;
+      for (const query of hiddenSearches) {
+        search.value = query;
+        search.dispatchEvent(new Event('input'));
+        await settle();
+        expect(tableOf(fixture.componentInstance).resultCount).toBe(0);
+        expect(root.querySelector('tbody')!.textContent).toContain('No matching records found');
+      }
+    });
+
+    it('renders the page window and working first/last/previous/next controls', async () => {
+      const table = tableOf(fixture.componentInstance);
+      table.setRows(Array.from({ length: 120 }, () => ({ ...table.rows[0] })));
+      await settle();
+      const button = (label: string) => root.querySelector<HTMLButtonElement>(`.pagination button[aria-label="${label} page"]`)!;
+      expect(button('First').disabled).toBeTrue();
+      expect(button('Previous').disabled).toBeTrue();
+      expect(button('Last').disabled).toBeFalse();
+      button('Last').click();
+      await settle();
+      expect(table.page).toBe(12);
+      expect(table.pages).toEqual([8, 9, 10, 11, 12]);
+      expect(root.querySelector('.pagination .active button')!.getAttribute('aria-current')).toBe('page');
+      expect(root.querySelector('.pagination .active button')!.textContent!.trim()).toBe('12');
+      expect(root.querySelector('.dataTables_info')!.textContent).toContain('111 to 120 of 120');
+      expect(button('Last').disabled).toBeTrue();
+      expect(button('Next').disabled).toBeTrue();
+      button('First').click();
+      await settle();
+      expect(table.pages).toEqual([1, 2, 3, 4, 5]);
+      button('Next').click();
+      await settle();
+      expect(table.page).toBe(2);
+      button('Previous').click();
+      await settle();
+      expect(table.page).toBe(1);
+      table.setRows([]);
+      await settle();
+      for (const label of ['First', 'Previous', 'Next', 'Last']) {
+        expect(button(label).disabled).toBeTrue();
+      }
+      expect(root.querySelector('.dataTables_info')!.textContent).toContain('0 to 0 of 0');
+    });
   });
 }
 
@@ -118,20 +164,23 @@ verifyPage('Site', SiteComponent, (page) => page.table,
   { id: 11, latitude: '35', longitude: '51', elevation: '995 m' },
   (api) => expect(api.updateSite).toHaveBeenCalledOnceWith({
     id: 11, city: 'Tehran', address: 'Address', latitude: '35', longitude: '51', location: 'Location', elevation: '995 m',
-  })
+  }), ['11']
 );
 verifyPage('Unit', UnitComponent, (page) => page.table,
   { id: 5, plantId: 1, employerId: 'e1' },
   (api) => expect(api.updateUnit).toHaveBeenCalledOnceWith({ id: 5, name: 'Unit', plantId: 1 }),
+  ['5', '1', 'e1'],
   (page, id) => page.filterByPlant(id)
 );
 verifyPage('System', SystemComponent, (page) => page.table,
   { id: 3, unitId: 5, employerId: 'e1' },
   (api) => expect(api.updateSystem).toHaveBeenCalledOnceWith({ id: 3, name: 'System', unitId: 5 }),
+  ['3', '5', 'e1'],
   (page, id) => page.filterByUnit(id)
 );
 verifyPage('Asset', AssetComponent, (page) => page.table,
   { id: 7, systemId: 3, employerId: 'e1', tag: null },
   (api) => expect(api.updateAsset).toHaveBeenCalledOnceWith({ id: 7, name: 'Asset', tag: '', systemId: 3 }),
+  ['7', '3', 'e1'],
   (page, id) => page.filterBySystem(id)
 );

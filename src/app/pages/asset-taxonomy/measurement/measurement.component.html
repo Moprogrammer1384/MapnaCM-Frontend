@@ -109,14 +109,20 @@
             </div>
             <div class="dataTables_paginate paging_simple_numbers">
               <ul class="pagination">
+                <li class="paginate_button page-item first" [class.disabled]="table.page === 1">
+                  <button type="button" class="page-link" aria-label="First page" [disabled]="table.page === 1" (click)="table.goToPage(1)">First</button>
+                </li>
                 <li class="paginate_button page-item previous" [class.disabled]="table.page === 1">
-                  <a href="javascript:;" class="page-link" (click)="table.goToPage(table.page - 1)"><i class="previous"></i></a>
+                  <button type="button" class="page-link" aria-label="Previous page" [disabled]="table.page === 1" (click)="table.goToPage(table.page - 1)"><i class="previous"></i></button>
                 </li>
                 <li *ngFor="let p of table.pages" class="paginate_button page-item" [class.active]="p === table.page">
-                  <a href="javascript:;" class="page-link" (click)="table.goToPage(p)">{{ p }}</a>
+                  <button type="button" class="page-link" [attr.aria-current]="p === table.page ? 'page' : null" (click)="table.goToPage(p)">{{ p }}</button>
                 </li>
                 <li class="paginate_button page-item next" [class.disabled]="table.page === table.totalPages">
-                  <a href="javascript:;" class="page-link" (click)="table.goToPage(table.page + 1)"><i class="next"></i></a>
+                  <button type="button" class="page-link" aria-label="Next page" [disabled]="table.page === table.totalPages" (click)="table.goToPage(table.page + 1)"><i class="next"></i></button>
+                </li>
+                <li class="paginate_button page-item last" [class.disabled]="table.page === table.totalPages">
+                  <button type="button" class="page-link" aria-label="Last page" [disabled]="table.page === table.totalPages" (click)="table.goToPage(table.totalPages)">Last</button>
                 </li>
               </ul>
             </div>
@@ -213,14 +219,20 @@
             </div>
             <div class="dataTables_paginate paging_simple_numbers">
               <ul class="pagination">
+                <li class="paginate_button page-item first" [class.disabled]="types.page === 1">
+                  <button type="button" class="page-link" aria-label="First page" [disabled]="types.page === 1" (click)="types.goToPage(1)">First</button>
+                </li>
                 <li class="paginate_button page-item previous" [class.disabled]="types.page === 1">
-                  <a href="javascript:;" class="page-link" (click)="types.goToPage(types.page - 1)"><i class="previous"></i></a>
+                  <button type="button" class="page-link" aria-label="Previous page" [disabled]="types.page === 1" (click)="types.goToPage(types.page - 1)"><i class="previous"></i></button>
                 </li>
                 <li *ngFor="let p of types.pages" class="paginate_button page-item" [class.active]="p === types.page">
-                  <a href="javascript:;" class="page-link" (click)="types.goToPage(p)">{{ p }}</a>
+                  <button type="button" class="page-link" [attr.aria-current]="p === types.page ? 'page' : null" (click)="types.goToPage(p)">{{ p }}</button>
                 </li>
                 <li class="paginate_button page-item next" [class.disabled]="types.page === types.totalPages">
-                  <a href="javascript:;" class="page-link" (click)="types.goToPage(types.page + 1)"><i class="next"></i></a>
+                  <button type="button" class="page-link" aria-label="Next page" [disabled]="types.page === types.totalPages" (click)="types.goToPage(types.page + 1)"><i class="next"></i></button>
+                </li>
+                <li class="paginate_button page-item last" [class.disabled]="types.page === types.totalPages">
+                  <button type="button" class="page-link" aria-label="Last page" [disabled]="types.page === types.totalPages" (click)="types.goToPage(types.totalPages)">Last</button>
                 </li>
               </ul>
             </div>

@@ -37,7 +37,8 @@ export class SystemComponent implements OnInit {
       { key: 'system', title: 'Name', class: 'min-w-125px min-w-md-200px' },
       { key: 'unit', title: 'Unit Name', class: 'min-w-175px min-w-md-250px' },
       { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
-    ] satisfies readonly TablePaginationColumn<SystemRow>[]
+    ] satisfies readonly TablePaginationColumn<SystemRow>[],
+    { searchKeys: ['system', 'unit', 'employer'] satisfies readonly Extract<keyof SystemRow, string>[] }
   );
 
   // Select values are IDs; hierarchy labels are for display only.

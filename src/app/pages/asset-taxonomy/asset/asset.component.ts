@@ -40,7 +40,8 @@ export class AssetComponent implements OnInit {
       { key: 'tag', title: 'Tag', class: 'min-w-125px' },
       { key: 'system', title: 'System Name', class: 'min-w-175px min-w-md-250px' },
       { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
-    ] satisfies readonly TablePaginationColumn<AssetRow>[]
+    ] satisfies readonly TablePaginationColumn<AssetRow>[],
+    { searchKeys: ['asset', 'tag', 'system', 'employer'] satisfies readonly Extract<keyof AssetRow, string>[] }
   );
 
   // Select values are IDs; hierarchy labels are for display only.

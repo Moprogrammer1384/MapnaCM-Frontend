@@ -64,7 +64,8 @@ export class MeasurementComponent implements OnInit {
       { key: 'sensitivity', title: 'Sensitivity', class: '' },
       { key: 'component', title: 'Component Name', class: 'min-w-150px' },
       { key: 'employer', title: 'Employer', class: 'min-w-125px' },
-    ] satisfies readonly TablePaginationColumn<MeasurementRow>[]
+    ] satisfies readonly TablePaginationColumn<MeasurementRow>[],
+    { searchKeys: ['measurement', 'tag', 'type', 'unit', 'sensitivity', 'component', 'employer'] satisfies readonly Extract<keyof MeasurementRow, string>[] }
   );
 
   types = new TablePagination<TypeRow>(
@@ -72,7 +73,8 @@ export class MeasurementComponent implements OnInit {
     [
       { key: 'name', title: 'Name', class: 'min-w-125px' },
       { key: 'unit', title: 'Unit', class: 'min-w-100px' },
-    ] satisfies readonly TablePaginationColumn<TypeRow>[]
+    ] satisfies readonly TablePaginationColumn<TypeRow>[],
+    { searchKeys: ['name', 'unit'] satisfies readonly Extract<keyof TypeRow, string>[] }
   );
   typeOptions: MeasurementType[] = [];
   typeFormModel: TypeFormModel = { name: '', unit: '' };

@@ -51,12 +51,14 @@ export class PlantComponent implements OnInit {
       { key: 'type', title: 'Type', class: 'min-w-150px' },
       { key: 'site', title: 'Site', class: 'min-w-175px min-w-md-250px' },
       { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
-    ] satisfies readonly TablePaginationColumn<PlantRow>[]
+    ] satisfies readonly TablePaginationColumn<PlantRow>[],
+    { searchKeys: ['name', 'type', 'site', 'employer'] satisfies readonly Extract<keyof PlantRow, string>[] }
   );
 
   types = new TablePagination<TypeRow>(
     [],
-    [{ key: 'name', title: 'Name', class: 'min-w-150px' }] satisfies readonly TablePaginationColumn<TypeRow>[]
+    [{ key: 'name', title: 'Name', class: 'min-w-150px' }] satisfies readonly TablePaginationColumn<TypeRow>[],
+    { searchKeys: ['name'] satisfies readonly Extract<keyof TypeRow, string>[] }
   );
 
   // Options for the Type / Site selects in the plant modals, loaded from the

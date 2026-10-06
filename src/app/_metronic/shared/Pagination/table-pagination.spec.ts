@@ -1,5 +1,6 @@
 import { TablePagination, TablePaginationColumn } from './table-pagination';
 import Swal from 'sweetalert2';
+import { compareElevationText } from './table-pagination-comparators';
 
 describe('TablePagination ordering', () => {
   const rows = [
@@ -13,8 +14,8 @@ describe('TablePagination ordering', () => {
   beforeEach(() => {
     table = new TablePagination(rows, [
       { key: 'name', title: 'Name', class: '' },
-      { key: 'elevation', title: 'Elevation', class: '' },
-    ]);
+      { key: 'elevation', title: 'Elevation', class: '', compare: (left, right) => compareElevationText(left.elevation, right.elevation) },
+    ], { searchKeys: ['name', 'elevation'], pageSizes: [1, 10, 25, 50, 100] });
   });
 
   it('starts in API order without an active header arrow', () => {
@@ -104,7 +105,7 @@ describe('TablePagination cached derivations', () => {
     ];
     table = new TablePagination<Row>(sourceRows, [
       { key: 'sortValue', title: 'Sort', class: '' },
-    ] satisfies readonly TablePaginationColumn<Row>[]);
+    ] satisfies readonly TablePaginationColumn<Row>[], { searchKeys: ['searchValue'], pageSizes: [1, 2, 10] });
     table.search('needle');
     table.sortBy('sortValue');
     table.setPageSize(1);
@@ -299,7 +300,7 @@ describe('TablePagination native values', () => {
       { id: 2, parentId: 1, name: 'Alpha', sensitivity: -0.25, enabled: true, tag: null },
       { id: 3, parentId: 0, name: 'Charlie', sensitivity: null, enabled: false, tag: 'VIB' },
       { id: 4, parentId: 1, name: 'Delta', sensitivity: 0, enabled: true, tag: '' },
-    ], columns);
+    ], columns, { searchKeys: ['name', 'tag', 'sensitivity', 'enabled'], pageSizes: [1, 10, 25, 50, 100] });
   });
 
   it('sorts native numbers and nullable decimals without mutating source data', () => {
@@ -331,7 +332,7 @@ describe('TablePagination native values', () => {
     expect(table.filtered.length).toBe(4);
   });
 
-  it('searches text, numeric IDs, decimals and booleans without stringifying stored values', () => {
+  it('searches configured text, decimals and booleans without stringifying stored values', () => {
     table.search('  vIb  ');
     expect(table.filtered.map((row) => row.id)).toEqual([3]);
     table.search('-0.25');
@@ -346,6 +347,16 @@ describe('TablePagination native values', () => {
     expect(table.filtered).toEqual([]);
     expect(table.rows[2].sensitivity).toBeNull();
     expect(table.rows[0].tag).toBeUndefined();
+  });
+
+  it('excludes hidden IDs and parent IDs from searching', () => {
+    table.setRows([{ id: 901, parentId: 76543, name: 'Bearing', sensitivity: null, enabled: false, tag: null }]);
+    table.search('901');
+    expect(table.resultCount).toBe(0);
+    table.search('76543');
+    expect(table.resultCount).toBe(0);
+    table.search(' BEARING ');
+    expect(table.resultCount).toBe(1);
   });
 
   it('keeps paging and entry counts correct after filtering and searching', () => {
@@ -367,9 +378,176 @@ describe('TablePagination native values', () => {
       { key: 'sensitivty', title: 'Sensitivity', class: '' },
     ] satisfies readonly TablePaginationColumn<Row>[];
     expect(invalidColumns.length).toBe(1);
+    const invalidSearchKeys = [
+      // @ts-expect-error Search keys must be declared row fields.
+      'sensitivty',
+    ] satisfies readonly Extract<keyof Row, string>[];
+    expect(invalidSearchKeys.length).toBe(1);
     // @ts-expect-error A numeric parent filter cannot accept string IDs.
     table.setFilter('parentId', '0');
     // @ts-expect-error Missing properties cannot be used as filter keys.
     table.setFilter('plantId', 1);
+  });
+});
+
+describe('TablePagination pagination safeguards and window', () => {
+  interface Row { id: number; name: string; group: number; }
+  const rows: Row[] = Array.from({ length: 230 }, (_, index) => ({ id: index + 1, name: 'Bearing', group: index < 15 ? 1 : 2 }));
+  const columns = [{ key: 'name', title: 'Name', class: '' }] satisfies readonly TablePaginationColumn<Row>[];
+  let table: TablePagination<Row>;
+
+  beforeEach(() => {
+    table = new TablePagination(rows, columns, { searchKeys: ['name'] });
+  });
+
+  it('accepts only configured finite positive integer sizes and preserves state on rejection', () => {
+    table.goToPage(3);
+    const paged = table.paged;
+    const filtered = table.filtered;
+    const pages = table.pages;
+    for (const value of [1, 2, 9, 11, 20, 101, 0, -1, 1.5, NaN, Infinity, -Infinity, '', 'abc', '25.5']) {
+      table.setPageSize(value);
+      expect([table.page, table.pageSize]).toEqual([3, 10]);
+      expect(table.paged === paged).toBeTrue();
+      expect(table.filtered === filtered).toBeTrue();
+      expect(table.pages === pages).toBeTrue();
+    }
+    table.setPageSize('25');
+    expect([table.page, table.pageSize, table.totalPages]).toEqual([1, 25, 10]);
+    expect(table.filtered === filtered).toBeTrue();
+    table.goToPage(3);
+    table.setPageSize(25);
+    expect(table.page).toBe(1);
+  });
+
+  it('accepts only integer pages in the valid range', () => {
+    table.goToPage(3);
+    const paged = table.paged;
+    for (const value of [-1, 0, 1.5, 24, NaN, Infinity, -Infinity]) {
+      table.goToPage(value);
+      expect(table.page).toBe(3);
+      expect(table.paged === paged).toBeTrue();
+    }
+    table.goToPage(23);
+    expect(table.page).toBe(23);
+    table.goToPage(1);
+    expect(table.page).toBe(1);
+  });
+
+  it('shifts five consecutive page numbers around the current page at both boundaries', () => {
+    for (const [page, expected] of [
+      [1, [1, 2, 3, 4, 5]],
+      [2, [1, 2, 3, 4, 5]],
+      [3, [1, 2, 3, 4, 5]],
+      [4, [2, 3, 4, 5, 6]],
+      [12, [10, 11, 12, 13, 14]],
+      [21, [19, 20, 21, 22, 23]],
+      [22, [19, 20, 21, 22, 23]],
+      [23, [19, 20, 21, 22, 23]],
+    ] satisfies readonly (readonly [number, readonly number[]])[]) {
+      table.goToPage(page);
+      expect(table.pages).toEqual(expected);
+      expect(table.pages).toContain(table.page);
+    }
+    table.setRows(rows.slice(0, 40));
+    expect(table.page).toBe(4);
+    expect(table.pages).toEqual([1, 2, 3, 4]);
+  });
+
+  it('clamps after shrinking rows and resets after filtering/searching with valid empty metadata', () => {
+    table.goToPage(23);
+    table.setRows(rows.slice(0, 15));
+    expect([table.page, table.totalPages, table.infoStart, table.infoEnd]).toEqual([2, 2, 11, 15]);
+    table.setRows(rows);
+    expect(table.page).toBe(2);
+    table.goToPage(23);
+    table.setFilter('group', 1);
+    expect([table.page, table.totalPages, table.resultCount]).toEqual([1, 2, 15]);
+    table.goToPage(2);
+    table.search('missing');
+    expect([table.page, table.totalPages, table.infoStart, table.infoEnd]).toEqual([1, 1, 0, 0]);
+    expect(table.pages).toEqual([1]);
+    expect(table.paged).toEqual([]);
+    table.goToPage(2);
+    expect(table.page).toBe(1);
+    table.setRows([]);
+    expect([table.page, table.totalPages, table.resultCount]).toEqual([1, 1, 0]);
+  });
+
+  it('uses immutable custom sizes and rejects invalid size configurations', () => {
+    const sizes = [5, 15];
+    const custom = new TablePagination(rows, columns, { searchKeys: ['name'], pageSizes: sizes });
+    sizes.push(10);
+    expect(custom.pageSize).toBe(5);
+    custom.setPageSize(10);
+    expect(custom.pageSize).toBe(5);
+    custom.setPageSize(15);
+    expect(custom.pageSize).toBe(15);
+    for (const pageSizes of [[], [0], [-1], [1.5], [Infinity], [NaN]]) {
+      expect(() => new TablePagination(rows, columns, { searchKeys: ['name'], pageSizes }))
+        .toThrowError('Page sizes must contain finite, positive integers.');
+    }
+  });
+});
+
+describe('TablePagination column-specific sorting', () => {
+  interface Row { id: number; name: string; tag: string | null; amount: number | null; visible: boolean; }
+  const rows: Row[] = [
+    { id: 1, name: '2 Pump', tag: '2A', amount: 2, visible: true },
+    { id: 2, name: '10 Pump', tag: '10Z', amount: 10, visible: true },
+    { id: 3, name: '10 Pump', tag: '10A', amount: 10, visible: true },
+    { id: 4, name: '3 Pump', tag: null, amount: null, visible: false },
+  ];
+  const columns = [
+    { key: 'name', title: 'Name', class: '' },
+    { key: 'tag', title: 'Tag', class: '' },
+    { key: 'amount', title: 'Amount', class: '' },
+  ] satisfies readonly TablePaginationColumn<Row>[];
+  let table: TablePagination<Row>;
+  const ids = () => table.filtered.map((row) => row.id);
+
+  beforeEach(() => {
+    table = new TablePagination(rows, columns, { searchKeys: ['name', 'tag', 'amount'] });
+  });
+
+  it('sorts digit-prefixed names/tags textually and native numbers numerically', () => {
+    table.sortBy('name');
+    expect(ids()).toEqual([2, 3, 1, 4]);
+    table.sortBy('tag');
+    expect(ids()).toEqual([4, 3, 2, 1]);
+    table.sortBy('amount');
+    expect(ids()).toEqual([4, 1, 2, 3]);
+    table.sortBy('amount');
+    expect(ids()).toEqual([2, 3, 1, 4]);
+    expect(rows.map((row) => row.id)).toEqual([1, 2, 3, 4]);
+  });
+
+  it('retains API order for ties in both directions and restores filtered order when cleared', () => {
+    table.setFilter('visible', true);
+    table.sortBy('name');
+    expect(ids()).toEqual([2, 3, 1]);
+    table.sortBy('name');
+    expect(ids()).toEqual([1, 2, 3]);
+    table.sortBy('name');
+    expect(ids()).toEqual([1, 2, 3]);
+    expect(table.filters.visible).toBeTrue();
+    expect(table.sortClass('name')).toBe('');
+    table.sortBy('id'); // Declared row fields must also be configured columns.
+    expect(table.sortKey).toBeNull();
+  });
+
+  it('supplies typed rows to custom comparators and handles nulls before calling them', () => {
+    const compare = jasmine.createSpy<(left: Row, right: Row) => number>('compare').and.callFake((left, right) => {
+      if (left.amount === null || right.amount === null) {
+        throw new Error('Null comparison should be handled centrally.');
+      }
+      return left.amount - right.amount;
+    });
+    table = new TablePagination(rows, [{ key: 'amount', title: 'Amount', class: '', compare }], { searchKeys: ['name'] });
+    table.sortBy('amount');
+    expect(ids()).toEqual([4, 1, 2, 3]);
+    expect(compare).toHaveBeenCalled();
+    table.sortBy('amount');
+    expect(ids()).toEqual([2, 3, 1, 4]);
   });
 });

@@ -142,7 +142,7 @@ maintenance entry for focused browser validation.
 | `src/app/modules/profile/`, `wizards/` | Primarily template/demo screens |
 | `src/app/modules/widgets-examples/` | Widget galleries, including the standalone Apache Charts gallery |
 | `src/app/_metronic/` | Shared layout, icons, directives, theme DOM helpers, widgets |
-| `src/app/custom-components/` | Reusable table record component and pagination helper/footer components, exposed through `SharedModule` |
+| `src/app/custom-components/` | Composed data table, reusable table record and pagination helper/footer components, exposed through `SharedModule` |
 | `src/app/_fake/` | Mixed legacy code: in-memory demo API plus services calling Keenthemes remotely |
 | `src/app/graphify-out/` | Generated graph reports/caches; historical, not application source |
 | `src/assets/` | Theme Sass, icons, media/plugins, generated Apache chart scripts/data/vendor files |
@@ -267,28 +267,37 @@ uses cards with a create modal; it does not use the table wrapper.
 ### Asset taxonomy
 
 Taxonomy pages use shared `TablePagination<T>` from
-`src/app/custom-components/Pagination/table-pagination.ts` and Angular-rendered
+`src/app/custom-components/data-table/Pagination/table-pagination.ts` and Angular-rendered
 tables. They do not use `<app-crud>`, despite matching DataTables styling/classes. Reuse this pattern
 for taxonomy pages. `AssetApiService` requests up to 10,000 rows for client-side
 search/filter/sort/paging; this is a current limit, not unlimited pagination.
 
-All nine tables across the seven taxonomy pages use `<app-table-record>` from
-`custom-components/table-record/`, declared/exported by `SharedModule`. Its required
+All nine tables across the seven taxonomy pages use `<app-data-table>` from
+`custom-components/data-table/`, declared/exported by `SharedModule`. This generic
+wrapper owns the existing responsive container and composes `<app-table-record>`
+with `<app-paginationbar>`, passing the same required `TablePagination<T>` instance
+to both. It forwards `tableId` and readonly typed `editRecord`/`deleteRecord` outputs
+to the page without introducing state, API calls or confirmation logic.
+
+The underlying `<app-table-record>` remains available independently from
+`custom-components/data-table/table-record/`, declared/exported by `SharedModule`. Its required
 typed `table: TablePagination<T>` input supplies column definitions, sorting and
 paged rows; cells render native values by each column key (null/undefined stay
 blank). The optional `tableId` input defaults to `kt_profile_overview_table`;
 existing distinct Plant Type/Measurement/Measurement Type IDs are preserved.
 Typed `editRecord` and `deleteRecord` outputs emit the readonly row snapshot.
 Pages own modal opening, delete confirmation and API mutations. The component
-renders the table only; responsive containers, toolbar/search/filter controls
-and pagination bars remain in their host pages. Empty-state colspan derives
+renders the table only; the data-table wrapper supplies its responsive container
+and pagination bar. Toolbar/search/filter controls remain in host pages. Empty-state colspan derives
 from the configured columns plus Actions. No DataTables plugin is initialized.
 
-All nine taxonomy table footers use `<app-paginationbar [table]="table">`
-(Plant also binds `plants`/`types`; Measurement also binds `types`). The reusable
-wrapper and its `pagination-records` and `pagination-pages` children live under
-`custom-components/Pagination/paginationbar/`. Import `SharedModule` to use the
+All nine taxonomy table footers use `<app-paginationbar [table]="table">` inside
+the data-table wrapper. Plant passes separate `plants`/`types` instances to its
+wrappers; Measurement passes separate `table`/`types` instances. The pagination
+bar and its `pagination-records` and `pagination-pages` children live under
+`custom-components/data-table/Pagination/paginationbar/`. Import `SharedModule` to use the
 wrapper or either child independently, passing the same required `table` input.
+Both `table-record/` and `Pagination/` are nested inside `custom-components/data-table/`.
 The row-independent `PaginationState` interface describes readonly pagination
 metadata and `setPageSize`/`goToPage`; existing `TablePagination<T>` instances
 satisfy it directly. Components delegate state updates to the supplied table.
@@ -422,7 +431,8 @@ Do not assume screens are integrated based solely on where their files live.
 ## Select2, styles, theme, and localization
 
 `SharedModule` exports Keenicons, `Select2Directive`, `PaginationbarComponent`,
-`PaginationRecordsComponent`, `PaginationPagesComponent` and `TableRecordComponent`. Selects with
+`PaginationRecordsComponent`, `PaginationPagesComponent`, `TableRecordComponent`
+and `DataTableComponent`. Selects with
 `data-control="select2"`, `data-kt-select2="true"`, or `appSelect2` are automatically
 enhanced. The directive preserves Angular value accessors, numeric `[ngValue]`,
 validation, model changes, and asynchronously loaded options.
@@ -838,4 +848,44 @@ every vendored asset or generated graph report.
   TypeScript compilation and all **104** focused taxonomy/table/pagination/Select2
   ChromeHeadless tests passed. `git diff --check` passed. Existing 2.70 MB initial
   bundle-budget warning and four CSS selector warnings remain. Tests mock APIs;
+  live backend integration and manual visual auditing were not performed.
+
+### 2026-10-06 - Composed data table wrapper
+
+- Added generic `DataTableComponent<T>` under `custom-components/data-table/`,
+  declared/exported through `SharedModule`. `<app-data-table>` composes the
+  existing table record and pagination bar using one required `TablePagination<T>`
+  input, the original responsive Metronic container and an optional `tableId`.
+  Readonly typed edit/delete outputs forward the current row once to host pages.
+- Replaced all nine table/footer pairs across seven taxonomy page templates,
+  preserving each table instance, DOM ID, modal and confirmation handler.
+  Pages retain search/filter controls, data loading and API workflows. The
+  original components remain independently exported. No helper, API, storage,
+  custom style or theme script behavior changed.
+- Added five wrapper browser integration tests for navigation/sorting and row/range
+  synchronization, native/Select2 sizing, event forwarding, external state/input
+  replacement and empty results, and independent wrappers with different row types.
+  Updated existing taxonomy/Plant integration checks to exercise the wrapper.
+- Verified production build with strict Angular template checks, project lint,
+  normal test TypeScript compilation, `git diff --check`, and all **109** focused
+  taxonomy/data-table/table-record/pagination/Select2 ChromeHeadless tests passed.
+  Existing 2.70 MB initial-bundle budget warning and four CSS selector warnings
+  remain. API calls were mocked; live backend integration and manual visual
+  auditing were not performed.
+
+### 2026-10-06 - Nest table record and pagination inside data table
+
+- The linked `_metronic/shared/table-record/` and `_metronic/shared/Pagination/`
+  locations were already absent; moved the current complete folders from
+  `custom-components/` into `custom-components/data-table/`, preserving casing.
+  All 15 relocated files retain their implementation/templates and adjacent tests;
+  only two relocated test imports needed an additional parent-directory level.
+- Updated SharedModule, wrapper and test imports, all seven taxonomy page helper
+  imports, and the Site comparator import. Existing wrapper work and independently
+  exported child components are preserved. Confirmed old folders are absent and
+  no stale application imports remain; historical generated reports were excluded.
+- Verified production build with strict Angular template compilation, project lint,
+  normal test TypeScript compilation, and all **109** focused data-table, table-record,
+  pagination, taxonomy and Select2 ChromeHeadless tests passed. Existing 2.70 MB
+  bundle-budget warning and four CSS selector warnings remain. APIs were mocked;
   live backend integration and manual visual auditing were not performed.

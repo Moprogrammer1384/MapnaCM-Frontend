@@ -50,19 +50,12 @@
       <!--begin::Card body-->
       <div class="card-body pt-0">
         <!--begin::Table container-->
-        <div class="table-responsive dataTables_wrapper dt-bootstrap5 no-footer">
-          <!--begin::Table-->
-          <app-table-record
-            [table]="table"
-            tableId="kt_measurement_table"
-            (editRecord)="openEditModal(editMeasurementModal, $event)"
-            (deleteRecord)="table.confirmDelete($event, $event.measurement)">
-          </app-table-record>
-          <!--end::Table-->
-          <!--begin::Table footer-->
-          <app-paginationbar [table]="table"></app-paginationbar>
-          <!--end::Table footer-->
-        </div>
+        <app-data-table
+          [table]="table"
+          tableId="kt_measurement_table"
+          (editRecord)="openEditModal(editMeasurementModal, $event)"
+          (deleteRecord)="table.confirmDelete($event, $event.measurement)">
+        </app-data-table>
         <!--end::Table container-->
       </div>
       <!--end::Card body-->
@@ -97,19 +90,12 @@
       <!--begin::Card body-->
       <div class="card-body pt-0">
         <!--begin::Table container-->
-        <div class="table-responsive dataTables_wrapper dt-bootstrap5 no-footer">
-          <!--begin::Table-->
-          <app-table-record
-            [table]="types"
-            tableId="kt_measurement_type_table"
-            (editRecord)="openEditTypeModal(editTypeModal, $event)"
-            (deleteRecord)="deleteType($event)">
-          </app-table-record>
-          <!--end::Table-->
-          <!--begin::Table footer-->
-          <app-paginationbar [table]="types"></app-paginationbar>
-          <!--end::Table footer-->
-        </div>
+        <app-data-table
+          [table]="types"
+          tableId="kt_measurement_type_table"
+          (editRecord)="openEditTypeModal(editTypeModal, $event)"
+          (deleteRecord)="deleteType($event)">
+        </app-data-table>
         <!--end::Table container-->
       </div>
       <!--end::Card body-->

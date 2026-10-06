@@ -152,7 +152,7 @@ describe('Plant Select2 integration', () => {
     const typeEdit = spyOn(page, 'openEditTypeModal').and.callThrough();
     const plantDelete = spyOn(page.plants, 'confirmDelete');
     const typeDelete = spyOn(page.types, 'confirmDelete');
-    expect(root.querySelectorAll('app-table-record').length).toBe(2);
+    expect(root.querySelectorAll('app-data-table').length).toBe(2);
     root.querySelector<HTMLElement>('#kt_profile_overview_table [aria-label="Edit record"]')!.click();
     await settle();
     expect(plantEdit).toHaveBeenCalledOnceWith(jasmine.anything(), plant);

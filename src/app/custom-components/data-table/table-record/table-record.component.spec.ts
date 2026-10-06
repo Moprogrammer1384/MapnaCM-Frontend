@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TablePagination } from '../Pagination/table-pagination';
-import { SharedModule } from '../../_metronic/shared/shared.module';
+import { SharedModule } from '../../../_metronic/shared/shared.module';
 
 interface RecordRow {
   id: number;

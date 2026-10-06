@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { of } from 'rxjs';
 import Swal from 'sweetalert2';
-import { TablePagination } from '../../custom-components/Pagination/table-pagination';
+import { TablePagination } from '../../custom-components/data-table/Pagination/table-pagination';
 import { SharedModule } from '../../_metronic/shared/shared.module';
 import { AssetComponent } from './asset/asset.component';
 import { AssetApiService } from './services/asset-api.service';
@@ -124,9 +124,11 @@ function verifyPage<C, R extends object>(
       }
     });
 
-    it('uses the shared table for columns, sorting and the existing confirmed-delete workflow', async () => {
+    it('uses the composed data table for columns, sorting and the existing confirmed-delete workflow', async () => {
       const table = tableOf(fixture.componentInstance);
-      const sharedTable = root.querySelector<HTMLElement>('app-table-record')!;
+      const sharedTable = root.querySelector<HTMLElement>('app-data-table')!;
+      expect(sharedTable.querySelector('app-table-record')).not.toBeNull();
+      expect(sharedTable.querySelector('app-paginationbar')).not.toBeNull();
       const row = table.paged[0];
       expect(Array.from(sharedTable.querySelectorAll('thead th'), (cell) => cell.textContent!.trim()))
         .toEqual([...table.columns.map((column) => column.title), 'Actions']);

@@ -4,7 +4,7 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { AssetSystem, SystemPayload, Unit } from 'src/app/core/models/asset.model';
 import { AssetApiService } from '../services/asset-api.service';
-import { TablePagination, TablePaginationColumn } from 'src/app/custom-components/Pagination/table-pagination';
+import { TablePagination, TablePaginationColumn } from 'src/app/custom-components/data-table/Pagination/table-pagination';
 
 interface SystemRow {
   id: number;

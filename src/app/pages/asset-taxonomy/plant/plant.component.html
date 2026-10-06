@@ -37,19 +37,12 @@
       <!--begin::Card body-->
       <div class="card-body pt-0">
         <!--begin::Table container-->
-        <div class="table-responsive dataTables_wrapper dt-bootstrap5 no-footer">
-          <!--begin::Table-->
-          <app-table-record
-            [table]="plants"
-            tableId="kt_profile_overview_table"
-            (editRecord)="openEditPlantModal(editPlantModal, $event)"
-            (deleteRecord)="deletePlant($event)">
-          </app-table-record>
-          <!--end::Table-->
-          <!--begin::Table footer-->
-          <app-paginationbar [table]="plants"></app-paginationbar>
-          <!--end::Table footer-->
-        </div>
+        <app-data-table
+          [table]="plants"
+          tableId="kt_profile_overview_table"
+          (editRecord)="openEditPlantModal(editPlantModal, $event)"
+          (deleteRecord)="deletePlant($event)">
+        </app-data-table>
         <!--end::Table container-->
       </div>
       <!--end::Card body-->
@@ -86,19 +79,12 @@
       <!--begin::Card body-->
       <div class="card-body pt-0">
         <!--begin::Table container-->
-        <div class="table-responsive dataTables_wrapper dt-bootstrap5 no-footer">
-          <!--begin::Table-->
-          <app-table-record
-            [table]="types"
-            tableId="kt_plant_type_table"
-            (editRecord)="openEditTypeModal(editTypeModal, $event)"
-            (deleteRecord)="deleteType($event)">
-          </app-table-record>
-          <!--end::Table-->
-          <!--begin::Table footer-->
-          <app-paginationbar [table]="types"></app-paginationbar>
-          <!--end::Table footer-->
-        </div>
+        <app-data-table
+          [table]="types"
+          tableId="kt_plant_type_table"
+          (editRecord)="openEditTypeModal(editTypeModal, $event)"
+          (deleteRecord)="deleteType($event)">
+        </app-data-table>
         <!--end::Table container-->
       </div>
       <!--end::Card body-->

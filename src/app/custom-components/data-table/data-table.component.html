@@ -1,0 +1,9 @@
+<div class="table-responsive dataTables_wrapper dt-bootstrap5 no-footer">
+  <app-table-record
+    [table]="table"
+    [tableId]="tableId"
+    (editRecord)="editRecord.emit($event)"
+    (deleteRecord)="deleteRecord.emit($event)">
+  </app-table-record>
+  <app-paginationbar [table]="table"></app-paginationbar>
+</div>

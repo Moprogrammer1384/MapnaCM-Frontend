@@ -33,8 +33,8 @@ describe('Plant Select2 integration', () => {
       'getAllSites', 'getAllPlantTypes', 'getAllPlants', 'createPlant', 'updatePlant', 'getEmployerOptions',
     ]);
     api.getAllSites.and.returnValue(of([
-      { id: 11, city: 'Tehran', latitude: '35', longitude: '51', address: '', location: '', elevation: '' },
-      { id: 22, city: 'Shiraz', latitude: '29', longitude: '52', address: '', location: '', elevation: '' },
+      { id: 11, city: 'Tehran', latitude: '35', longitude: '51', address: '', location: '', elevation: 0 },
+      { id: 22, city: 'Shiraz', latitude: '29', longitude: '52', address: '', location: '', elevation: 0 },
     ]));
     api.getAllPlantTypes.and.returnValue(of([{ id: 3, name: 'Thermal' }]));
     api.getAllPlants.and.returnValue(of([
@@ -127,7 +127,7 @@ describe('Plant Select2 integration', () => {
     await settle();
     expect(field('plantTypeId').nextElementSibling!.textContent).toContain('Thermal');
     expect(field('siteId').nextElementSibling!.textContent).toContain('Shiraz (29, 52)');
-    expect(field('employer').nextElementSibling!.textContent).toContain(fixture.componentInstance.plants.rows[0].employer);
+    expect(field('employer').nextElementSibling!.textContent).toContain(fixture.componentInstance.plants.rows[0].employerName ?? '');
     window.jQuery(field('siteId')).select2('open');
     modals.dismissAll();
     await settle();

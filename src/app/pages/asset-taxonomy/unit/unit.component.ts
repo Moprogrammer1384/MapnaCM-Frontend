@@ -2,24 +2,9 @@ import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
-import { Unit, UnitPayload } from 'src/app/core/models/asset.model';
+import type { Unit, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
-
-interface UnitRow {
-  id: number;
-  employer: string;
-  employerId: string | null;
-  plant: string;
-  plantId: number;
-  unit: string;
-}
-
-interface UnitFormModel {
-  id?: number;
-  plantId: number | null;
-  unit: string;
-}
 
 @Component({
   selector: 'app-unit',
@@ -31,26 +16,26 @@ export class UnitComponent implements OnInit {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
 
-  table = new TablePagination<UnitRow>(
+  table = new TablePagination<Unit>(
     [],
     [
-      { key: 'unit', title: 'Name', class: 'min-w-125px min-w-md-200px' },
-      { key: 'plant', title: 'Plant Name', class: 'min-w-175px min-w-md-250px' },
-      { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
-    ] satisfies readonly TablePaginationColumn<UnitRow>[],
-    { searchKeys: ['unit', 'plant', 'employer'] satisfies readonly Extract<keyof UnitRow, string>[] }
+      { key: 'name', title: 'Name', class: 'min-w-125px min-w-md-200px' },
+      { key: 'plantLabel', title: 'Plant Name', class: 'min-w-175px min-w-md-250px' },
+      { key: 'employerName', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
+    ] satisfies readonly TablePaginationColumn<Unit>[],
+    { searchKeys: ['name', 'plantLabel', 'employerName'] satisfies readonly Extract<keyof Unit, string>[] }
   );
 
   // Select values are IDs; hierarchy labels are for display only.
-  plantOptions: { id: number; label: string }[] = [];
-  employers: { id: string; name: string }[] = [];
+  plantOptions: TaxonomyParentOption[] = [];
+  employers: EmployerOption[] = [];
   employerFilter: string | null = null;
   plantFilter: number | null = null;
 
-  unitForm: UnitFormModel = this.emptyForm();
+  unitForm: Unit = this.emptyForm();
   saving = false;
 
-  private employerByPlantId: Record<number, { id: string | null; name: string }> = {};
+  private employerByPlantId: Record<number, InheritedEmployer> = {};
 
   constructor(
     private modalService: NgbModal,
@@ -95,7 +80,10 @@ export class UnitComponent implements OnInit {
         this.employerByPlantId = {};
 
         for (const plant of plants) {
-          this.plantOptions.push({ id: plant.id, label: plant.hierarchyLabel });
+          if (plant.id === undefined) {
+            continue;
+          }
+          this.plantOptions.push({ id: plant.id, label: plant.hierarchyLabel ?? plant.name });
           this.employerByPlantId[plant.id] = {
             id: plant.employerId ?? null,
             name: plant.employerName || '—',
@@ -109,14 +97,11 @@ export class UnitComponent implements OnInit {
     });
   }
 
-  private toUnitRow(unit: Unit): UnitRow {
-    const employer = this.employerByPlantId[unit.plantId];
+  private toUnitRow(unit: Unit): Unit {
+    const employer = unit.plantId === null ? undefined : this.employerByPlantId[unit.plantId];
     return {
-      id: unit.id,
-      unit: unit.name,
-      plant: unit.plantLabel,
-      plantId: unit.plantId,
-      employer: employer?.name || '—',
+      ...unit,
+      employerName: employer?.name || '\u2014',
       employerId: employer?.id ?? null,
     };
   }
@@ -136,8 +121,8 @@ export class UnitComponent implements OnInit {
     this.modalService.open(content, this.modalConfig);
   }
 
-  openEditModal(content: TemplateRef<any>, unit: UnitRow): void {
-    this.unitForm = { id: unit.id, plantId: unit.plantId, unit: unit.unit };
+  openEditModal(content: TemplateRef<any>, unit: Unit): void {
+    this.unitForm = { id: unit.id, plantId: unit.plantId, name: unit.name };
     this.modalService.open(content, this.modalConfig);
   }
 
@@ -158,7 +143,7 @@ export class UnitComponent implements OnInit {
     }
 
     this.saving = true;
-    const payload: UnitPayload = { name: this.unitForm.unit, plantId };
+    const payload = { name: this.unitForm.name, plantId };
     const isEdit = !!this.unitForm.id;
     const request$ = isEdit
       ? this.apiService.updateUnit({ id: this.unitForm.id!, ...payload })
@@ -181,14 +166,17 @@ export class UnitComponent implements OnInit {
 
   // Opens the Metronic confirmation dialog; the API delete only runs from
   // the onConfirmedDelete callback after the admin confirms.
-  deleteUnit(unit: UnitRow): void {
-    this.table.confirmDelete(unit, unit.unit);
+  deleteUnit(unit: Unit): void {
+    this.table.confirmDelete(unit, unit.name);
   }
 
-  private deleteUnitConfirmed(unit: UnitRow): void {
+  private deleteUnitConfirmed(unit: Unit): void {
+    if (unit.id === undefined) {
+      return;
+    }
     this.apiService.deleteUnit(unit.id).subscribe({
       next: () => {
-        this.showAlert('success', 'Deleted!', 'You have deleted ' + unit.unit + '!.');
+        this.showAlert('success', 'Deleted!', 'You have deleted ' + unit.name + '!.');
         this.loadUnitsOnly();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the unit.'),
@@ -206,8 +194,8 @@ export class UnitComponent implements OnInit {
     });
   }
 
-  private emptyForm(): UnitFormModel {
-    return { plantId: null, unit: '' };
+  private emptyForm(): Unit {
+    return { plantId: null, name: '' };
   }
 
   private showAlert(icon: 'success' | 'error', title: string, text: string): void {

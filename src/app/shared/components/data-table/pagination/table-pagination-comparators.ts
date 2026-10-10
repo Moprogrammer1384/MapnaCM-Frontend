@@ -12,11 +12,6 @@ export function compareNumericText(left: string, right: string): number {
   return leftNumber - rightNumber;
 }
 
-/** Site elevation is text in the API, sometimes formatted as "1,190 m". */
-export function compareElevationText(left: string, right: string): number {
-  return compareNumericText(left.replace(/(\d)\s*m$/i, '$1'), right.replace(/(\d)\s*m$/i, '$1'));
-}
-
 function numericText(value: string): number | null {
   const text = value.trim();
   // Match the entire decimal/scientific value, including properly grouped commas.

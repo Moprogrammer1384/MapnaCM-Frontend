@@ -412,8 +412,8 @@ Column keys use `Extract<keyof T, string>` and all nine column arrays use
 `satisfies readonly TablePaginationColumn<RowType>[]`. Numbers sort numerically;
 text sorts textually, including digit-prefixed names/tags. Columns may supply
 typed `(left: T, right: T) => number` comparators. Site latitude/longitude use
-explicit full-value numeric-text comparison; elevation handles comma grouping
-and an optional `m` suffix. No default numeric-prefix parsing remains. Equal
+explicit full-value numeric-text comparison; elevation is a native number and
+uses the default numeric comparison. No default numeric-prefix parsing remains. Equal
 values retain response order in both directions; clearing sorting restores
 filtered response order. Sorting ignores fields not configured as columns.
 Null/undefined sort as blanks, first ascending and last descending. Null, undefined,
@@ -467,7 +467,9 @@ Navigation order: **Site -> Plant -> Unit -> System -> Asset -> Component -> Mea
 The relationship chain is Measurement -> Component -> Asset -> System -> Unit -> Plant -> Site.
 Plant Type is managed as a second table on the Plant page.
 
-- Site stores city/address/coordinates/location/elevation as strings.
+- Site stores city/address/coordinates/location as strings. Elevation is numeric
+  (`number | null` in the shared model for blank, required forms); Site Add/Update
+  payloads require a finite number. Zero, negative values and decimals are valid.
 - Plant selects numeric Site and Plant Type IDs and an Identity Employer user.
   Its payload contains `employerId` and the employer display-name snapshot.
 - Plant candidate employers come from `getUsersByRole('Employer')`.
@@ -479,8 +481,9 @@ Plant Type is managed as a second table on the Plant page.
 - Unit/System/Asset/Component parent options use `{ id: number, label: string }`.
   Forms, edit restoration, and parent filters bind numeric IDs; labels are displayed
   and sorted only. Duplicate or changed labels do not change relationships.
-  Explicit row interfaces retain numeric entity/parent IDs (including
-  `UnitRow.plantId`) and nullable Identity employer IDs as `string | null`.
+  Shared entity models retain numeric entity/parent IDs and nullable string
+  Identity employer IDs. Entity IDs are optional for new forms, and parent
+  selections are nullable while forms are incomplete; saved API records provide IDs.
   Filters, edit restoration and delete calls use those native values directly;
   numeric form values go directly into API payloads.
 - Component displays name, Tag, Asset label, and inherited employer. It loads real
@@ -517,7 +520,7 @@ GET `/MeasurementType/GetAll`, POST `/MeasurementType/Add`, PUT
 The former Measurement UI-state service is absent. This API migration preceded
 the native-row refactor; the session-memory notes in older log entries are historical.
 Measurement payloads already include numeric `measurementTypeId` and `sensitivity`.
-`TaxonomyMeasurement` and its row retain nullable type ID, type name, unit, and
+`Measurement` and its row retain nullable type ID, type name, unit, and
 sensitivity for legacy records. Null cells render blank; required fields must be
 selected/filled when editing those records. Type deletion failures are surfaced from
 the API. These are verified frontend contracts, not verified live backend behavior.
@@ -528,6 +531,35 @@ shared add/edit modal and a sortable Tag column after Name. Rows retain tags as
 edit forms normalize null to `''`, so existing records remain searchable and editable.
 Frontend create/update payloads include `tag`; clearing it submits `''`. These are
 frontend models/bindings only; backend/database work belongs to the other team.
+
+### Unified taxonomy model organization (2026-10-10)
+
+- The user's later instruction supersedes the separate UI-model extraction:
+  **one shared model per entity**, defined in `core/models/asset-taxonomy.model.ts` and
+  used directly for API data, table state and Add/Edit forms across all seven pages.
+  Models are `Site`, `PlantType`, `Plant`, `Unit`, `AssetSystem`, `Asset`,
+  `Component`, `Measurement` and `MeasurementType`.
+- Removed the seven page `.models.ts` files, separate Row/Form interfaces,
+  standalone Payload interfaces and `asset-taxonomy-options.model.ts`.
+  Parent/employer option helpers and `RoleUser` also live in `asset-taxonomy.model.ts`.
+- Canonical entity name fields use `name`; parent display fields use the API's
+  `plantLabel`, `unitLabel`, `systemLabel`, `assetLabel` and `componentLabel`.
+  Plant/Measurement display types use `typeName`; inherited employer display uses
+  `employerName`. Table/search keys and form bindings use these same fields.
+- IDs are optional for unsaved forms; required parent selections can be null
+  until validation; joined labels and audit data are optional. Measurement legacy
+  null type/sensitivity values and tag normalization remain supported. Rows still
+  use immutable snapshots; edit forms copy values to retain cancellation isolation.
+- API write method types derive allowed fields from the shared model with `Pick`
+  and required numeric ID constraints, instead of separate payload declarations.
+  Every create/update method explicitly serializes its established request fields,
+  excluding inherited display/audit fields; POST omits entity ID and PUT includes it.
+  Plant Type create now accepts a name-bearing object internally; its HTTP body
+  remains `{ name }`. Validation, endpoints, storage and Metronic visuals are retained.
+- Ancestor maps skip unsaved records and null relationships; dropdown labels
+  fall back to the parent's name when hierarchy text is absent. Delete handlers
+  skip records without IDs. These guards support using the same model for blank
+  form state and saved records while retaining strict compilation.
 
 ## Profile and demo boundaries
 
@@ -1207,3 +1239,90 @@ superseded by the user's later `components/` rename on 2026-10-10.
   Existing 2.77 MB bundle-budget warning and four CSS selector warnings remain.
   APIs were mocked; manual visual inspection and live backend integration were
   not performed.
+
+### 2026-10-10 - Extract taxonomy page and shared UI models
+
+- Moved all 18 row/form interfaces into seven adjacent `<page>.models.ts` files,
+  with type-only imports in Site, Plant, Unit, System, Asset, Component and
+  Measurement. Kept row/form types distinct and all original fields/nullability.
+  Gave the exported Plant Type and Measurement Type models explicit names.
+- Added shared parent-option, employer-option and nullable inherited-employer
+  interfaces under `core/models/asset-taxonomy-options.model.ts`. Updated page
+  arrays/maps/lookup signatures and `AssetApiService.getEmployerOptions()` to use
+  them. Shared API entities/payloads remain in `core/models/asset.model.ts`.
+- Verified all extracted field shapes against HEAD and identical emitted
+  JavaScript across the seven components and API service. Templates, styles,
+  validation, payloads, hierarchy loading and storage behavior are preserved.
+- Production build with strict Angular template checks, project lint, normal test
+  TypeScript compilation, `git diff --check`, and all **65** focused taxonomy/modal
+  ChromeHeadless tests passed. Existing 2.77 MB bundle warning and four CSS
+  selector warnings remain. API calls were mocked; live backend integration and
+  a new manual visual audit were not performed for this type-only extraction.
+
+### 2026-10-10 - One shared taxonomy model per entity
+
+- At the user's request, consolidated all taxonomy entity definitions into
+  `core/models/asset.model.ts`. Each entity's API data, table and form use the
+  same shared interface. Removed separate Row/Form/Payload interfaces, seven
+  page model files and the separate options model file from the previous work.
+- Updated tables, searches, modal bindings and confirmation labels to canonical
+  `name`, parent-label, `typeName` and `employerName` fields. Preserve response
+  fields in table snapshots and copy editable values for cancellation isolation.
+  Optional unsaved IDs, nullable blank selections, joined display fields and
+  inherited-employer enrichment are documented in the shared model.
+- Service write signatures derive fields from these models and still require
+  numeric saved IDs/selected relationships. Added explicit field serialization
+  for every create/update request so full entity objects cannot send audit/joined
+  display fields. Plant Type create accepts a name-bearing object internally;
+  the existing backend endpoint and `{ name }` request are unchanged.
+- Updated three existing specs for canonical field names and added ten HTTP
+  regression tests: create/update contracts for all nine entities, preserving
+  null employer clearing, empty tags and zero sensitivity/type IDs, plus the
+  business-failure observable path. Existing modal/validation/row isolation
+  tests continue to exercise the unified models.
+- Verified strict Angular compilation, normal test TypeScript compilation,
+  production build, project lint, `git diff --check`, and all **75** focused
+  taxonomy/modal/API ChromeHeadless tests. Existing 2.77 MB bundle warning and
+  four CSS selector warnings remain. No stale taxonomy model imports remain.
+  Requests were mocked; live backend integration and manual visual inspection
+  were not performed. Templates retain their visuals and existing control names.
+
+### 2026-10-10 - Taxonomy model filename
+
+- Renamed the shared model file from `core/models/asset.model.ts` to
+  `core/models/asset-taxonomy.model.ts` at the user's request. Updated imports
+  in all seven taxonomy pages and the central API service, plus current model
+  documentation above. Historical paths in earlier maintenance entries describe
+  the old filename and are superseded by this entry.
+- Model contents, entity names, behavior and API contracts are unchanged.
+  Verified strict Angular compilation, normal test TypeScript compilation,
+  project lint, `git diff --check`, removal of the old file and absence of stale
+  application imports. Build/browser tests were not rerun for this filename-only
+  update; the prior 75 passing focused tests belong to the preceding task.
+
+### 2026-10-10 - Component and Measurement model names
+
+- Renamed the shared `TaxonomyComponent` interface to `Component` and
+  `TaxonomyMeasurement` to `Measurement` in `core/models/asset-taxonomy.model.ts`
+  at the user's request. Updated all API service and page type references,
+  including tables, forms and derived write signatures, plus current guidance.
+- The Component page imports Angular's decorator as `AngularComponent` and uses
+  `@AngularComponent` so the entity model can retain the exact name `Component`.
+  Entity fields, API contracts, page selectors/templates and behavior are retained.
+- Verified strict Angular compilation, normal test TypeScript compilation,
+  project lint, `git diff --check`, and absence of old model names in application
+  TypeScript. Build/browser tests were not rerun for this type-name-only change;
+  historical model names in older maintenance entries are superseded here.
+
+### 2026-10-10 — Numeric Site elevation
+
+- Changed the canonical Site elevation to `number | null`; null represents the
+  blank required form. Site create/update payload signatures require `number`.
+- The shared Add/Edit input uses `type="number" step="any"`. Submission rejects
+  blank/nonfinite values and preserves zero, negative values and decimals.
+- Elevation uses native numeric table sorting; removed its obsolete formatted
+  text comparator. Coordinates retain their existing string models.
+- Verified: production build, lint, test TypeScript compilation, and 123 focused
+  ChromeHeadless tests passed (taxonomy, form modal, API serialization, pagination).
+  Existing 2.77 MB initial bundle budget warning and four selector warnings remain.
+  Backend numeric elevation integration has not been exercised against a live API.

@@ -45,7 +45,7 @@
       [table]="table"
       tableId="kt_profile_overview_table"
       (editRecord)="openEditModal(assetModal, $event)"
-      (deleteRecord)="table.confirmDelete($event, $event.asset)">
+      (deleteRecord)="table.confirmDelete($event, $event.name)">
     </app-data-table>
     <!--end::Table container-->
   </div>
@@ -70,7 +70,7 @@
           <span class="required">Asset Name</span>
         </label>
         <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter Asset Name" name="asset" [(ngModel)]="assetForm.asset" required />
+        <input type="text" class="form-control form-control-solid" placeholder="Enter Asset Name" name="asset" [(ngModel)]="assetForm.name" required />
       </div>
       <!--end::Input group-->
       <!--begin::Input group-->

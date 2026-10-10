@@ -2,26 +2,9 @@ import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
-import { Asset, AssetPayload, AssetSystem } from 'src/app/core/models/asset.model';
+import type { Asset, AssetSystem, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
-
-interface AssetRow {
-  id: number;
-  employer: string;
-  employerId: string | null;
-  system: string;
-  systemId: number;
-  asset: string;
-  tag: string | null;
-}
-
-interface AssetFormModel {
-  id?: number;
-  systemId: number | null;
-  asset: string;
-  tag: string;
-}
 
 @Component({
   selector: 'app-asset',
@@ -33,31 +16,31 @@ export class AssetComponent implements OnInit {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
 
-  table = new TablePagination<AssetRow>(
+  table = new TablePagination<Asset>(
     [],
     [
-      { key: 'asset', title: 'Name', class: 'min-w-125px min-w-md-200px' },
+      { key: 'name', title: 'Name', class: 'min-w-125px min-w-md-200px' },
       { key: 'tag', title: 'Tag', class: 'min-w-125px' },
-      { key: 'system', title: 'System Name', class: 'min-w-175px min-w-md-250px' },
-      { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
-    ] satisfies readonly TablePaginationColumn<AssetRow>[],
-    { searchKeys: ['asset', 'tag', 'system', 'employer'] satisfies readonly Extract<keyof AssetRow, string>[] }
+      { key: 'systemLabel', title: 'System Name', class: 'min-w-175px min-w-md-250px' },
+      { key: 'employerName', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
+    ] satisfies readonly TablePaginationColumn<Asset>[],
+    { searchKeys: ['name', 'tag', 'systemLabel', 'employerName'] satisfies readonly Extract<keyof Asset, string>[] }
   );
 
   // Select values are IDs; hierarchy labels are for display only.
-  systemOptions: { id: number; label: string }[] = [];
-  employers: { id: string; name: string }[] = [];
+  systemOptions: TaxonomyParentOption[] = [];
+  employers: EmployerOption[] = [];
   employerFilter: string | null = null;
   systemFilter: number | null = null;
 
-  assetForm: AssetFormModel = this.emptyForm();
+  assetForm: Asset = this.emptyForm();
   saving = false;
 
   // unit id -> plant id (to inherit the plant's employer)
   private plantIdByUnitId: Record<number, number> = {};
   // system id -> unit id (to reach the plant's employer)
   private unitIdBySystemId: Record<number, number> = {};
-  private employerByPlantId: Record<number, { id: string | null; name: string }> = {};
+  private employerByPlantId: Record<number, InheritedEmployer> = {};
 
   constructor(
     private modalService: NgbModal,
@@ -102,8 +85,13 @@ export class AssetComponent implements OnInit {
         this.unitIdBySystemId = {};
 
         for (const system of systems) {
-          this.systemOptions.push({ id: system.id, label: system.hierarchyLabel });
-          this.unitIdBySystemId[system.id] = system.unitId;
+          if (system.id === undefined) {
+            continue;
+          }
+          this.systemOptions.push({ id: system.id, label: system.hierarchyLabel ?? system.name });
+          if (system.unitId !== null) {
+            this.unitIdBySystemId[system.id] = system.unitId;
+          }
         }
         this.systemOptions.sort((left, right) => left.label.localeCompare(right.label));
 
@@ -118,7 +106,12 @@ export class AssetComponent implements OnInit {
       next: (units) => {
         this.plantIdByUnitId = {};
         for (const unit of units) {
-          this.plantIdByUnitId[unit.id] = unit.plantId;
+          if (unit.id === undefined) {
+            continue;
+          }
+          if (unit.plantId !== null) {
+            this.plantIdByUnitId[unit.id] = unit.plantId;
+          }
         }
 
         this.loadPlants();
@@ -132,6 +125,9 @@ export class AssetComponent implements OnInit {
       next: (plants) => {
         this.employerByPlantId = {};
         for (const plant of plants) {
+          if (plant.id === undefined) {
+            continue;
+          }
           this.employerByPlantId[plant.id] = {
             id: plant.employerId ?? null,
             name: plant.employerName || '—',
@@ -144,20 +140,20 @@ export class AssetComponent implements OnInit {
     });
   }
 
-  private toAssetRow(asset: Asset): AssetRow {
+  private toAssetRow(asset: Asset): Asset {
     const employer = this.employerOfSystem(asset.systemId);
     return {
-      id: asset.id,
-      asset: asset.name,
+      ...asset,
       tag: asset.tag ?? null,
-      system: asset.systemLabel,
-      systemId: asset.systemId,
-      employer: employer?.name || '—',
+      employerName: employer?.name || '\u2014',
       employerId: employer?.id ?? null,
     };
   }
 
-  private employerOfSystem(systemId: number): { id: string | null; name: string } | undefined {
+  private employerOfSystem(systemId: number | null): InheritedEmployer | undefined {
+    if (systemId === null) {
+      return undefined;
+    }
     const unitId = this.unitIdBySystemId[systemId];
     const plantId = unitId !== undefined ? this.plantIdByUnitId[unitId] : undefined;
     return plantId !== undefined ? this.employerByPlantId[plantId] : undefined;
@@ -178,8 +174,8 @@ export class AssetComponent implements OnInit {
     this.modalService.open(content, this.modalConfig);
   }
 
-  openEditModal(content: TemplateRef<any>, asset: AssetRow): void {
-    this.assetForm = { id: asset.id, systemId: asset.systemId, asset: asset.asset, tag: asset.tag ?? '' };
+  openEditModal(content: TemplateRef<any>, asset: Asset): void {
+    this.assetForm = { id: asset.id, systemId: asset.systemId, name: asset.name, tag: asset.tag ?? '' };
     this.modalService.open(content, this.modalConfig);
   }
 
@@ -200,7 +196,7 @@ export class AssetComponent implements OnInit {
     }
 
     this.saving = true;
-    const payload: AssetPayload = { name: this.assetForm.asset, tag: this.assetForm.tag, systemId };
+    const payload = { name: this.assetForm.name, tag: this.assetForm.tag ?? '', systemId };
     const isEdit = !!this.assetForm.id;
     const request$ = isEdit
       ? this.apiService.updateAsset({ id: this.assetForm.id!, ...payload })
@@ -223,22 +219,25 @@ export class AssetComponent implements OnInit {
 
   // Opens the Metronic confirmation dialog; the API delete only runs from
   // the onConfirmedDelete callback after the admin confirms.
-  deleteAsset(asset: AssetRow): void {
-    this.table.confirmDelete(asset, asset.asset);
+  deleteAsset(asset: Asset): void {
+    this.table.confirmDelete(asset, asset.name);
   }
 
-  private deleteAssetConfirmed(asset: AssetRow): void {
+  private deleteAssetConfirmed(asset: Asset): void {
+    if (asset.id === undefined) {
+      return;
+    }
     this.apiService.deleteAsset(asset.id).subscribe({
       next: () => {
-        this.showAlert('success', 'Deleted!', 'You have deleted ' + asset.asset + '!.');
+        this.showAlert('success', 'Deleted!', 'You have deleted ' + asset.name + '!.');
         this.loadAssets();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the asset.'),
     });
   }
 
-  private emptyForm(): AssetFormModel {
-    return { systemId: null, asset: '', tag: '' };
+  private emptyForm(): Asset {
+    return { systemId: null, name: '', tag: '' };
   }
 
   private showAlert(icon: 'success' | 'error', title: string, text: string): void {

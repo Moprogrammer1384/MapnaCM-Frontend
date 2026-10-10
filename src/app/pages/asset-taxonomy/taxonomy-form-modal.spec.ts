@@ -42,7 +42,7 @@ describe('Taxonomy add/edit modal reuse', () => {
         'getAllAssets', 'getAllComponents', 'getAllMeasurements', 'getAllMeasurementTypes', 'getEmployerOptions',
       ]);
       api.getAllSites.and.returnValue(of([{
-        id: 11, city: 'Tehran', address: 'Address', latitude: '35', longitude: '51', location: '', elevation: '995 m',
+        id: 11, city: 'Tehran', address: 'Address', latitude: '35', longitude: '51', location: '', elevation: 995,
       }]));
       api.getAllPlantTypes.and.returnValue(of([{ id: 2, name: 'Thermal' }]));
       api.getAllPlants.and.returnValue(of([{

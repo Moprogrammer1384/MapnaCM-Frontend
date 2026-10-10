@@ -97,7 +97,7 @@
         <!--begin::Col-->
         <div class="col-md-6 fv-row">
           <label class="required fs-6 fw-semibold mb-2">Elevation above sea level</label>
-          <input type="text" class="form-control form-control-solid" placeholder="e.g. 1,190 m" name="elevation" [(ngModel)]="siteForm.elevation" required />
+          <input type="number" step="any" class="form-control form-control-solid" placeholder="e.g. 1190" name="elevation" [(ngModel)]="siteForm.elevation" required />
         </div>
         <!--end::Col-->
       </div>

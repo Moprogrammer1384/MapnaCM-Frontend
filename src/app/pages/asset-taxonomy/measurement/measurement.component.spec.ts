@@ -106,7 +106,7 @@ describe('Measurement page', () => {
   it('renders the measurement with its type, unit and sensitivity from the API and filters the rows', () => {
     expect(fixture.nativeElement.querySelector('tbody').textContent).toContain('RMS velocity');
     expect(fixture.componentInstance.table.rows[0]).toEqual(jasmine.objectContaining({
-      id: 20, componentId: 10, component: componentLabel, employer: 'Test employer', type: 'Velocity', unit: 'mm/s', sensitivity: 0.25, measurementTypeId: 1,
+      id: 20, componentId: 10, componentLabel, employerName: 'Test employer', typeName: 'Velocity', unit: 'mm/s', sensitivity: 0.25, measurementTypeId: 1,
     }));
     fixture.componentInstance.filterByType(99);
     fixture.detectChanges();
@@ -148,7 +148,7 @@ describe('Measurement page', () => {
     fixture.componentInstance.refresh();
     await settle();
     expect(fixture.componentInstance.table.rows[0]).toEqual(jasmine.objectContaining({
-      id: 21, componentId: 10, measurementTypeId: null, sensitivity: null, type: null, unit: null, tag: null,
+      id: 21, componentId: 10, measurementTypeId: null, sensitivity: null, typeName: null, unit: null, tag: null,
     }));
     const root: HTMLElement = fixture.nativeElement;
     const cells = root.querySelectorAll('#kt_measurement_table tbody tr:first-child td');
@@ -156,7 +156,7 @@ describe('Measurement page', () => {
     root.querySelector<HTMLButtonElement>('button[aria-label="Edit record"]')!.click();
     await settle();
     expect(fixture.componentInstance.measurementForm).toEqual({
-      id: 21, componentId: 10, measurement: 'Legacy measurement', tag: '', measurementTypeId: null, sensitivity: null,
+      id: 21, componentId: 10, name: 'Legacy measurement', tag: '', measurementTypeId: null, sensitivity: null,
     });
     await submit();
     expect(api.updateMeasurement).not.toHaveBeenCalled();

@@ -41,7 +41,7 @@ function verifyPage<C, R extends object>(
         'getEmployerOptions', 'updateSite', 'updateUnit', 'updateSystem', 'updateAsset',
       ]);
       api.getAllSites.and.returnValue(of([{
-        id: 11, city: 'Tehran', address: 'Address', latitude: '35', longitude: '51', location: 'Location', elevation: '995 m',
+        id: 11, city: 'Tehran', address: 'Address', latitude: '35', longitude: '51', location: 'Location', elevation: 995,
       }]));
       api.getAllPlants.and.returnValue(of([{
         id: 1, name: 'Plant', siteId: 11, plantTypeId: 2, siteLabel: 'Tehran', typeName: 'Thermal',
@@ -182,9 +182,9 @@ function verifyPage<C, R extends object>(
 }
 
 verifyPage('Site', SiteComponent, (page) => page.table,
-  { id: 11, latitude: '35', longitude: '51', elevation: '995 m' },
+  { id: 11, latitude: '35', longitude: '51', elevation: 995 },
   (api) => expect(api.updateSite).toHaveBeenCalledOnceWith({
-    id: 11, city: 'Tehran', address: 'Address', latitude: '35', longitude: '51', location: 'Location', elevation: '995 m',
+    id: 11, city: 'Tehran', address: 'Address', latitude: '35', longitude: '51', location: 'Location', elevation: 995,
   }), ['11']
 );
 verifyPage('Unit', UnitComponent, (page) => page.table,

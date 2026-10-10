@@ -45,7 +45,7 @@
       [table]="table"
       tableId="kt_profile_overview_table"
       (editRecord)="openEditModal(unitModal, $event)"
-      (deleteRecord)="table.confirmDelete($event, $event.unit)">
+      (deleteRecord)="table.confirmDelete($event, $event.name)">
     </app-data-table>
     <!--end::Table container-->
   </div>
@@ -70,7 +70,7 @@
           <span class="required">Unit Name</span>
         </label>
         <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter Unit Name" name="unit" [(ngModel)]="unitForm.unit" required />
+        <input type="text" class="form-control form-control-solid" placeholder="Enter Unit Name" name="unit" [(ngModel)]="unitForm.name" required />
       </div>
       <!--end::Input group-->
       <!--begin::Input group-->

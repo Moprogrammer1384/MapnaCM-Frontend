@@ -2,37 +2,9 @@ import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
+import type { Plant, PlantType, TaxonomyParentOption, EmployerOption } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
-
-interface PlantRow {
-  id: number;
-  name: string;
-  type: string;
-  site: string;
-  plantTypeId: number;
-  siteId: number;
-  employer: string;
-  employerId: string | null;
-}
-
-interface TypeRow {
-  id: number;
-  name: string;
-}
-
-interface PlantFormModel {
-  id?: number;
-  name: string;
-  plantTypeId: number | null;
-  siteId: number | null;
-  employerId: string | null;
-}
-
-interface TypeFormModel {
-  id?: number;
-  name: string;
-}
 
 @Component({
   selector: 'app-plant',
@@ -44,37 +16,37 @@ export class PlantComponent implements OnInit {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
 
-  plants = new TablePagination<PlantRow>(
+  plants = new TablePagination<Plant>(
     [],
     [
       { key: 'name', title: 'Name', class: 'min-w-150px' },
-      { key: 'type', title: 'Type', class: 'min-w-150px' },
-      { key: 'site', title: 'Site', class: 'min-w-175px min-w-md-250px' },
-      { key: 'employer', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
-    ] satisfies readonly TablePaginationColumn<PlantRow>[],
-    { searchKeys: ['name', 'type', 'site', 'employer'] satisfies readonly Extract<keyof PlantRow, string>[] }
+      { key: 'typeName', title: 'Type', class: 'min-w-150px' },
+      { key: 'siteLabel', title: 'Site', class: 'min-w-175px min-w-md-250px' },
+      { key: 'employerName', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
+    ] satisfies readonly TablePaginationColumn<Plant>[],
+    { searchKeys: ['name', 'typeName', 'siteLabel', 'employerName'] satisfies readonly Extract<keyof Plant, string>[] }
   );
 
-  types = new TablePagination<TypeRow>(
+  types = new TablePagination<PlantType>(
     [],
-    [{ key: 'name', title: 'Name', class: 'min-w-150px' }] satisfies readonly TablePaginationColumn<TypeRow>[],
-    { searchKeys: ['name'] satisfies readonly Extract<keyof TypeRow, string>[] }
+    [{ key: 'name', title: 'Name', class: 'min-w-150px' }] satisfies readonly TablePaginationColumn<PlantType>[],
+    { searchKeys: ['name'] satisfies readonly Extract<keyof PlantType, string>[] }
   );
 
   // Options for the Type / Site selects in the plant modals, loaded from the
   // backend (sites keep the "City (lat, lng)" display label).
-  typeOptions: { id: number; name: string }[] = [];
-  siteOptions: { id: number; label: string }[] = [];
+  typeOptions: PlantType[] = [];
+  siteOptions: TaxonomyParentOption[] = [];
 
-  plantFormModel: PlantFormModel = this.emptyPlantForm();
-  typeFormModel: TypeFormModel = this.emptyTypeForm();
+  plantFormModel: Plant = this.emptyPlantForm();
+  typeFormModel: PlantType = this.emptyTypeForm();
   saving = false;
   // Employer filter values are user IDs; names are for display only.
-  employers: { id: string; name: string }[] = [];
+  employers: EmployerOption[] = [];
   employerFilter: string | null = null;
 
   // Identity users carrying the Employer role — the only valid assignments.
-  employerUsers: { id: string; name: string }[] = [];
+  employerUsers: EmployerOption[] = [];
 
   constructor(
     private modalService: NgbModal,
@@ -103,10 +75,15 @@ export class PlantComponent implements OnInit {
   loadSites(): void {
     this.apiService.getAllSites().subscribe({
       next: (sites) => {
-        this.siteOptions = sites.map((site) => ({
-          id: site.id,
-          label: `${site.city} (${site.latitude}, ${site.longitude})`,
-        }));
+        this.siteOptions = [];
+        for (const site of sites) {
+          if (site.id !== undefined) {
+            this.siteOptions.push({
+              id: site.id,
+              label: `${site.city} (${site.latitude}, ${site.longitude})`,
+            });
+          }
+        }
         this.cdr.detectChanges();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load sites.'),
@@ -116,7 +93,7 @@ export class PlantComponent implements OnInit {
   loadTypes(): void {
     this.apiService.getAllPlantTypes().subscribe({
       next: (types) => {
-        this.typeOptions = types.map((type) => ({ id: type.id, name: type.name }));
+        this.typeOptions = types;
         this.types.setRows(types.map((type) => ({ id: type.id, name: type.name })), { resetPage: true });
         this.cdr.detectChanges();
       },
@@ -139,13 +116,8 @@ export class PlantComponent implements OnInit {
     this.apiService.getAllPlants().subscribe({
       next: (plants) => {
         this.plants.setRows(plants.map((plant) => ({
-          id: plant.id,
-          name: plant.name,
-          type: plant.typeName,
-          site: plant.siteLabel,
-          plantTypeId: plant.plantTypeId,
-          siteId: plant.siteId,
-          employer: plant.employerName || '—',
+          ...plant,
+          employerName: plant.employerName || '\u2014',
           employerId: plant.employerId ?? null,
         })), { resetPage: true });
         this.cdr.detectChanges();
@@ -161,7 +133,7 @@ export class PlantComponent implements OnInit {
     this.modalService.open(content, this.modalConfig);
   }
 
-  openEditPlantModal(content: TemplateRef<any>, plant: PlantRow): void {
+  openEditPlantModal(content: TemplateRef<any>, plant: Plant): void {
     this.plantFormModel = {
       id: plant.id,
       name: plant.name,
@@ -214,11 +186,14 @@ export class PlantComponent implements OnInit {
 
   // Opens the Metronic confirmation dialog; the API delete only runs from
   // the onConfirmedDelete callback after the admin confirms.
-  deletePlant(plant: PlantRow): void {
+  deletePlant(plant: Plant): void {
     this.plants.confirmDelete(plant, plant.name);
   }
 
-  private deletePlantConfirmed(plant: PlantRow): void {
+  private deletePlantConfirmed(plant: Plant): void {
+    if (plant.id === undefined) {
+      return;
+    }
     this.apiService.deletePlant(plant.id).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + plant.name + '!.');
@@ -235,7 +210,7 @@ export class PlantComponent implements OnInit {
     this.modalService.open(content, this.modalConfig);
   }
 
-  openEditTypeModal(content: TemplateRef<any>, type: TypeRow): void {
+  openEditTypeModal(content: TemplateRef<any>, type: PlantType): void {
     this.typeFormModel = { id: type.id, name: type.name };
     this.modalService.open(content, this.modalConfig);
   }
@@ -254,7 +229,7 @@ export class PlantComponent implements OnInit {
     const isEdit = !!this.typeFormModel.id;
     const request$ = isEdit
       ? this.apiService.updatePlantType({ id: this.typeFormModel.id!, name: this.typeFormModel.name })
-      : this.apiService.createPlantType(this.typeFormModel.name);
+      : this.apiService.createPlantType({ name: this.typeFormModel.name });
 
     request$.subscribe({
       next: () => {
@@ -271,11 +246,14 @@ export class PlantComponent implements OnInit {
     });
   }
 
-  deleteType(type: TypeRow): void {
+  deleteType(type: PlantType): void {
     this.types.confirmDelete(type, type.name);
   }
 
-  private deleteTypeConfirmed(type: TypeRow): void {
+  private deleteTypeConfirmed(type: PlantType): void {
+    if (type.id === undefined) {
+      return;
+    }
     this.apiService.deletePlantType(type.id).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + type.name + '!.');
@@ -287,11 +265,11 @@ export class PlantComponent implements OnInit {
 
   // ---- Helpers --------------------------------------------------------
 
-  private emptyPlantForm(): PlantFormModel {
+  private emptyPlantForm(): Plant {
     return { name: '', plantTypeId: null, siteId: null, employerId: null };
   }
 
-  private emptyTypeForm(): TypeFormModel {
+  private emptyTypeForm(): PlantType {
     return { name: '' };
   }
 

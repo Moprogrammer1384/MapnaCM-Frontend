@@ -80,7 +80,7 @@ describe('Component page', () => {
   it('renders the component, its backend asset label and inherited employer and filters the rows', () => {
     expect(fixture.nativeElement.querySelector('tbody').textContent).toContain('Bearing');
     expect(fixture.componentInstance.table.rows[0]).toEqual(jasmine.objectContaining({
-      id: 12, assetId: 7, asset: assetLabel, employer: 'Test employer', employerId: 'e1', tag: null,
+      id: 12, assetId: 7, assetLabel, employerName: 'Test employer', employerId: 'e1', tag: null,
     }));
     fixture.componentInstance.filterByAsset(99);
     fixture.detectChanges();

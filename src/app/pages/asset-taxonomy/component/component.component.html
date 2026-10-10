@@ -45,7 +45,7 @@
       [table]="table"
       tableId="kt_profile_overview_table"
       (editRecord)="openEditModal(componentModal, $event)"
-      (deleteRecord)="table.confirmDelete($event, $event.component)">
+      (deleteRecord)="table.confirmDelete($event, $event.name)">
     </app-data-table>
     <!--end::Table container-->
   </div>
@@ -70,7 +70,7 @@
           <span class="required">Component Name</span>
         </label>
         <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter Component Name" name="component" [(ngModel)]="componentForm.component" required />
+        <input type="text" class="form-control form-control-solid" placeholder="Enter Component Name" name="component" [(ngModel)]="componentForm.name" required />
       </div>
       <!--end::Input group-->
       <!--begin::Input group-->

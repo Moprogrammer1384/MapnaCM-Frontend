@@ -2,44 +2,9 @@ import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
-import { MeasurementPayload, MeasurementType, TaxonomyMeasurement } from 'src/app/core/models/asset.model';
+import type { Measurement, MeasurementType, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
-
-interface MeasurementRow {
-  id: number;
-  employer: string;
-  employerId: string | null;
-  component: string;
-  componentId: number;
-  measurement: string;
-  tag: string | null;
-  type: string | null;
-  unit: string | null;
-  measurementTypeId: number | null;
-  sensitivity: number | null;
-}
-
-interface TypeRow {
-  id: number;
-  name: string;
-  unit: string;
-}
-
-interface TypeFormModel {
-  id?: number;
-  name: string;
-  unit: string;
-}
-
-interface MeasurementFormModel {
-  id?: number;
-  componentId: number | null;
-  measurement: string;
-  tag: string;
-  measurementTypeId: number | null;
-  sensitivity: number | null;
-}
 
 @Component({
   selector: 'app-measurement',
@@ -51,50 +16,50 @@ export class MeasurementComponent implements OnInit {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
 
-  table = new TablePagination<MeasurementRow>(
+  table = new TablePagination<Measurement>(
     [],
     [
       // Widths are relaxed so the 8-column table fits the viewport like the
       // other taxonomy tables and the Actions column stays visible; long
       // hierarchy labels wrap instead of forcing horizontal overflow.
-      { key: 'measurement', title: 'Name', class: 'min-w-100px' },
+      { key: 'name', title: 'Name', class: 'min-w-100px' },
       { key: 'tag', title: 'Tag', class: '' },
-      { key: 'type', title: 'Type', class: '' },
+      { key: 'typeName', title: 'Type', class: '' },
       { key: 'unit', title: 'Unit', class: '' },
       { key: 'sensitivity', title: 'Sensitivity', class: '' },
-      { key: 'component', title: 'Component Name', class: 'min-w-150px' },
-      { key: 'employer', title: 'Employer', class: 'min-w-125px' },
-    ] satisfies readonly TablePaginationColumn<MeasurementRow>[],
-    { searchKeys: ['measurement', 'tag', 'type', 'unit', 'sensitivity', 'component', 'employer'] satisfies readonly Extract<keyof MeasurementRow, string>[] }
+      { key: 'componentLabel', title: 'Component Name', class: 'min-w-150px' },
+      { key: 'employerName', title: 'Employer', class: 'min-w-125px' },
+    ] satisfies readonly TablePaginationColumn<Measurement>[],
+    { searchKeys: ['name', 'tag', 'typeName', 'unit', 'sensitivity', 'componentLabel', 'employerName'] satisfies readonly Extract<keyof Measurement, string>[] }
   );
 
-  types = new TablePagination<TypeRow>(
+  types = new TablePagination<MeasurementType>(
     [],
     [
       { key: 'name', title: 'Name', class: 'min-w-125px' },
       { key: 'unit', title: 'Unit', class: 'min-w-100px' },
-    ] satisfies readonly TablePaginationColumn<TypeRow>[],
-    { searchKeys: ['name', 'unit'] satisfies readonly Extract<keyof TypeRow, string>[] }
+    ] satisfies readonly TablePaginationColumn<MeasurementType>[],
+    { searchKeys: ['name', 'unit'] satisfies readonly Extract<keyof MeasurementType, string>[] }
   );
   typeOptions: MeasurementType[] = [];
-  typeFormModel: TypeFormModel = { name: '', unit: '' };
+  typeFormModel: MeasurementType = { name: '', unit: '' };
   typeFilter: number | null = null;
 
   // Options carry the backend hierarchy labels ("City - Plant - Unit -
   // System - Asset - Component"); the select binds the numeric component id.
-  componentOptions: { id: number; label: string }[] = [];
+  componentOptions: TaxonomyParentOption[] = [];
   // Employer filter values are user IDs; names are for display only.
-  employers: { id: string; name: string }[] = [];
+  employers: EmployerOption[] = [];
   employerFilter: string | null = null;
   componentFilter: number | null = null;
-  measurementForm: MeasurementFormModel = this.emptyForm();
+  measurementForm: Measurement = this.emptyForm();
   saving = false;
 
   private assetIdByComponentId: Record<number, number> = {};
   private systemIdByAssetId: Record<number, number> = {};
   private unitIdBySystemId: Record<number, number> = {};
   private plantIdByUnitId: Record<number, number> = {};
-  private employerByPlantId: Record<number, { id: string | null; name: string }> = {};
+  private employerByPlantId: Record<number, InheritedEmployer> = {};
 
   constructor(
     private modalService: NgbModal,
@@ -144,7 +109,12 @@ export class MeasurementComponent implements OnInit {
       next: (assets) => {
         this.systemIdByAssetId = {};
         for (const asset of assets) {
-          this.systemIdByAssetId[asset.id] = asset.systemId;
+          if (asset.id === undefined) {
+            continue;
+          }
+          if (asset.systemId !== null) {
+            this.systemIdByAssetId[asset.id] = asset.systemId;
+          }
         }
         this.loadSystems();
       },
@@ -157,7 +127,12 @@ export class MeasurementComponent implements OnInit {
       next: (systems) => {
         this.unitIdBySystemId = {};
         for (const system of systems) {
-          this.unitIdBySystemId[system.id] = system.unitId;
+          if (system.id === undefined) {
+            continue;
+          }
+          if (system.unitId !== null) {
+            this.unitIdBySystemId[system.id] = system.unitId;
+          }
         }
         this.loadUnits();
       },
@@ -170,7 +145,12 @@ export class MeasurementComponent implements OnInit {
       next: (units) => {
         this.plantIdByUnitId = {};
         for (const unit of units) {
-          this.plantIdByUnitId[unit.id] = unit.plantId;
+          if (unit.id === undefined) {
+            continue;
+          }
+          if (unit.plantId !== null) {
+            this.plantIdByUnitId[unit.id] = unit.plantId;
+          }
         }
         this.loadPlants();
       },
@@ -183,6 +163,9 @@ export class MeasurementComponent implements OnInit {
       next: (plants) => {
         this.employerByPlantId = {};
         for (const plant of plants) {
+          if (plant.id === undefined) {
+            continue;
+          }
           this.employerByPlantId[plant.id] = {
             id: plant.employerId ?? null,
             name: plant.employerName || '—',
@@ -200,9 +183,14 @@ export class MeasurementComponent implements OnInit {
         this.componentOptions = [];
         this.assetIdByComponentId = {};
         for (const component of components) {
+          if (component.id === undefined) {
+            continue;
+          }
           // Backend hierarchy label: "City - Plant - Unit - System - Asset - Component".
-          this.componentOptions.push({ id: component.id, label: component.hierarchyLabel });
-          this.assetIdByComponentId[component.id] = component.assetId;
+          this.componentOptions.push({ id: component.id, label: component.hierarchyLabel ?? component.name });
+          if (component.assetId !== null) {
+            this.assetIdByComponentId[component.id] = component.assetId;
+          }
         }
         this.componentOptions.sort((left, right) => left.label.localeCompare(right.label));
         this.loadMeasurements();
@@ -211,7 +199,10 @@ export class MeasurementComponent implements OnInit {
     });
   }
 
-  private employerOfComponent(componentId: number): { id: string | null; name: string } | undefined {
+  private employerOfComponent(componentId: number | null): InheritedEmployer | undefined {
+    if (componentId === null) {
+      return undefined;
+    }
     const assetId = this.assetIdByComponentId[componentId];
     if (assetId === undefined) {
       return undefined;
@@ -222,20 +213,12 @@ export class MeasurementComponent implements OnInit {
     return plantId !== undefined ? this.employerByPlantId[plantId] : undefined;
   }
 
-  private toMeasurementRow(measurement: TaxonomyMeasurement): MeasurementRow {
+  private toMeasurementRow(measurement: Measurement): Measurement {
     const employer = this.employerOfComponent(measurement.componentId);
     return {
-      id: measurement.id,
-      measurement: measurement.name,
+      ...measurement,
       tag: measurement.tag ?? null,
-      type: measurement.typeName,
-      unit: measurement.unit,
-      measurementTypeId: measurement.measurementTypeId,
-      sensitivity: measurement.sensitivity,
-      // Parent labels are displayed independently of the selected component ID.
-      component: measurement.componentLabel,
-      componentId: measurement.componentId,
-      employer: employer?.name || '—',
+      employerName: employer?.name || '\u2014',
       employerId: employer?.id ?? null,
     };
   }
@@ -255,11 +238,11 @@ export class MeasurementComponent implements OnInit {
     this.modalService.open(content, this.modalConfig);
   }
 
-  openEditModal(content: TemplateRef<any>, measurement: MeasurementRow): void {
+  openEditModal(content: TemplateRef<any>, measurement: Measurement): void {
     this.measurementForm = {
       id: measurement.id,
       componentId: measurement.componentId,
-      measurement: measurement.measurement,
+      name: measurement.name,
       tag: measurement.tag ?? '',
       measurementTypeId: measurement.measurementTypeId,
       sensitivity: measurement.sensitivity,
@@ -271,7 +254,7 @@ export class MeasurementComponent implements OnInit {
     if (this.saving) {
       return;
     }
-    if (form.invalid || !this.measurementForm.measurement.trim() || !this.measurementForm.componentId ||
+    if (form.invalid || !this.measurementForm.name.trim() || !this.measurementForm.componentId ||
       this.measurementForm.measurementTypeId === null || this.measurementForm.sensitivity === null) {
       form.control.markAllAsTouched();
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
@@ -293,9 +276,9 @@ export class MeasurementComponent implements OnInit {
     }
 
     this.saving = true;
-    const payload: MeasurementPayload = {
-      name: this.measurementForm.measurement.trim(),
-      tag: this.measurementForm.tag,
+    const payload = {
+      name: this.measurementForm.name.trim(),
+      tag: this.measurementForm.tag ?? '',
       measurementTypeId,
       sensitivity: this.measurementForm.sensitivity,
       componentId,
@@ -319,18 +302,21 @@ export class MeasurementComponent implements OnInit {
     });
   }
 
-  private deleteMeasurementConfirmed(measurement: MeasurementRow): void {
+  private deleteMeasurementConfirmed(measurement: Measurement): void {
+    if (measurement.id === undefined) {
+      return;
+    }
     this.apiService.deleteMeasurement(measurement.id).subscribe({
       next: () => {
-        this.showAlert('success', 'Deleted!', 'You have deleted ' + measurement.measurement + '!.');
+        this.showAlert('success', 'Deleted!', 'You have deleted ' + measurement.name + '!.');
         this.loadMeasurements();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the measurement.'),
     });
   }
 
-  private emptyForm(): MeasurementFormModel {
-    return { componentId: null, measurement: '', tag: '', measurementTypeId: null, sensitivity: null };
+  private emptyForm(): Measurement {
+    return { componentId: null, name: '', tag: '', measurementTypeId: null, sensitivity: null };
   }
 
   private loadTypes(): void {
@@ -353,7 +339,7 @@ export class MeasurementComponent implements OnInit {
     this.modalService.open(content, this.modalConfig);
   }
 
-  openEditTypeModal(content: TemplateRef<any>, type: TypeRow): void {
+  openEditTypeModal(content: TemplateRef<any>, type: MeasurementType): void {
     this.typeFormModel = { id: type.id, name: type.name, unit: type.unit };
     this.modalService.open(content, this.modalConfig);
   }
@@ -390,11 +376,14 @@ export class MeasurementComponent implements OnInit {
     });
   }
 
-  deleteType(type: TypeRow): void {
+  deleteType(type: MeasurementType): void {
     this.types.confirmDelete(type, type.name);
   }
 
-  private deleteTypeConfirmed(type: TypeRow): void {
+  private deleteTypeConfirmed(type: MeasurementType): void {
+    if (type.id === undefined) {
+      return;
+    }
     this.apiService.deleteMeasurementType(type.id).subscribe({
       next: () => {
         if (this.typeFilter === type.id) {

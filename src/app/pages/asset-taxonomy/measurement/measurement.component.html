@@ -54,7 +54,7 @@
           [table]="table"
           tableId="kt_measurement_table"
           (editRecord)="openEditModal(measurementModal, $event)"
-          (deleteRecord)="table.confirmDelete($event, $event.measurement)">
+          (deleteRecord)="table.confirmDelete($event, $event.name)">
         </app-data-table>
         <!--end::Table container-->
       </div>
@@ -123,7 +123,7 @@
           <span class="required">Measurement Name</span>
         </label>
         <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter Measurement Name" name="measurement" [(ngModel)]="measurementForm.measurement" required />
+        <input type="text" class="form-control form-control-solid" placeholder="Enter Measurement Name" name="measurement" [(ngModel)]="measurementForm.name" required />
       </div>
       <!--end::Input group-->
       <!--begin::Input group-->

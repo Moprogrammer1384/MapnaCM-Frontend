@@ -1,12 +1,11 @@
 import { TablePagination, TablePaginationColumn } from './table-pagination';
 import Swal from 'sweetalert2';
-import { compareElevationText } from './table-pagination-comparators';
 
 describe('TablePagination ordering', () => {
   const rows = [
-    { name: 'Bravo', elevation: '995 m' },
-    { name: 'Charlie', elevation: '1,190 m' },
-    { name: 'Alpha', elevation: '200 m' },
+    { name: 'Bravo', elevation: 995 },
+    { name: 'Charlie', elevation: 1190 },
+    { name: 'Alpha', elevation: 200 },
   ];
   let table: TablePagination<(typeof rows)[number]>;
   const names = () => table.filtered.map((row) => row.name);
@@ -14,7 +13,7 @@ describe('TablePagination ordering', () => {
   beforeEach(() => {
     table = new TablePagination(rows, [
       { key: 'name', title: 'Name', class: '' },
-      { key: 'elevation', title: 'Elevation', class: '', compare: (left, right) => compareElevationText(left.elevation, right.elevation) },
+      { key: 'elevation', title: 'Elevation', class: '' },
     ], { searchKeys: ['name', 'elevation'], pageSizes: [1, 10, 25, 50, 100] });
   });
 
@@ -51,7 +50,7 @@ describe('TablePagination ordering', () => {
   });
 
   it('restores filtered API order and resets pagination when clearing the sort', () => {
-    table.setRows([rows[0], { name: 'Echo', elevation: '500 m' }, rows[1], rows[2]]);
+    table.setRows([rows[0], { name: 'Echo', elevation: 500 }, rows[1], rows[2]]);
     table.search('a');
     table.setPageSize(1);
     table.sortBy('name');

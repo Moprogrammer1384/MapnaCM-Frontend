@@ -2,30 +2,10 @@ import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
-import { SitePayload } from 'src/app/core/models/asset.model';
+import type { Site } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
-import { compareElevationText, compareNumericText } from 'src/app/shared/components/data-table/pagination/table-pagination-comparators';
-
-interface SiteRow {
-  id: number;
-  city: string;
-  address: string;
-  latitude: string;
-  longitude: string;
-  location: string;
-  elevation: string;
-}
-
-interface SiteFormModel {
-  id?: number;
-  city: string;
-  address: string;
-  latitude: string;
-  longitude: string;
-  location: string;
-  elevation: string;
-}
+import { compareNumericText } from 'src/app/shared/components/data-table/pagination/table-pagination-comparators';
 
 @Component({
   selector: 'app-site',
@@ -37,7 +17,7 @@ export class SiteComponent implements OnInit {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
   };
 
-  table = new TablePagination<SiteRow>(
+  table = new TablePagination<Site>(
     [],
     [
       { key: 'city', title: 'City', class: 'min-w-125px' },
@@ -45,12 +25,12 @@ export class SiteComponent implements OnInit {
       { key: 'latitude', title: 'Latitude', class: 'min-w-100px', compare: (left, right) => compareNumericText(left.latitude, right.latitude) },
       { key: 'longitude', title: 'Longitude', class: 'min-w-100px', compare: (left, right) => compareNumericText(left.longitude, right.longitude) },
       { key: 'location', title: 'Location', class: 'min-w-150px' },
-      { key: 'elevation', title: 'Elevation above sea level', class: 'min-w-125px', compare: (left, right) => compareElevationText(left.elevation, right.elevation) },
-    ] satisfies readonly TablePaginationColumn<SiteRow>[],
-    { searchKeys: ['city', 'address', 'latitude', 'longitude', 'location', 'elevation'] satisfies readonly Extract<keyof SiteRow, string>[] }
+      { key: 'elevation', title: 'Elevation above sea level', class: 'min-w-125px' },
+    ] satisfies readonly TablePaginationColumn<Site>[],
+    { searchKeys: ['city', 'address', 'latitude', 'longitude', 'location', 'elevation'] satisfies readonly Extract<keyof Site, string>[] }
   );
 
-  siteForm: SiteFormModel = this.emptySiteForm();
+  siteForm: Site = this.emptySiteForm();
   saving = false;
 
   constructor(
@@ -87,7 +67,7 @@ export class SiteComponent implements OnInit {
     this.modalService.open(content, this.modalConfig);
   }
 
-  openEditModal(content: TemplateRef<any>, site: SiteRow): void {
+  openEditModal(content: TemplateRef<any>, site: Site): void {
     this.siteForm = {
       id: site.id,
       city: site.city,
@@ -109,15 +89,21 @@ export class SiteComponent implements OnInit {
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
+    const elevation = this.siteForm.elevation;
+    if (typeof elevation !== 'number' || !Number.isFinite(elevation)) {
+      form.control.markAllAsTouched();
+      this.showAlert('error', 'Error!', 'Please enter a valid elevation.');
+      return;
+    }
 
     this.saving = true;
-    const payload: SitePayload = {
+    const payload = {
       city: this.siteForm.city,
       address: this.siteForm.address,
       latitude: this.siteForm.latitude,
       longitude: this.siteForm.longitude,
       location: this.siteForm.location,
-      elevation: this.siteForm.elevation,
+      elevation,
     };
     const isEdit = !!this.siteForm.id;
     const request$ = isEdit
@@ -141,11 +127,14 @@ export class SiteComponent implements OnInit {
 
   // Opens the Metronic confirmation dialog; the API delete only runs from
   // the onConfirmedDelete callback after the admin confirms.
-  deleteSite(site: SiteRow): void {
+  deleteSite(site: Site): void {
     this.table.confirmDelete(site, site.city);
   }
 
-  private deleteSiteConfirmed(site: SiteRow): void {
+  private deleteSiteConfirmed(site: Site): void {
+    if (site.id === undefined) {
+      return;
+    }
     this.apiService.deleteSite(site.id).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + site.city + '!.');
@@ -155,8 +144,8 @@ export class SiteComponent implements OnInit {
     });
   }
 
-  private emptySiteForm(): SiteFormModel {
-    return { city: '', address: '', latitude: '', longitude: '', location: '', elevation: '' };
+  private emptySiteForm(): Site {
+    return { city: '', address: '', latitude: '', longitude: '', location: '', elevation: null };
   }
 
   private showAlert(icon: 'success' | 'error', title: string, text: string): void {

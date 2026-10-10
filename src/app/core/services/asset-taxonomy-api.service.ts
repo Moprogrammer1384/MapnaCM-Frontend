@@ -6,26 +6,19 @@ import { environment } from '../../../environments/environment';
 import { ApiEnvelope } from '../models/response.model';
 import { criteriaToHttpParams } from '../utils/query-params';
 import { PaginatedResult } from '../models/user-management.model';
-import {
+import type {
+  EmployerOption,
   Asset,
-  AssetPayload,
   AssetSystem,
-  ComponentPayload,
-  MeasurementPayload,
   MeasurementType,
-  MeasurementTypePayload,
   Plant,
-  PlantPayload,
   PlantType,
   RoleUser,
   Site,
-  SitePayload,
-  SystemPayload,
-  TaxonomyComponent,
-  TaxonomyMeasurement,
+  Component,
+  Measurement,
   Unit,
-  UnitPayload,
-} from '../models/asset.model';
+} from '../models/asset-taxonomy.model';
 
 /** Shared page request for the taxonomy lists: everything, client-side filtered. */
 const ALL_ROWS_PARAMS = criteriaToHttpParams({ skip: 0, take: 10000 });
@@ -51,15 +44,30 @@ export class AssetApiService {
       .pipe(map((response) => this.unwrapPage(response)));
   }
 
-  createSite(payload: SitePayload): Observable<void> {
+  createSite(payload: Pick<Site, 'city' | 'address' | 'latitude' | 'longitude' | 'location'> & { elevation: number }): Observable<void> {
     return this.http
-      .post<ApiEnvelope<object>>(`${this.apiUrl}/Site/Add`, payload)
+      .post<ApiEnvelope<object>>(`${this.apiUrl}/Site/Add`, {
+        city: payload.city,
+        address: payload.address,
+        latitude: payload.latitude,
+        longitude: payload.longitude,
+        location: payload.location,
+        elevation: payload.elevation,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
-  updateSite(payload: SitePayload & { id: number }): Observable<void> {
+  updateSite(payload: Pick<Site, 'city' | 'address' | 'latitude' | 'longitude' | 'location'> & { id: number; elevation: number }): Observable<void> {
     return this.http
-      .put<ApiEnvelope<object>>(`${this.apiUrl}/Site/Update`, payload)
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/Site/Update`, {
+        id: payload.id,
+        city: payload.city,
+        address: payload.address,
+        latitude: payload.latitude,
+        longitude: payload.longitude,
+        location: payload.location,
+        elevation: payload.elevation,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
@@ -77,15 +85,18 @@ export class AssetApiService {
       .pipe(map((response) => this.unwrapPage(response)));
   }
 
-  createPlantType(name: string): Observable<void> {
+  createPlantType(payload: Pick<PlantType, 'name'>): Observable<void> {
     return this.http
-      .post<ApiEnvelope<object>>(`${this.apiUrl}/PlantType/Add`, { name })
+      .post<ApiEnvelope<object>>(`${this.apiUrl}/PlantType/Add`, { name: payload.name })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
-  updatePlantType(payload: { id: number; name: string }): Observable<void> {
+  updatePlantType(payload: Pick<PlantType, 'name'> & { id: number }): Observable<void> {
     return this.http
-      .put<ApiEnvelope<object>>(`${this.apiUrl}/PlantType/Update`, payload)
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/PlantType/Update`, {
+        id: payload.id,
+        name: payload.name,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
@@ -103,15 +114,28 @@ export class AssetApiService {
       .pipe(map((response) => this.unwrapPage(response)));
   }
 
-  createPlant(payload: PlantPayload): Observable<void> {
+  createPlant(payload: Pick<Plant, 'name' | 'employerId' | 'employerName'> & { siteId: number; plantTypeId: number }): Observable<void> {
     return this.http
-      .post<ApiEnvelope<object>>(`${this.apiUrl}/Plant/Add`, payload)
+      .post<ApiEnvelope<object>>(`${this.apiUrl}/Plant/Add`, {
+        name: payload.name,
+        siteId: payload.siteId,
+        plantTypeId: payload.plantTypeId,
+        employerId: payload.employerId,
+        employerName: payload.employerName,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
-  updatePlant(payload: PlantPayload & { id: number }): Observable<void> {
+  updatePlant(payload: Pick<Plant, 'name' | 'employerId' | 'employerName'> & { siteId: number; plantTypeId: number } & { id: number }): Observable<void> {
     return this.http
-      .put<ApiEnvelope<object>>(`${this.apiUrl}/Plant/Update`, payload)
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/Plant/Update`, {
+        id: payload.id,
+        name: payload.name,
+        siteId: payload.siteId,
+        plantTypeId: payload.plantTypeId,
+        employerId: payload.employerId,
+        employerName: payload.employerName,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
@@ -140,7 +164,7 @@ export class AssetApiService {
    * display name. Single source for the plant form select and every employer
    * filter in the taxonomy pages.
    */
-  getEmployerOptions(): Observable<{ id: string; name: string }[]> {
+  getEmployerOptions(): Observable<EmployerOption[]> {
     return this.getUsersByRole('Employer').pipe(
       map((users) =>
         users.map((user) => ({
@@ -159,15 +183,22 @@ export class AssetApiService {
       .pipe(map((response) => this.unwrapPage(response)));
   }
 
-  createUnit(payload: UnitPayload): Observable<void> {
+  createUnit(payload: Pick<Unit, 'name'> & { plantId: number }): Observable<void> {
     return this.http
-      .post<ApiEnvelope<object>>(`${this.apiUrl}/Unit/Add`, payload)
+      .post<ApiEnvelope<object>>(`${this.apiUrl}/Unit/Add`, {
+        name: payload.name,
+        plantId: payload.plantId,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
-  updateUnit(payload: UnitPayload & { id: number }): Observable<void> {
+  updateUnit(payload: Pick<Unit, 'name'> & { plantId: number } & { id: number }): Observable<void> {
     return this.http
-      .put<ApiEnvelope<object>>(`${this.apiUrl}/Unit/Update`, payload)
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/Unit/Update`, {
+        id: payload.id,
+        name: payload.name,
+        plantId: payload.plantId,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
@@ -185,15 +216,22 @@ export class AssetApiService {
       .pipe(map((response) => this.unwrapPage(response)));
   }
 
-  createSystem(payload: SystemPayload): Observable<void> {
+  createSystem(payload: Pick<AssetSystem, 'name'> & { unitId: number }): Observable<void> {
     return this.http
-      .post<ApiEnvelope<object>>(`${this.apiUrl}/System/Add`, payload)
+      .post<ApiEnvelope<object>>(`${this.apiUrl}/System/Add`, {
+        name: payload.name,
+        unitId: payload.unitId,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
-  updateSystem(payload: SystemPayload & { id: number }): Observable<void> {
+  updateSystem(payload: Pick<AssetSystem, 'name'> & { unitId: number } & { id: number }): Observable<void> {
     return this.http
-      .put<ApiEnvelope<object>>(`${this.apiUrl}/System/Update`, payload)
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/System/Update`, {
+        id: payload.id,
+        name: payload.name,
+        unitId: payload.unitId,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
@@ -211,15 +249,24 @@ export class AssetApiService {
       .pipe(map((response) => this.unwrapPage(response)));
   }
 
-  createAsset(payload: AssetPayload): Observable<void> {
+  createAsset(payload: Pick<Asset, 'name'> & { systemId: number; tag?: string }): Observable<void> {
     return this.http
-      .post<ApiEnvelope<object>>(`${this.apiUrl}/Asset/Add`, payload)
+      .post<ApiEnvelope<object>>(`${this.apiUrl}/Asset/Add`, {
+        name: payload.name,
+        tag: payload.tag,
+        systemId: payload.systemId,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
-  updateAsset(payload: AssetPayload & { id: number }): Observable<void> {
+  updateAsset(payload: Pick<Asset, 'name'> & { systemId: number; tag?: string } & { id: number }): Observable<void> {
     return this.http
-      .put<ApiEnvelope<object>>(`${this.apiUrl}/Asset/Update`, payload)
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/Asset/Update`, {
+        id: payload.id,
+        name: payload.name,
+        tag: payload.tag,
+        systemId: payload.systemId,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
@@ -231,21 +278,30 @@ export class AssetApiService {
 
   // ---- Components -------------------------------------------------------
 
-  getAllComponents(): Observable<TaxonomyComponent[]> {
+  getAllComponents(): Observable<Component[]> {
     return this.http
-      .get<ApiEnvelope<PaginatedResult<TaxonomyComponent>>>(`${this.apiUrl}/Component/GetAll`, { params: ALL_ROWS_PARAMS })
+      .get<ApiEnvelope<PaginatedResult<Component>>>(`${this.apiUrl}/Component/GetAll`, { params: ALL_ROWS_PARAMS })
       .pipe(map((response) => this.unwrapPage(response)));
   }
 
-  createComponent(payload: ComponentPayload): Observable<void> {
+  createComponent(payload: Pick<Component, 'name'> & { assetId: number; tag?: string }): Observable<void> {
     return this.http
-      .post<ApiEnvelope<object>>(`${this.apiUrl}/Component/Add`, payload)
+      .post<ApiEnvelope<object>>(`${this.apiUrl}/Component/Add`, {
+        name: payload.name,
+        tag: payload.tag,
+        assetId: payload.assetId,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
-  updateComponent(payload: ComponentPayload & { id: number }): Observable<void> {
+  updateComponent(payload: Pick<Component, 'name'> & { assetId: number; tag?: string } & { id: number }): Observable<void> {
     return this.http
-      .put<ApiEnvelope<object>>(`${this.apiUrl}/Component/Update`, payload)
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/Component/Update`, {
+        id: payload.id,
+        name: payload.name,
+        tag: payload.tag,
+        assetId: payload.assetId,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
@@ -257,21 +313,34 @@ export class AssetApiService {
 
   // ---- Measurements -------------------------------------------------------
 
-  getAllMeasurements(): Observable<TaxonomyMeasurement[]> {
+  getAllMeasurements(): Observable<Measurement[]> {
     return this.http
-      .get<ApiEnvelope<PaginatedResult<TaxonomyMeasurement>>>(`${this.apiUrl}/Measurement/GetAll`, { params: ALL_ROWS_PARAMS })
+      .get<ApiEnvelope<PaginatedResult<Measurement>>>(`${this.apiUrl}/Measurement/GetAll`, { params: ALL_ROWS_PARAMS })
       .pipe(map((response) => this.unwrapPage(response)));
   }
 
-  createMeasurement(payload: MeasurementPayload): Observable<void> {
+  createMeasurement(payload: Pick<Measurement, 'name'> & { componentId: number; measurementTypeId: number; sensitivity: number; tag?: string }): Observable<void> {
     return this.http
-      .post<ApiEnvelope<object>>(`${this.apiUrl}/Measurement/Add`, payload)
+      .post<ApiEnvelope<object>>(`${this.apiUrl}/Measurement/Add`, {
+        name: payload.name,
+        tag: payload.tag,
+        measurementTypeId: payload.measurementTypeId,
+        sensitivity: payload.sensitivity,
+        componentId: payload.componentId,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
-  updateMeasurement(payload: MeasurementPayload & { id: number }): Observable<void> {
+  updateMeasurement(payload: Pick<Measurement, 'name'> & { componentId: number; measurementTypeId: number; sensitivity: number; tag?: string } & { id: number }): Observable<void> {
     return this.http
-      .put<ApiEnvelope<object>>(`${this.apiUrl}/Measurement/Update`, payload)
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/Measurement/Update`, {
+        id: payload.id,
+        name: payload.name,
+        tag: payload.tag,
+        measurementTypeId: payload.measurementTypeId,
+        sensitivity: payload.sensitivity,
+        componentId: payload.componentId,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
@@ -289,15 +358,22 @@ export class AssetApiService {
       .pipe(map((response) => this.unwrapPage(response)));
   }
 
-  createMeasurementType(payload: MeasurementTypePayload): Observable<void> {
+  createMeasurementType(payload: Pick<MeasurementType, 'name' | 'unit'>): Observable<void> {
     return this.http
-      .post<ApiEnvelope<object>>(`${this.apiUrl}/MeasurementType/Add`, payload)
+      .post<ApiEnvelope<object>>(`${this.apiUrl}/MeasurementType/Add`, {
+        name: payload.name,
+        unit: payload.unit,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
-  updateMeasurementType(payload: MeasurementTypePayload & { id: number }): Observable<void> {
+  updateMeasurementType(payload: Pick<MeasurementType, 'name' | 'unit'> & { id: number }): Observable<void> {
     return this.http
-      .put<ApiEnvelope<object>>(`${this.apiUrl}/MeasurementType/Update`, payload)
+      .put<ApiEnvelope<object>>(`${this.apiUrl}/MeasurementType/Update`, {
+        id: payload.id,
+        name: payload.name,
+        unit: payload.unit,
+      })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 

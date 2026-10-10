@@ -15,12 +15,12 @@
           <!--begin::Search-->
           <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
             <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-            <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Measurement" #tableSearch (input)="table.search(tableSearch.value)" aria-label="Search Measurement" />
+            <input type="text" [disabled]="listState.loading()" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Measurement" #tableSearch (input)="table.search(tableSearch.value)" aria-label="Search Measurement" />
           </div>
           <!--end::Search-->
           <!--begin::Employer filter-->
           <div class="my-1 me-md-4 w-100 w-md-250px">
-            <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by employer" [ngModel]="employerFilter" (ngModelChange)="filterByEmployer($event)">
+            <select [disabled]="saving || !employersState.ready" class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by employer" [ngModel]="employerFilter" (ngModelChange)="filterByEmployer($event)">
               <option [ngValue]="null">All Employers</option>
               <option *ngFor="let e of employers" [ngValue]="e.id">{{ e.name }}</option>
             </select>
@@ -28,20 +28,20 @@
           <!--end::Employer filter-->
           <!--begin::Component filter-->
           <div class="my-1 me-md-4 w-100 w-md-250px">
-            <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by component" [ngModel]="componentFilter" (ngModelChange)="filterByComponent($event)">
+            <select [disabled]="saving || !listState.ready" class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by component" [ngModel]="componentFilter" (ngModelChange)="filterByComponent($event)">
               <option [ngValue]="null">All Components</option>
               <option *ngFor="let s of componentOptions" [ngValue]="s.id">{{ s.label }}</option>
             </select>
           </div>
           <!--end::Component filter-->
           <div class="my-1 me-md-4 w-100 w-md-150px">
-            <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by measurement type" [ngModel]="typeFilter" (ngModelChange)="filterByType($event)">
+            <select [disabled]="saving || !typesState.ready" class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by measurement type" [ngModel]="typeFilter" (ngModelChange)="filterByType($event)">
               <option [ngValue]="null">All Types</option>
               <option *ngFor="let type of typeOptions" [ngValue]="type.id">{{ type.name }} ({{ type.unit }})</option>
             </select>
           </div>
           <!--begin::Button-->
-          <button type="button" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(measurementModal)">Add Measurement</button>
+          <button type="button" [disabled]="!canAdd" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(measurementModal)">Add Measurement</button>
           <!--end::Button-->
         </div>
         <!--begin::Card toolbar-->
@@ -49,9 +49,19 @@
       <!--end::Card header-->
       <!--begin::Card body-->
       <div class="card-body pt-0">
+        <app-request-feedback [state]="employersState" loadingMessage="Loading employers..." [retryDisabled]="saving" (retry)="loadEmployerOptions()"></app-request-feedback>
+        <app-request-feedback [state]="typesState" loadingMessage="Loading measurement types..." [retryDisabled]="saving" (retry)="loadTypes()"></app-request-feedback>
+        <div *ngIf="typesState.ready && typeOptions.length === 0" class="alert alert-warning">Add a Measurement Type below before creating a Measurement.</div>
+        <div *ngIf="listState.ready && componentOptions.length === 0" class="alert alert-warning">Add a <a routerLink="/asset-taxonomy/component" class="alert-link">Component</a> before creating a Measurement.</div>
         <!--begin::Table container-->
         <app-data-table
           [table]="table"
+          [loading]="listState.loading()"
+          [error]="listState.error()"
+          [actionsDisabled]="actionsDisabled"
+          [retryDisabled]="saving"
+          emptyMessage="No measurements yet."
+          (retry)="refresh()"
           tableId="kt_measurement_table"
           (editRecord)="openEditModal(measurementModal, $event)"
           (deleteRecord)="table.confirmDelete($event, $event.name)">
@@ -77,11 +87,11 @@
           <!--begin::Search-->
           <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
             <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-            <input type="text" id="kt_measurement_type_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Type" aria-label="Search measurement types" #typesSearch (input)="types.search(typesSearch.value)" />
+            <input type="text" [disabled]="typesState.loading()" id="kt_measurement_type_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Type" aria-label="Search measurement types" #typesSearch (input)="types.search(typesSearch.value)" />
           </div>
           <!--end::Search-->
           <!--begin::Button-->
-          <button type="button" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddTypeModal(typeModal)">Add Type</button>
+          <button type="button" [disabled]="saving || typesState.loading()" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddTypeModal(typeModal)">Add Type</button>
           <!--end::Button-->
         </div>
         <!--begin::Card toolbar-->
@@ -92,6 +102,12 @@
         <!--begin::Table container-->
         <app-data-table
           [table]="types"
+          [loading]="typesState.loading()"
+          [error]="typesState.error()"
+          [actionsDisabled]="saving"
+          [retryDisabled]="saving"
+          emptyMessage="No measurement types yet."
+          (retry)="loadTypes()"
           tableId="kt_measurement_type_table"
           (editRecord)="openEditTypeModal(typeModal, $event)"
           (deleteRecord)="deleteType($event)">

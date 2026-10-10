@@ -1,7 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
+import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { Unit, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
@@ -11,9 +14,10 @@ import { TablePagination, TablePaginationColumn } from 'src/app/shared/component
   templateUrl: './unit.component.html',
   styleUrls: ['./unit.component.scss'],
 })
-export class UnitComponent implements OnInit {
+export class UnitComponent implements OnInit, OnDestroy {
   modalConfig: NgbModalOptions = {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
+    beforeDismiss: () => !this.saving,
   };
 
   table = new TablePagination<Unit>(
@@ -37,6 +41,26 @@ export class UnitComponent implements OnInit {
 
   private employerByPlantId: Record<number, InheritedEmployer> = {};
 
+  readonly listState = new RequestState();
+  readonly employersState = new RequestState();
+  private readonly destroyRef = inject(DestroyRef);
+  private activeModal?: NgbModalRef;
+
+  get canAdd(): boolean {
+    return !this.saving && this.listState.ready && this.plantOptions.length > 0;
+  }
+
+  get actionsDisabled(): boolean {
+    return this.saving || this.listState.loading();
+  }
+
+  ngOnDestroy(): void {
+    this.listState.destroy();
+    this.employersState.destroy();
+    this.saving = false;
+    this.activeModal?.dismiss('page destroyed');
+  }
+
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
@@ -49,13 +73,13 @@ export class UnitComponent implements OnInit {
     this.refresh();
   }
 
-  private loadEmployerOptions(): void {
-    this.apiService.getEmployerOptions().subscribe({
+  loadEmployerOptions(): void {
+    this.employersState.track(this.apiService.getEmployerOptions(), 'Unable to load employer users.', 'getEmployerOptions').subscribe({
       next: (users) => {
         this.employers = users;
         this.cdr.detectChanges();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load employer users.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
@@ -70,11 +94,14 @@ export class UnitComponent implements OnInit {
   }
 
   refresh(): void {
+    if (this.listState.loading()) {
+      return;
+    }
     this.loadPlants();
   }
 
   private loadPlants(): void {
-    this.apiService.getAllPlants().subscribe({
+    this.listState.track(this.apiService.getAllPlants(), 'Unable to load plants.', 'getAllPlants').subscribe({
       next: (plants) => {
         this.plantOptions = [];
         this.employerByPlantId = {};
@@ -93,7 +120,7 @@ export class UnitComponent implements OnInit {
 
         this.loadUnits();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load plants.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
@@ -107,23 +134,29 @@ export class UnitComponent implements OnInit {
   }
 
   private loadUnits(): void {
-    this.apiService.getAllUnits().subscribe({
+    this.listState.track(this.apiService.getAllUnits(), 'Unable to load units.', 'getAllUnits').subscribe({
       next: (units) => {
         this.table.setRows(units.map((unit) => this.toUnitRow(unit)), { resetPage: true });
         this.cdr.detectChanges();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load units.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
   openAddModal(content: TemplateRef<any>): void {
+    if (!this.canAdd) {
+      return;
+    }
     this.unitForm = this.emptyForm();
-    this.modalService.open(content, this.modalConfig);
+    this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
   openEditModal(content: TemplateRef<any>, unit: Unit): void {
+    if (this.actionsDisabled || this.table.isDeleting(unit)) {
+      return;
+    }
     this.unitForm = { id: unit.id, plantId: unit.plantId, name: unit.name };
-    this.modalService.open(content, this.modalConfig);
+    this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
   submit(form: NgForm, modal: { dismiss: (reason: string) => void }): void {
@@ -149,7 +182,7 @@ export class UnitComponent implements OnInit {
       ? this.apiService.updateUnit({ id: this.unitForm.id!, ...payload })
       : this.apiService.createUnit(payload);
 
-    request$.subscribe({
+    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.saving = false;
         modal.dismiss('saved');
@@ -171,10 +204,13 @@ export class UnitComponent implements OnInit {
   }
 
   private deleteUnitConfirmed(unit: Unit): void {
-    if (unit.id === undefined) {
+    if (this.saving || unit.id === undefined || !this.table.beginDelete(unit)) {
       return;
     }
-    this.apiService.deleteUnit(unit.id).subscribe({
+    this.apiService.deleteUnit(unit.id).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.table.endDelete(unit))
+    ).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + unit.name + '!.');
         this.loadUnitsOnly();
@@ -185,12 +221,12 @@ export class UnitComponent implements OnInit {
 
   // After a mutation only the unit list changes; the plant maps are current.
   private loadUnitsOnly(): void {
-    this.apiService.getAllUnits().subscribe({
+    this.listState.track(this.apiService.getAllUnits(), 'Unable to load units.', 'getAllUnits').subscribe({
       next: (units) => {
         this.table.setRows(units.map((unit) => this.toUnitRow(unit)), { resetPage: true });
         this.cdr.detectChanges();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load units.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 

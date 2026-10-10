@@ -1,11 +1,21 @@
-<div class="dataTables_wrapper dt-bootstrap5 no-footer">
-  <div class="table-responsive">
+<div class="dataTables_wrapper dt-bootstrap5 no-footer" [attr.aria-busy]="loading">
+  <div *ngIf="loading" class="d-flex align-items-center justify-content-center gap-3 py-10 text-gray-600" role="status">
+    <span class="spinner-border spinner-border-sm text-primary" aria-hidden="true"></span>
+    <span>Loading records...</span>
+  </div>
+  <div *ngIf="!loading && error" class="alert alert-danger d-flex flex-column flex-sm-row align-items-sm-center gap-3" role="alert">
+    <span class="flex-grow-1 text-break">{{ error }}</span>
+    <button type="button" class="btn btn-sm btn-light-danger" [disabled]="retryDisabled" (click)="retry.emit()">Retry</button>
+  </div>
+  <div *ngIf="!loading && !error" class="table-responsive">
     <app-table-record
       [table]="table"
       [tableId]="tableId"
+      [emptyMessage]="emptyMessage"
+      [actionsDisabled]="actionsDisabled"
       (editRecord)="editRecord.emit($event)"
       (deleteRecord)="deleteRecord.emit($event)">
     </app-table-record>
   </div>
-  <app-paginationbar [table]="table"></app-paginationbar>
+  <app-paginationbar *ngIf="!loading && !error" [table]="table"></app-paginationbar>
 </div>

@@ -25,19 +25,21 @@
       <td *ngFor="let col of table.columns">{{ record[col.key] }}</td>
       <td class="text-end text-nowrap">
         <button pButton type="button" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
-          aria-label="Edit record" (click)="editRecord.emit(record)">
+          aria-label="Edit record" [disabled]="actionsDisabled || table.isDeleting(record)" (click)="editRecord.emit(record)">
           <i class="ki-duotone ki-pencil fs-2" aria-hidden="true"><span class="path1"></span><span class="path2"></span></i>
         </button>
         <button pButton type="button" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm"
-          aria-label="Delete record" data-kt-site-table-filter="delete_row" (click)="deleteRecord.emit(record)">
-          <i class="ki-duotone ki-trash fs-2" aria-hidden="true"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+          aria-label="Delete record" data-kt-site-table-filter="delete_row" [disabled]="actionsDisabled || table.isDeleting(record)"
+          [attr.aria-busy]="table.isDeleting(record)" (click)="deleteRecord.emit(record)">
+          <span *ngIf="table.isDeleting(record)" class="spinner-border spinner-border-sm" role="status" aria-label="Deleting record"></span>
+          <i *ngIf="!table.isDeleting(record)" class="ki-duotone ki-trash fs-2" aria-hidden="true"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
         </button>
       </td>
     </tr>
   </ng-template>
   <ng-template pTemplate="emptymessage">
     <tr class="fs-6">
-      <td [attr.colspan]="table.columns.length + 1" class="text-center text-gray-500">No matching records found</td>
+      <td [attr.colspan]="table.columns.length + 1" class="text-center text-gray-500">{{ table.rows.length ? 'No matching records found' : emptyMessage }}</td>
     </tr>
   </ng-template>
 </p-table>

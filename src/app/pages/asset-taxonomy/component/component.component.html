@@ -12,12 +12,12 @@
       <!--begin::Search-->
       <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
         <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Component" #tableSearch (input)="table.search(tableSearch.value)" aria-label="Search Component" />
+        <input type="text" [disabled]="listState.loading()" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Component" #tableSearch (input)="table.search(tableSearch.value)" aria-label="Search Component" />
       </div>
       <!--end::Search-->
       <!--begin::Employer filter-->
       <div class="my-1 me-md-4 w-100 w-md-250px">
-        <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by employer" [ngModel]="employerFilter" (ngModelChange)="filterByEmployer($event)">
+        <select [disabled]="saving || !employersState.ready" class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by employer" [ngModel]="employerFilter" (ngModelChange)="filterByEmployer($event)">
           <option [ngValue]="null">All Employers</option>
           <option *ngFor="let e of employers" [ngValue]="e.id">{{ e.name }}</option>
         </select>
@@ -25,14 +25,14 @@
       <!--end::Employer filter-->
       <!--begin::Asset filter-->
       <div class="my-1 me-md-4 w-100 w-md-250px">
-        <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by asset" [ngModel]="assetFilter" (ngModelChange)="filterByAsset($event)">
+        <select [disabled]="saving || !listState.ready" class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by asset" [ngModel]="assetFilter" (ngModelChange)="filterByAsset($event)">
           <option [ngValue]="null">All Assets</option>
           <option *ngFor="let s of assetOptions" [ngValue]="s.id">{{ s.label }}</option>
         </select>
       </div>
       <!--end::Asset filter-->
       <!--begin::Button-->
-      <button type="button" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(componentModal)">Add Component</button>
+      <button type="button" [disabled]="!canAdd" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(componentModal)">Add Component</button>
       <!--end::Button-->
     </div>
     <!--begin::Card toolbar-->
@@ -40,9 +40,17 @@
   <!--end::Card header-->
   <!--begin::Card body-->
   <div class="card-body pt-0">
+    <app-request-feedback [state]="employersState" loadingMessage="Loading employers..." [retryDisabled]="saving" (retry)="loadEmployerOptions()"></app-request-feedback>
+    <div *ngIf="listState.ready && assetOptions.length === 0" class="alert alert-warning">Add a <a routerLink="/asset-taxonomy/asset" class="alert-link">Asset</a> before creating a Component.</div>
     <!--begin::Table container-->
     <app-data-table
       [table]="table"
+      [loading]="listState.loading()"
+      [error]="listState.error()"
+      [actionsDisabled]="actionsDisabled"
+      [retryDisabled]="saving"
+      emptyMessage="No components yet."
+      (retry)="refresh()"
       tableId="kt_profile_overview_table"
       (editRecord)="openEditModal(componentModal, $event)"
       (deleteRecord)="table.confirmDelete($event, $event.name)">

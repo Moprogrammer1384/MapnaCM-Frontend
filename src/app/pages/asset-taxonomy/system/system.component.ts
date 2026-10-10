@@ -1,7 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
+import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { AssetSystem, Unit, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
@@ -11,9 +14,10 @@ import { TablePagination, TablePaginationColumn } from 'src/app/shared/component
   templateUrl: './system.component.html',
   styleUrls: ['./system.component.scss'],
 })
-export class SystemComponent implements OnInit {
+export class SystemComponent implements OnInit, OnDestroy {
   modalConfig: NgbModalOptions = {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
+    beforeDismiss: () => !this.saving,
   };
 
   table = new TablePagination<AssetSystem>(
@@ -39,6 +43,26 @@ export class SystemComponent implements OnInit {
   // unit id -> plant id (to inherit the plant's employer)
   private plantIdByUnitId: Record<number, number> = {};
 
+  readonly listState = new RequestState();
+  readonly employersState = new RequestState();
+  private readonly destroyRef = inject(DestroyRef);
+  private activeModal?: NgbModalRef;
+
+  get canAdd(): boolean {
+    return !this.saving && this.listState.ready && this.unitOptions.length > 0;
+  }
+
+  get actionsDisabled(): boolean {
+    return this.saving || this.listState.loading();
+  }
+
+  ngOnDestroy(): void {
+    this.listState.destroy();
+    this.employersState.destroy();
+    this.saving = false;
+    this.activeModal?.dismiss('page destroyed');
+  }
+
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
@@ -51,13 +75,13 @@ export class SystemComponent implements OnInit {
     this.refresh();
   }
 
-  private loadEmployerOptions(): void {
-    this.apiService.getEmployerOptions().subscribe({
+  loadEmployerOptions(): void {
+    this.employersState.track(this.apiService.getEmployerOptions(), 'Unable to load employer users.', 'getEmployerOptions').subscribe({
       next: (users) => {
         this.employers = users;
         this.cdr.detectChanges();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load employer users.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
@@ -72,11 +96,14 @@ export class SystemComponent implements OnInit {
   }
 
   refresh(): void {
+    if (this.listState.loading()) {
+      return;
+    }
     this.loadUnits();
   }
 
   private loadUnits(): void {
-    this.apiService.getAllUnits().subscribe({
+    this.listState.track(this.apiService.getAllUnits(), 'Unable to load units.', 'getAllUnits').subscribe({
       next: (units: Unit[]) => {
         this.unitOptions = [];
         this.plantIdByUnitId = {};
@@ -94,12 +121,12 @@ export class SystemComponent implements OnInit {
 
         this.loadPlants();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load units.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
   private loadPlants(): void {
-    this.apiService.getAllPlants().subscribe({
+    this.listState.track(this.apiService.getAllPlants(), 'Unable to load plants.', 'getAllPlants').subscribe({
       next: (plants) => {
         this.employerByPlantId = {};
         for (const plant of plants) {
@@ -114,7 +141,7 @@ export class SystemComponent implements OnInit {
 
         this.loadSystems();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load plants.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
@@ -136,23 +163,29 @@ export class SystemComponent implements OnInit {
   }
 
   private loadSystems(): void {
-    this.apiService.getAllSystems().subscribe({
+    this.listState.track(this.apiService.getAllSystems(), 'Unable to load systems.', 'getAllSystems').subscribe({
       next: (systems) => {
         this.table.setRows(systems.map((system) => this.toSystemRow(system)), { resetPage: true });
         this.cdr.detectChanges();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load systems.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
   openAddModal(content: TemplateRef<any>): void {
+    if (!this.canAdd) {
+      return;
+    }
     this.systemForm = this.emptyForm();
-    this.modalService.open(content, this.modalConfig);
+    this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
   openEditModal(content: TemplateRef<any>, system: AssetSystem): void {
+    if (this.actionsDisabled || this.table.isDeleting(system)) {
+      return;
+    }
     this.systemForm = { id: system.id, unitId: system.unitId, name: system.name };
-    this.modalService.open(content, this.modalConfig);
+    this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
   submit(form: NgForm, modal: { dismiss: (reason: string) => void }): void {
@@ -178,7 +211,7 @@ export class SystemComponent implements OnInit {
       ? this.apiService.updateSystem({ id: this.systemForm.id!, ...payload })
       : this.apiService.createSystem(payload);
 
-    request$.subscribe({
+    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.saving = false;
         modal.dismiss('saved');
@@ -200,10 +233,13 @@ export class SystemComponent implements OnInit {
   }
 
   private deleteSystemConfirmed(system: AssetSystem): void {
-    if (system.id === undefined) {
+    if (this.saving || system.id === undefined || !this.table.beginDelete(system)) {
       return;
     }
-    this.apiService.deleteSystem(system.id).subscribe({
+    this.apiService.deleteSystem(system.id).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.table.endDelete(system))
+    ).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + system.name + '!.');
         this.loadSystems();

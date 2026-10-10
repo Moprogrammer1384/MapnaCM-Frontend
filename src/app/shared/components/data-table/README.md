@@ -5,6 +5,17 @@ Import the existing `SharedModule` to use `<app-data-table>`. Pass one typed
 `deleteRecord` in the host page. The table record and pagination children remain
 independently exported. All seven taxonomy pages use this implementation.
 
+Optional `loading`, `error`, `emptyMessage`, `actionsDisabled` and `retryDisabled`
+inputs provide Metronic request feedback. Loading/error states hide the table and
+paginator; the `retry` output asks the host to reload. A successful empty dataset
+uses `emptyMessage`, while an existing dataset filtered to zero rows shows
+"No matching records found". Requests remain owned by the host page.
+
+`TablePagination.confirmDelete` allows one confirmation at a time. The host must
+call `beginDelete(row)` before a confirmed mutation and `endDelete(row)` in its
+finalizer. Pending rows disable both actions and show a deletion spinner; the
+lock follows the entity ID across refreshed row snapshots.
+
 - `p-table` renders rows and empty states; `pButton` provides accessible sort and
   row-action buttons. The existing typed helper retains cached filtering, custom
   comparators, three-state sorting, immutable snapshots and pagination state.

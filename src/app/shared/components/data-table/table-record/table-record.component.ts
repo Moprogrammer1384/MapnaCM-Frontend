@@ -21,6 +21,8 @@ export class TableRecordComponent<T extends object> {
   // PrimeNG accepts mutable arrays; retain cached, immutable row snapshots.
   readonly viewRows = computed(() => [...(this.tableState()?.paged ?? [])]);
   @Input() tableId = 'kt_profile_overview_table';
+  @Input() emptyMessage = 'No records yet.';
+  @Input() actionsDisabled = false;
 
   // Hosts retain their modal, confirmation and API mutation workflows.
   @Output() editRecord = new EventEmitter<Readonly<T>>();

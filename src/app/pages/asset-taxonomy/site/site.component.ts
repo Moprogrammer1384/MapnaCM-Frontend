@@ -1,7 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
+import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { Site } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
@@ -12,9 +15,10 @@ import { compareNumericText } from 'src/app/shared/components/data-table/paginat
   templateUrl: './site.component.html',
   styleUrls: ['./site.component.scss'],
 })
-export class SiteComponent implements OnInit {
+export class SiteComponent implements OnInit, OnDestroy {
   modalConfig: NgbModalOptions = {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
+    beforeDismiss: () => !this.saving,
   };
 
   table = new TablePagination<Site>(
@@ -33,6 +37,24 @@ export class SiteComponent implements OnInit {
   siteForm: Site = this.emptySiteForm();
   saving = false;
 
+  readonly listState = new RequestState();
+  private readonly destroyRef = inject(DestroyRef);
+  private activeModal?: NgbModalRef;
+
+  get canAdd(): boolean {
+    return !this.saving && !this.listState.loading();
+  }
+
+  get actionsDisabled(): boolean {
+    return this.saving || this.listState.loading();
+  }
+
+  ngOnDestroy(): void {
+    this.listState.destroy();
+    this.saving = false;
+    this.activeModal?.dismiss('page destroyed');
+  }
+
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
@@ -45,7 +67,7 @@ export class SiteComponent implements OnInit {
   }
 
   loadSites(): void {
-    this.apiService.getAllSites().subscribe({
+    this.listState.track(this.apiService.getAllSites(), 'Unable to load sites.', 'getAllSites').subscribe({
       next: (sites) => {
         this.table.setRows(sites.map((site) => ({
           id: site.id,
@@ -58,16 +80,22 @@ export class SiteComponent implements OnInit {
         })), { resetPage: true });
         this.cdr.detectChanges();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load sites.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
   openAddModal(content: TemplateRef<any>): void {
+    if (!this.canAdd) {
+      return;
+    }
     this.siteForm = this.emptySiteForm();
-    this.modalService.open(content, this.modalConfig);
+    this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
   openEditModal(content: TemplateRef<any>, site: Site): void {
+    if (this.actionsDisabled || this.table.isDeleting(site)) {
+      return;
+    }
     this.siteForm = {
       id: site.id,
       city: site.city,
@@ -77,7 +105,7 @@ export class SiteComponent implements OnInit {
       location: site.location,
       elevation: site.elevation,
     };
-    this.modalService.open(content, this.modalConfig);
+    this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
   submit(form: NgForm, modal: { dismiss: (reason: string) => void }): void {
@@ -111,7 +139,7 @@ export class SiteComponent implements OnInit {
       ? this.apiService.updateSite({ id: this.siteForm.id!, ...payload })
       : this.apiService.createSite(payload);
 
-    request$.subscribe({
+    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.saving = false;
         modal.dismiss('saved');
@@ -133,10 +161,13 @@ export class SiteComponent implements OnInit {
   }
 
   private deleteSiteConfirmed(site: Site): void {
-    if (site.id === undefined) {
+    if (this.saving || site.id === undefined || !this.table.beginDelete(site)) {
       return;
     }
-    this.apiService.deleteSite(site.id).subscribe({
+    this.apiService.deleteSite(site.id).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.table.endDelete(site))
+    ).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + site.city + '!.');
         this.loadSites();

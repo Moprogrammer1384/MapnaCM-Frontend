@@ -1,0 +1,8 @@
+<div *ngIf="state.loading()" class="d-flex align-items-center gap-3 text-gray-600 py-3" role="status">
+  <span class="spinner-border spinner-border-sm text-primary" aria-hidden="true"></span>
+  <span>{{ loadingMessage }}</span>
+</div>
+<div *ngIf="!state.loading() && state.error()" class="alert alert-danger d-flex flex-column flex-sm-row align-items-sm-center gap-3" role="alert">
+  <span class="flex-grow-1 text-break">{{ state.error() }}</span>
+  <button type="button" class="btn btn-sm btn-light-danger" [disabled]="retryDisabled" (click)="retry.emit()">Retry</button>
+</div>

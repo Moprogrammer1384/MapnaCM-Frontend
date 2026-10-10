@@ -14,6 +14,7 @@ import { TableRecordComponent } from '../../shared/components/data-table/table-r
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
 import { FormModalComponent } from '../../shared/components/form-modal/form-modal.component';
 import { FiniteNumberDirective, TrimmedRequiredDirective } from '../../shared/components/form-validation/form-validators.directive';
+import { RequestFeedbackComponent } from '../../shared/components/request-state/request-feedback.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { FiniteNumberDirective, TrimmedRequiredDirective } from '../../shared/co
     DataTableComponent,
     FormModalComponent,
     FiniteNumberDirective,
-    TrimmedRequiredDirective
+    TrimmedRequiredDirective,
+    RequestFeedbackComponent
   ],
   imports: [
     CommonModule,
@@ -46,7 +48,8 @@ import { FiniteNumberDirective, TrimmedRequiredDirective } from '../../shared/co
     DataTableComponent,
     FormModalComponent,
     FiniteNumberDirective,
-    TrimmedRequiredDirective
+    TrimmedRequiredDirective,
+    RequestFeedbackComponent
   ]
 })
 export class SharedModule {

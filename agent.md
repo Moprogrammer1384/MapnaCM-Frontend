@@ -233,6 +233,7 @@ maintenance entry for focused browser validation.
 | `src/app/_metronic/` | Shared layout, icons, directives, theme DOM helpers, widgets |
 | `src/app/shared/components/data-table/` | PrimeNG table/paginator/select/button adapters with Metronic visuals, typed pagination helper and adjacent tests, exposed through `SharedModule` |
 | `src/app/shared/components/form-modal/` | Shared Metronic presentation for nine taxonomy form modals, each serving add/edit; page-owned forms projected into the shell, exported through `SharedModule` |
+| `src/app/shared/components/request-state/` | Cancellable keyed read-state helper and shared Metronic loading/error/retry feedback, exported through `SharedModule` |
 | `src/app/_fake/` | Mixed legacy code: in-memory demo API plus services calling Keenthemes remotely |
 | `src/app/graphify-out/` | Generated graph reports/caches; historical, not application source |
 | `src/assets/` | Theme Sass, icons, media/plugins, generated Apache chart scripts/data/vendor files |
@@ -368,7 +369,22 @@ All nine tables across the seven taxonomy pages use `<app-data-table>` from
 wrapper owns the responsive table scroller and composes `<app-table-record>`
 with `<app-paginationbar>`, passing the same required `TablePagination<T>` instance
 to both. It forwards `tableId` and readonly typed `editRecord`/`deleteRecord` outputs
-to the page without introducing state, API calls or confirmation logic.
+to the page without introducing API calls or confirmation logic. Optional
+`loading`, `error`, `emptyMessage`, `actionsDisabled` and `retryDisabled` inputs
+render Metronic request feedback; `retry` delegates reloading to the page.
+Loading/error hide the table and paginator. Successful empty datasets show the
+entity-specific empty message; filtering an existing dataset to zero rows shows
+"No matching records found".
+
+Pages own `RequestState` instances from `shared/components/request-state/` for
+main lists and independent employer/site/type options. Keyed reads cancel stale
+predecessors; chained hierarchy reads retain loading until all required reads
+finish. Failed reads display inline Retry without discarding the search query.
+Optional employer lookup failures leave the main table available. Successful
+empty prerequisites show guidance to create the parent/type, and Add/Edit stay
+disabled until required lookup data is ready. Page destruction cancels reads and
+writes and dismisses only that page's modal. Existing endpoints and hierarchy
+read order are retained; no new storage or backend contracts were introduced.
 
 The underlying `<app-table-record>` remains available independently from
 `shared/components/data-table/table-record/`, declared/exported by `SharedModule`. Its required
@@ -408,6 +424,10 @@ representations of explicitly configured fields, combines exact filters typed pe
 page sizes 10/25/50/100, and cycles default -> ascending -> descending -> default.
 Sorting preserves the original row array. New searches/filters/sorts reset page 1.
 Deletion prompts first; `onConfirmedDelete` delegates the mutation to the host.
+Only one confirmation may be open per table. Hosts call `beginDelete(row)` before
+the confirmed API mutation and `endDelete(row)` in its finalizer. Pending rows
+disable Edit/Delete and show a spinner; ID-based locks survive row snapshot
+replacement. Failed or cancelled mutations release the lock for another attempt.
 Column keys use `Extract<keyof T, string>` and all nine column arrays use
 `satisfies readonly TablePaginationColumn<RowType>[]`. Numbers sort numerically;
 text sorts textually, including digit-prefixed names/tags. Columns may supply
@@ -452,7 +472,11 @@ the Metronic close button, heading/optional description, responsive body spacing
 cancel/submit actions and loading indicator. Each page projects its complete
 `NgForm` and retains fields, models, validation, errors and save handlers. The
 shared submit button associates with that form through native `form="formId"`;
-IDs must be unique in the document. Saving disables submission. Dismiss outputs
+IDs must be unique in the document. Saving disables submission, Close and Cancel.
+Page-owned `beforeDismiss` guards block backdrop/programmatic dismissal during
+saving; the shared shell prevents Escape at keypress time to cover ng-bootstrap's
+deferred animation-frame handler. Failed saves retain the form values and restore
+all actions; successful saves close the modal. Dismiss outputs
 retain `Cross click` and `cancel`; ng-bootstrap still owns modal lifecycle.
 Site's existing action IDs and edit description are retained. Select2 continues
 to use the existing directive without additional plugin initialization.
@@ -1391,3 +1415,35 @@ superseded by the user's later `components/` rename on 2026-10-10.
   `git diff --check`. Existing 2.77 MB bundle warning and four CSS selector warnings
   remain. APIs were mocked; manual visual inspection and live API integration were
   not performed. No new visual styles, dependencies, endpoints or storage were added.
+
+### 2026-10-10 - Taxonomy request feedback and mutation guards
+
+- Added consistent loading, inline error/Retry and successful-empty states to all
+  seven taxonomy pages and nine tables. Loading no longer displays filtered-empty
+  text. Searches survive retries. Independent lookup failures have their own
+  feedback; optional employer failures leave main rows usable. Empty required
+  parent/type lists provide creation guidance and disable dependent Add actions.
+- Added reusable RequestState and RequestFeedbackComponent under
+  `shared/components/request-state/`. Keyed reads cancel superseded requests;
+  hierarchy chains retain loading until their final read. Page destruction
+  cancels outstanding subscriptions and dismisses the page-owned modal.
+- Saving disables Close/Cancel/Submit and prevents backdrop, Escape and
+  programmatic dismissal. Escape is prevented at keypress time because
+  ng-bootstrap defers its handler to an animation frame. A failed save leaves
+  values intact and restores actions; successful saves close normally.
+- Added per-table confirmation guards and per-entity pending deletion locks.
+  Repeated clicks cannot create duplicate confirmations or DELETE requests.
+  Pending rows disable Edit/Delete and display a spinner; failed requests unlock
+  the row for retry. ID-based locks survive immutable row snapshot replacement.
+- Added 33 real-page integration regressions, four read-state unit tests and two
+  deletion-state tests. Verified production build with strict templates, project
+  lint, normal test TypeScript compilation and all **154** focused
+  taxonomy/API/shared-control/Select2 tests with 1440x1000 desktop and 390x844
+  mobile ChromeHeadless launchers: **308 executions passed**. Assertions include
+  light/dark error colors, responsive overflow, retry, queued Escape after a
+  failed save and duplicate deletion clicks. Temporary generators/Karma config
+  were removed; `git diff --check` passed.
+- Existing 2.77 MB initial-bundle warning and four CSS selector warnings remain.
+  HTTP responses were mocked; live backend integration and manual visual review
+  were not performed. Existing Metronic classes, endpoints, data models and
+  storage decisions were preserved; no dependencies or visual styles were added.

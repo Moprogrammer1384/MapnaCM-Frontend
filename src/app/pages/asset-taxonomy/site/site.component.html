@@ -12,11 +12,11 @@
       <!--begin::Search-->
       <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
         <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Site" #tableSearch (input)="table.search(tableSearch.value)" aria-label="Search Site" />
+        <input type="text" [disabled]="listState.loading()" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Site" #tableSearch (input)="table.search(tableSearch.value)" aria-label="Search Site" />
       </div>
       <!--end::Search-->
       <!--begin::Button-->
-      <button type="button" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(siteModal)">Add Site</button>
+      <button type="button" [disabled]="!canAdd" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(siteModal)">Add Site</button>
       <!--end::Button-->
     </div>
     <!--begin::Card toolbar-->
@@ -27,6 +27,12 @@
     <!--begin::Table container-->
     <app-data-table
       [table]="table"
+      [loading]="listState.loading()"
+      [error]="listState.error()"
+      [actionsDisabled]="actionsDisabled"
+      [retryDisabled]="saving"
+      emptyMessage="No sites yet."
+      (retry)="loadSites()"
       tableId="kt_profile_overview_table"
       (editRecord)="openEditModal(siteModal, $event)"
       (deleteRecord)="deleteSite($event)">

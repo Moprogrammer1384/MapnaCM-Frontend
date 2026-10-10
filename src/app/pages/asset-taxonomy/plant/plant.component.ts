@@ -1,7 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
+import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { Plant, PlantType, TaxonomyParentOption, EmployerOption } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
@@ -11,9 +14,10 @@ import { TablePagination, TablePaginationColumn } from 'src/app/shared/component
   templateUrl: './plant.component.html',
   styleUrls: ['./plant.component.scss'],
 })
-export class PlantComponent implements OnInit {
+export class PlantComponent implements OnInit, OnDestroy {
   modalConfig: NgbModalOptions = {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
+    beforeDismiss: () => !this.saving,
   };
 
   plants = new TablePagination<Plant>(
@@ -48,6 +52,30 @@ export class PlantComponent implements OnInit {
   // Identity users carrying the Employer role — the only valid assignments.
   employerUsers: EmployerOption[] = [];
 
+  readonly listState = new RequestState();
+  readonly employersState = new RequestState();
+  readonly typesState = new RequestState();
+  readonly sitesState = new RequestState();
+  private readonly destroyRef = inject(DestroyRef);
+  private activeModal?: NgbModalRef;
+
+  get canAdd(): boolean {
+    return !this.saving && !this.listState.loading() && this.sitesState.ready && this.typesState.ready && this.employersState.ready && this.siteOptions.length > 0 && this.typeOptions.length > 0;
+  }
+
+  get actionsDisabled(): boolean {
+    return this.saving || this.listState.loading() || !this.sitesState.ready || !this.typesState.ready || !this.employersState.ready;
+  }
+
+  ngOnDestroy(): void {
+    this.listState.destroy();
+    this.employersState.destroy();
+    this.typesState.destroy();
+    this.sitesState.destroy();
+    this.saving = false;
+    this.activeModal?.dismiss('page destroyed');
+  }
+
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
@@ -73,7 +101,7 @@ export class PlantComponent implements OnInit {
   }
 
   loadSites(): void {
-    this.apiService.getAllSites().subscribe({
+    this.sitesState.track(this.apiService.getAllSites(), 'Unable to load sites.', 'getAllSites').subscribe({
       next: (sites) => {
         this.siteOptions = [];
         for (const site of sites) {
@@ -86,34 +114,34 @@ export class PlantComponent implements OnInit {
         }
         this.cdr.detectChanges();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load sites.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
   loadTypes(): void {
-    this.apiService.getAllPlantTypes().subscribe({
+    this.typesState.track(this.apiService.getAllPlantTypes(), 'Unable to load plant types.', 'getAllPlantTypes').subscribe({
       next: (types) => {
         this.typeOptions = types;
         this.types.setRows(types.map((type) => ({ id: type.id, name: type.name })), { resetPage: true });
         this.cdr.detectChanges();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load plant types.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
   loadEmployerUsers(): void {
-    this.apiService.getEmployerOptions().subscribe({
+    this.employersState.track(this.apiService.getEmployerOptions(), 'Unable to load employer users.', 'getEmployerOptions').subscribe({
       next: (users) => {
         this.employerUsers = users;
         this.employers = users;
         this.cdr.detectChanges();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load employer users.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
   loadPlants(): void {
-    this.apiService.getAllPlants().subscribe({
+    this.listState.track(this.apiService.getAllPlants(), 'Unable to load plants.', 'getAllPlants').subscribe({
       next: (plants) => {
         this.plants.setRows(plants.map((plant) => ({
           ...plant,
@@ -122,18 +150,24 @@ export class PlantComponent implements OnInit {
         })), { resetPage: true });
         this.cdr.detectChanges();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load plants.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
   // ---- Plant modal ----------------------------------------------------
 
   openAddPlantModal(content: TemplateRef<any>): void {
+    if (!this.canAdd) {
+      return;
+    }
     this.plantFormModel = this.emptyPlantForm();
-    this.modalService.open(content, this.modalConfig);
+    this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
   openEditPlantModal(content: TemplateRef<any>, plant: Plant): void {
+    if (this.actionsDisabled || this.plants.isDeleting(plant)) {
+      return;
+    }
     this.plantFormModel = {
       id: plant.id,
       name: plant.name,
@@ -141,7 +175,7 @@ export class PlantComponent implements OnInit {
       siteId: plant.siteId,
       employerId: plant.employerId || null,
     };
-    this.modalService.open(content, this.modalConfig);
+    this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
   submitPlant(form: NgForm, modal: { dismiss: (reason: string) => void }): void {
@@ -169,7 +203,7 @@ export class PlantComponent implements OnInit {
       ? this.apiService.updatePlant({ id: this.plantFormModel.id!, ...payload })
       : this.apiService.createPlant(payload);
 
-    request$.subscribe({
+    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.saving = false;
         modal.dismiss('saved');
@@ -191,10 +225,13 @@ export class PlantComponent implements OnInit {
   }
 
   private deletePlantConfirmed(plant: Plant): void {
-    if (plant.id === undefined) {
+    if (this.saving || plant.id === undefined || !this.plants.beginDelete(plant)) {
       return;
     }
-    this.apiService.deletePlant(plant.id).subscribe({
+    this.apiService.deletePlant(plant.id).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.plants.endDelete(plant))
+    ).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + plant.name + '!.');
         this.loadPlants();
@@ -206,13 +243,19 @@ export class PlantComponent implements OnInit {
   // ---- Type modal -------------------------------------------------------
 
   openAddTypeModal(content: TemplateRef<any>): void {
+    if (this.saving || this.typesState.loading()) {
+      return;
+    }
     this.typeFormModel = this.emptyTypeForm();
-    this.modalService.open(content, this.modalConfig);
+    this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
   openEditTypeModal(content: TemplateRef<any>, type: PlantType): void {
+    if (this.saving || this.typesState.loading() || this.types.isDeleting(type)) {
+      return;
+    }
     this.typeFormModel = { id: type.id, name: type.name };
-    this.modalService.open(content, this.modalConfig);
+    this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
   submitType(form: NgForm, modal: { dismiss: (reason: string) => void }): void {
@@ -231,7 +274,7 @@ export class PlantComponent implements OnInit {
       ? this.apiService.updatePlantType({ id: this.typeFormModel.id!, name: this.typeFormModel.name.trim() })
       : this.apiService.createPlantType({ name: this.typeFormModel.name.trim() });
 
-    request$.subscribe({
+    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.saving = false;
         modal.dismiss('saved');
@@ -252,10 +295,13 @@ export class PlantComponent implements OnInit {
   }
 
   private deleteTypeConfirmed(type: PlantType): void {
-    if (type.id === undefined) {
+    if (this.saving || type.id === undefined || !this.types.beginDelete(type)) {
       return;
     }
-    this.apiService.deletePlantType(type.id).subscribe({
+    this.apiService.deletePlantType(type.id).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.types.endDelete(type))
+    ).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + type.name + '!.');
         this.loadTypes();

@@ -1,7 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
+import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { Measurement, MeasurementType, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
@@ -11,9 +14,10 @@ import { TablePagination, TablePaginationColumn } from 'src/app/shared/component
   templateUrl: './measurement.component.html',
   styleUrls: ['./measurement.component.scss'],
 })
-export class MeasurementComponent implements OnInit {
+export class MeasurementComponent implements OnInit, OnDestroy {
   modalConfig: NgbModalOptions = {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
+    beforeDismiss: () => !this.saving,
   };
 
   table = new TablePagination<Measurement>(
@@ -61,6 +65,28 @@ export class MeasurementComponent implements OnInit {
   private plantIdByUnitId: Record<number, number> = {};
   private employerByPlantId: Record<number, InheritedEmployer> = {};
 
+  readonly listState = new RequestState();
+  readonly employersState = new RequestState();
+  readonly typesState = new RequestState();
+  private readonly destroyRef = inject(DestroyRef);
+  private activeModal?: NgbModalRef;
+
+  get canAdd(): boolean {
+    return !this.saving && this.listState.ready && this.componentOptions.length > 0 && this.typesState.ready && this.typeOptions.length > 0;
+  }
+
+  get actionsDisabled(): boolean {
+    return this.saving || this.listState.loading() || !this.typesState.ready;
+  }
+
+  ngOnDestroy(): void {
+    this.listState.destroy();
+    this.employersState.destroy();
+    this.typesState.destroy();
+    this.saving = false;
+    this.activeModal?.dismiss('page destroyed');
+  }
+
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
@@ -75,13 +101,13 @@ export class MeasurementComponent implements OnInit {
     this.refresh();
   }
 
-  private loadEmployerOptions(): void {
-    this.apiService.getEmployerOptions().subscribe({
+  loadEmployerOptions(): void {
+    this.employersState.track(this.apiService.getEmployerOptions(), 'Unable to load employer users.', 'getEmployerOptions').subscribe({
       next: (users) => {
         this.employers = users;
         this.cdr.detectChanges();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load employer users.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
@@ -101,11 +127,14 @@ export class MeasurementComponent implements OnInit {
   }
 
   refresh(): void {
+    if (this.listState.loading()) {
+      return;
+    }
     this.loadAssets();
   }
 
   private loadAssets(): void {
-    this.apiService.getAllAssets().subscribe({
+    this.listState.track(this.apiService.getAllAssets(), 'Unable to load assets.', 'getAllAssets').subscribe({
       next: (assets) => {
         this.systemIdByAssetId = {};
         for (const asset of assets) {
@@ -118,12 +147,12 @@ export class MeasurementComponent implements OnInit {
         }
         this.loadSystems();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load assets.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
   private loadSystems(): void {
-    this.apiService.getAllSystems().subscribe({
+    this.listState.track(this.apiService.getAllSystems(), 'Unable to load systems.', 'getAllSystems').subscribe({
       next: (systems) => {
         this.unitIdBySystemId = {};
         for (const system of systems) {
@@ -136,12 +165,12 @@ export class MeasurementComponent implements OnInit {
         }
         this.loadUnits();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load systems.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
   private loadUnits(): void {
-    this.apiService.getAllUnits().subscribe({
+    this.listState.track(this.apiService.getAllUnits(), 'Unable to load units.', 'getAllUnits').subscribe({
       next: (units) => {
         this.plantIdByUnitId = {};
         for (const unit of units) {
@@ -154,12 +183,12 @@ export class MeasurementComponent implements OnInit {
         }
         this.loadPlants();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load units.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
   private loadPlants(): void {
-    this.apiService.getAllPlants().subscribe({
+    this.listState.track(this.apiService.getAllPlants(), 'Unable to load plants.', 'getAllPlants').subscribe({
       next: (plants) => {
         this.employerByPlantId = {};
         for (const plant of plants) {
@@ -173,12 +202,12 @@ export class MeasurementComponent implements OnInit {
         }
         this.loadComponents();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load plants.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
   private loadComponents(): void {
-    this.apiService.getAllComponents().subscribe({
+    this.listState.track(this.apiService.getAllComponents(), 'Unable to load components.', 'getAllComponents').subscribe({
       next: (components) => {
         this.componentOptions = [];
         this.assetIdByComponentId = {};
@@ -195,7 +224,7 @@ export class MeasurementComponent implements OnInit {
         this.componentOptions.sort((left, right) => left.label.localeCompare(right.label));
         this.loadMeasurements();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load components.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
@@ -224,21 +253,27 @@ export class MeasurementComponent implements OnInit {
   }
 
   private loadMeasurements(): void {
-    this.apiService.getAllMeasurements().subscribe({
+    this.listState.track(this.apiService.getAllMeasurements(), 'Unable to load measurements.', 'getAllMeasurements').subscribe({
       next: (measurements) => {
         this.table.setRows(measurements.map((measurement) => this.toMeasurementRow(measurement)), { resetPage: true });
         this.cdr.detectChanges();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load measurements.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
   openAddModal(content: TemplateRef<any>): void {
+    if (!this.canAdd) {
+      return;
+    }
     this.measurementForm = this.emptyForm();
-    this.modalService.open(content, this.modalConfig);
+    this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
   openEditModal(content: TemplateRef<any>, measurement: Measurement): void {
+    if (this.actionsDisabled || this.table.isDeleting(measurement)) {
+      return;
+    }
     this.measurementForm = {
       id: measurement.id,
       componentId: measurement.componentId,
@@ -247,7 +282,7 @@ export class MeasurementComponent implements OnInit {
       measurementTypeId: measurement.measurementTypeId,
       sensitivity: measurement.sensitivity,
     };
-    this.modalService.open(content, this.modalConfig);
+    this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
   submit(form: NgForm, modal: { dismiss: (reason: string) => void }): void {
@@ -287,7 +322,7 @@ export class MeasurementComponent implements OnInit {
     const request$ = isEdit
       ? this.apiService.updateMeasurement({ id: this.measurementForm.id!, ...payload })
       : this.apiService.createMeasurement(payload);
-    request$.subscribe({
+    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.saving = false;
         modal.dismiss('saved');
@@ -303,10 +338,13 @@ export class MeasurementComponent implements OnInit {
   }
 
   private deleteMeasurementConfirmed(measurement: Measurement): void {
-    if (measurement.id === undefined) {
+    if (this.saving || measurement.id === undefined || !this.table.beginDelete(measurement)) {
       return;
     }
-    this.apiService.deleteMeasurement(measurement.id).subscribe({
+    this.apiService.deleteMeasurement(measurement.id).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.table.endDelete(measurement))
+    ).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + measurement.name + '!.');
         this.loadMeasurements();
@@ -319,14 +357,14 @@ export class MeasurementComponent implements OnInit {
     return { componentId: null, name: '', tag: '', measurementTypeId: null, sensitivity: null };
   }
 
-  private loadTypes(): void {
-    this.apiService.getAllMeasurementTypes().subscribe({
+  loadTypes(): void {
+    this.typesState.track(this.apiService.getAllMeasurementTypes(), 'Unable to load measurement types.', 'getAllMeasurementTypes').subscribe({
       next: (types) => {
         this.typeOptions = types;
         this.types.setRows(types.map((type) => ({ id: type.id, name: type.name, unit: type.unit })));
         this.cdr.detectChanges();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to load measurement types.'),
+      error: () => this.cdr.detectChanges(),
     });
   }
 
@@ -335,13 +373,19 @@ export class MeasurementComponent implements OnInit {
   }
 
   openAddTypeModal(content: TemplateRef<any>): void {
+    if (this.saving || this.typesState.loading()) {
+      return;
+    }
     this.typeFormModel = { name: '', unit: '' };
-    this.modalService.open(content, this.modalConfig);
+    this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
   openEditTypeModal(content: TemplateRef<any>, type: MeasurementType): void {
+    if (this.saving || this.typesState.loading() || this.types.isDeleting(type)) {
+      return;
+    }
     this.typeFormModel = { id: type.id, name: type.name, unit: type.unit };
-    this.modalService.open(content, this.modalConfig);
+    this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
   submitType(form: NgForm, modal: { dismiss: (reason: string) => void }): void {
@@ -361,7 +405,7 @@ export class MeasurementComponent implements OnInit {
     const request$ = isEdit
       ? this.apiService.updateMeasurementType({ id: this.typeFormModel.id!, ...payload })
       : this.apiService.createMeasurementType(payload);
-    request$.subscribe({
+    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.saving = false;
         this.loadTypes();
@@ -382,10 +426,13 @@ export class MeasurementComponent implements OnInit {
   }
 
   private deleteTypeConfirmed(type: MeasurementType): void {
-    if (type.id === undefined) {
+    if (this.saving || type.id === undefined || !this.types.beginDelete(type)) {
       return;
     }
-    this.apiService.deleteMeasurementType(type.id).subscribe({
+    this.apiService.deleteMeasurementType(type.id).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.types.endDelete(type))
+    ).subscribe({
       next: () => {
         if (this.typeFilter === type.id) {
           this.filterByType(null);

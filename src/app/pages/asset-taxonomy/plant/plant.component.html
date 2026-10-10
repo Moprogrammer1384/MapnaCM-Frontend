@@ -16,19 +16,19 @@
           <!--begin::Search-->
           <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
             <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-            <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Plant" #plantsSearch (input)="plants.search(plantsSearch.value)" aria-label="Search Plant" />
+            <input type="text" [disabled]="listState.loading()" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Plant" #plantsSearch (input)="plants.search(plantsSearch.value)" aria-label="Search Plant" />
           </div>
           <!--end::Search-->
           <!--begin::Employer filter-->
           <div class="my-1 me-md-4 w-100 w-md-250px">
-            <select class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by employer" [ngModel]="employerFilter" (ngModelChange)="filterByEmployer($event)">
+            <select [disabled]="saving || !employersState.ready" class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by employer" [ngModel]="employerFilter" (ngModelChange)="filterByEmployer($event)">
               <option [ngValue]="null">All Employers</option>
               <option *ngFor="let e of employers" [ngValue]="e.id">{{ e.name }}</option>
             </select>
           </div>
           <!--end::Employer filter-->
           <!--begin::Button-->
-          <button type="button" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddPlantModal(plantModal)">Add Plant</button>
+          <button type="button" [disabled]="!canAdd" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddPlantModal(plantModal)">Add Plant</button>
           <!--end::Button-->
         </div>
         <!--begin::Card toolbar-->
@@ -36,9 +36,20 @@
       <!--end::Card header-->
       <!--begin::Card body-->
       <div class="card-body pt-0">
+        <app-request-feedback [state]="employersState" loadingMessage="Loading employers..." [retryDisabled]="saving" (retry)="loadEmployerUsers()"></app-request-feedback>
+        <app-request-feedback [state]="sitesState" loadingMessage="Loading site options..." [retryDisabled]="saving" (retry)="loadSites()"></app-request-feedback>
+        <app-request-feedback [state]="typesState" loadingMessage="Loading plant types..." [retryDisabled]="saving" (retry)="loadTypes()"></app-request-feedback>
+        <div *ngIf="sitesState.ready && siteOptions.length === 0" class="alert alert-warning">Add a <a routerLink="/asset-taxonomy/site" class="alert-link">Site</a> before creating a Plant.</div>
+        <div *ngIf="typesState.ready && typeOptions.length === 0" class="alert alert-warning">Add a Plant Type below before creating a Plant.</div>
         <!--begin::Table container-->
         <app-data-table
           [table]="plants"
+          [loading]="listState.loading()"
+          [error]="listState.error()"
+          [actionsDisabled]="actionsDisabled"
+          [retryDisabled]="saving"
+          emptyMessage="No plants yet."
+          (retry)="loadPlants()"
           tableId="kt_profile_overview_table"
           (editRecord)="openEditPlantModal(plantModal, $event)"
           (deleteRecord)="deletePlant($event)">
@@ -66,11 +77,11 @@
           <!--begin::Search-->
           <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
             <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-            <input type="text" id="kt_filter_search_type" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Type" #typesSearch (input)="types.search(typesSearch.value)" aria-label="Search plant types" />
+            <input type="text" [disabled]="typesState.loading()" id="kt_filter_search_type" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Type" #typesSearch (input)="types.search(typesSearch.value)" aria-label="Search plant types" />
           </div>
           <!--end::Search-->
           <!--begin::Button-->
-          <button type="button" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddTypeModal(typeModal)">Add Type</button>
+          <button type="button" [disabled]="saving || typesState.loading()" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddTypeModal(typeModal)">Add Type</button>
           <!--end::Button-->
         </div>
         <!--begin::Card toolbar-->
@@ -81,6 +92,12 @@
         <!--begin::Table container-->
         <app-data-table
           [table]="types"
+          [loading]="typesState.loading()"
+          [error]="typesState.error()"
+          [actionsDisabled]="saving"
+          [retryDisabled]="saving"
+          emptyMessage="No plant types yet."
+          (retry)="loadTypes()"
           tableId="kt_plant_type_table"
           (editRecord)="openEditTypeModal(typeModal, $event)"
           (deleteRecord)="deleteType($event)">

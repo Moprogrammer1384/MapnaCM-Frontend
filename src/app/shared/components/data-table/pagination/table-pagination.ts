@@ -34,6 +34,8 @@ export class TablePagination<T extends object> {
   private readonly sortState = signal<TableSort<T>>({ key: null, direction: null });
   private readonly requestedPage = signal(1);
   private readonly pageSizeState = signal(10);
+  private readonly deletingRows = signal<ReadonlySet<unknown>>(new Set());
+  private confirmationOpen = false;
 
   // Each stage tracks only its inputs. Reading pagination never sorts; changing
   // the page or page size never invalidates filtering or sorting.
@@ -102,6 +104,24 @@ export class TablePagination<T extends object> {
   /** When set, deletion is delegated to the host (API call + reload); the
    * local row drop is skipped and the host owns the success feedback. */
   onConfirmedDelete?: (row: T) => void;
+
+  isDeleting(row: T): boolean {
+    return this.deletingRows().has(this.deleteKey(row));
+  }
+
+  beginDelete(row: T): boolean {
+    if (this.isDeleting(row)) {
+      return false;
+    }
+    this.deletingRows.set(new Set([...this.deletingRows(), this.deleteKey(row)]));
+    return true;
+  }
+
+  endDelete(row: T): void {
+    const pending = new Set(this.deletingRows());
+    pending.delete(this.deleteKey(row));
+    this.deletingRows.set(pending);
+  }
 
   get rows(): readonly Readonly<T>[] {
     return this.rowsState();
@@ -222,6 +242,10 @@ export class TablePagination<T extends object> {
    * host (API delete) or drops the row locally. Cancel is focused so the
    * destructive action is never the default. */
   confirmDelete(row: T, label: string): void {
+    if (this.confirmationOpen || this.isDeleting(row)) {
+      return;
+    }
+    this.confirmationOpen = true;
     Swal.fire({
       title: 'Are you sure?',
       text: 'You are about to delete "' + label + '". This action cannot be undone.',
@@ -236,6 +260,7 @@ export class TablePagination<T extends object> {
         cancelButton: 'btn fw-bold btn-active-light-primary',
       },
     }).then((result) => {
+      this.confirmationOpen = false;
       if (result.value) {
         if (this.onConfirmedDelete) {
           this.onConfirmedDelete(row);
@@ -253,7 +278,14 @@ export class TablePagination<T extends object> {
           this.setRows(this.rows.filter((r) => r !== row));
         });
       }
+    }).catch(() => {
+      this.confirmationOpen = false;
     });
+  }
+
+  private deleteKey(row: T): unknown {
+    const id: unknown = 'id' in row ? row.id : undefined;
+    return typeof id === 'number' || typeof id === 'string' ? id : row;
   }
 
   private matchesFilters(row: Readonly<T>, filters: TableFilters<T>): boolean {

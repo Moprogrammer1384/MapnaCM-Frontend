@@ -187,7 +187,7 @@ export class UnitComponent implements OnInit, OnDestroy {
         this.saving = false;
         modal.dismiss('saved');
         this.showAlert('success', 'Success!', isEdit ? 'Unit updated successfully!' : 'Unit created successfully!');
-        this.loadUnitsOnly();
+        this.loadUnits();
       },
       error: (error) => {
         this.saving = false;
@@ -195,12 +195,6 @@ export class UnitComponent implements OnInit, OnDestroy {
         this.showAlert('error', 'Error!', error?.message || 'The request failed.');
       },
     });
-  }
-
-  // Opens the Metronic confirmation dialog; the API delete only runs from
-  // the onConfirmedDelete callback after the admin confirms.
-  deleteUnit(unit: Unit): void {
-    this.table.confirmDelete(unit, unit.name);
   }
 
   private deleteUnitConfirmed(unit: Unit): void {
@@ -213,20 +207,9 @@ export class UnitComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + unit.name + '!.');
-        this.loadUnitsOnly();
+        this.loadUnits();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the unit.'),
-    });
-  }
-
-  // After a mutation only the unit list changes; the plant maps are current.
-  private loadUnitsOnly(): void {
-    this.listState.track(this.apiService.getAllUnits(), 'Unable to load units.', 'getAllUnits').subscribe({
-      next: (units) => {
-        this.table.setRows(units.map((unit) => this.toUnitRow(unit)), { resetPage: true });
-        this.cdr.detectChanges();
-      },
-      error: () => this.cdr.detectChanges(),
     });
   }
 

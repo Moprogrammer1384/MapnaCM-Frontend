@@ -199,7 +199,7 @@
         <label class="fs-6 fw-semibold mb-2" [for]="formModal.formId + '_employer'">Assign Employer</label>
         <select [id]="formModal.formId + '_employer'" aria-label="Assign Employer" class="form-select form-select-solid" data-control="select2" data-placeholder="Select an Employer" name="employer" [(ngModel)]="plantFormModel.employerId">
           <option [ngValue]="null">No Employer</option>
-          <option *ngFor="let u of employerUsers" [ngValue]="u.id">{{ u.name }}</option>
+          <option *ngFor="let u of employers" [ngValue]="u.id">{{ u.name }}</option>
         </select>
       </div>
       <!--end::Input group-->

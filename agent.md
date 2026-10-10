@@ -1447,3 +1447,27 @@ superseded by the user's later `components/` rename on 2026-10-10.
   HTTP responses were mocked; live backend integration and manual visual review
   were not performed. Existing Metronic classes, endpoints, data models and
   storage decisions were preserved; no dependencies or visual styles were added.
+
+### 2026-10-10 - Focused taxonomy duplicate cleanup
+
+- Unit now uses its existing `loadUnits()` for the initial hierarchy load and
+  successful create/update/delete refreshes. Removed the identical
+  `loadUnitsOnly()` implementation; employer enrichment, keyed request state,
+  cancellation and page-reset behavior remain in the retained loader.
+- Removed unused page-level `deleteUnit()`, `deleteSystem()` and `deleteAsset()`
+  confirmation wrappers after checking application/template references. Their
+  templates already call `table.confirmDelete()` directly. Confirmed API delete
+  handlers, ID-based locks and finalizers remain intact; used Site/Plant/Type
+  wrappers were retained.
+- Plant has one `employers` options array for filtering, assignment and employer
+  display-name lookup during submission. Removed `employerUsers` and its duplicate
+  assignment, and updated the modal option binding. Existing employer read/retry,
+  optional clearing and request serialization remain unchanged.
+- The five application files have 33 fewer net lines. No API/model/storage,
+  dependency, styling or validation changes were made; existing removed specs and
+  the untracked architecture report were preserved.
+- Verified production build with strict Angular templates, project lint, normal
+  test TypeScript compilation, reference searches and `git diff --check`.
+  Existing 2.77 MB initial-bundle warning and four CSS selector warnings remain.
+  Browser tests, manual visual review and live backend integration were not run
+  for this behavior-preserving cleanup; no new tests were added.

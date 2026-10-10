@@ -226,12 +226,6 @@ export class SystemComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Opens the Metronic confirmation dialog; the API delete only runs from
-  // the onConfirmedDelete callback after the admin confirms.
-  deleteSystem(system: AssetSystem): void {
-    this.table.confirmDelete(system, system.name);
-  }
-
   private deleteSystemConfirmed(system: AssetSystem): void {
     if (this.saving || system.id === undefined || !this.table.beginDelete(system)) {
       return;

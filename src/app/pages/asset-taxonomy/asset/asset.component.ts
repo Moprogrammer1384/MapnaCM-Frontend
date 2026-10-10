@@ -250,12 +250,6 @@ export class AssetComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Opens the Metronic confirmation dialog; the API delete only runs from
-  // the onConfirmedDelete callback after the admin confirms.
-  deleteAsset(asset: Asset): void {
-    this.table.confirmDelete(asset, asset.name);
-  }
-
   private deleteAssetConfirmed(asset: Asset): void {
     if (this.saving || asset.id === undefined || !this.table.beginDelete(asset)) {
       return;

@@ -49,9 +49,6 @@ export class PlantComponent implements OnInit, OnDestroy {
   employers: EmployerOption[] = [];
   employerFilter: string | null = null;
 
-  // Identity users carrying the Employer role — the only valid assignments.
-  employerUsers: EmployerOption[] = [];
-
   readonly listState = new RequestState();
   readonly employersState = new RequestState();
   readonly typesState = new RequestState();
@@ -132,7 +129,6 @@ export class PlantComponent implements OnInit, OnDestroy {
   loadEmployerUsers(): void {
     this.employersState.track(this.apiService.getEmployerOptions(), 'Unable to load employer users.', 'getEmployerOptions').subscribe({
       next: (users) => {
-        this.employerUsers = users;
         this.employers = users;
         this.cdr.detectChanges();
       },
@@ -190,7 +186,7 @@ export class PlantComponent implements OnInit, OnDestroy {
 
     this.saving = true;
     // Employer is optional: a null id clears the assignment.
-    const employer = this.employerUsers.find((user) => user.id === this.plantFormModel.employerId);
+    const employer = this.employers.find((user) => user.id === this.plantFormModel.employerId);
     const payload = {
       name: this.plantFormModel.name.trim(),
       siteId: this.plantFormModel.siteId,

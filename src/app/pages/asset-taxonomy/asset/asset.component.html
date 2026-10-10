@@ -32,7 +32,7 @@
       </div>
       <!--end::System filter-->
       <!--begin::Button-->
-      <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(addAssetModal)">Add Asset</a>
+      <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(assetModal)">Add Asset</a>
       <!--end::Button-->
     </div>
     <!--begin::Card toolbar-->
@@ -44,7 +44,7 @@
     <app-data-table
       [table]="table"
       tableId="kt_profile_overview_table"
-      (editRecord)="openEditModal(editAssetModal, $event)"
+      (editRecord)="openEditModal(assetModal, $event)"
       (deleteRecord)="table.confirmDelete($event, $event.asset)">
     </app-data-table>
     <!--end::Table container-->
@@ -53,24 +53,16 @@
 </div>
 <!--end::Card-->
 
-<!--begin::Modal - Add Asset-->
-<ng-template #addAssetModal let-modal>
-  <ng-container *ngTemplateOutlet="assetFormTpl; context: { modal: modal, title: 'Add Asset', formId: 'kt_modal_add_asset_form', submitLabel: 'Submit' }"></ng-container>
-</ng-template>
-<!--end::Modal - Add Asset-->
-<!--begin::Modal - Edit Asset-->
-<ng-template #editAssetModal let-modal>
-  <ng-container *ngTemplateOutlet="assetFormTpl; context: { modal: modal, title: 'Edit Asset', formId: 'kt_modal_edit_asset_form', submitLabel: 'Save' }"></ng-container>
-</ng-template>
-<!--end::Modal - Edit Asset-->
-<ng-template #assetFormTpl let-modal="modal" let-title="title" let-formId="formId" let-submitLabel="submitLabel">
+<!--begin::Modal - Asset (Add / Edit)-->
+<ng-template #assetModal let-modal>
   <app-form-modal
-    [title]="title"
-    [formId]="formId"
-    [submitLabel]="submitLabel"
+    #formModal
+    [title]="assetForm.id ? 'Edit Asset' : 'Add Asset'"
+    [formId]="assetForm.id ? 'kt_modal_edit_asset_form' : 'kt_modal_add_asset_form'"
+    [submitLabel]="assetForm.id ? 'Save' : 'Submit'"
     [saving]="saving"
     (dismiss)="modal.dismiss($event)">
-    <form [id]="formId" [attr.aria-labelledby]="formId + '_title'" class="form" (ngSubmit)="submit(assetNgForm, modal)" #assetNgForm="ngForm" novalidate>
+    <form [id]="formModal.formId" [attr.aria-labelledby]="formModal.formId + '_title'" class="form" (ngSubmit)="submit(assetNgForm, modal)" #assetNgForm="ngForm" novalidate>
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
@@ -101,3 +93,4 @@
     </form>
   </app-form-modal>
 </ng-template>
+<!--end::Modal - Asset (Add / Edit)-->

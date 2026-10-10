@@ -41,7 +41,7 @@
             </select>
           </div>
           <!--begin::Button-->
-          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(addMeasurementModal)">Add Measurement</a>
+          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(measurementModal)">Add Measurement</a>
           <!--end::Button-->
         </div>
         <!--begin::Card toolbar-->
@@ -53,7 +53,7 @@
         <app-data-table
           [table]="table"
           tableId="kt_measurement_table"
-          (editRecord)="openEditModal(editMeasurementModal, $event)"
+          (editRecord)="openEditModal(measurementModal, $event)"
           (deleteRecord)="table.confirmDelete($event, $event.measurement)">
         </app-data-table>
         <!--end::Table container-->
@@ -81,7 +81,7 @@
           </div>
           <!--end::Search-->
           <!--begin::Button-->
-          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddTypeModal(addTypeModal)">Add Type</a>
+          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddTypeModal(typeModal)">Add Type</a>
           <!--end::Button-->
         </div>
         <!--begin::Card toolbar-->
@@ -93,7 +93,7 @@
         <app-data-table
           [table]="types"
           tableId="kt_measurement_type_table"
-          (editRecord)="openEditTypeModal(editTypeModal, $event)"
+          (editRecord)="openEditTypeModal(typeModal, $event)"
           (deleteRecord)="deleteType($event)">
         </app-data-table>
         <!--end::Table container-->
@@ -106,24 +106,16 @@
 </div>
 <!--end::Row-->
 
-<!--begin::Modal - Add Measurement-->
-<ng-template #addMeasurementModal let-modal>
-  <ng-container *ngTemplateOutlet="measurementFormTpl; context: { modal: modal, title: 'Add Measurement', formId: 'kt_modal_add_measurement_form', submitLabel: 'Submit' }"></ng-container>
-</ng-template>
-<!--end::Modal - Add Measurement-->
-<!--begin::Modal - Edit Measurement-->
-<ng-template #editMeasurementModal let-modal>
-  <ng-container *ngTemplateOutlet="measurementFormTpl; context: { modal: modal, title: 'Edit Measurement', formId: 'kt_modal_edit_measurement_form', submitLabel: 'Save' }"></ng-container>
-</ng-template>
-<!--end::Modal - Edit Measurement-->
-<ng-template #measurementFormTpl let-modal="modal" let-title="title" let-formId="formId" let-submitLabel="submitLabel">
+<!--begin::Modal - Measurement (Add / Edit)-->
+<ng-template #measurementModal let-modal>
   <app-form-modal
-    [title]="title"
-    [formId]="formId"
-    [submitLabel]="submitLabel"
+    #formModal
+    [title]="measurementForm.id ? 'Edit Measurement' : 'Add Measurement'"
+    [formId]="measurementForm.id ? 'kt_modal_edit_measurement_form' : 'kt_modal_add_measurement_form'"
+    [submitLabel]="measurementForm.id ? 'Save' : 'Submit'"
     [saving]="saving"
     (dismiss)="modal.dismiss($event)">
-    <form [id]="formId" [attr.aria-labelledby]="formId + '_title'" class="form" (ngSubmit)="submit(measurementNgForm, modal)" #measurementNgForm="ngForm" novalidate>
+    <form [id]="formModal.formId" [attr.aria-labelledby]="formModal.formId + '_title'" class="form" (ngSubmit)="submit(measurementNgForm, modal)" #measurementNgForm="ngForm" novalidate>
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
@@ -141,8 +133,8 @@
       </div>
       <div class="row g-5 g-md-9 mb-8">
         <div class="col-md-6 fv-row">
-          <label class="required fs-6 fw-semibold mb-2" [for]="formId + '_type'">Type</label>
-          <select [id]="formId + '_type'" class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Type" name="measurementTypeId" [(ngModel)]="measurementForm.measurementTypeId" #measurementType="ngModel" required>
+          <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_type'">Type</label>
+          <select [id]="formModal.formId + '_type'" class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Type" name="measurementTypeId" [(ngModel)]="measurementForm.measurementTypeId" #measurementType="ngModel" required>
             <option [ngValue]="null">Select type...</option>
             <option *ngFor="let type of typeOptions" [ngValue]="type.id">{{ type.name }} ({{ type.unit }})</option>
           </select>
@@ -150,14 +142,14 @@
           <div *ngIf="measurementType.invalid && (measurementType.touched || measurementNgForm.submitted)" class="fv-plugins-message-container invalid-feedback d-block">Select a measurement type.</div>
         </div>
         <div class="col-md-6 fv-row">
-          <label class="required fs-6 fw-semibold mb-2" [for]="formId + '_sensitivity'">Sensitivity</label>
-          <input [id]="formId + '_sensitivity'" type="number" step="any" class="form-control form-control-solid" placeholder="Enter Sensitivity" name="sensitivity" [(ngModel)]="measurementForm.sensitivity" #sensitivity="ngModel" required />
+          <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_sensitivity'">Sensitivity</label>
+          <input [id]="formModal.formId + '_sensitivity'" type="number" step="any" class="form-control form-control-solid" placeholder="Enter Sensitivity" name="sensitivity" [(ngModel)]="measurementForm.sensitivity" #sensitivity="ngModel" required />
           <div *ngIf="sensitivity.invalid && (sensitivity.touched || measurementNgForm.submitted)" class="fv-plugins-message-container invalid-feedback d-block">Enter a number for sensitivity.</div>
         </div>
       </div>
       <div *ngIf="selectedTypeUnit" class="d-flex flex-column mb-8 fv-row">
-        <label class="fs-6 fw-semibold mb-2" [for]="formId + '_unit'">Unit</label>
-        <input [id]="formId + '_unit'" type="text" class="form-control form-control-solid" [value]="selectedTypeUnit" readonly />
+        <label class="fs-6 fw-semibold mb-2" [for]="formModal.formId + '_unit'">Unit</label>
+        <input [id]="formModal.formId + '_unit'" type="text" class="form-control form-control-solid" [value]="selectedTypeUnit" readonly />
       </div>
       <div class="d-flex flex-column mb-15 fv-row">
         <!--begin::Label-->
@@ -174,28 +166,18 @@
     </form>
   </app-form-modal>
 </ng-template>
+<!--end::Modal - Measurement (Add / Edit)-->
 
-<!--begin::Modal - Add Type-->
-<ng-template #addTypeModal let-modal>
-  <ng-container *ngTemplateOutlet="typeForm; context: { modal: modal, title: 'Add Measurement Type', formId: 'kt_modal_add_measurement_type_form', submitLabel: 'Submit' }"></ng-container>
-</ng-template>
-<!--end::Modal - Add Type-->
-
-<!--begin::Modal - Edit Type-->
-<ng-template #editTypeModal let-modal>
-  <ng-container *ngTemplateOutlet="typeForm; context: { modal: modal, title: 'Edit Measurement Type', formId: 'kt_modal_edit_measurement_type_form', submitLabel: 'Save' }"></ng-container>
-</ng-template>
-<!--end::Modal - Edit Type-->
-
-<!-- Shared type form (Add / Edit differ only in title, form id and submit label) -->
-<ng-template #typeForm let-modal="modal" let-title="title" let-formId="formId" let-submitLabel="submitLabel">
+<!--begin::Modal - Measurement Type (Add / Edit)-->
+<ng-template #typeModal let-modal>
   <app-form-modal
-    [title]="title"
-    [formId]="formId"
-    [submitLabel]="submitLabel"
+    #formModal
+    [title]="typeFormModel.id ? 'Edit Measurement Type' : 'Add Measurement Type'"
+    [formId]="typeFormModel.id ? 'kt_modal_edit_measurement_type_form' : 'kt_modal_add_measurement_type_form'"
+    [submitLabel]="typeFormModel.id ? 'Save' : 'Submit'"
     [saving]="saving"
     (dismiss)="modal.dismiss($event)">
-    <form [id]="formId" [attr.aria-labelledby]="formId + '_title'" class="form" (ngSubmit)="submitType(typeNgForm, modal)" #typeNgForm="ngForm" novalidate>
+    <form [id]="formModal.formId" [attr.aria-labelledby]="formModal.formId + '_title'" class="form" (ngSubmit)="submitType(typeNgForm, modal)" #typeNgForm="ngForm" novalidate>
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
@@ -207,9 +189,10 @@
       </div>
       <!--end::Input group-->
       <div class="d-flex flex-column mb-15 fv-row">
-        <label class="required fs-6 fw-semibold mb-2" [for]="formId + '_unit'">Unit</label>
-        <input [id]="formId + '_unit'" type="text" class="form-control form-control-solid" placeholder="Enter Unit (e.g. mm/s)" name="unit" [(ngModel)]="typeFormModel.unit" required />
+        <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_unit'">Unit</label>
+        <input [id]="formModal.formId + '_unit'" type="text" class="form-control form-control-solid" placeholder="Enter Unit (e.g. mm/s)" name="unit" [(ngModel)]="typeFormModel.unit" required />
       </div>
     </form>
   </app-form-modal>
 </ng-template>
+<!--end::Modal - Measurement Type (Add / Edit)-->

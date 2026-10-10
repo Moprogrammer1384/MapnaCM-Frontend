@@ -28,7 +28,7 @@
           </div>
           <!--end::Employer filter-->
           <!--begin::Button-->
-          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddPlantModal(addPlantModal)">Add Plant</a>
+          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddPlantModal(plantModal)">Add Plant</a>
           <!--end::Button-->
         </div>
         <!--begin::Card toolbar-->
@@ -40,7 +40,7 @@
         <app-data-table
           [table]="plants"
           tableId="kt_profile_overview_table"
-          (editRecord)="openEditPlantModal(editPlantModal, $event)"
+          (editRecord)="openEditPlantModal(plantModal, $event)"
           (deleteRecord)="deletePlant($event)">
         </app-data-table>
         <!--end::Table container-->
@@ -70,7 +70,7 @@
           </div>
           <!--end::Search-->
           <!--begin::Button-->
-          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddTypeModal(addTypeModal)">Add Type</a>
+          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddTypeModal(typeModal)">Add Type</a>
           <!--end::Button-->
         </div>
         <!--begin::Card toolbar-->
@@ -82,7 +82,7 @@
         <app-data-table
           [table]="types"
           tableId="kt_plant_type_table"
-          (editRecord)="openEditTypeModal(editTypeModal, $event)"
+          (editRecord)="openEditTypeModal(typeModal, $event)"
           (deleteRecord)="deleteType($event)">
         </app-data-table>
         <!--end::Table container-->
@@ -95,39 +95,16 @@
 </div>
 <!--end::Row-->
 
-<!--begin::Modal - Add Plant-->
-<ng-template #addPlantModal let-modal>
-  <ng-container *ngTemplateOutlet="plantForm; context: { modal: modal, title: 'Add Plant', formId: 'kt_modal_add_plant_form', submitLabel: 'Submit' }"></ng-container>
-</ng-template>
-<!--end::Modal - Add Plant-->
-
-<!--begin::Modal - Edit Plant-->
-<ng-template #editPlantModal let-modal>
-  <ng-container *ngTemplateOutlet="plantForm; context: { modal: modal, title: 'Edit Plant', formId: 'kt_modal_edit_plant_form', submitLabel: 'Save' }"></ng-container>
-</ng-template>
-<!--end::Modal - Edit Plant-->
-
-<!--begin::Modal - Add Type-->
-<ng-template #addTypeModal let-modal>
-  <ng-container *ngTemplateOutlet="typeForm; context: { modal: modal, title: 'Add Type', formId: 'kt_modal_add_type_form', submitLabel: 'Submit' }"></ng-container>
-</ng-template>
-<!--end::Modal - Add Type-->
-
-<!--begin::Modal - Edit Type-->
-<ng-template #editTypeModal let-modal>
-  <ng-container *ngTemplateOutlet="typeForm; context: { modal: modal, title: 'Edit Type', formId: 'kt_modal_edit_type_form', submitLabel: 'Save' }"></ng-container>
-</ng-template>
-<!--end::Modal - Edit Type-->
-
-<!-- Shared plant form (Add / Edit differ only in title, form id and submit label) -->
-<ng-template #plantForm let-modal="modal" let-title="title" let-formId="formId" let-submitLabel="submitLabel">
+<!--begin::Modal - Plant (Add / Edit)-->
+<ng-template #plantModal let-modal>
   <app-form-modal
-    [title]="title"
-    [formId]="formId"
-    [submitLabel]="submitLabel"
+    #formModal
+    [title]="plantFormModel.id ? 'Edit Plant' : 'Add Plant'"
+    [formId]="plantFormModel.id ? 'kt_modal_edit_plant_form' : 'kt_modal_add_plant_form'"
+    [submitLabel]="plantFormModel.id ? 'Save' : 'Submit'"
     [saving]="saving"
     (dismiss)="modal.dismiss($event)">
-    <form [id]="formId" [attr.aria-labelledby]="formId + '_title'" class="form" (ngSubmit)="submitPlant(plantNgForm, modal)" #plantNgForm="ngForm" novalidate>
+    <form [id]="formModal.formId" [attr.aria-labelledby]="formModal.formId + '_title'" class="form" (ngSubmit)="submitPlant(plantNgForm, modal)" #plantNgForm="ngForm" novalidate>
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
@@ -142,8 +119,8 @@
       <div class="row g-5 g-md-9 mb-8">
         <!--begin::Col-->
         <div class="col-md-6 fv-row">
-          <label class="required fs-6 fw-semibold mb-2" [for]="formId + '_type'">Type</label>
-          <select [id]="formId + '_type'" aria-label="Type" class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Select a Type" name="plantTypeId" [(ngModel)]="plantFormModel.plantTypeId" required>
+          <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_type'">Type</label>
+          <select [id]="formModal.formId + '_type'" aria-label="Type" class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Select a Type" name="plantTypeId" [(ngModel)]="plantFormModel.plantTypeId" required>
             <option [ngValue]="null" disabled>Select type...</option>
             <option *ngFor="let t of typeOptions" [ngValue]="t.id">{{ t.name }}</option>
           </select>
@@ -151,8 +128,8 @@
         <!--end::Col-->
         <!--begin::Col-->
         <div class="col-md-6 fv-row">
-          <label class="required fs-6 fw-semibold mb-2" [for]="formId + '_site'">Site</label>
-          <select [id]="formId + '_site'" aria-label="Site" class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Site" name="siteId" [(ngModel)]="plantFormModel.siteId" required>
+          <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_site'">Site</label>
+          <select [id]="formModal.formId + '_site'" aria-label="Site" class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Site" name="siteId" [(ngModel)]="plantFormModel.siteId" required>
             <option [ngValue]="null" disabled>Select site...</option>
             <option *ngFor="let s of siteOptions" [ngValue]="s.id">{{ s.label }}</option>
           </select>
@@ -162,8 +139,8 @@
       <!--end::Input group-->
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-15 fv-row">
-        <label class="fs-6 fw-semibold mb-2" [for]="formId + '_employer'">Assign Employer</label>
-        <select [id]="formId + '_employer'" aria-label="Assign Employer" class="form-select form-select-solid" data-control="select2" data-placeholder="Select an Employer" name="employer" [(ngModel)]="plantFormModel.employerId">
+        <label class="fs-6 fw-semibold mb-2" [for]="formModal.formId + '_employer'">Assign Employer</label>
+        <select [id]="formModal.formId + '_employer'" aria-label="Assign Employer" class="form-select form-select-solid" data-control="select2" data-placeholder="Select an Employer" name="employer" [(ngModel)]="plantFormModel.employerId">
           <option [ngValue]="null">No Employer</option>
           <option *ngFor="let u of employerUsers" [ngValue]="u.id">{{ u.name }}</option>
         </select>
@@ -172,16 +149,18 @@
     </form>
   </app-form-modal>
 </ng-template>
+<!--end::Modal - Plant (Add / Edit)-->
 
-<!-- Shared type form (Add / Edit differ only in title, form id and submit label) -->
-<ng-template #typeForm let-modal="modal" let-title="title" let-formId="formId" let-submitLabel="submitLabel">
+<!--begin::Modal - Type (Add / Edit)-->
+<ng-template #typeModal let-modal>
   <app-form-modal
-    [title]="title"
-    [formId]="formId"
-    [submitLabel]="submitLabel"
+    #formModal
+    [title]="typeFormModel.id ? 'Edit Type' : 'Add Type'"
+    [formId]="typeFormModel.id ? 'kt_modal_edit_type_form' : 'kt_modal_add_type_form'"
+    [submitLabel]="typeFormModel.id ? 'Save' : 'Submit'"
     [saving]="saving"
     (dismiss)="modal.dismiss($event)">
-    <form [id]="formId" [attr.aria-labelledby]="formId + '_title'" class="form" (ngSubmit)="submitType(typeNgForm, modal)" #typeNgForm="ngForm" novalidate>
+    <form [id]="formModal.formId" [attr.aria-labelledby]="formModal.formId + '_title'" class="form" (ngSubmit)="submitType(typeNgForm, modal)" #typeNgForm="ngForm" novalidate>
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-15 fv-row">
         <!--begin::Label-->
@@ -195,3 +174,4 @@
     </form>
   </app-form-modal>
 </ng-template>
+<!--end::Modal - Type (Add / Edit)-->

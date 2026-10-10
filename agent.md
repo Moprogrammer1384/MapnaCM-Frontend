@@ -232,7 +232,7 @@ maintenance entry for focused browser validation.
 | `src/app/modules/widgets-examples/` | Widget galleries, including the standalone Apache Charts gallery |
 | `src/app/_metronic/` | Shared layout, icons, directives, theme DOM helpers, widgets |
 | `src/app/shared/components/data-table/` | PrimeNG table/paginator/select/button adapters with Metronic visuals, typed pagination helper and adjacent tests, exposed through `SharedModule` |
-| `src/app/shared/components/form-modal/` | Shared Metronic presentation for all 18 taxonomy add/edit dialogs; page-owned forms projected into the shell, exported through `SharedModule` |
+| `src/app/shared/components/form-modal/` | Shared Metronic presentation for nine taxonomy form modals, each serving add/edit; page-owned forms projected into the shell, exported through `SharedModule` |
 | `src/app/_fake/` | Mixed legacy code: in-memory demo API plus services calling Keenthemes remotely |
 | `src/app/graphify-out/` | Generated graph reports/caches; historical, not application source |
 | `src/assets/` | Theme Sass, icons, media/plugins, generated Apache chart scripts/data/vendor files |
@@ -446,7 +446,7 @@ Taxonomy forms use `NgForm`, required fields, `saving` guards, ng-bootstrap moda
 templates, Metronic alerts, and refresh after successful mutation. Async updates
 often call `ChangeDetectorRef.detectChanges()` to repaint within the shared layout.
 
-As of 2026-10-10, all 18 add/edit dialogs use `FormModalComponent` from
+As of 2026-10-10, all nine taxonomy form modals use `FormModalComponent` from
 `shared/components/form-modal/`, exported by `SharedModule`. The component owns
 the Metronic close button, heading/optional description, responsive body spacing,
 cancel/submit actions and loading indicator. Each page projects its complete
@@ -456,6 +456,10 @@ IDs must be unique in the document. Saving disables submission. Dismiss outputs
 retain `Cross click` and `cancel`; ng-bootstrap still owns modal lifecycle.
 Site's existing action IDs and edit description are retained. Select2 continues
 to use the existing directive without additional plugin initialization.
+Each entity has one modal template for both Add and Edit, including Plant Type
+and Measurement Type. The page's form-model ID selects the title, submit label
+and existing mode-specific DOM IDs; both actions open the same `TemplateRef`.
+Opening Add resets the page-owned model; opening Edit copies the selected row.
 
 ## Taxonomy and employer inheritance
 
@@ -1182,3 +1186,24 @@ superseded by the user's later `components/` rename on 2026-10-10.
   and page-owned SweetAlert2 alerts display success or failure afterward.
 - Source review only; no application behavior changed and no runtime tests or
   live backend integration were run for this clarification.
+
+### 2026-10-10 - One taxonomy modal for Add and Edit
+
+- Replaced separate add/edit wrappers with one modal template per entity across
+  all seven taxonomy pages (nine forms including Plant and Measurement Types).
+  Site now also shares one field layout. Both actions pass the same template;
+  the existing form-model ID selects title, submit label and mode-specific IDs.
+- Retained the shared Metronic shell, Site edit description/action IDs, form
+  bindings, validation, Select2 lifecycle and existing create/update handlers.
+  No API contracts, storage, service implementations or styles changed.
+- Added nine browser regressions covering cancelled edits followed by pristine
+  Add forms, shared-template identity, headings, native submit association,
+  accessible form labels, row isolation and required-field validation. Tests
+  wait for ng-bootstrap's closing animation before inspecting the next dialog.
+- Verified production build, normal test TypeScript compilation, project lint,
+  and all **65** focused taxonomy/modal ChromeHeadless tests. All **15** modal
+  tests also passed with a 390x844 mobile launcher, including shared light/dark
+  theme and overflow checks. Removed temporary Karma configuration.
+  Existing 2.77 MB bundle-budget warning and four CSS selector warnings remain.
+  APIs were mocked; manual visual inspection and live backend integration were
+  not performed.

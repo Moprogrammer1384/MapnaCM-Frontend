@@ -32,7 +32,7 @@
       </div>
       <!--end::Plant filter-->
       <!--begin::Button-->
-      <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(addUnitModal)">Add Unit</a>
+      <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(unitModal)">Add Unit</a>
       <!--end::Button-->
     </div>
     <!--begin::Card toolbar-->
@@ -44,7 +44,7 @@
     <app-data-table
       [table]="table"
       tableId="kt_profile_overview_table"
-      (editRecord)="openEditModal(editUnitModal, $event)"
+      (editRecord)="openEditModal(unitModal, $event)"
       (deleteRecord)="table.confirmDelete($event, $event.unit)">
     </app-data-table>
     <!--end::Table container-->
@@ -53,24 +53,16 @@
 </div>
 <!--end::Card-->
 
-<!--begin::Modal - Add Unit-->
-<ng-template #addUnitModal let-modal>
-  <ng-container *ngTemplateOutlet="unitFormTpl; context: { modal: modal, title: 'Add Unit', formId: 'kt_modal_add_unit_form', submitLabel: 'Submit' }"></ng-container>
-</ng-template>
-<!--end::Modal - Add Unit-->
-<!--begin::Modal - Edit Unit-->
-<ng-template #editUnitModal let-modal>
-  <ng-container *ngTemplateOutlet="unitFormTpl; context: { modal: modal, title: 'Edit Unit', formId: 'kt_modal_edit_unit_form', submitLabel: 'Save' }"></ng-container>
-</ng-template>
-<!--end::Modal - Edit Unit-->
-<ng-template #unitFormTpl let-modal="modal" let-title="title" let-formId="formId" let-submitLabel="submitLabel">
+<!--begin::Modal - Unit (Add / Edit)-->
+<ng-template #unitModal let-modal>
   <app-form-modal
-    [title]="title"
-    [formId]="formId"
-    [submitLabel]="submitLabel"
+    #formModal
+    [title]="unitForm.id ? 'Edit Unit' : 'Add Unit'"
+    [formId]="unitForm.id ? 'kt_modal_edit_unit_form' : 'kt_modal_add_unit_form'"
+    [submitLabel]="unitForm.id ? 'Save' : 'Submit'"
     [saving]="saving"
     (dismiss)="modal.dismiss($event)">
-    <form [id]="formId" [attr.aria-labelledby]="formId + '_title'" class="form" (ngSubmit)="submit(unitNgForm, modal)" #unitNgForm="ngForm" novalidate>
+    <form [id]="formModal.formId" [attr.aria-labelledby]="formModal.formId + '_title'" class="form" (ngSubmit)="submit(unitNgForm, modal)" #unitNgForm="ngForm" novalidate>
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
@@ -97,3 +89,4 @@
     </form>
   </app-form-modal>
 </ng-template>
+<!--end::Modal - Unit (Add / Edit)-->

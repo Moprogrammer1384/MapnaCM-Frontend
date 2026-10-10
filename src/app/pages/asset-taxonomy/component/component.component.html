@@ -32,7 +32,7 @@
       </div>
       <!--end::Asset filter-->
       <!--begin::Button-->
-      <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(addComponentModal)">Add Component</a>
+      <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(componentModal)">Add Component</a>
       <!--end::Button-->
     </div>
     <!--begin::Card toolbar-->
@@ -44,7 +44,7 @@
     <app-data-table
       [table]="table"
       tableId="kt_profile_overview_table"
-      (editRecord)="openEditModal(editComponentModal, $event)"
+      (editRecord)="openEditModal(componentModal, $event)"
       (deleteRecord)="table.confirmDelete($event, $event.component)">
     </app-data-table>
     <!--end::Table container-->
@@ -53,24 +53,16 @@
 </div>
 <!--end::Card-->
 
-<!--begin::Modal - Add Component-->
-<ng-template #addComponentModal let-modal>
-  <ng-container *ngTemplateOutlet="componentFormTpl; context: { modal: modal, title: 'Add Component', formId: 'kt_modal_add_component_form', submitLabel: 'Submit' }"></ng-container>
-</ng-template>
-<!--end::Modal - Add Component-->
-<!--begin::Modal - Edit Component-->
-<ng-template #editComponentModal let-modal>
-  <ng-container *ngTemplateOutlet="componentFormTpl; context: { modal: modal, title: 'Edit Component', formId: 'kt_modal_edit_component_form', submitLabel: 'Save' }"></ng-container>
-</ng-template>
-<!--end::Modal - Edit Component-->
-<ng-template #componentFormTpl let-modal="modal" let-title="title" let-formId="formId" let-submitLabel="submitLabel">
+<!--begin::Modal - Component (Add / Edit)-->
+<ng-template #componentModal let-modal>
   <app-form-modal
-    [title]="title"
-    [formId]="formId"
-    [submitLabel]="submitLabel"
+    #formModal
+    [title]="componentForm.id ? 'Edit Component' : 'Add Component'"
+    [formId]="componentForm.id ? 'kt_modal_edit_component_form' : 'kt_modal_add_component_form'"
+    [submitLabel]="componentForm.id ? 'Save' : 'Submit'"
     [saving]="saving"
     (dismiss)="modal.dismiss($event)">
-    <form [id]="formId" [attr.aria-labelledby]="formId + '_title'" class="form" (ngSubmit)="submit(componentNgForm, modal)" #componentNgForm="ngForm" novalidate>
+    <form [id]="formModal.formId" [attr.aria-labelledby]="formModal.formId + '_title'" class="form" (ngSubmit)="submit(componentNgForm, modal)" #componentNgForm="ngForm" novalidate>
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
@@ -101,3 +93,4 @@
     </form>
   </app-form-modal>
 </ng-template>
+<!--end::Modal - Component (Add / Edit)-->

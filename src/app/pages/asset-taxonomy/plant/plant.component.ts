@@ -237,6 +237,7 @@ export class PlantComponent implements OnInit {
         modal.dismiss('saved');
         this.showAlert('success', 'Success!', isEdit ? 'Type updated successfully!' : 'Type created successfully!');
         this.loadTypes();
+        this.loadPlants();
       },
       error: (error) => {
         this.saving = false;
@@ -258,6 +259,7 @@ export class PlantComponent implements OnInit {
       next: () => {
         this.showAlert('success', 'Deleted!', 'You have deleted ' + type.name + '!.');
         this.loadTypes();
+        this.loadPlants();
       },
       error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the type.'),
     });

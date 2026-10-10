@@ -365,6 +365,7 @@ export class MeasurementComponent implements OnInit {
       next: () => {
         this.saving = false;
         this.loadTypes();
+        this.loadMeasurements();
         modal.dismiss('saved');
         this.showAlert('success', 'Success!', isEdit ? 'Type updated successfully!' : 'Type created successfully!');
       },
@@ -390,6 +391,7 @@ export class MeasurementComponent implements OnInit {
           this.filterByType(null);
         }
         this.loadTypes();
+        this.loadMeasurements();
         this.cdr.detectChanges();
         this.showAlert('success', 'Deleted!', 'You have deleted ' + type.name + '!.');
       },

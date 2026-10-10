@@ -466,6 +466,8 @@ Opening Add resets the page-owned model; opening Edit copies the selected row.
 Navigation order: **Site -> Plant -> Unit -> System -> Asset -> Component -> Measurement**.
 The relationship chain is Measurement -> Component -> Asset -> System -> Unit -> Plant -> Site.
 Plant Type is managed as a second table on the Plant page.
+Successful Plant Type and Measurement Type create/update/delete operations refresh
+both the type lookup table and the related main list, keeping joined names/units current.
 
 - Site stores city/address/coordinates/location as strings. Elevation is numeric
   (`number | null` in the shared model for blank, required forms); Site Add/Update
@@ -1326,3 +1328,25 @@ superseded by the user's later `components/` rename on 2026-10-10.
   ChromeHeadless tests passed (taxonomy, form modal, API serialization, pagination).
   Existing 2.77 MB initial bundle budget warning and four selector warnings remain.
   Backend numeric elevation integration has not been exercised against a live API.
+
+### 2026-10-10 - Keep main taxonomy lists current after type changes
+
+- Corrected a finding from the seven-page review: tool output JSON escaping was
+  misread as source escaping. The existing `\u2014` fallback is a valid JavaScript
+  Unicode escape that renders an em dash. TypeScript AST inspection verified all
+  six employer-bearing pages have real em-dash literals and no literal escaped
+  Unicode text. No employer display changes were necessary.
+- Plant Type and Measurement Type successful create/update/delete callbacks now
+  reload the associated Plant/Measurement list as well as the type table/options.
+  Measurement rows consequently receive refreshed type names and units through
+  the existing API reads. Failed writes retain the existing tables and open form.
+  Models, request serialization, endpoints, styles and storage decisions are unchanged.
+- Added eight focused regressions in `taxonomy-type-refresh.spec.ts`, using the
+  real pages/templates and mocked HTTP: both entity types cover successful edit,
+  create, rejected edit and successful deletion, including rendered type/unit cells.
+  The six page/integration spec files removed in `f6adcd1` were not restored.
+- Verified production build with strict templates, project lint, normal test
+  TypeScript compilation, all **85** focused taxonomy-type/API/shared-control/Select2
+  ChromeHeadless tests, and `git diff --check`. Existing 2.77 MB initial-bundle warning
+  and four CSS selector warnings remain. Live backend integration and manual visual
+  inspection were not performed; the eight new tests use mocked HTTP responses.

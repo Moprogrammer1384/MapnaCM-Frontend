@@ -12,6 +12,7 @@ import { PaginationRecordsComponent } from '../../shared/components/data-table/p
 import { PaginationPagesComponent } from '../../shared/components/data-table/pagination/paginationbar/pagination-pages/pagination-pages.component';
 import { TableRecordComponent } from '../../shared/components/data-table/table-record/table-record.component';
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
+import { FormModalComponent } from '../../shared/components/form-modal/form-modal.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { DataTableComponent } from '../../shared/components/data-table/data-tabl
     PaginationRecordsComponent,
     PaginationPagesComponent,
     TableRecordComponent,
-    DataTableComponent
+    DataTableComponent,
+    FormModalComponent
   ],
   imports: [
     CommonModule,
@@ -38,7 +40,8 @@ import { DataTableComponent } from '../../shared/components/data-table/data-tabl
     PaginationRecordsComponent,
     PaginationPagesComponent,
     TableRecordComponent,
-    DataTableComponent
+    DataTableComponent,
+    FormModalComponent
   ]
 })
 export class SharedModule {

@@ -112,7 +112,7 @@ describe('Plant Select2 integration', () => {
       window.jQuery(select).val(select.options[1].value).trigger('change');
     }
     await settle();
-    modal().querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    modal().querySelector<HTMLButtonElement>('app-form-modal button[type="submit"]')!.click();
     expect(api.createPlant).toHaveBeenCalledOnceWith({
       name: 'New plant',
       plantTypeId: 3,
@@ -141,7 +141,7 @@ describe('Plant Select2 integration', () => {
 
   it('keeps missing required selections invalid', async () => {
     await openAdd();
-    modal().querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    modal().querySelector<HTMLButtonElement>('app-form-modal button[type="submit"]')!.click();
     expect(api.createPlant).not.toHaveBeenCalled();
     expect(Swal.fire).toHaveBeenCalledWith(jasmine.objectContaining({ text: 'Please fill in all required fields.' }));
   });

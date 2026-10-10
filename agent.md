@@ -232,6 +232,7 @@ maintenance entry for focused browser validation.
 | `src/app/modules/widgets-examples/` | Widget galleries, including the standalone Apache Charts gallery |
 | `src/app/_metronic/` | Shared layout, icons, directives, theme DOM helpers, widgets |
 | `src/app/shared/components/data-table/` | PrimeNG table/paginator/select/button adapters with Metronic visuals, typed pagination helper and adjacent tests, exposed through `SharedModule` |
+| `src/app/shared/components/form-modal/` | Shared Metronic presentation for all 18 taxonomy add/edit dialogs; page-owned forms projected into the shell, exported through `SharedModule` |
 | `src/app/_fake/` | Mixed legacy code: in-memory demo API plus services calling Keenthemes remotely |
 | `src/app/graphify-out/` | Generated graph reports/caches; historical, not application source |
 | `src/assets/` | Theme Sass, icons, media/plugins, generated Apache chart scripts/data/vendor files |
@@ -445,6 +446,17 @@ Taxonomy forms use `NgForm`, required fields, `saving` guards, ng-bootstrap moda
 templates, Metronic alerts, and refresh after successful mutation. Async updates
 often call `ChangeDetectorRef.detectChanges()` to repaint within the shared layout.
 
+As of 2026-10-10, all 18 add/edit dialogs use `FormModalComponent` from
+`shared/components/form-modal/`, exported by `SharedModule`. The component owns
+the Metronic close button, heading/optional description, responsive body spacing,
+cancel/submit actions and loading indicator. Each page projects its complete
+`NgForm` and retains fields, models, validation, errors and save handlers. The
+shared submit button associates with that form through native `form="formId"`;
+IDs must be unique in the document. Saving disables submission. Dismiss outputs
+retain `Cross click` and `cancel`; ng-bootstrap still owns modal lifecycle.
+Site's existing action IDs and edit description are retained. Select2 continues
+to use the existing directive without additional plugin initialization.
+
 ## Taxonomy and employer inheritance
 
 Navigation order: **Site -> Plant -> Unit -> System -> Asset -> Component -> Measurement**.
@@ -531,7 +543,7 @@ Do not assume screens are integrated based solely on where their files live.
 
 `SharedModule` exports Keenicons, `Select2Directive`, `PaginationbarComponent`,
 `PaginationRecordsComponent`, `PaginationPagesComponent`, `TableRecordComponent`
-and `DataTableComponent`. Selects with
+`DataTableComponent` and `FormModalComponent`. Selects with
 `data-control="select2"`, `data-kt-select2="true"`, or `appSelect2` are automatically
 enhanced. The directive preserves Angular value accessors, numeric `[ngValue]`,
 validation, model changes, and asynchronously loaded options.
@@ -1130,3 +1142,43 @@ superseded by the user's later `components/` rename on 2026-10-10.
   of the old folder. Existing 2.77 MB bundle warning and four CSS selector warnings
   remain. Browser tests were not rerun for this directory-only relocation; no
   component behavior, API contracts or storage decisions changed.
+
+### 2026-10-10 - Shared asset taxonomy form modal presentation
+
+- Inventoried all 18 add/edit dialogs for Site, Plant, Plant Type, Unit, System,
+  Asset, Component, Measurement and Measurement Type. Compared the existing Angular
+  markup with the matching static Site/Plant/Unit/System references and their
+  Metronic dependencies; retained the existing Angular/ng-bootstrap integration.
+- Added `FormModalComponent` under `shared/components/form-modal/`, exported by
+  `SharedModule`. All seven pages use its common header/body/title/actions/loading
+  presentation through ten form-shell instances (shared add/edit templates reuse
+  eight of them; Site retains two distinct form templates).
+- Preserved every existing input/select/option binding, form ID, page-owned NgForm,
+  save handler, API integration and confirmation workflow. Native HTML form
+  association connects the shared submit button to the projected page form.
+  Saving now disables the submit action. Close is an accessible native button;
+  forms reference their heading through `aria-labelledby`. No custom visual
+  styles, packages, theme scripts, API contracts or storage changes were added.
+- Added six browser checks for projected NgForm registration/numeric values,
+  invalid/touched fields, loading/retry behavior, edit/close presentation, cancel
+  and Select2 cleanup, theme colors and viewport overflow. Updated existing page
+  tests to click the actual shared submit button instead of dispatching form events.
+- Verified production build with strict template checks, project lint, normal test
+  TypeScript compilation and all **118** focused taxonomy/shared-table/Select2/modal
+  tests. Repeated with 1440x1000 desktop and 390x844 mobile ChromeHeadless launchers:
+  **236 executions passed**. Temporary Karma configuration was removed. Final
+  binding audit confirmed all page fields unchanged and no duplicated modal chrome.
+  Existing 2.77 MB bundle warning and four CSS selector warnings remain. APIs were
+  mocked; live backend integration and manual visual inspection were not performed.
+
+### 2026-10-10 - Taxonomy delete and save dialog source review
+
+- Verified all nine taxonomy tables use `TablePagination.confirmDelete()` in
+  `shared/components/data-table/pagination/table-pagination.ts` for the SweetAlert2
+  delete confirmation; confirmed deletion delegates to the page's API handler.
+- Add/edit presentation lives in `shared/components/form-modal/`; fields and
+  save handlers remain in each taxonomy page. There is no separate approval
+  confirmation before saving: valid Submit/Save calls the existing API directly,
+  and page-owned SweetAlert2 alerts display success or failure afterward.
+- Source review only; no application behavior changed and no runtime tests or
+  live backend integration were run for this clarification.

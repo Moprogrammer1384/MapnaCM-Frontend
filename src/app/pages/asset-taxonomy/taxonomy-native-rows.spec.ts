@@ -108,7 +108,9 @@ function verifyPage<C, R extends object>(
       root.querySelector<HTMLButtonElement>('button[aria-label="Edit record"]')!.click();
       await settle();
       const modal = document.querySelector('ngb-modal-window')!;
-      modal.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+      const submit = modal.querySelector<HTMLButtonElement>('app-form-modal button[type="submit"]')!;
+      expect(submit.form).toBe(modal.querySelector('form'));
+      submit.click();
       await settle();
       verifySubmission(api);
     });

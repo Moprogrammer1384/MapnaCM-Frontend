@@ -64,26 +64,13 @@
 </ng-template>
 <!--end::Modal - Edit Unit-->
 <ng-template #unitFormTpl let-modal="modal" let-title="title" let-formId="formId" let-submitLabel="submitLabel">
-  <!--begin::Modal header-->
-  <div class="modal-header pb-0 border-0 justify-content-end">
-    <!--begin::Close-->
-    <div class="btn btn-sm btn-icon btn-active-color-primary" (click)="modal.dismiss('Cross click')">
-      <app-keenicon name="cross" class="fs-1"></app-keenicon>
-    </div>
-    <!--end::Close-->
-  </div>
-  <!--begin::Modal header-->
-  <!--begin::Modal body-->
-  <div class="modal-body scroll-y px-5 px-md-10 px-lg-15 pt-0 pb-10 pb-md-15">
-    <!--begin:Form-->
-    <form [id]="formId" class="form" (ngSubmit)="submit(unitNgForm, modal)" #unitNgForm="ngForm" novalidate>
-      <!--begin::Heading-->
-      <div class="mb-8 mb-md-13 text-center">
-        <!--begin::Title-->
-        <h1 class="mb-3">{{ title }}</h1>
-        <!--end::Title-->
-      </div>
-      <!--end::Heading-->
+  <app-form-modal
+    [title]="title"
+    [formId]="formId"
+    [submitLabel]="submitLabel"
+    [saving]="saving"
+    (dismiss)="modal.dismiss($event)">
+    <form [id]="formId" [attr.aria-labelledby]="formId + '_title'" class="form" (ngSubmit)="submit(unitNgForm, modal)" #unitNgForm="ngForm" novalidate>
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
@@ -107,18 +94,6 @@
         </select>
       </div>
       <!--end::Input group-->
-      <!--begin::Actions-->
-      <div class="text-center">
-        <button type="reset" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Cancel</button>
-        <button type="submit" class="btn btn-primary" [attr.data-kt-indicator]="saving ? 'on' : 'off'">
-          <span class="indicator-label">{{ submitLabel }}</span>
-          <span class="indicator-progress">Please wait...
-          <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-        </button>
-      </div>
-      <!--end::Actions-->
     </form>
-    <!--end:Form-->
-  </div>
-  <!--end::Modal body-->
+  </app-form-modal>
 </ng-template>

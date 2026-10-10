@@ -31,7 +31,7 @@ describe('Component page', () => {
     await settle();
   };
   const submit = async () => {
-    modal().querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    modal().querySelector<HTMLButtonElement>('app-form-modal button[type="submit"]')!.click();
     await settle();
   };
 

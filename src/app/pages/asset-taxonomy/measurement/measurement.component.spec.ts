@@ -30,7 +30,7 @@ describe('Measurement page', () => {
     await settle();
   };
   const submit = async () => {
-    modal().querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    modal().querySelector<HTMLButtonElement>('app-form-modal button[type="submit"]')!.click();
     await settle();
   };
   const setTypeAndSensitivity = async (value = '0.25') => {

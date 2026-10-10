@@ -39,26 +39,15 @@
 
 <!--begin::Modal - Add Site-->
 <ng-template #addSiteModal let-modal>
-  <!--begin::Modal header-->
-  <div class="modal-header pb-0 border-0 justify-content-end">
-    <!--begin::Close-->
-    <div class="btn btn-sm btn-icon btn-active-color-primary" (click)="modal.dismiss('Cross click')">
-      <app-keenicon name="cross" class="fs-1"></app-keenicon>
-    </div>
-    <!--end::Close-->
-  </div>
-  <!--begin::Modal header-->
-  <!--begin::Modal body-->
-  <div class="modal-body scroll-y px-5 px-md-10 px-lg-15 pt-0 pb-10 pb-md-15">
-    <!--begin:Form-->
-    <form id="kt_modal_new_target_form" class="form" (ngSubmit)="submit(addSiteForm, modal)" #addSiteForm="ngForm" novalidate>
-      <!--begin::Heading-->
-      <div class="mb-8 mb-md-13 text-center">
-        <!--begin::Title-->
-        <h1 class="mb-3">Add Site</h1>
-        <!--end::Title-->
-      </div>
-      <!--end::Heading-->
+  <app-form-modal
+    title="Add Site"
+    formId="kt_modal_new_target_form"
+    submitLabel="Submit"
+    [saving]="saving"
+    cancelId="kt_modal_new_target_cancel"
+    submitId="kt_modal_new_target_submit"
+    (dismiss)="modal.dismiss($event)">
+    <form id="kt_modal_new_target_form" aria-labelledby="kt_modal_new_target_form_title" class="form" (ngSubmit)="submit(addSiteForm, modal)" #addSiteForm="ngForm" novalidate>
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
@@ -111,48 +100,23 @@
         <!--end::Col-->
       </div>
       <!--end::Input group-->
-      <!--begin::Actions-->
-      <div class="text-center">
-        <button type="reset" id="kt_modal_new_target_cancel" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Cancel</button>
-        <button type="submit" id="kt_modal_new_target_submit" class="btn btn-primary" [attr.data-kt-indicator]="saving ? 'on' : 'off'">
-          <span class="indicator-label">Submit</span>
-          <span class="indicator-progress">Please wait...
-          <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-        </button>
-      </div>
-      <!--end::Actions-->
     </form>
-    <!--end:Form-->
-  </div>
-  <!--end::Modal body-->
+  </app-form-modal>
 </ng-template>
 <!--end::Modal - Add Site-->
 
 <!--begin::Modal - Edit Site-->
 <ng-template #editSiteModal let-modal>
-  <!--begin::Modal header-->
-  <div class="modal-header pb-0 border-0 justify-content-end">
-    <!--begin::Close-->
-    <div class="btn btn-sm btn-icon btn-active-color-primary" (click)="modal.dismiss('Cross click')">
-      <app-keenicon name="cross" class="fs-1"></app-keenicon>
-    </div>
-    <!--end::Close-->
-  </div>
-  <!--begin::Modal header-->
-  <!--begin::Modal body-->
-  <div class="modal-body scroll-y px-5 px-md-10 px-lg-15 pt-0 pb-10 pb-md-15">
-    <!--begin:Form-->
-    <form id="kt_modal_edit_site_form" class="form" (ngSubmit)="submit(editSiteForm, modal)" #editSiteForm="ngForm" novalidate>
-      <!--begin::Heading-->
-      <div class="mb-8 mb-md-13 text-center">
-        <!--begin::Title-->
-        <h1 class="mb-3">Edit Site</h1>
-        <!--end::Title-->
-        <!--begin::Description-->
-        <div class="text-muted fw-semibold fs-5">Site details</div>
-        <!--end::Description-->
-      </div>
-      <!--end::Heading-->
+  <app-form-modal
+    title="Edit Site"
+    formId="kt_modal_edit_site_form"
+    submitLabel="Save"
+    [saving]="saving"
+    description="Site details"
+    cancelId="kt_modal_edit_site_cancel"
+    submitId="kt_modal_edit_site_submit"
+    (dismiss)="modal.dismiss($event)">
+    <form id="kt_modal_edit_site_form" aria-labelledby="kt_modal_edit_site_form_title" class="form" (ngSubmit)="submit(editSiteForm, modal)" #editSiteForm="ngForm" novalidate>
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
@@ -205,19 +169,7 @@
         <!--end::Col-->
       </div>
       <!--end::Input group-->
-      <!--begin::Actions-->
-      <div class="text-center">
-        <button type="reset" id="kt_modal_edit_site_cancel" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Cancel</button>
-        <button type="submit" id="kt_modal_edit_site_submit" class="btn btn-primary" [attr.data-kt-indicator]="saving ? 'on' : 'off'">
-          <span class="indicator-label">Save</span>
-          <span class="indicator-progress">Please wait...
-          <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-        </button>
-      </div>
-      <!--end::Actions-->
     </form>
-    <!--end:Form-->
-  </div>
-  <!--end::Modal body-->
+  </app-form-modal>
 </ng-template>
 <!--end::Modal - Edit Site-->

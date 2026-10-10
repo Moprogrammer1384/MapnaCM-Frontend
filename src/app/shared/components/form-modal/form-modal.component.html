@@ -1,0 +1,21 @@
+<div class="modal-header pb-0 border-0 justify-content-end">
+  <button type="button" class="btn btn-sm btn-icon btn-active-color-primary" aria-label="Close modal" (click)="dismiss.emit('Cross click')">
+    <app-keenicon name="cross" class="fs-1" aria-hidden="true"></app-keenicon>
+  </button>
+</div>
+<div class="modal-body scroll-y px-5 px-md-10 px-lg-15 pt-0 pb-10 pb-md-15" [attr.aria-busy]="saving">
+  <div class="mb-8 mb-md-13 text-center">
+    <h1 [id]="formId + '_title'" class="mb-3">{{ title }}</h1>
+    <div *ngIf="description" class="text-muted fw-semibold fs-5">{{ description }}</div>
+  </div>
+  <ng-content></ng-content>
+  <div class="text-center">
+    <button type="button" [id]="cancelId" class="btn btn-light me-3" (click)="dismiss.emit('cancel')">Cancel</button>
+    <button type="submit" [id]="submitId" [attr.form]="formId" class="btn btn-primary" [disabled]="saving" [attr.data-kt-indicator]="saving ? 'on' : 'off'">
+      <span class="indicator-label">{{ submitLabel }}</span>
+      <span class="indicator-progress" role="status">Please wait...
+        <span class="spinner-border spinner-border-sm align-middle ms-2" aria-hidden="true"></span>
+      </span>
+    </button>
+  </div>
+</div>

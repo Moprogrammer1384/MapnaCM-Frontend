@@ -7,11 +7,11 @@ import { PaginatorModule } from 'primeng/paginator';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { Select2Directive } from './select2/select2.directive';
-import { PaginationbarComponent } from '../../shared/component/data-table/pagination/paginationbar/paginationbar.component';
-import { PaginationRecordsComponent } from '../../shared/component/data-table/pagination/paginationbar/pagination-records/pagination-records.component';
-import { PaginationPagesComponent } from '../../shared/component/data-table/pagination/paginationbar/pagination-pages/pagination-pages.component';
-import { TableRecordComponent } from '../../shared/component/data-table/table-record/table-record.component';
-import { DataTableComponent } from '../../shared/component/data-table/data-table.component';
+import { PaginationbarComponent } from '../../shared/components/data-table/pagination/paginationbar/paginationbar.component';
+import { PaginationRecordsComponent } from '../../shared/components/data-table/pagination/paginationbar/pagination-records/pagination-records.component';
+import { PaginationPagesComponent } from '../../shared/components/data-table/pagination/paginationbar/pagination-pages/pagination-pages.component';
+import { TableRecordComponent } from '../../shared/components/data-table/table-record/table-record.component';
+import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
 
 @NgModule({
   declarations: [

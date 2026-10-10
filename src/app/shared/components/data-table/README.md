@@ -30,7 +30,7 @@ input and readonly action payloads retain the original public component contract
 Run the existing tests with:
 
 ```text
-npm test -- --watch=false --browsers=ChromeHeadless --include=src/app/shared/component/data-table/**/*.spec.ts --include=src/app/pages/asset-taxonomy/**/*.spec.ts --include=src/app/_metronic/shared/select2/select2.directive.spec.ts
+npm test -- --watch=false --browsers=ChromeHeadless --include=src/app/shared/components/data-table/**/*.spec.ts --include=src/app/pages/asset-taxonomy/**/*.spec.ts --include=src/app/_metronic/shared/select2/select2.directive.spec.ts
 ```
 
 References: [PrimeNG table](https://v18.primeng.org/table),

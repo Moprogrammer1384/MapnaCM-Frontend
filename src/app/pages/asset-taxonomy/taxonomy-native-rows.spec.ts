@@ -1,5 +1,5 @@
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { configureMetronicPrimeNG, selectPageSize } from 'src/app/shared/component/data-table/testing/prime-table-test-support';
+import { configureMetronicPrimeNG, selectPageSize } from 'src/app/shared/components/data-table/testing/prime-table-test-support';
 import { CommonModule } from '@angular/common';
 import { Type } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { of } from 'rxjs';
 import Swal from 'sweetalert2';
-import { TablePagination } from '../../shared/component/data-table/pagination/table-pagination';
+import { TablePagination } from '../../shared/components/data-table/pagination/table-pagination';
 import { SharedModule } from '../../_metronic/shared/shared.module';
 import { AssetComponent } from './asset/asset.component';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';

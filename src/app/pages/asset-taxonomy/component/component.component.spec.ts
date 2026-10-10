@@ -1,5 +1,5 @@
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { configureMetronicPrimeNG } from 'src/app/shared/component/data-table/testing/prime-table-test-support';
+import { configureMetronicPrimeNG } from 'src/app/shared/components/data-table/testing/prime-table-test-support';
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';

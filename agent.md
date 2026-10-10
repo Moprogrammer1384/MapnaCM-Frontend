@@ -39,12 +39,12 @@ Never treat this file as a substitute for inspecting files that have changed.
   import them from this central directory. Asset taxonomy uses
   `src/app/core/services/asset-taxonomy-api.service.ts`.
 - **Reusable component location rule (2026-10-10): from now on, every reusable
-  component must be placed under `src/app/shared/component/`.** Create or extract
+  component must be placed under `src/app/shared/components/`.** Create or extract
   reusable components into this directory, using a feature subfolder when needed.
   Page-specific components remain with their pages. Existing reusable components
   in `_metronic/` are retained integrations, not the placement pattern for future
   reusable components. The data-table was migrated from `custom-components/`
-  into `shared/component/` on 2026-10-10.
+  into `shared/components/` on 2026-10-10.
 - Keep changes within the requested scope. Record unrelated findings here;
   do not silently turn a feature request into a general rewrite.
 - Update the appropriate section of this file when a contract or decision changes.
@@ -216,7 +216,7 @@ maintenance entry for focused browser validation.
 | `src/main.ts`, `src/app/app.module.ts` | Bootstrap, HTTP, translations, auth initializer, global providers |
 | `src/app/core/` | Shared API models, centralized services, query serialization, auth interceptor |
 | `src/app/core/services/` | Required service location; `AssetApiService` provides taxonomy CRUD and employer lookups |
-| `src/app/shared/component/` | Required location for reusable components created or extracted from 2026-10-10 onward |
+| `src/app/shared/components/` | Required location for reusable components created or extracted from 2026-10-10 onward |
 | `src/app/pages/routing.ts` | Lazy routes inside the authenticated layout |
 | `src/app/pages/asset-taxonomy/` | Site, Plant/Plant Type, Unit, System, Asset, Component, Measurement management |
 | `src/app/pages/user/` | Real MapnaCM user list, add/edit, activity toggle, delete, detail/audit view |
@@ -231,7 +231,7 @@ maintenance entry for focused browser validation.
 | `src/app/modules/profile/`, `wizards/` | Primarily template/demo screens |
 | `src/app/modules/widgets-examples/` | Widget galleries, including the standalone Apache Charts gallery |
 | `src/app/_metronic/` | Shared layout, icons, directives, theme DOM helpers, widgets |
-| `src/app/shared/component/data-table/` | PrimeNG table/paginator/select/button adapters with Metronic visuals, typed pagination helper and adjacent tests, exposed through `SharedModule` |
+| `src/app/shared/components/data-table/` | PrimeNG table/paginator/select/button adapters with Metronic visuals, typed pagination helper and adjacent tests, exposed through `SharedModule` |
 | `src/app/_fake/` | Mixed legacy code: in-memory demo API plus services calling Keenthemes remotely |
 | `src/app/graphify-out/` | Generated graph reports/caches; historical, not application source |
 | `src/assets/` | Theme Sass, icons, media/plugins, generated Apache chart scripts/data/vendor files |
@@ -356,21 +356,21 @@ uses cards with a create modal; it does not use the table wrapper.
 ### Asset taxonomy
 
 Taxonomy pages use shared `TablePagination<T>` from
-`src/app/shared/component/data-table/pagination/table-pagination.ts` and PrimeNG-rendered
+`src/app/shared/components/data-table/pagination/table-pagination.ts` and PrimeNG-rendered
 tables. They do not use `<app-crud>`, despite matching DataTables styling/classes. Reuse this pattern
 for taxonomy pages. `AssetApiService` lives in `src/app/core/services/asset-taxonomy-api.service.ts`
 and requests up to 10,000 rows for client-side
 search/filter/sort/paging; this is a current limit, not unlimited pagination.
 
 All nine tables across the seven taxonomy pages use `<app-data-table>` from
-`shared/component/data-table/`, declared/exported by `SharedModule`. This generic
+`shared/components/data-table/`, declared/exported by `SharedModule`. This generic
 wrapper owns the responsive table scroller and composes `<app-table-record>`
 with `<app-paginationbar>`, passing the same required `TablePagination<T>` instance
 to both. It forwards `tableId` and readonly typed `editRecord`/`deleteRecord` outputs
 to the page without introducing state, API calls or confirmation logic.
 
 The underlying `<app-table-record>` remains available independently from
-`shared/component/data-table/table-record/`, declared/exported by `SharedModule`. Its required
+`shared/components/data-table/table-record/`, declared/exported by `SharedModule`. Its required
 typed `table: TablePagination<T>` input supplies column definitions, sorting and
 paged rows; cells render native values by each column key (null/undefined stay
 blank). The optional `tableId` input defaults to `kt_profile_overview_table`;
@@ -388,9 +388,9 @@ All nine taxonomy table footers use `<app-paginationbar [table]="table">` inside
 the data-table wrapper. Plant passes separate `plants`/`types` instances to its
 wrappers; Measurement passes separate `table`/`types` instances. The pagination
 bar and its `pagination-records` and `pagination-pages` children live under
-`shared/component/data-table/pagination/paginationbar/`. Import `SharedModule` to use the
+`shared/components/data-table/pagination/paginationbar/`. Import `SharedModule` to use the
 wrapper or either child independently, passing the same required `table` input.
-Both `table-record/` and lowercase `pagination/` are nested inside `shared/component/data-table/`.
+Both `table-record/` and lowercase `pagination/` are nested inside `shared/components/data-table/`.
 The row-independent `PaginationState` interface describes readonly pagination
 metadata and `setPageSize`/`goToPage`; existing `TablePagination<T>` instances
 satisfy it directly. Components delegate state updates to the supplied table.
@@ -548,7 +548,7 @@ RTL CSS is generated separately and enabled by changing the stylesheet imports.
 
 PrimeNG 18.0.2 and Angular CDK 18.2.14 are installed for the taxonomy table adapters.
 `AppModule` uses `providePrimeNG(METRONIC_PRIMENG_CONFIG)` from
-`shared/component/metronic-primeng.config.ts`. PrimeNG 18 exposes no public unstyled
+`shared/components/metronic-primeng.config.ts`. PrimeNG 18 exposes no public unstyled
 input; this configuration uses an empty visual preset and a lower `primeng` CSS
 cascade layer. No PrimeNG default theme/preset, PrimeIcons, PrimeFlex or Tailwind
 stylesheet is imported. The namespaced `data-table/_metronic-table-adapters.scss`
@@ -1026,6 +1026,9 @@ conflict with the Mandatory Styling Policy adopted on 2026-10-10.
 
 ### 2026-10-10 - Reusable component location rule
 
+Historical directory spelling: the singular `component/` in this entry was
+superseded by the user's later `components/` rename on 2026-10-10.
+
 - The user established `src/app/shared/component/` (singular `component`) as the
   required location for every reusable component from now on. Recorded the rule
   in `AGENTS.md`, the working agreement and the source map.
@@ -1112,3 +1115,18 @@ conflict with the Mandatory Styling Policy adopted on 2026-10-10.
   in tests. Computer-use reported no browser available, so manual visual inspection
   was unavailable; computed-style/theme/responsive checks ran in ChromeHeadless.
   Live backend integration and a browser performance benchmark were not performed.
+
+### 2026-10-10 - Plural shared components directory
+
+- Renamed `src/app/shared/component/` to `src/app/shared/components/` at the user's
+  request. All 22 files were relocated; their contents differ only in updated
+  folder references. Updated SharedModule, application configuration, all taxonomy
+  helper/test imports, the global Sass import and the data-table README test command.
+- Updated `AGENTS.md` and current sections of this file: the reusable-component
+  location rule now requires the plural `src/app/shared/components/`. Older log
+  paths describe historical locations and are superseded by this entry.
+- Verified production build, project lint, normal test TypeScript compilation,
+  `git diff --check`, absence of stale application/guidance references, and removal
+  of the old folder. Existing 2.77 MB bundle warning and four CSS selector warnings
+  remain. Browser tests were not rerun for this directory-only relocation; no
+  component behavior, API contracts or storage decisions changed.

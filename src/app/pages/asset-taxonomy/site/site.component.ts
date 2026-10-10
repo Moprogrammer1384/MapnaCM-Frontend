@@ -4,8 +4,8 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { SitePayload } from 'src/app/core/models/asset.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
-import { TablePagination, TablePaginationColumn } from 'src/app/shared/component/data-table/pagination/table-pagination';
-import { compareElevationText, compareNumericText } from 'src/app/shared/component/data-table/pagination/table-pagination-comparators';
+import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
+import { compareElevationText, compareNumericText } from 'src/app/shared/components/data-table/pagination/table-pagination-comparators';
 
 interface SiteRow {
   id: number;

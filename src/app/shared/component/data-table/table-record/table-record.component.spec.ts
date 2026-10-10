@@ -1,7 +1,9 @@
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { configureMetronicPrimeNG } from 'src/app/shared/component/data-table/testing/prime-table-test-support';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TablePagination } from '../Pagination/table-pagination';
-import { SharedModule } from '../../../_metronic/shared/shared.module';
+import { TablePagination } from '../pagination/table-pagination';
+import { SharedModule } from 'src/app/_metronic/shared/shared.module';
 
 interface RecordRow {
   id: number;
@@ -44,12 +46,13 @@ describe('TableRecordComponent through SharedModule', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [TableRecordHostComponent],
-      imports: [SharedModule],
+      imports: [SharedModule, NoopAnimationsModule],
     }).compileComponents();
+    configureMetronicPrimeNG();
     fixture = TestBed.createComponent(TableRecordHostComponent);
     host = fixture.componentInstance;
     fixture.detectChanges();
-    table = fixture.nativeElement.querySelector('#kt_profile_overview_table');
+    table = fixture.nativeElement.querySelector('#kt_profile_overview_table table');
   });
 
   afterEach(() => fixture.destroy());
@@ -120,7 +123,7 @@ describe('TableRecordComponent through SharedModule', () => {
   });
 
   it('keeps different row types, table IDs, actions, sorting and empty states independent', () => {
-    const other: HTMLTableElement = fixture.nativeElement.querySelector('#type-table');
+    const other: HTMLTableElement = fixture.nativeElement.querySelector('#type-table table');
     other.querySelector<HTMLElement>('[aria-label="Edit record"]')!.click();
     other.querySelector<HTMLTableCellElement>('th')!.click();
     fixture.detectChanges();

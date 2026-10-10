@@ -1,3 +1,5 @@
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { configureMetronicPrimeNG } from 'src/app/shared/component/data-table/testing/prime-table-test-support';
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -60,9 +62,10 @@ describe('Component page', () => {
     spyOn(Swal, 'fire').and.stub();
     await TestBed.configureTestingModule({
       declarations: [ComponentComponent],
-      imports: [CommonModule, SharedModule, FormsModule, NgbModalModule],
+      imports: [CommonModule, SharedModule, FormsModule, NgbModalModule, NoopAnimationsModule],
       providers: [{ provide: AssetApiService, useValue: api }],
     }).compileComponents();
+    configureMetronicPrimeNG();
     fixture = TestBed.createComponent(ComponentComponent);
     fixture.componentInstance.modalConfig.animation = false;
     modals = TestBed.inject(NgbModal);
@@ -117,7 +120,7 @@ describe('Component page', () => {
   });
 
   it('restores edit values and saves the existing component ID', async () => {
-    (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
+    (fixture.nativeElement.querySelector('button[aria-label="Edit record"]')! as HTMLElement).click();
     await settle();
     expect(modal().querySelector<HTMLInputElement>('input[name="component"]')!.value).toBe('Bearing');
     expect(fixture.componentInstance.componentForm.assetId).toBe(7);
@@ -127,7 +130,7 @@ describe('Component page', () => {
 
   it('keeps the dialog open and clears saving when the API fails', async () => {
     api.updateComponent.and.returnValue(throwError(() => new Error('Update failed')));
-    (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
+    (fixture.nativeElement.querySelector('button[aria-label="Edit record"]')! as HTMLElement).click();
     await settle();
     await submit();
     expect(modal()).not.toBeNull();
@@ -136,7 +139,7 @@ describe('Component page', () => {
   });
 
   it('rejects an asset selection that is no longer available', async () => {
-    (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
+    (fixture.nativeElement.querySelector('button[aria-label="Edit record"]')! as HTMLElement).click();
     await settle();
     fixture.componentInstance.componentForm.assetId = 99;
     await settle();
@@ -147,7 +150,7 @@ describe('Component page', () => {
 
   it('deletes only after the confirmation is accepted', async () => {
     (Swal.fire as jasmine.Spy).and.returnValue(Promise.resolve({ value: false }));
-    const button = fixture.nativeElement.querySelector('app-keenicon[name="trash"]').parentElement as HTMLElement;
+    const button = fixture.nativeElement.querySelector('button[aria-label="Delete record"]')! as HTMLElement;
     button.click();
     await settle();
     expect(api.deleteComponent).not.toHaveBeenCalled();

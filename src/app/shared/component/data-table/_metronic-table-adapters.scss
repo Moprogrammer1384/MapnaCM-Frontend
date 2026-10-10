@@ -1,0 +1,101 @@
+// Theme-free PrimeNG adapters. Reuse the installed Metronic Sass variables,
+// Bootstrap utilities and documented PrimeNG 18 classes; never target other UI.
+.darp-table-paginator {
+  .p-paginator-pages {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  button {
+    @extend .page-link;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: $pagination-item-height;
+    min-width: $pagination-item-height;
+    margin-inline-end: $pagination-item-space;
+    border-radius: $btn-border-radius;
+    font-size: $pagination-font-size;
+    font-weight: $pagination-font-weight;
+    line-height: $line-height-base;
+
+    &:last-child.p-paginator-last { margin-inline-end: 0; }
+
+    &:focus-visible {
+      outline: $focus-ring-width solid var(--#{$prefix}primary);
+      outline-offset: $border-width;
+    }
+
+    &[aria-current='page'] {
+      color: $pagination-active-color;
+      background-color: $pagination-active-bg;
+    }
+
+    &:disabled {
+      color: $pagination-disabled-color;
+      background-color: $pagination-disabled-bg;
+      pointer-events: none;
+    }
+  }
+
+  .previous,
+  .next {
+    display: block;
+    width: $pagination-icon-height;
+    height: $pagination-icon-height;
+  }
+
+  .previous { @include svg-bg-icon(arrow-start, $pagination-color); }
+  .next { @include svg-bg-icon(arrow-end, $pagination-color); }
+  button:hover .previous { @include svg-bg-icon(arrow-start, $pagination-hover-color); }
+  button:hover .next { @include svg-bg-icon(arrow-end, $pagination-hover-color); }
+  button:disabled .previous { @include svg-bg-icon(arrow-start, $pagination-disabled-color); }
+  button:disabled .next { @include svg-bg-icon(arrow-end, $pagination-disabled-color); }
+
+  @include media-breakpoint-down(lg) {
+    button { margin-inline-end: $pagination-item-space-tablet-and-mobile; }
+  }
+}
+
+.darp-table-page-size {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+
+  .p-select-label { padding: 0; }
+  .p-select-dropdown { display: none; }
+
+  &.p-focus,
+  &.p-select-open { background-color: $input-solid-bg-focus; }
+
+  &:focus-within {
+    outline: $focus-ring-width solid var(--#{$prefix}primary);
+    outline-offset: $border-width;
+  }
+}
+
+.darp-table-page-size-panel {
+  color: $input-color;
+  font-family: $font-family-base;
+  font-size: $input-font-size;
+  border: $border-width solid var(--#{$prefix}border-color);
+
+  .p-select-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .p-select-option {
+    padding: $select2-dropdown-option-padding;
+    cursor: pointer;
+
+    &.p-focus,
+    &:hover { background-color: $input-solid-bg-focus; }
+
+    &.p-select-option-selected {
+      color: var(--#{$prefix}primary);
+      background-color: var(--#{$prefix}primary-light);
+    }
+  }
+}

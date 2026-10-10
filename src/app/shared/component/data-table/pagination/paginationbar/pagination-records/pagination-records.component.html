@@ -1,0 +1,13 @@
+<div class="d-flex align-items-center">
+  <div class="dataTables_length">
+    <p-select [options]="pageSizes()" [ngModel]="table.pageSize" (ngModelChange)="table.setPageSize($event)"
+      [ngModelOptions]="{ standalone: true }" [filter]="false" [checkmark]="false" ariaLabel="Page size"
+      styleClass="form-select form-select-sm form-select-solid w-auto darp-table-page-size"
+      panelStyleClass="darp-table-page-size-panel bg-body rounded shadow py-3">
+      <ng-template pTemplate="dropdownicon"><span class="d-none" aria-hidden="true"></span></ng-template>
+    </p-select>
+  </div>
+  <div class="dataTables_info" role="status" aria-live="polite">
+    {{ table.infoStart }} to {{ table.infoEnd }} of {{ table.resultCount }} entries
+  </div>
+</div>

@@ -42,8 +42,9 @@ Never treat this file as a substitute for inspecting files that have changed.
   component must be placed under `src/app/shared/component/`.** Create or extract
   reusable components into this directory, using a feature subfolder when needed.
   Page-specific components remain with their pages. Existing reusable components
-  in `custom-components/` or `_metronic/` are current source locations, not the
-  placement pattern for future reusable components.
+  in `_metronic/` are retained integrations, not the placement pattern for future
+  reusable components. The data-table was migrated from `custom-components/`
+  into `shared/component/` on 2026-10-10.
 - Keep changes within the requested scope. Record unrelated findings here;
   do not silently turn a feature request into a general rewrite.
 - Update the appropriate section of this file when a contract or decision changes.
@@ -230,7 +231,7 @@ maintenance entry for focused browser validation.
 | `src/app/modules/profile/`, `wizards/` | Primarily template/demo screens |
 | `src/app/modules/widgets-examples/` | Widget galleries, including the standalone Apache Charts gallery |
 | `src/app/_metronic/` | Shared layout, icons, directives, theme DOM helpers, widgets |
-| `src/app/custom-components/` | Composed data table, reusable table record and pagination helper/footer components, exposed through `SharedModule` |
+| `src/app/shared/component/data-table/` | PrimeNG table/paginator/select/button adapters with Metronic visuals, typed pagination helper and adjacent tests, exposed through `SharedModule` |
 | `src/app/_fake/` | Mixed legacy code: in-memory demo API plus services calling Keenthemes remotely |
 | `src/app/graphify-out/` | Generated graph reports/caches; historical, not application source |
 | `src/assets/` | Theme Sass, icons, media/plugins, generated Apache chart scripts/data/vendor files |
@@ -355,25 +356,28 @@ uses cards with a create modal; it does not use the table wrapper.
 ### Asset taxonomy
 
 Taxonomy pages use shared `TablePagination<T>` from
-`src/app/custom-components/data-table/Pagination/table-pagination.ts` and Angular-rendered
+`src/app/shared/component/data-table/pagination/table-pagination.ts` and PrimeNG-rendered
 tables. They do not use `<app-crud>`, despite matching DataTables styling/classes. Reuse this pattern
 for taxonomy pages. `AssetApiService` lives in `src/app/core/services/asset-taxonomy-api.service.ts`
 and requests up to 10,000 rows for client-side
 search/filter/sort/paging; this is a current limit, not unlimited pagination.
 
 All nine tables across the seven taxonomy pages use `<app-data-table>` from
-`custom-components/data-table/`, declared/exported by `SharedModule`. This generic
-wrapper owns the existing responsive container and composes `<app-table-record>`
+`shared/component/data-table/`, declared/exported by `SharedModule`. This generic
+wrapper owns the responsive table scroller and composes `<app-table-record>`
 with `<app-paginationbar>`, passing the same required `TablePagination<T>` instance
 to both. It forwards `tableId` and readonly typed `editRecord`/`deleteRecord` outputs
 to the page without introducing state, API calls or confirmation logic.
 
 The underlying `<app-table-record>` remains available independently from
-`custom-components/data-table/table-record/`, declared/exported by `SharedModule`. Its required
+`shared/component/data-table/table-record/`, declared/exported by `SharedModule`. Its required
 typed `table: TablePagination<T>` input supplies column definitions, sorting and
 paged rows; cells render native values by each column key (null/undefined stay
 blank). The optional `tableId` input defaults to `kt_profile_overview_table`;
-existing distinct Plant Type/Measurement/Measurement Type IDs are preserved.
+existing distinct Plant Type/Measurement/Measurement Type IDs are preserved on the
+PrimeNG table host; its native table has a generated ID. Query `#<tableId> table`
+when accessing the native table. `p-table` owns row/empty-state rendering and
+`pButton` supplies sort and row-action buttons with Metronic classes and Keenicons.
 Typed `editRecord` and `deleteRecord` outputs emit the readonly row snapshot.
 Pages own modal opening, delete confirmation and API mutations. The component
 renders the table only; the data-table wrapper supplies its responsive container
@@ -384,13 +388,19 @@ All nine taxonomy table footers use `<app-paginationbar [table]="table">` inside
 the data-table wrapper. Plant passes separate `plants`/`types` instances to its
 wrappers; Measurement passes separate `table`/`types` instances. The pagination
 bar and its `pagination-records` and `pagination-pages` children live under
-`custom-components/data-table/Pagination/paginationbar/`. Import `SharedModule` to use the
+`shared/component/data-table/pagination/paginationbar/`. Import `SharedModule` to use the
 wrapper or either child independently, passing the same required `table` input.
-Both `table-record/` and `Pagination/` are nested inside `custom-components/data-table/`.
+Both `table-record/` and lowercase `pagination/` are nested inside `shared/component/data-table/`.
 The row-independent `PaginationState` interface describes readonly pagination
 metadata and `setPageSize`/`goToPage`; existing `TablePagination<T>` instances
 satisfy it directly. Components delegate state updates to the supplied table.
-The records child uses the existing Select2 directive; do not initialize it again.
+The records child uses PrimeNG `p-select` for page sizes; do not initialize Select2
+on this control. The pages child uses `p-paginator` for the five-number window and
+First/Previous/Next/Last controls, converting zero-based events into helper pages.
+The footer stays outside horizontal scrolling so the dropdown is not clipped.
+The helper remains the source of row/filter/sort/page state; PrimeNG does not
+independently sort or paginate its supplied page rows. Empty results keep the
+helper at page 1 with disabled navigation; PrimeNG renders no numbered empty page.
 
 `TablePagination<T extends object>` retains native row values, searches the text
 representations of explicitly configured fields, combines exact filters typed per field, supports
@@ -535,6 +545,16 @@ for the plugin. See `_metronic/shared/select2/README.md` for attributes and exam
 `src/styles.scss` imports theme Sass, plugins, Angular vendor styles, and three
 Keenicon font styles. Use `<app-keenicon>` and existing Metronic utility classes.
 RTL CSS is generated separately and enabled by changing the stylesheet imports.
+
+PrimeNG 18.0.2 and Angular CDK 18.2.14 are installed for the taxonomy table adapters.
+`AppModule` uses `providePrimeNG(METRONIC_PRIMENG_CONFIG)` from
+`shared/component/metronic-primeng.config.ts`. PrimeNG 18 exposes no public unstyled
+input; this configuration uses an empty visual preset and a lower `primeng` CSS
+cascade layer. No PrimeNG default theme/preset, PrimeIcons, PrimeFlex or Tailwind
+stylesheet is imported. The namespaced `data-table/_metronic-table-adapters.scss`
+partial is loaded after the existing Metronic Sass and reuses its variables and
+mixins for pagination, form/select, dropdown and focus styling. Theme colors track
+`data-bs-theme`. The default PrimeNG accessibility translations are retained.
 
 Theme mode uses `data-bs-theme` and storage keys `kt_theme_mode_value` and
 `kt_theme_mode_menu`. Layout config uses versioned `layoutConfig` and
@@ -1059,3 +1079,36 @@ conflict with the Mandatory Styling Policy adopted on 2026-10-10.
   currently declared dependencies. No packages, application code or styles changed.
   Verified the policy contents and `git diff --check`; build/browser tests were not
   rerun for this documentation-only update.
+
+### 2026-10-10 - PrimeNG data table with Metronic visuals
+
+- Moved the entire reusable data-table implementation/helper/comparators/tests from
+  `custom-components/data-table/` to `shared/component/data-table/`, standardized
+  imports on lowercase `pagination/`, and updated SharedModule and all seven
+  taxonomy pages. All nine tables use the same exported component contracts.
+- Replaced rendered table/empty-state markup with PrimeNG `p-table`, navigation
+  with `p-paginator`, page-size Select2 with `p-select`, and sort/row-action buttons
+  with `pButton`. Retained typed cached table state, native/nullable fields, custom
+  comparators, three-state sorting, row snapshots, search/filter controls and host
+  modal/confirmation/API workflows. Page sizes reset page 1; zero-based paginator
+  events map to the helper's one-based page. Footer stays outside table scrolling.
+- Installed PrimeNG 18.0.2 and explicit Angular CDK 18.2.14 (Angular 18 compatible).
+  Added an empty-preset/lower-layer PrimeNG configuration and namespaced Metronic
+  Sass adapters using existing theme tokens/mixins. No PrimeNG default visual theme,
+  PrimeIcons, PrimeFlex or Tailwind styles are used. Default accessibility locale
+  values are preserved. Table IDs remain on the PrimeNG hosts; native table IDs
+  are generated. The folder README documents reuse and inspection details.
+- Updated existing integration assertions to exercise actual PrimeNG dropdown
+  overlays/buttons and retained the original behavior checks. Added keyboard
+  selection, responsive footer/accessibility and light/dark style comparisons
+  against the previous Metronic pagination markup.
+- Verified production build, project lint, normal test TypeScript compilation,
+  `git diff --check`, and all **112** focused tests. Repeated those tests with
+  1440x1000 and 390x844 ChromeHeadless launchers: **224 executions passed**.
+  The former shared-table casing blocker is resolved by the relocation/import
+  normalization. Temporary responsive Karma configuration and logs were removed.
+- Initial bundle is now approximately **2.77 MB**, still above the existing 2 MB
+  warning budget; the four existing CSS selector warnings remain. APIs were mocked
+  in tests. Computer-use reported no browser available, so manual visual inspection
+  was unavailable; computed-style/theme/responsive checks ran in ChromeHeadless.
+  Live backend integration and a browser performance benchmark were not performed.

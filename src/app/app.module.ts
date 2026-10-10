@@ -13,6 +13,8 @@ import { AuthService } from './modules/auth/services/auth.service';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { environment } from 'src/environments/environment';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { providePrimeNG } from 'primeng/config';
+import { METRONIC_PRIMENG_CONFIG } from './shared/component/metronic-primeng.config';
 // #fake-start#
 import { FakeAPIService } from './_fake/fake-api.service';
 // #fake-end#
@@ -48,6 +50,7 @@ function appInitializer(authService: AuthService) {
     SweetAlert2Module.forRoot(),
   ],
   providers: [
+    providePrimeNG(METRONIC_PRIMENG_CONFIG),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

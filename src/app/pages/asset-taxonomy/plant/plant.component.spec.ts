@@ -1,3 +1,5 @@
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { configureMetronicPrimeNG } from 'src/app/shared/component/data-table/testing/prime-table-test-support';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
@@ -47,9 +49,10 @@ describe('Plant Select2 integration', () => {
     spyOn(Swal, 'fire').and.stub();
     await TestBed.configureTestingModule({
       declarations: [PlantComponent],
-      imports: [SharedModule, FormsModule, NgbModalModule],
+      imports: [SharedModule, FormsModule, NgbModalModule, NoopAnimationsModule],
       providers: [{ provide: AssetApiService, useValue: api }],
     }).compileComponents();
+    configureMetronicPrimeNG();
     fixture = TestBed.createComponent(PlantComponent);
     fixture.componentInstance.modalConfig.animation = false;
     modals = TestBed.inject(NgbModal);
@@ -120,7 +123,7 @@ describe('Plant Select2 integration', () => {
   });
 
   it('shows edit selections, then restores placeholders when reopened for adding', async () => {
-    (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
+    (fixture.nativeElement.querySelector('button[aria-label="Edit record"]')! as HTMLElement).click();
     await settle();
     expect(field('plantTypeId').nextElementSibling!.textContent).toContain('Thermal');
     expect(field('siteId').nextElementSibling!.textContent).toContain('Shiraz (29, 52)');

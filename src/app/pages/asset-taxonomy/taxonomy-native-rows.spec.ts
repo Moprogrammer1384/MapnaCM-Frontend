@@ -1,3 +1,5 @@
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { configureMetronicPrimeNG, selectPageSize } from 'src/app/shared/component/data-table/testing/prime-table-test-support';
 import { CommonModule } from '@angular/common';
 import { Type } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -5,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { of } from 'rxjs';
 import Swal from 'sweetalert2';
-import { TablePagination } from '../../custom-components/data-table/Pagination/table-pagination';
+import { TablePagination } from '../../shared/component/data-table/pagination/table-pagination';
 import { SharedModule } from '../../_metronic/shared/shared.module';
 import { AssetComponent } from './asset/asset.component';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
@@ -63,9 +65,10 @@ function verifyPage<C, R extends object>(
       spyOn(Swal, 'fire').and.stub();
       await TestBed.configureTestingModule({
         declarations: [componentType],
-        imports: [CommonModule, SharedModule, FormsModule, NgbModalModule],
+        imports: [CommonModule, SharedModule, FormsModule, NgbModalModule, NoopAnimationsModule],
         providers: [{ provide: AssetApiService, useValue: api }],
       }).compileComponents();
+      configureMetronicPrimeNG();
       fixture = TestBed.createComponent(componentType);
       modals = TestBed.inject(NgbModal);
       root = fixture.nativeElement;
@@ -100,12 +103,9 @@ function verifyPage<C, R extends object>(
       search.value = '';
       search.dispatchEvent(new Event('input'));
       await settle();
-      const size = root.querySelector<HTMLSelectElement>('select[aria-label="Page size"]')!;
-      size.value = '25';
-      size.dispatchEvent(new Event('change'));
-      await settle();
+      await selectPageSize(root, 25, settle);
       expect(table.pageSize).toBe(25);
-      root.querySelector('app-keenicon[name="pencil"]')!.parentElement!.click();
+      root.querySelector<HTMLButtonElement>('button[aria-label="Edit record"]')!.click();
       await settle();
       const modal = document.querySelector('ngb-modal-window')!;
       modal.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
@@ -147,7 +147,7 @@ function verifyPage<C, R extends object>(
       const table = tableOf(fixture.componentInstance);
       table.setRows(Array.from({ length: 120 }, () => ({ ...table.rows[0] })));
       await settle();
-      const button = (label: string) => root.querySelector<HTMLButtonElement>(`.pagination button[aria-label="${label} page"]`)!;
+      const button = (label: string) => root.querySelector<HTMLButtonElement>(`.pagination button[aria-label="${label} Page"]`)!;
       expect(button('First').disabled).toBeTrue();
       expect(button('Previous').disabled).toBeTrue();
       expect(button('Last').disabled).toBeFalse();
@@ -155,8 +155,8 @@ function verifyPage<C, R extends object>(
       await settle();
       expect(table.page).toBe(12);
       expect(table.pages).toEqual([8, 9, 10, 11, 12]);
-      expect(root.querySelector('.pagination .active button')!.getAttribute('aria-current')).toBe('page');
-      expect(root.querySelector('.pagination .active button')!.textContent!.trim()).toBe('12');
+      expect(root.querySelector('.pagination button[aria-current="page"]')!.getAttribute('aria-current')).toBe('page');
+      expect(root.querySelector('.pagination button[aria-current="page"]')!.textContent!.trim()).toBe('12');
       expect(root.querySelector('.dataTables_info')!.textContent).toContain('111 to 120 of 120');
       expect(button('Last').disabled).toBeTrue();
       expect(button('Next').disabled).toBeTrue();

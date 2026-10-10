@@ -1,7 +1,10 @@
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { configureMetronicPrimeNG } from 'src/app/shared/component/data-table/testing/prime-table-test-support';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SharedModule } from '../../_metronic/shared/shared.module';
-import { TablePagination } from './Pagination/table-pagination';
+import { SharedModule } from 'src/app/_metronic/shared/shared.module';
+import { TablePagination } from './pagination/table-pagination';
+import { selectPageSize } from './testing/prime-table-test-support';
 
 interface RecordRow {
   id: number;
@@ -13,6 +16,11 @@ interface RecordRow {
   template: `
     <app-data-table [table]="table" (editRecord)="onEdit($event)" (deleteRecord)="onDelete($event)"></app-data-table>
     <app-data-table [table]="types" tableId="type-table" (editRecord)="editedType = $event"></app-data-table>
+    <div class="pagination" aria-hidden="true" data-metronic-reference>
+      <div class="page-item"><button class="page-link">2</button></div>
+      <div class="page-item active"><button class="page-link">1</button></div>
+      <div class="page-item disabled"><button class="page-link" disabled>First</button></div>
+    </div>
   `,
 })
 class DataTableHostComponent {
@@ -51,28 +59,40 @@ describe('DataTableComponent through SharedModule', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
     fixture.detectChanges();
   };
-  const button = (label: string) => wrapper.querySelector<HTMLButtonElement>(`button[aria-label="${label} page"]`)!;
-  const sizeSelect = () => wrapper.querySelector<HTMLSelectElement>('select[aria-label="Page size"]')!;
+  const button = (label: string) => wrapper.querySelector<HTMLButtonElement>(`button[aria-label="${label} Page"]`)!;
+  const sizeLabel = () => wrapper.querySelector('.p-select-label')!.textContent!.trim();
   const info = () => wrapper.querySelector('.dataTables_info')!.textContent!;
   const firstCells = () => Array.from(wrapper.querySelectorAll('tbody tr:first-child td'), (cell) => cell.textContent!.trim());
   const rowCount = () => wrapper.querySelectorAll('tbody tr').length;
+  let initialTheme: string | null;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [DataTableHostComponent],
-      imports: [SharedModule],
+      imports: [SharedModule, NoopAnimationsModule],
     }).compileComponents();
+    configureMetronicPrimeNG();
     fixture = TestBed.createComponent(DataTableHostComponent);
+    initialTheme = document.documentElement.getAttribute('data-bs-theme');
     host = fixture.componentInstance;
     await settle();
     wrapper = fixture.nativeElement.querySelector('app-data-table');
   });
 
-  afterEach(() => fixture.destroy());
+  afterEach(() => {
+    fixture.destroy();
+    if (initialTheme === null) {
+      document.documentElement.removeAttribute('data-bs-theme');
+    } else {
+      document.documentElement.setAttribute('data-bs-theme', initialTheme);
+    }
+  });
 
   it('keeps the rendered rows and footer synchronized when navigating and sorting', async () => {
     expect(wrapper.querySelector('#kt_profile_overview_table')).not.toBeNull();
-    expect(wrapper.querySelectorAll('.table-responsive.dataTables_wrapper').length).toBe(1);
+    expect(wrapper.querySelectorAll('.table-responsive').length).toBe(1);
+    expect(wrapper.querySelector('p-table')).not.toBeNull();
+    expect(wrapper.querySelector('p-paginator')).not.toBeNull();
     expect(rowCount()).toBe(10);
     expect(firstCells()).toEqual(['Item 1', '32', '']);
     expect(info()).toContain('1 to 10 of 32 entries');
@@ -90,28 +110,24 @@ describe('DataTableComponent through SharedModule', () => {
     expect(firstCells()).toEqual(['Item 32', '1', '']);
     expect(info()).toContain('1 to 10 of 32 entries');
     expect(button('First').disabled).toBeTrue();
-    expect(wrapper.querySelector('.pagination .active button')!.getAttribute('aria-current')).toBe('page');
+    expect(wrapper.querySelector('.pagination button[aria-current="page"]')!.getAttribute('aria-current')).toBe('page');
   });
 
-  it('applies native and Select2 size changes once to both rows and entry ranges', async () => {
+  it('applies PrimeNG size changes once to both rows and entry ranges', async () => {
     const changeSize = spyOn(host.table, 'setPageSize').and.callThrough();
-    expect(wrapper.querySelectorAll('.select2-container').length).toBe(1);
+    expect(wrapper.querySelector('.select2-container')).toBeNull();
     button('Last').click();
     await settle();
-    const select = sizeSelect();
-    select.value = '25';
-    select.dispatchEvent(new Event('change'));
-    await settle();
-    expect(changeSize).toHaveBeenCalledOnceWith('25');
+    await selectPageSize(wrapper, 25, settle);
+    expect(changeSize).toHaveBeenCalledOnceWith(25);
     expect(host.table.page).toBe(1);
     expect(rowCount()).toBe(25);
     expect(info()).toContain('1 to 25 of 32 entries');
     changeSize.calls.reset();
     button('Next').click();
     await settle();
-    window.jQuery(select).val('50').trigger('change');
-    await settle();
-    expect(changeSize).toHaveBeenCalledOnceWith('50');
+    await selectPageSize(wrapper, 50, settle);
+    expect(changeSize).toHaveBeenCalledOnceWith(50);
     expect(host.table.page).toBe(1);
     expect(rowCount()).toBe(32);
     expect(info()).toContain('1 to 32 of 32 entries');
@@ -161,7 +177,7 @@ describe('DataTableComponent through SharedModule', () => {
       { id: 102, name: 'New second', amount: 2 },
     ], host.table.columns, { searchKeys: ['name'], pageSizes: [1, 2] });
     await settle();
-    expect(sizeSelect().value).toBe('1');
+    expect(sizeLabel()).toBe('1');
     button('Next').click();
     await settle();
     expect(firstCells()).toEqual(['New second', '2', '']);
@@ -171,7 +187,7 @@ describe('DataTableComponent through SharedModule', () => {
   it('keeps wrappers with different row types, IDs, pagination and actions independent', async () => {
     const other: HTMLElement = fixture.nativeElement.querySelectorAll('app-data-table')[1];
     expect(other.querySelector('#type-table')).not.toBeNull();
-    other.querySelector<HTMLButtonElement>('button[aria-label="Last page"]')!.click();
+    other.querySelector<HTMLButtonElement>('button[aria-label="Last Page"]')!.click();
     await settle();
     expect(other.querySelector('tbody td')!.textContent).toBe('Displacement');
     expect(other.querySelector('.dataTables_info')!.textContent).toContain('3 to 3 of 3 entries');
@@ -180,11 +196,51 @@ describe('DataTableComponent through SharedModule', () => {
     expect(host.edited).toBeUndefined();
     expect(host.table.page).toBe(1);
     expect(firstCells()).toEqual(['Item 1', '32', '']);
-    const select = other.querySelector<HTMLSelectElement>('select')!;
-    window.jQuery(select).val('2').trigger('change');
-    await settle();
+    await selectPageSize(other, 2, settle);
     expect(host.types.pageSize).toBe(2);
     expect(host.table.pageSize).toBe(10);
     expect(rowCount()).toBe(10);
+  });
+
+  it('matches Metronic pagination tokens in light and dark modes without PrimeNG palette variables', async () => {
+    const reference = fixture.nativeElement.querySelector('[data-metronic-reference]') as HTMLElement;
+    for (const theme of ['light', 'dark']) {
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      await settle();
+      const pairs = [
+        [wrapper.querySelector('.p-paginator-page:not([aria-current])')!, reference.querySelector('.page-item:not(.active):not(.disabled) button')!],
+        [wrapper.querySelector('.p-paginator-page[aria-current="page"]')!, reference.querySelector('.active button')!],
+        [button('First'), reference.querySelector('.disabled button')!],
+      ];
+      for (const [actual, expected] of pairs) {
+        const actualStyle = getComputedStyle(actual);
+        const expectedStyle = getComputedStyle(expected);
+        for (const property of ['color', 'background-color', 'font-size', 'font-weight', 'border-radius', 'height', 'min-width']) {
+          expect(actualStyle.getPropertyValue(property)).withContext(`${theme}: ${property}`)
+            .toBe(expectedStyle.getPropertyValue(property));
+        }
+      }
+      expect(getComputedStyle(document.documentElement).getPropertyValue('--p-primary-color')).toBe('');
+      expect(wrapper.querySelector('p-select')!.classList.contains('form-select-solid')).toBeTrue();
+    }
+  });
+
+  it('keeps the responsive footer outside the scrolling table and preserves native action accessibility', () => {
+    const scroller = wrapper.querySelector('.table-responsive')!;
+    const footer = wrapper.querySelector('app-paginationbar')!;
+    expect(scroller.contains(footer)).toBeFalse();
+    expect(getComputedStyle(scroller).overflowX).toBe('auto');
+    expect(getComputedStyle(footer.firstElementChild!).flexDirection).toBe(window.innerWidth < 768 ? 'column' : 'row');
+    expect(wrapper.querySelector('[role="combobox"]')!.getAttribute('aria-label')).toBe('Page size');
+    for (const label of ['Edit record', 'Delete record']) {
+      const action = wrapper.querySelector<HTMLButtonElement>(`button[aria-label="${label}"]`)!;
+      expect(action.type).toBe('button');
+      expect(action.classList.contains('p-button')).toBeTrue();
+    }
+    const sort = wrapper.querySelector<HTMLButtonElement>('th button')!;
+    expect(sort.getAttribute('aria-label')).toBe('Sort by Name');
+    sort.click();
+    fixture.detectChanges();
+    expect(sort.closest('th')!.getAttribute('aria-sort')).toBe('ascending');
   });
 });

@@ -1,3 +1,5 @@
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { configureMetronicPrimeNG } from 'src/app/shared/component/data-table/testing/prime-table-test-support';
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -40,7 +42,7 @@ describe('Measurement page', () => {
     await settle();
   };
   const clickTypeAction = async (icon: string) => {
-    (fixture.nativeElement.querySelector(`#kt_measurement_type_table app-keenicon[name="${icon}"]`).parentElement as HTMLElement).click();
+    fixture.nativeElement.querySelector(`#kt_measurement_type_table button[aria-label="${icon === 'pencil' ? 'Edit' : 'Delete'} record"]`).click();
     await settle();
   };
   const write = (name: string, value: string) => {
@@ -86,9 +88,10 @@ describe('Measurement page', () => {
     spyOn(Swal, 'fire').and.stub();
     await TestBed.configureTestingModule({
       declarations: [MeasurementComponent],
-      imports: [CommonModule, SharedModule, FormsModule, NgbModalModule],
+      imports: [CommonModule, SharedModule, FormsModule, NgbModalModule, NoopAnimationsModule],
       providers: [{ provide: AssetApiService, useValue: api }],
     }).compileComponents();
+    configureMetronicPrimeNG();
     fixture = TestBed.createComponent(MeasurementComponent);
     fixture.componentInstance.modalConfig.animation = false;
     modals = TestBed.inject(NgbModal);
@@ -150,7 +153,7 @@ describe('Measurement page', () => {
     const root: HTMLElement = fixture.nativeElement;
     const cells = root.querySelectorAll('#kt_measurement_table tbody tr:first-child td');
     expect(Array.from(cells).slice(1, 5).map((cell) => cell.textContent!.trim())).toEqual(['', '', '', '']);
-    root.querySelector<HTMLElement>('app-keenicon[name="pencil"]')!.parentElement!.click();
+    root.querySelector<HTMLButtonElement>('button[aria-label="Edit record"]')!.click();
     await settle();
     expect(fixture.componentInstance.measurementForm).toEqual({
       id: 21, componentId: 10, measurement: 'Legacy measurement', tag: '', measurementTypeId: null, sensitivity: null,
@@ -173,7 +176,7 @@ describe('Measurement page', () => {
     expect(fixture.componentInstance.table.filters.measurementTypeId).toBe(0);
     expect(fixture.componentInstance.table.filtered.length).toBe(1);
     const root: HTMLElement = fixture.nativeElement;
-    root.querySelector<HTMLElement>('app-keenicon[name="pencil"]')!.parentElement!.click();
+    root.querySelector<HTMLButtonElement>('button[aria-label="Edit record"]')!.click();
     await settle();
     expect(fixture.componentInstance.measurementForm.measurementTypeId).toBe(0);
     expect(fixture.componentInstance.measurementForm.sensitivity).toBe(0);
@@ -198,7 +201,7 @@ describe('Measurement page', () => {
   });
 
   it('restores edit values including type and sensitivity and saves the full payload', async () => {
-    (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
+    (fixture.nativeElement.querySelector('button[aria-label="Edit record"]')! as HTMLElement).click();
     await settle();
     expect(modal().querySelector<HTMLInputElement>('input[name="measurement"]')!.value).toBe('RMS velocity');
     expect(fixture.componentInstance.measurementForm.componentId).toBe(10);
@@ -213,7 +216,7 @@ describe('Measurement page', () => {
 
   it('keeps the dialog open and clears saving when the API fails', async () => {
     api.updateMeasurement.and.returnValue(throwError(() => new Error('Update failed')));
-    (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
+    (fixture.nativeElement.querySelector('button[aria-label="Edit record"]')! as HTMLElement).click();
     await settle();
     await submit();
     expect(modal()).not.toBeNull();
@@ -222,7 +225,7 @@ describe('Measurement page', () => {
   });
 
   it('rejects stale component and type selections', async () => {
-    (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
+    (fixture.nativeElement.querySelector('button[aria-label="Edit record"]')! as HTMLElement).click();
     await settle();
     fixture.componentInstance.measurementForm.componentId = 99;
     await settle();
@@ -238,12 +241,12 @@ describe('Measurement page', () => {
   });
 
   it('accepts zero sensitivity and rejects non-finite values', async () => {
-    (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
+    (fixture.nativeElement.querySelector('button[aria-label="Edit record"]')! as HTMLElement).click();
     await settle();
     await setTypeAndSensitivity('0');
     await submit();
     expect(api.updateMeasurement).toHaveBeenCalledWith(jasmine.objectContaining({ sensitivity: 0 }));
-    (fixture.nativeElement.querySelector('app-keenicon[name="pencil"]').parentElement as HTMLElement).click();
+    (fixture.nativeElement.querySelector('button[aria-label="Edit record"]')! as HTMLElement).click();
     await settle();
     fixture.componentInstance.measurementForm.sensitivity = Infinity;
     await settle();
@@ -253,7 +256,7 @@ describe('Measurement page', () => {
 
   it('deletes a measurement only after the confirmation is accepted', async () => {
     (Swal.fire as jasmine.Spy).and.returnValue(Promise.resolve({ value: false }));
-    const button = fixture.nativeElement.querySelector('app-keenicon[name="trash"]').parentElement as HTMLElement;
+    const button = fixture.nativeElement.querySelector('button[aria-label="Delete record"]')! as HTMLElement;
     button.click();
     await settle();
     expect(api.deleteMeasurement).not.toHaveBeenCalled();

@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { PaginatorState } from 'primeng/paginator';
 import { PaginationState } from '../pagination-state';
 
 @Component({
@@ -7,4 +8,10 @@ import { PaginationState } from '../pagination-state';
 })
 export class PaginationPagesComponent {
   @Input({ required: true }) table!: PaginationState;
+
+  onPageChange(event: PaginatorState): void {
+    if (event.page !== undefined) {
+      this.table.goToPage(event.page + 1);
+    }
+  }
 }

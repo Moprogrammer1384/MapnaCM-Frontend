@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { TablePagination } from './Pagination/table-pagination';
+import { TablePagination } from './pagination/table-pagination';
 
 @Component({
   selector: 'app-data-table',

@@ -1,0 +1,10 @@
+<div class="dataTables_paginate paging_simple_numbers">
+  <p-paginator [first]="(table.page - 1) * table.pageSize" [rows]="table.pageSize" [totalRecords]="table.resultCount"
+    [pageLinkSize]="5" [showFirstLastIcon]="true" styleClass="pagination darp-table-paginator"
+    (onPageChange)="onPageChange($event)">
+    <ng-template pTemplate="firstpagelinkicon">First</ng-template>
+    <ng-template pTemplate="previouspagelinkicon"><i class="previous" aria-hidden="true"></i></ng-template>
+    <ng-template pTemplate="nextpagelinkicon"><i class="next" aria-hidden="true"></i></ng-template>
+    <ng-template pTemplate="lastpagelinkicon">Last</ng-template>
+  </p-paginator>
+</div>

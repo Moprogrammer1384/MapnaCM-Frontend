@@ -3,7 +3,7 @@ import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { Asset, AssetPayload, AssetSystem } from 'src/app/core/models/asset.model';
-import { AssetApiService } from '../services/asset-api.service';
+import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { TablePagination, TablePaginationColumn } from 'src/app/custom-components/data-table/Pagination/table-pagination';
 
 interface AssetRow {

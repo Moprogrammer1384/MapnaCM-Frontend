@@ -1,6 +1,6 @@
-# Demo1
+# DARP
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.x.x.
+DARP is an Angular 18 frontend built with Metronic.
 
 ## Development server
 

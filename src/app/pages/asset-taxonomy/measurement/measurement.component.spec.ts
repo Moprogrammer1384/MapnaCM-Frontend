@@ -5,7 +5,7 @@ import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { of, throwError } from 'rxjs';
 import Swal from 'sweetalert2';
 import { SharedModule } from '../../../_metronic/shared/shared.module';
-import { AssetApiService } from '../services/asset-api.service';
+import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { MeasurementComponent } from './measurement.component';
 
 describe('Measurement page', () => {

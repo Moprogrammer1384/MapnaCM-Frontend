@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 import { TablePagination } from '../../custom-components/data-table/Pagination/table-pagination';
 import { SharedModule } from '../../_metronic/shared/shared.module';
 import { AssetComponent } from './asset/asset.component';
-import { AssetApiService } from './services/asset-api.service';
+import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { SiteComponent } from './site/site.component';
 import { SystemComponent } from './system/system.component';
 import { UnitComponent } from './unit/unit.component';

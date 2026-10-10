@@ -4,7 +4,7 @@ import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { of } from 'rxjs';
 import Swal from 'sweetalert2';
 import { SharedModule } from '../../../_metronic/shared/shared.module';
-import { AssetApiService } from '../services/asset-api.service';
+import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { PlantComponent } from './plant.component';
 
 describe('Plant Select2 integration', () => {

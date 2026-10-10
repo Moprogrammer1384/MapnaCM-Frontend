@@ -1,6 +1,6 @@
-# MapnaCM frontend: development context
+# DARP frontend: development context
 
-Last studied: **2026-10-06 (Asia/Tehran)**.
+Last studied: **2026-10-06 (Asia/Tehran)**. Latest focused maintenance: **2026-10-10**.
 Latest source reviewed: `52233c9` (`Plant type fix`), plus the Tag and Measurement Type UI changes below.
 
 This is the project memory for development with Codex. Read it at the start of
@@ -24,15 +24,26 @@ Never treat this file as a substitute for inspecting files that have changed.
 - **Default design source:** `C:/Users/hafez/Documents/Mapna/Mapna-UIUX/customize`.
   Most requests convert a supplied HTML design into Angular. Build from scratch
   only when explicitly requested, still using existing Metronic content.
-- **Standing theme restriction:** use existing Metronic CSS, scripts, components,
-  utility classes, markup, and dependencies. Do not author custom CSS/SCSS,
-  inline styles, or new handwritten JavaScript for styling or theme behavior,
-  including when a request mentions styles/scripts. Angular component state,
-  bindings, forms, validation, and integration glue remain part of UI conversion.
+- **Mandatory styling policy (2026-10-10):** follow the METRONIC ONLY policy below.
+  It supersedes conflicting older styling/library restrictions. Reuse Metronic
+  patterns first; PrimeNG and Spartan UI may supply functionality/behavior only.
+  Centralized Metronic-token-based adapter styling and supported styling APIs are
+  permitted by this policy; independent visual systems are prohibited. Angular
+  state, bindings, forms, validation, and integration remain part of UI conversion.
 - Preserve the user's edits. Inspect `git status` and the relevant diff first.
 - Read the page, its template/styles, module/route, service/models, and relevant
   tests before changing a feature. Follow calls into shared code when needed.
 - Reuse existing shared components and directives before adding alternatives.
+- **Service location rule (2026-10-10): services must be placed under
+  `src/app/core/services/`.** Do not create service implementations in page folders;
+  import them from this central directory. Asset taxonomy uses
+  `src/app/core/services/asset-taxonomy-api.service.ts`.
+- **Reusable component location rule (2026-10-10): from now on, every reusable
+  component must be placed under `src/app/shared/component/`.** Create or extract
+  reusable components into this directory, using a feature subfolder when needed.
+  Page-specific components remain with their pages. Existing reusable components
+  in `custom-components/` or `_metronic/` are current source locations, not the
+  placement pattern for future reusable components.
 - Keep changes within the requested scope. Record unrelated findings here;
   do not silently turn a feature request into a general rewrite.
 - Update the appropriate section of this file when a contract or decision changes.
@@ -46,12 +57,87 @@ Never treat this file as a substitute for inspecting files that have changed.
   later repository changes. Their original browser-storage implementation has
   been removed. Preserve current frontend wiring; focus new work on Angular UI.
 
+## Mandatory Styling Policy — METRONIC ONLY
+
+Adopted on **2026-10-10** from the user's instructions. This policy takes priority
+over conflicting older guidance in `agent.md`, `AGENTS.md`, `CLAUDE.md`, and
+historical maintenance entries. Other non-conflicting project rules remain active,
+including the service and reusable-component location rules.
+
+### 1. Single Source of Truth
+
+Metronic is the ONLY authorized visual design system for the entire DARP application.
+
+All UI components MUST follow Metronic's visual design, regardless of their implementation source.
+
+PrimeNG and Spartan UI are permitted ONLY as component functionality/behavior providers.
+
+Their default visual styles MUST NOT be used.
+
+### 2. External Component Styling
+
+When using PrimeNG or Spartan UI:
+
+- Disable or avoid the library's default styling.
+- Use unstyled/headless modes where supported.
+- Apply Metronic design tokens and CSS conventions.
+- Match existing Metronic components visually.
+- Preserve Metronic typography, colors, spacing, sizing, borders, radii, shadows and focus states.
+- Support existing Metronic light/dark themes.
+- Preserve responsive and accessibility behavior.
+
+### 3. Styling Restrictions
+
+STRICTLY PROHIBITED:
+
+- Using PrimeNG default themes or presets.
+- Using Spartan UI default visual styles.
+- Introducing independent color palettes.
+- Using arbitrary Tailwind utility values.
+- Creating competing button, input, dialog, dropdown or table visual styles.
+- Applying fragile global CSS overrides.
+- Modifying third-party library source code.
+- Copying styles without checking Metronic tokens.
+
+### 4. Styling Implementation
+
+Preferred approach:
+
+1. Find the equivalent Metronic component or visual pattern.
+2. Extract its existing styling conventions.
+3. Use the selected library for functionality.
+4. Apply Metronic-compatible templates/classes, tokens, and styling APIs.
+5. Create reusable adapters when necessary.
+6. Keep styling centralized and maintainable.
+
+If a library does not support disabling or replacing its default styles reliably:
+
+- STOP.
+- Explain the styling limitation to the user.
+- Request approval before proceeding.
+
+### 5. Visual Acceptance Criteria
+
+A component is NOT complete unless:
+
+- It visually matches the existing Metronic UI.
+- No original PrimeNG/Spartan theme is visible.
+- Light/dark modes work where applicable.
+- Hover, focus, disabled, loading and error states are consistent with Metronic.
+- Responsive behavior is verified.
+- Accessibility is preserved.
+- No styling regression exists elsewhere.
+
+Any violation is considered a UI architecture defect.
+
 ## Project identity and toolchain
 
-MapnaCM is a frontend for a .NET backend (`Global.API`), built by adapting
-Metronic 8 demo1. `package.json` still names the application `MOGSight`, version
-`8.3.0`; the Angular project is `demo1`. The old README's Angular 13 description
-is historical: current dependencies use Angular **18.1**, TypeScript **5.5**,
+**Project name: DARP**, confirmed by the user on 2026-10-10. Use DARP in project
+documentation and application metadata. MapnaCM and MOGSight are earlier names
+still present in historical references and existing repository/backend paths.
+DARP is a frontend for a .NET backend (`Global.API`), built by adapting
+Metronic 8 demo1. The npm package name is `darp`, version `8.3.0`; the Angular
+workspace target remains `demo1`. Current dependencies use Angular **18.1**, TypeScript **5.5**,
 RxJS **7.8**, Bootstrap **5.3**, and ng-bootstrap **17**.
 
 Most application features use NgModules. Some newer chart components and generated
@@ -127,7 +213,9 @@ maintenance entry for focused browser validation.
 | Location | Responsibility and current state |
 | --- | --- |
 | `src/main.ts`, `src/app/app.module.ts` | Bootstrap, HTTP, translations, auth initializer, global providers |
-| `src/app/core/` | Shared API models, query serialization, auth interceptor |
+| `src/app/core/` | Shared API models, centralized services, query serialization, auth interceptor |
+| `src/app/core/services/` | Required service location; `AssetApiService` provides taxonomy CRUD and employer lookups |
+| `src/app/shared/component/` | Required location for reusable components created or extracted from 2026-10-10 onward |
 | `src/app/pages/routing.ts` | Lazy routes inside the authenticated layout |
 | `src/app/pages/asset-taxonomy/` | Site, Plant/Plant Type, Unit, System, Asset, Component, Measurement management |
 | `src/app/pages/user/` | Real MapnaCM user list, add/edit, activity toggle, delete, detail/audit view |
@@ -269,7 +357,8 @@ uses cards with a create modal; it does not use the table wrapper.
 Taxonomy pages use shared `TablePagination<T>` from
 `src/app/custom-components/data-table/Pagination/table-pagination.ts` and Angular-rendered
 tables. They do not use `<app-crud>`, despite matching DataTables styling/classes. Reuse this pattern
-for taxonomy pages. `AssetApiService` requests up to 10,000 rows for client-side
+for taxonomy pages. `AssetApiService` lives in `src/app/core/services/asset-taxonomy-api.service.ts`
+and requests up to 10,000 rows for client-side
 search/filter/sort/paging; this is a current limit, not unlimited pagination.
 
 All nine tables across the seven taxonomy pages use `<app-data-table>` from
@@ -493,8 +582,9 @@ occasionally matching JavaScript (currently `siteplant.js` is present).
 2. Port only page content inside `#kt_app_content_container`; Angular supplies
    the header/sidebar/footer. Content markers vary, so inspect the actual HTML.
 3. Reuse the design's existing Metronic styles, scripts, content, and dependencies.
-   Preserve required existing assets and load them only when needed; do not
-   introduce a new styling system, UI library, custom styles, or handwritten JS.
+   Preserve required existing assets and load them only when needed. Follow the
+   Mandatory Styling Policy above: no competing visual design system; PrimeNG
+   and Spartan UI may supply behavior through Metronic-compatible adapters.
 4. Convert icon markup to Keenicons components and preserve required theme hooks.
 5. Adapt markup, state, bindings, forms, and validation to Angular. Integrate
    existing theme behavior through lifecycle hooks with cleanup; do not rewrite
@@ -515,7 +605,8 @@ study does not authorize unrelated changes in that project or the backend.
 - `CLAUDE.md`: tests no longer use `require.context`; CLI `--include` exists,
   with the separate TypeScript compilation caveat above.
 - `CLAUDE.md`: "no standalone components" predates the ECharts integration.
-- `README.md`: Angular 13 and end-to-end instructions do not describe current setup.
+- `README.md`: the previous Angular 13 description was corrected to Angular 18;
+  its end-to-end instructions describe adding a target, not an existing configured one.
 - `employers.ts`: employer persistence is now supported in Plant API payloads;
   legacy fallback helpers remain in use.
 
@@ -560,6 +651,9 @@ every vendored asset or generated graph report.
 - Existing Component/Measurement storage was not changed by this clarification.
 
 ### 2026-10-04 - Template conversion and theme restrictions clarified
+
+Historical styling/library restrictions in this entry are superseded where they
+conflict with the Mandatory Styling Policy adopted on 2026-10-10.
 
 - The user established `Mapna-UIUX/customize` as the usual source of HTML designs
   to convert to Angular; building pages from scratch is the less common explicit request.
@@ -889,3 +983,79 @@ every vendored asset or generated graph report.
   pagination, taxonomy and Select2 ChromeHeadless tests passed. Existing 2.70 MB
   bundle-budget warning and four CSS selector warnings remain. APIs were mocked;
   live backend integration and manual visual auditing were not performed.
+
+### 2026-10-10 - Central service location rule and taxonomy migration
+
+- The user established `src/app/core/services/` as the required service location.
+  Recorded this rule in `AGENTS.md` and the working agreement above.
+- Moved `AssetApiService` from `pages/asset-taxonomy/services/` into
+  `core/services/`, adjusted its environment/model/utility imports, and updated
+  all seven taxonomy pages plus four existing test files to import the central
+  service. Root injection scope, API endpoints, payloads and behavior are retained.
+  Existing services in other features and vendor code were not relocated in this
+  taxonomy-focused change; their locations do not establish a new-service pattern.
+- Verified production build, project lint, focused taxonomy TypeScript compilation,
+  and all **50** taxonomy ChromeHeadless tests. Existing 2.70 MB initial-bundle
+  warning and four CSS selector warnings remain. No stale taxonomy service imports
+  remain in application TypeScript; historical generated graph reports were retained.
+- Normal test TypeScript compilation and the standard focused browser command
+  are currently blocked by existing `Pagination` versus on-disk `pagination`
+  casing errors (TS1149) in the shared table tests. Used a temporary tsconfig
+  selecting taxonomy specs without weakening compiler checks, then removed it.
+  Browser tests mocked APIs; live backend integration was not tested.
+
+### 2026-10-10 - Reusable component location rule
+
+- The user established `src/app/shared/component/` (singular `component`) as the
+  required location for every reusable component from now on. Recorded the rule
+  in `AGENTS.md`, the working agreement and the source map.
+- Inspected the current shared module and data-table component. Existing reusable
+  components remain in their current locations; this request establishes the
+  future placement rule and does not relocate existing implementations.
+- Documentation-only update. Verified `git diff --check`; application build and
+  tests were not rerun because application source was not changed in this update.
+
+### 2026-10-10 - Taxonomy API service filename
+
+- Renamed the central service file to `core/services/asset-taxonomy-api.service.ts`
+  at the user's request. Updated all seven page imports, four existing test imports,
+  and current documentation paths. The exported `AssetApiService` class and its
+  implementation are unchanged; the requested change is the filename.
+- Verified strict Angular compilation (`npx ngc -p tsconfig.app.json --noEmit`),
+  focused taxonomy test TypeScript compilation, project lint, and `git diff --check`.
+  No stale application imports remain. The temporary focused tsconfig was removed;
+  it avoids the previously recorded unrelated pagination casing errors without
+  weakening compiler checks. Production build and browser tests were not rerun
+  for this filename-only update; live backend integration was not tested.
+
+### 2026-10-10 - Project name is DARP
+
+- The user confirmed DARP as the project name. Updated `AGENTS.md`, this file's
+  heading/identity section, README, and the browser title. The npm package and
+  lockfile root names are now `darp` (lowercase package spelling).
+- Existing Angular workspace target `demo1`, build output `dist/demo1`, theme
+  identity, repository paths and backend integration contracts are retained.
+- Verified JSON parsing and matching package/lockfile root names, the HTML title,
+  and `git diff --check`. Build and browser tests were not rerun for these
+  documentation/metadata changes; runtime behavior was not changed.
+
+### 2026-10-10 - Mandatory Metronic-only styling policy
+
+- Added the user's complete Mandatory Styling Policy as the authoritative current
+  styling policy and aligned `AGENTS.md` with it. New policy takes precedence over
+  conflicting older guidance, including historical restrictions.
+- Resolved the older blanket prohibition on custom styling and additional UI
+  libraries: PrimeNG and Spartan UI may provide behavior only, with default visuals
+  disabled or reliably replaced. Metronic-compatible templates/classes, tokens,
+  styling APIs and centralized reusable adapter styling are permitted. Competing
+  visual systems and the policy's explicitly prohibited techniques remain forbidden.
+- Updated the static-page conversion workflow and marked the original 2026-10-04
+  restriction entry as historical where it conflicts. Retained non-conflicting UI
+  scope, integration/lifecycle, service-location and reusable-component rules.
+- Recorded the required stop/explain/request-approval condition for libraries whose
+  default styling cannot reliably be disabled or replaced, and all visual acceptance
+  criteria. This documents future requirements; it does not certify existing UI.
+- Inspected `package.json` and global style imports: PrimeNG and Spartan UI are not
+  currently declared dependencies. No packages, application code or styles changed.
+  Verified the policy contents and `git diff --check`; build/browser tests were not
+  rerun for this documentation-only update.

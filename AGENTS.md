@@ -1,5 +1,7 @@
 # Repository Guidelines
 
+The project name is **DARP** (confirmed by the user on 2026-10-10). Use this name in project documentation and application metadata.
+
 ## Project Memory
 
 - At the start of each task, read [agent.md](agent.md) for the project map, established decisions, and current validation notes, then inspect the live source relevant to the request.
@@ -16,14 +18,18 @@
 
 - Most page requests port an existing HTML design from `C:/Users/hafez/Documents/Mapna/Mapna-UIUX/customize`. Read the specified HTML and its existing CSS/JS dependencies before converting it into an Angular component. Build a page from scratch only when the user requests that.
 - Use existing Metronic content, layout primitives, utility classes, CSS, JavaScript behavior, and dependencies. Preserve the reference design and interactions while adapting markup, bindings, forms, and lifecycle integration to Angular.
-- Do not author custom CSS/SCSS, inline styles, or new handwritten JavaScript for UI design or theme behavior. This is a standing user restriction, including requests that mention styling or JavaScript. Implement the UI with existing theme capabilities and assets.
+- **Mandatory Styling Policy — METRONIC ONLY (2026-10-10):** follow the full [policy in agent.md](agent.md#mandatory-styling-policy--metronic-only). It takes precedence over conflicting older styling/library restrictions. Metronic is the only visual design system; PrimeNG and Spartan UI are permitted only as functionality/behavior providers with their default visuals disabled or reliably replaced.
+- Reuse Metronic patterns, templates/classes, tokens, and styling APIs. Centralized Metronic-token-based adapter styling is permitted; reusable adapters belong in `src/app/shared/component/`. Preserve Metronic light/dark themes, responsive behavior, accessibility, and hover/focus/disabled/loading/error states; verify visual consistency and absence of regressions before completion.
+- Do not use PrimeNG default themes/presets, Spartan default visual styles, independent palettes, arbitrary Tailwind values, competing component visuals, fragile global CSS overrides, modified third-party sources, or copied styles without checking Metronic tokens. If a library cannot reliably disable or replace its default styling, stop, explain the limitation, and request approval before proceeding.
 - Port page content only; the Angular layout supplies the shared chrome. Reuse already loaded dependencies and existing theme scripts without duplicate plugin initialization. Angular TypeScript for component state, bindings, validation, and integration is part of the conversion; it must not replace existing theme behavior with a newly invented implementation.
 
 ## Project Structure & Module Organization
 This is an Angular 18 application using TypeScript, SCSS, and the Metronic UI framework.
 - `src/app/pages/`: page features, including user, role, and permission management.
 - `src/app/modules/`: feature modules such as authentication, account, profile, chat, and internationalization.
-- `src/app/core/`: shared models and HTTP interceptors.
+- `src/app/core/`: shared models, services, and HTTP interceptors.
+- **Service location rule (2026-10-10): services must be placed under `src/app/core/services/`.** Do not create service implementations in page folders; import them from this central directory.
+- **Reusable component location rule (2026-10-10): from now on, every reusable component must be placed under `src/app/shared/component/`.** Create or extract reusable components into this directory, using a feature subfolder when needed; page-specific components remain with their pages.
 - `src/app/_metronic/`: shared layout, components, and widgets; reuse these before adding UI primitives.
 - `src/assets/`: media, theme Sass, CSS, and plugins. Global styles start in `src/styles.scss`.
 - `src/environments/`: development and production configuration. Tests live beside source files as `*.spec.ts`.

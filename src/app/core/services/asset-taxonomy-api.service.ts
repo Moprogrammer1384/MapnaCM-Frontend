@@ -2,10 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from '../../../../environments/environment';
-import { ApiEnvelope } from '../../../core/models/response.model';
-import { criteriaToHttpParams } from '../../../core/utils/query-params';
-import { PaginatedResult } from '../../../core/models/user-management.model';
+import { environment } from '../../../environments/environment';
+import { ApiEnvelope } from '../models/response.model';
+import { criteriaToHttpParams } from '../utils/query-params';
+import { PaginatedResult } from '../models/user-management.model';
 import {
   Asset,
   AssetPayload,
@@ -25,7 +25,7 @@ import {
   TaxonomyMeasurement,
   Unit,
   UnitPayload,
-} from '../../../core/models/asset.model';
+} from '../models/asset.model';
 
 /** Shared page request for the taxonomy lists: everything, client-side filtered. */
 const ALL_ROWS_PARAMS = criteriaToHttpParams({ skip: 0, take: 10000 });

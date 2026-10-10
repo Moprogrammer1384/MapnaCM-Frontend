@@ -63,6 +63,8 @@ export class Select2Directive implements AfterViewInit, AfterViewChecked, OnDest
           record.target !== this.elementRef.nativeElement)) {
           this.select!.select2('destroy');
           this.initialize();
+        } else {
+          this.syncAccessibility();
         }
       });
       this.observer.observe(this.elementRef.nativeElement, {
@@ -70,7 +72,8 @@ export class Select2Directive implements AfterViewInit, AfterViewChecked, OnDest
         subtree: true,
         characterData: true,
         attributes: true,
-        attributeFilter: ['value', 'label', 'disabled', 'selected'],
+        attributeFilter: ['value', 'label', 'disabled', 'selected', 'class', 'required',
+          'aria-label', 'aria-labelledby', 'aria-invalid', 'aria-describedby'],
       });
     });
   }
@@ -82,6 +85,7 @@ export class Select2Directive implements AfterViewInit, AfterViewChecked, OnDest
       this.selection = selection;
       this.zone.runOutsideAngular(() => this.select!.trigger('change.select2'));
     }
+    this.syncAccessibility();
   }
 
   ngOnDestroy(): void {
@@ -122,15 +126,42 @@ export class Select2Directive implements AfterViewInit, AfterViewChecked, OnDest
     }
     this.select!.data('dropdownParent', jquery(parent));
     this.select!.select2(options);
-    const label = element.getAttribute('aria-label');
-    if (label) {
-      this.select!.next('.select2').find('.select2-selection').attr('aria-label', label);
-    }
+    this.syncAccessibility();
     this.select!.removeData('placeholder').removeData('dropdownParent');
     this.selection = this.getSelection();
   }
 
   private getSelection(): string {
     return JSON.stringify(Array.from(this.elementRef.nativeElement.selectedOptions, (option) => option.value));
+  }
+
+  /** Keep the visible combobox aligned with Angular's native validation state. */
+  private syncAccessibility(): void {
+    if (!this.select) {
+      return;
+    }
+    const element = this.elementRef.nativeElement;
+    const selection = this.select.next('.select2').find('.select2-selection');
+    for (const attribute of ['aria-label', 'aria-invalid', 'aria-describedby']) {
+      const value = element.getAttribute(attribute);
+      if (value === null) {
+        selection.removeAttr(attribute);
+      } else {
+        selection.attr(attribute, value);
+      }
+    }
+    // Select2 names the combobox with its selected value by default. An explicit
+    // field label must take precedence so assistive technology announces the field.
+    const labelledBy = element.getAttribute('aria-labelledby');
+    const renderedId = selection.find('.select2-selection__rendered').attr('id');
+    if (labelledBy) {
+      selection.attr('aria-labelledby', labelledBy);
+    } else if (element.hasAttribute('aria-label') || !renderedId) {
+      selection.removeAttr('aria-labelledby');
+    } else {
+      selection.attr('aria-labelledby', renderedId);
+    }
+    selection.attr('aria-required', element.required ? 'true' : 'false');
+    selection.toggleClass('is-invalid', element.classList.contains('is-invalid'));
   }
 }

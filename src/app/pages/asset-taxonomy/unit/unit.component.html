@@ -12,7 +12,7 @@
       <!--begin::Search-->
       <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
         <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Unit" #tableSearch (input)="table.search(tableSearch.value)" />
+        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Unit" #tableSearch (input)="table.search(tableSearch.value)" aria-label="Search Unit" />
       </div>
       <!--end::Search-->
       <!--begin::Employer filter-->
@@ -32,7 +32,7 @@
       </div>
       <!--end::Plant filter-->
       <!--begin::Button-->
-      <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(unitModal)">Add Unit</a>
+      <button type="button" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(unitModal)">Add Unit</button>
       <!--end::Button-->
     </div>
     <!--begin::Card toolbar-->
@@ -66,24 +66,50 @@
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
-        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2" [for]="formModal.formId + '_unit'">
           <span class="required">Unit Name</span>
         </label>
         <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter Unit Name" name="unit" [(ngModel)]="unitForm.name" required />
+        <input
+          [id]="formModal.formId + '_unit'"
+          type="text"
+          class="form-control form-control-solid"
+          placeholder="Enter Unit Name"
+          name="unit"
+          [(ngModel)]="unitForm.name"
+          required
+          #unitControl="ngModel"
+          [class.is-invalid]="unitControl.invalid && (unitControl.touched || unitNgForm.submitted)"
+          [attr.aria-invalid]="(unitControl.invalid && (unitControl.touched || unitNgForm.submitted)) ? 'true' : null"
+          [attr.aria-describedby]="(unitControl.invalid && (unitControl.touched || unitNgForm.submitted)) ? (formModal.formId + '_unit_error') : null"
+          appTrimmedRequired />
+        <div *ngIf="unitControl.invalid && (unitControl.touched || unitNgForm.submitted)" [id]="formModal.formId + '_unit_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter unit name.</div>
       </div>
       <!--end::Input group-->
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-15 fv-row">
         <!--begin::Label-->
-        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2" [for]="formModal.formId + '_plant'">
           <span class="required">Plant Name</span>
         </label>
         <!--end::Label-->
-        <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Plant" name="plant" [(ngModel)]="unitForm.plantId" required>
+        <select
+          [id]="formModal.formId + '_plant'"
+          class="form-select form-select-solid"
+          data-control="select2"
+          data-placeholder="Select a Plant"
+          name="plant"
+          [(ngModel)]="unitForm.plantId"
+          required
+          aria-label="Plant Name"
+          #plantControl="ngModel"
+          [class.is-invalid]="plantControl.invalid && (plantControl.touched || unitNgForm.submitted)"
+          [attr.aria-invalid]="(plantControl.invalid && (plantControl.touched || unitNgForm.submitted)) ? 'true' : null"
+          [attr.aria-describedby]="(plantControl.invalid && (plantControl.touched || unitNgForm.submitted)) ? (formModal.formId + '_plant_error') : null">
           <option [ngValue]="null">Select plant...</option>
           <option *ngFor="let p of plantOptions" [ngValue]="p.id">{{ p.label }}</option>
         </select>
+        <div *ngIf="plantControl.invalid && (plantControl.touched || unitNgForm.submitted)" [id]="formModal.formId + '_plant_error'" class="fv-plugins-message-container invalid-feedback d-block">Select plant name.</div>
       </div>
       <!--end::Input group-->
     </form>

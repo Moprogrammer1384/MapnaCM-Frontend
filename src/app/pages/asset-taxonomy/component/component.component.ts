@@ -198,7 +198,7 @@ export class ComponentComponent implements OnInit {
     if (this.saving) {
       return;
     }
-    if (form.invalid || this.componentForm.assetId === null) {
+    if (form.invalid || !this.componentForm.name.trim() || this.componentForm.assetId === null) {
       form.control.markAllAsTouched();
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
       return;
@@ -210,7 +210,7 @@ export class ComponentComponent implements OnInit {
     }
 
     this.saving = true;
-    const payload = { name: this.componentForm.name, tag: this.componentForm.tag ?? '', assetId };
+    const payload = { name: this.componentForm.name.trim(), tag: this.componentForm.tag ?? '', assetId };
     const isEdit = !!this.componentForm.id;
     const request$ = isEdit
       ? this.apiService.updateComponent({ id: this.componentForm.id!, ...payload })

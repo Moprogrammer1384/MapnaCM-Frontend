@@ -84,7 +84,8 @@ export class SiteComponent implements OnInit {
     if (this.saving) {
       return;
     }
-    if (form.invalid) {
+    if (form.invalid || !this.siteForm.city.trim() || !this.siteForm.address.trim() ||
+      !this.siteForm.latitude.trim() || !this.siteForm.longitude.trim()) {
       form.control.markAllAsTouched();
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
       return;

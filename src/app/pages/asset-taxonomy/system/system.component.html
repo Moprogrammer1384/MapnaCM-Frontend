@@ -12,7 +12,7 @@
       <!--begin::Search-->
       <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
         <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search System" #tableSearch (input)="table.search(tableSearch.value)" />
+        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search System" #tableSearch (input)="table.search(tableSearch.value)" aria-label="Search System" />
       </div>
       <!--end::Search-->
       <!--begin::Employer filter-->
@@ -32,7 +32,7 @@
       </div>
       <!--end::Unit filter-->
       <!--begin::Button-->
-      <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(systemModal)">Add System</a>
+      <button type="button" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(systemModal)">Add System</button>
       <!--end::Button-->
     </div>
     <!--begin::Card toolbar-->
@@ -66,24 +66,50 @@
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
-        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2" [for]="formModal.formId + '_system'">
           <span class="required">System Name</span>
         </label>
         <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter System Name" name="system" [(ngModel)]="systemForm.name" required />
+        <input
+          [id]="formModal.formId + '_system'"
+          type="text"
+          class="form-control form-control-solid"
+          placeholder="Enter System Name"
+          name="system"
+          [(ngModel)]="systemForm.name"
+          required
+          #systemControl="ngModel"
+          [class.is-invalid]="systemControl.invalid && (systemControl.touched || systemNgForm.submitted)"
+          [attr.aria-invalid]="(systemControl.invalid && (systemControl.touched || systemNgForm.submitted)) ? 'true' : null"
+          [attr.aria-describedby]="(systemControl.invalid && (systemControl.touched || systemNgForm.submitted)) ? (formModal.formId + '_system_error') : null"
+          appTrimmedRequired />
+        <div *ngIf="systemControl.invalid && (systemControl.touched || systemNgForm.submitted)" [id]="formModal.formId + '_system_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter system name.</div>
       </div>
       <!--end::Input group-->
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-15 fv-row">
         <!--begin::Label-->
-        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2" [for]="formModal.formId + '_unit'">
           <span class="required">Unit Name</span>
         </label>
         <!--end::Label-->
-        <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Unit" name="unit" [(ngModel)]="systemForm.unitId" required>
+        <select
+          [id]="formModal.formId + '_unit'"
+          class="form-select form-select-solid"
+          data-control="select2"
+          data-placeholder="Select a Unit"
+          name="unit"
+          [(ngModel)]="systemForm.unitId"
+          required
+          aria-label="Unit Name"
+          #unitControl="ngModel"
+          [class.is-invalid]="unitControl.invalid && (unitControl.touched || systemNgForm.submitted)"
+          [attr.aria-invalid]="(unitControl.invalid && (unitControl.touched || systemNgForm.submitted)) ? 'true' : null"
+          [attr.aria-describedby]="(unitControl.invalid && (unitControl.touched || systemNgForm.submitted)) ? (formModal.formId + '_unit_error') : null">
           <option [ngValue]="null">Select unit...</option>
           <option *ngFor="let u of unitOptions" [ngValue]="u.id">{{ u.label }}</option>
         </select>
+        <div *ngIf="unitControl.invalid && (unitControl.touched || systemNgForm.submitted)" [id]="formModal.formId + '_unit_error'" class="fv-plugins-message-container invalid-feedback d-block">Select unit name.</div>
       </div>
       <!--end::Input group-->
     </form>

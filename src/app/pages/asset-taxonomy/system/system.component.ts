@@ -159,7 +159,7 @@ export class SystemComponent implements OnInit {
     if (this.saving) {
       return;
     }
-    if (form.invalid || this.systemForm.unitId === null) {
+    if (form.invalid || !this.systemForm.name.trim() || this.systemForm.unitId === null) {
       form.control.markAllAsTouched();
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
       return;
@@ -172,7 +172,7 @@ export class SystemComponent implements OnInit {
     }
 
     this.saving = true;
-    const payload = { name: this.systemForm.name, unitId };
+    const payload = { name: this.systemForm.name.trim(), unitId };
     const isEdit = !!this.systemForm.id;
     const request$ = isEdit
       ? this.apiService.updateSystem({ id: this.systemForm.id!, ...payload })

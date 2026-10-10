@@ -130,7 +130,7 @@ export class UnitComponent implements OnInit {
     if (this.saving) {
       return;
     }
-    if (form.invalid || this.unitForm.plantId === null) {
+    if (form.invalid || !this.unitForm.name.trim() || this.unitForm.plantId === null) {
       form.control.markAllAsTouched();
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
       return;
@@ -143,7 +143,7 @@ export class UnitComponent implements OnInit {
     }
 
     this.saving = true;
-    const payload = { name: this.unitForm.name, plantId };
+    const payload = { name: this.unitForm.name.trim(), plantId };
     const isEdit = !!this.unitForm.id;
     const request$ = isEdit
       ? this.apiService.updateUnit({ id: this.unitForm.id!, ...payload })

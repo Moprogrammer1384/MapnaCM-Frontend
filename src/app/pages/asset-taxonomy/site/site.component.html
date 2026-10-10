@@ -12,11 +12,11 @@
       <!--begin::Search-->
       <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
         <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Site" #tableSearch (input)="table.search(tableSearch.value)" />
+        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Site" #tableSearch (input)="table.search(tableSearch.value)" aria-label="Search Site" />
       </div>
       <!--end::Search-->
       <!--begin::Button-->
-      <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(siteModal)">Add Site</a>
+      <button type="button" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(siteModal)">Add Site</button>
       <!--end::Button-->
     </div>
     <!--begin::Card toolbar-->
@@ -53,35 +53,87 @@
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
-        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2" [for]="formModal.formId + '_city'">
           <span class="required">City</span>
         </label>
         <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter City" name="city" [(ngModel)]="siteForm.city" required />
+        <input
+          [id]="formModal.formId + '_city'"
+          type="text"
+          class="form-control form-control-solid"
+          placeholder="Enter City"
+          name="city"
+          [(ngModel)]="siteForm.city"
+          required
+          #cityControl="ngModel"
+          [class.is-invalid]="cityControl.invalid && (cityControl.touched || siteNgForm.submitted)"
+          [attr.aria-invalid]="(cityControl.invalid && (cityControl.touched || siteNgForm.submitted)) ? 'true' : null"
+          [attr.aria-describedby]="(cityControl.invalid && (cityControl.touched || siteNgForm.submitted)) ? (formModal.formId + '_city_error') : null"
+          appTrimmedRequired />
+        <div *ngIf="cityControl.invalid && (cityControl.touched || siteNgForm.submitted)" [id]="formModal.formId + '_city_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter city.</div>
       </div>
       <!--end::Input group-->
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
-        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2" [for]="formModal.formId + '_address'">
           <span class="required">Address</span>
         </label>
         <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter Address" name="address" [(ngModel)]="siteForm.address" required />
+        <input
+          [id]="formModal.formId + '_address'"
+          type="text"
+          class="form-control form-control-solid"
+          placeholder="Enter Address"
+          name="address"
+          [(ngModel)]="siteForm.address"
+          required
+          #addressControl="ngModel"
+          [class.is-invalid]="addressControl.invalid && (addressControl.touched || siteNgForm.submitted)"
+          [attr.aria-invalid]="(addressControl.invalid && (addressControl.touched || siteNgForm.submitted)) ? 'true' : null"
+          [attr.aria-describedby]="(addressControl.invalid && (addressControl.touched || siteNgForm.submitted)) ? (formModal.formId + '_address_error') : null"
+          appTrimmedRequired />
+        <div *ngIf="addressControl.invalid && (addressControl.touched || siteNgForm.submitted)" [id]="formModal.formId + '_address_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter address.</div>
       </div>
       <!--end::Input group-->
       <!--begin::Input group-->
       <div class="row g-5 g-md-9 mb-8">
         <!--begin::Col-->
         <div class="col-md-6 fv-row">
-          <label class="required fs-6 fw-semibold mb-2">Latitude</label>
-          <input type="text" class="form-control form-control-solid" placeholder="e.g. 35.6892" name="latitude" [(ngModel)]="siteForm.latitude" required />
+          <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_latitude'">Latitude</label>
+          <input
+            [id]="formModal.formId + '_latitude'"
+            type="text"
+            class="form-control form-control-solid"
+            placeholder="e.g. 35.6892"
+            name="latitude"
+            [(ngModel)]="siteForm.latitude"
+            required
+            #latitudeControl="ngModel"
+            [class.is-invalid]="latitudeControl.invalid && (latitudeControl.touched || siteNgForm.submitted)"
+            [attr.aria-invalid]="(latitudeControl.invalid && (latitudeControl.touched || siteNgForm.submitted)) ? 'true' : null"
+            [attr.aria-describedby]="(latitudeControl.invalid && (latitudeControl.touched || siteNgForm.submitted)) ? (formModal.formId + '_latitude_error') : null"
+            appTrimmedRequired />
+          <div *ngIf="latitudeControl.invalid && (latitudeControl.touched || siteNgForm.submitted)" [id]="formModal.formId + '_latitude_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter latitude.</div>
         </div>
         <!--end::Col-->
         <!--begin::Col-->
         <div class="col-md-6 fv-row">
-          <label class="required fs-6 fw-semibold mb-2">Longitude</label>
-          <input type="text" class="form-control form-control-solid" placeholder="e.g. 51.3890" name="longitude" [(ngModel)]="siteForm.longitude" required />
+          <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_longitude'">Longitude</label>
+          <input
+            [id]="formModal.formId + '_longitude'"
+            type="text"
+            class="form-control form-control-solid"
+            placeholder="e.g. 51.3890"
+            name="longitude"
+            [(ngModel)]="siteForm.longitude"
+            required
+            #longitudeControl="ngModel"
+            [class.is-invalid]="longitudeControl.invalid && (longitudeControl.touched || siteNgForm.submitted)"
+            [attr.aria-invalid]="(longitudeControl.invalid && (longitudeControl.touched || siteNgForm.submitted)) ? 'true' : null"
+            [attr.aria-describedby]="(longitudeControl.invalid && (longitudeControl.touched || siteNgForm.submitted)) ? (formModal.formId + '_longitude_error') : null"
+            appTrimmedRequired />
+          <div *ngIf="longitudeControl.invalid && (longitudeControl.touched || siteNgForm.submitted)" [id]="formModal.formId + '_longitude_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter longitude.</div>
         </div>
         <!--end::Col-->
       </div>
@@ -90,14 +142,28 @@
       <div class="row g-5 g-md-9 mb-15">
         <!--begin::Col-->
         <div class="col-md-6 fv-row">
-          <label class="fs-6 fw-semibold mb-2">Location</label>
-          <input type="text" class="form-control form-control-solid" placeholder="Enter Location" name="location" [(ngModel)]="siteForm.location" />
+          <label class="fs-6 fw-semibold mb-2" [for]="formModal.formId + '_location'">Location</label>
+          <input [id]="formModal.formId + '_location'" type="text" class="form-control form-control-solid" placeholder="Enter Location" name="location" [(ngModel)]="siteForm.location" />
         </div>
         <!--end::Col-->
         <!--begin::Col-->
         <div class="col-md-6 fv-row">
-          <label class="required fs-6 fw-semibold mb-2">Elevation above sea level</label>
-          <input type="number" step="any" class="form-control form-control-solid" placeholder="e.g. 1190" name="elevation" [(ngModel)]="siteForm.elevation" required />
+          <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_elevation'">Elevation above sea level</label>
+          <input
+            [id]="formModal.formId + '_elevation'"
+            type="number"
+            step="any"
+            class="form-control form-control-solid"
+            placeholder="e.g. 1190"
+            name="elevation"
+            [(ngModel)]="siteForm.elevation"
+            required
+            #elevationControl="ngModel"
+            [class.is-invalid]="elevationControl.invalid && (elevationControl.touched || siteNgForm.submitted)"
+            [attr.aria-invalid]="(elevationControl.invalid && (elevationControl.touched || siteNgForm.submitted)) ? 'true' : null"
+            [attr.aria-describedby]="(elevationControl.invalid && (elevationControl.touched || siteNgForm.submitted)) ? (formModal.formId + '_elevation_error') : null"
+            appFiniteNumber />
+          <div *ngIf="elevationControl.invalid && (elevationControl.touched || siteNgForm.submitted)" [id]="formModal.formId + '_elevation_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter a valid number for elevation above sea level.</div>
         </div>
         <!--end::Col-->
       </div>

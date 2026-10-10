@@ -12,7 +12,7 @@
       <!--begin::Search-->
       <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
         <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Asset" #tableSearch (input)="table.search(tableSearch.value)" />
+        <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Asset" #tableSearch (input)="table.search(tableSearch.value)" aria-label="Search Asset" />
       </div>
       <!--end::Search-->
       <!--begin::Employer filter-->
@@ -32,7 +32,7 @@
       </div>
       <!--end::System filter-->
       <!--begin::Button-->
-      <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(assetModal)">Add Asset</a>
+      <button type="button" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(assetModal)">Add Asset</button>
       <!--end::Button-->
     </div>
     <!--begin::Card toolbar-->
@@ -66,28 +66,54 @@
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
-        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2" [for]="formModal.formId + '_asset'">
           <span class="required">Asset Name</span>
         </label>
         <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter Asset Name" name="asset" [(ngModel)]="assetForm.name" required />
+        <input
+          [id]="formModal.formId + '_asset'"
+          type="text"
+          class="form-control form-control-solid"
+          placeholder="Enter Asset Name"
+          name="asset"
+          [(ngModel)]="assetForm.name"
+          required
+          #assetControl="ngModel"
+          [class.is-invalid]="assetControl.invalid && (assetControl.touched || assetNgForm.submitted)"
+          [attr.aria-invalid]="(assetControl.invalid && (assetControl.touched || assetNgForm.submitted)) ? 'true' : null"
+          [attr.aria-describedby]="(assetControl.invalid && (assetControl.touched || assetNgForm.submitted)) ? (formModal.formId + '_asset_error') : null"
+          appTrimmedRequired />
+        <div *ngIf="assetControl.invalid && (assetControl.touched || assetNgForm.submitted)" [id]="formModal.formId + '_asset_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter asset name.</div>
       </div>
       <!--end::Input group-->
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
-        <label class="d-flex align-items-center fs-6 fw-semibold mb-2" for="asset_tag">Tag</label>
-        <input id="asset_tag" type="text" class="form-control form-control-solid" placeholder="Enter Tag Name" name="tag" [(ngModel)]="assetForm.tag" />
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2" [for]="formModal.formId + '_tag'">Tag</label>
+        <input [id]="formModal.formId + '_tag'" type="text" class="form-control form-control-solid" placeholder="Enter Tag Name" name="tag" [(ngModel)]="assetForm.tag" />
       </div>
       <div class="d-flex flex-column mb-15 fv-row">
         <!--begin::Label-->
-        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2" [for]="formModal.formId + '_system'">
           <span class="required">System Name</span>
         </label>
         <!--end::Label-->
-        <select class="form-select form-select-solid" data-control="select2" data-placeholder="Select a System" name="system" [(ngModel)]="assetForm.systemId" required>
+        <select
+          [id]="formModal.formId + '_system'"
+          class="form-select form-select-solid"
+          data-control="select2"
+          data-placeholder="Select a System"
+          name="system"
+          [(ngModel)]="assetForm.systemId"
+          required
+          aria-label="System Name"
+          #systemControl="ngModel"
+          [class.is-invalid]="systemControl.invalid && (systemControl.touched || assetNgForm.submitted)"
+          [attr.aria-invalid]="(systemControl.invalid && (systemControl.touched || assetNgForm.submitted)) ? 'true' : null"
+          [attr.aria-describedby]="(systemControl.invalid && (systemControl.touched || assetNgForm.submitted)) ? (formModal.formId + '_system_error') : null">
           <option [ngValue]="null">Select system...</option>
           <option *ngFor="let s of systemOptions" [ngValue]="s.id">{{ s.label }}</option>
         </select>
+        <div *ngIf="systemControl.invalid && (systemControl.touched || assetNgForm.submitted)" [id]="formModal.formId + '_system_error'" class="fv-plugins-message-container invalid-feedback d-block">Select system name.</div>
       </div>
       <!--end::Input group-->
     </form>

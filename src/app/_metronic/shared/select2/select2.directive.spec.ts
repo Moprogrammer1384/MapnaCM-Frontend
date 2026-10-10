@@ -9,6 +9,8 @@ import { SharedModule } from '../shared.module';
     <div class="modal" style="display: block" dir="rtl">
       <select *ngIf="visible" data-control="select2" data-placeholder="Select a Site"
         class="form-select form-select-solid" [(ngModel)]="value" required
+        [attr.aria-label]="label" [attr.aria-describedby]="description"
+        [attr.aria-invalid]="invalid ? 'true' : null" [class.is-invalid]="invalid"
         [disabled]="disabled" (change)="changes = changes + 1">
         <option [ngValue]="null" disabled>Select site...</option>
         <option *ngFor="let item of items" [ngValue]="item.id">{{ item.name }}</option>
@@ -31,6 +33,9 @@ class TestHostComponent {
   disabled = false;
   value: number | null = null;
   changes = 0;
+  label: string | null = 'Site';
+  description: string | null = null;
+  invalid = false;
   items = [{ id: 11, name: 'Tehran' }, { id: 22, name: 'Shiraz' }];
   multiple = new FormControl<number[]>([1], { nonNullable: true });
   single = new FormControl<number | null>(null, Validators.required);
@@ -67,6 +72,30 @@ describe('Select2Directive with the real plugin', () => {
     expect(selection().querySelector('.select2-selection')!.classList).toContain('form-select-solid');
     expect(selection().querySelector('.select2-selection__placeholder')!.textContent).toBe('Select a Site');
     expect(selection().getAttribute('dir')).toBe('rtl');
+  });
+
+  it('keeps the visible field name and validation feedback synchronized', async () => {
+    const combobox = () => selection().querySelector<HTMLElement>('.select2-selection')!;
+    expect(combobox().getAttribute('aria-label')).toBe('Site');
+    expect(combobox().getAttribute('aria-labelledby')).toBeNull();
+    host.label = 'Parent site';
+    host.description = 'site-error';
+    host.invalid = true;
+    await settle();
+    expect(combobox().getAttribute('aria-label')).toBe('Parent site');
+    expect(combobox().getAttribute('aria-required')).toBe('true');
+    expect(combobox().getAttribute('aria-invalid')).toBe('true');
+    expect(combobox().getAttribute('aria-describedby')).toBe('site-error');
+    expect(combobox().classList).toContain('is-invalid');
+    host.invalid = false;
+    host.description = null;
+    host.label = null;
+    await settle();
+    expect(combobox().getAttribute('aria-invalid')).toBeNull();
+    expect(combobox().getAttribute('aria-describedby')).toBeNull();
+    expect(combobox().classList).not.toContain('is-invalid');
+    expect(combobox().getAttribute('aria-label')).toBeNull();
+    expect(combobox().getAttribute('aria-labelledby')).toBe(combobox().querySelector('.select2-selection__rendered')!.id);
   });
 
   it('keeps the searchable dropdown inside the modal and filters its results', async () => {

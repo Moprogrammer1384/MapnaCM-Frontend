@@ -148,7 +148,7 @@ export class PlantComponent implements OnInit {
     if (this.saving) {
       return;
     }
-    if (form.invalid || !this.plantFormModel.plantTypeId || !this.plantFormModel.siteId) {
+    if (form.invalid || !this.plantFormModel.name.trim() || !this.plantFormModel.plantTypeId || !this.plantFormModel.siteId) {
       form.control.markAllAsTouched();
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
       return;
@@ -158,7 +158,7 @@ export class PlantComponent implements OnInit {
     // Employer is optional: a null id clears the assignment.
     const employer = this.employerUsers.find((user) => user.id === this.plantFormModel.employerId);
     const payload = {
-      name: this.plantFormModel.name,
+      name: this.plantFormModel.name.trim(),
       siteId: this.plantFormModel.siteId,
       plantTypeId: this.plantFormModel.plantTypeId,
       employerId: this.plantFormModel.employerId ?? null,
@@ -219,7 +219,7 @@ export class PlantComponent implements OnInit {
     if (this.saving) {
       return;
     }
-    if (form.invalid) {
+    if (form.invalid || !this.typeFormModel.name.trim()) {
       form.control.markAllAsTouched();
       this.showAlert('error', 'Error!', 'Please fill in all required fields.');
       return;
@@ -228,8 +228,8 @@ export class PlantComponent implements OnInit {
     this.saving = true;
     const isEdit = !!this.typeFormModel.id;
     const request$ = isEdit
-      ? this.apiService.updatePlantType({ id: this.typeFormModel.id!, name: this.typeFormModel.name })
-      : this.apiService.createPlantType({ name: this.typeFormModel.name });
+      ? this.apiService.updatePlantType({ id: this.typeFormModel.id!, name: this.typeFormModel.name.trim() })
+      : this.apiService.createPlantType({ name: this.typeFormModel.name.trim() });
 
     request$.subscribe({
       next: () => {

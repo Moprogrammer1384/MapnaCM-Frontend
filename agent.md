@@ -461,6 +461,15 @@ and Measurement Type. The page's form-model ID selects the title, submit label
 and existing mode-specific DOM IDs; both actions open the same `TemplateRef`.
 Opening Add resets the page-owned model; opening Edit copies the selected row.
 
+All nine forms use shared `appTrimmedRequired` and `appFiniteNumber` validators
+from `shared/components/form-validation/`, exported by `SharedModule`. Required
+text rejects whitespace-only values; numeric validators expose the existing
+finite-number rules to NgForm. Errors use Metronic invalid-feedback classes and
+appear after touch or submission, with invalid state and descriptions connected
+through ARIA. Every field has an associated label/ID; search fields have accessible
+names and all Add actions are native buttons. Select2 mirrors native field names,
+required/invalid state and error descriptions onto its visible combobox.
+
 ## Taxonomy and employer inheritance
 
 Navigation order: **Site -> Plant -> Unit -> System -> Asset -> Component -> Measurement**.
@@ -1350,3 +1359,35 @@ superseded by the user's later `components/` rename on 2026-10-10.
   ChromeHeadless tests, and `git diff --check`. Existing 2.77 MB initial-bundle warning
   and four CSS selector warnings remain. Live backend integration and manual visual
   inspection were not performed; the eight new tests use mocked HTTP responses.
+
+### 2026-10-10 - Standard taxonomy validation and accessibility
+
+- Applied one validation/feedback pattern to all seven taxonomy pages and all
+  nine Add/Edit forms, including Plant Type and Measurement Type. All 23 required
+  controls show field-level Metronic feedback after touch/submission; all 29 form
+  controls have linked labels/IDs. Nine Add actions use `button type="button"`,
+  and all nine searches have accessible names. Error descriptions and invalid
+  state clear when the values are corrected; optional fields remain optional.
+- Added shared TrimmedRequired/FiniteNumber directives under
+  `shared/components/form-validation/`, exported through SharedModule. Required
+  text rejects whitespace without changing model values. Entity name payloads
+  trim surrounding whitespace consistently. Site coordinate fields retain their
+  string contracts; no new coordinate ranges or numeric sensitivity/elevation
+  restrictions were introduced. Zero, negative values and decimals remain valid.
+- Extended the existing Select2 adapter to mirror field names, required state,
+  invalid styling and error descriptions onto the visible combobox as Angular
+  attributes change. Explicit field names take precedence over Select2's generated
+  selected-value label; default labeling is restored when an explicit label is
+  removed. Plugin initialization, numeric value accessors and cleanup remain.
+- Added 29 real-page/modal regressions for Add/Edit labels, whitespace rejection,
+  inline feedback, clearing errors, normalized requests, rejected-write retry,
+  invalid numeric values, zero/negative decimals, light/dark colors and overflow.
+  Added one adjacent Select2 test for accessible naming and dynamic error state.
+- Verified production build with strict templates, project lint, normal test
+  TypeScript compilation, and all **115** focused taxonomy/API/shared-control/Select2
+  tests with 1440x1000 desktop and 390x844 mobile ChromeHeadless launchers:
+  **230 executions passed**. Light/dark and responsive checks use computed styles
+  and browser geometry. Removed the temporary Karma configuration; verified
+  `git diff --check`. Existing 2.77 MB bundle warning and four CSS selector warnings
+  remain. APIs were mocked; manual visual inspection and live API integration were
+  not performed. No new visual styles, dependencies, endpoints or storage were added.

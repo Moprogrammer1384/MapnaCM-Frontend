@@ -13,6 +13,7 @@ import { PaginationPagesComponent } from '../../shared/components/data-table/pag
 import { TableRecordComponent } from '../../shared/components/data-table/table-record/table-record.component';
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
 import { FormModalComponent } from '../../shared/components/form-modal/form-modal.component';
+import { FiniteNumberDirective, TrimmedRequiredDirective } from '../../shared/components/form-validation/form-validators.directive';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,9 @@ import { FormModalComponent } from '../../shared/components/form-modal/form-moda
     PaginationPagesComponent,
     TableRecordComponent,
     DataTableComponent,
-    FormModalComponent
+    FormModalComponent,
+    FiniteNumberDirective,
+    TrimmedRequiredDirective
   ],
   imports: [
     CommonModule,
@@ -41,7 +44,9 @@ import { FormModalComponent } from '../../shared/components/form-modal/form-moda
     PaginationPagesComponent,
     TableRecordComponent,
     DataTableComponent,
-    FormModalComponent
+    FormModalComponent,
+    FiniteNumberDirective,
+    TrimmedRequiredDirective
   ]
 })
 export class SharedModule {

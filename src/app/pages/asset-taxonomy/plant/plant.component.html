@@ -16,7 +16,7 @@
           <!--begin::Search-->
           <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
             <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-            <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Plant" #plantsSearch (input)="plants.search(plantsSearch.value)" />
+            <input type="text" id="kt_filter_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Plant" #plantsSearch (input)="plants.search(plantsSearch.value)" aria-label="Search Plant" />
           </div>
           <!--end::Search-->
           <!--begin::Employer filter-->
@@ -28,7 +28,7 @@
           </div>
           <!--end::Employer filter-->
           <!--begin::Button-->
-          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddPlantModal(plantModal)">Add Plant</a>
+          <button type="button" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddPlantModal(plantModal)">Add Plant</button>
           <!--end::Button-->
         </div>
         <!--begin::Card toolbar-->
@@ -66,11 +66,11 @@
           <!--begin::Search-->
           <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
             <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-            <input type="text" id="kt_filter_search_type" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Type" #typesSearch (input)="types.search(typesSearch.value)" />
+            <input type="text" id="kt_filter_search_type" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Type" #typesSearch (input)="types.search(typesSearch.value)" aria-label="Search plant types" />
           </div>
           <!--end::Search-->
           <!--begin::Button-->
-          <a href="javascript:;" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddTypeModal(typeModal)">Add Type</a>
+          <button type="button" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddTypeModal(typeModal)">Add Type</button>
           <!--end::Button-->
         </div>
         <!--begin::Card toolbar-->
@@ -108,31 +108,71 @@
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
-        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2" [for]="formModal.formId + '_name'">
           <span class="required">Name</span>
         </label>
         <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter Plant Name" name="name" [(ngModel)]="plantFormModel.name" required />
+        <input
+          [id]="formModal.formId + '_name'"
+          type="text"
+          class="form-control form-control-solid"
+          placeholder="Enter Plant Name"
+          name="name"
+          [(ngModel)]="plantFormModel.name"
+          required
+          #nameControl="ngModel"
+          [class.is-invalid]="nameControl.invalid && (nameControl.touched || plantNgForm.submitted)"
+          [attr.aria-invalid]="(nameControl.invalid && (nameControl.touched || plantNgForm.submitted)) ? 'true' : null"
+          [attr.aria-describedby]="(nameControl.invalid && (nameControl.touched || plantNgForm.submitted)) ? (formModal.formId + '_name_error') : null"
+          appTrimmedRequired />
+        <div *ngIf="nameControl.invalid && (nameControl.touched || plantNgForm.submitted)" [id]="formModal.formId + '_name_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter name.</div>
       </div>
       <!--end::Input group-->
       <!--begin::Input group-->
       <div class="row g-5 g-md-9 mb-8">
         <!--begin::Col-->
         <div class="col-md-6 fv-row">
-          <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_type'">Type</label>
-          <select [id]="formModal.formId + '_type'" aria-label="Type" class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Select a Type" name="plantTypeId" [(ngModel)]="plantFormModel.plantTypeId" required>
+          <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_plantTypeId'">Type</label>
+          <select
+            [id]="formModal.formId + '_plantTypeId'"
+            aria-label="Type"
+            class="form-select form-select-solid"
+            data-control="select2"
+            data-hide-search="true"
+            data-placeholder="Select a Type"
+            name="plantTypeId"
+            [(ngModel)]="plantFormModel.plantTypeId"
+            required
+            #plantTypeIdControl="ngModel"
+            [class.is-invalid]="plantTypeIdControl.invalid && (plantTypeIdControl.touched || plantNgForm.submitted)"
+            [attr.aria-invalid]="(plantTypeIdControl.invalid && (plantTypeIdControl.touched || plantNgForm.submitted)) ? 'true' : null"
+            [attr.aria-describedby]="(plantTypeIdControl.invalid && (plantTypeIdControl.touched || plantNgForm.submitted)) ? (formModal.formId + '_plantTypeId_error') : null">
             <option [ngValue]="null" disabled>Select type...</option>
             <option *ngFor="let t of typeOptions" [ngValue]="t.id">{{ t.name }}</option>
           </select>
+          <div *ngIf="plantTypeIdControl.invalid && (plantTypeIdControl.touched || plantNgForm.submitted)" [id]="formModal.formId + '_plantTypeId_error'" class="fv-plugins-message-container invalid-feedback d-block">Select type.</div>
         </div>
         <!--end::Col-->
         <!--begin::Col-->
         <div class="col-md-6 fv-row">
-          <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_site'">Site</label>
-          <select [id]="formModal.formId + '_site'" aria-label="Site" class="form-select form-select-solid" data-control="select2" data-placeholder="Select a Site" name="siteId" [(ngModel)]="plantFormModel.siteId" required>
+          <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_siteId'">Site</label>
+          <select
+            [id]="formModal.formId + '_siteId'"
+            aria-label="Site"
+            class="form-select form-select-solid"
+            data-control="select2"
+            data-placeholder="Select a Site"
+            name="siteId"
+            [(ngModel)]="plantFormModel.siteId"
+            required
+            #siteIdControl="ngModel"
+            [class.is-invalid]="siteIdControl.invalid && (siteIdControl.touched || plantNgForm.submitted)"
+            [attr.aria-invalid]="(siteIdControl.invalid && (siteIdControl.touched || plantNgForm.submitted)) ? 'true' : null"
+            [attr.aria-describedby]="(siteIdControl.invalid && (siteIdControl.touched || plantNgForm.submitted)) ? (formModal.formId + '_siteId_error') : null">
             <option [ngValue]="null" disabled>Select site...</option>
             <option *ngFor="let s of siteOptions" [ngValue]="s.id">{{ s.label }}</option>
           </select>
+          <div *ngIf="siteIdControl.invalid && (siteIdControl.touched || plantNgForm.submitted)" [id]="formModal.formId + '_siteId_error'" class="fv-plugins-message-container invalid-feedback d-block">Select site.</div>
         </div>
         <!--end::Col-->
       </div>
@@ -164,11 +204,24 @@
       <!--begin::Input group-->
       <div class="d-flex flex-column mb-15 fv-row">
         <!--begin::Label-->
-        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2" [for]="formModal.formId + '_name'">
           <span class="required">Name</span>
         </label>
         <!--end::Label-->
-        <input type="text" class="form-control form-control-solid" placeholder="Enter Type Name" name="name" [(ngModel)]="typeFormModel.name" required />
+        <input
+          [id]="formModal.formId + '_name'"
+          type="text"
+          class="form-control form-control-solid"
+          placeholder="Enter Type Name"
+          name="name"
+          [(ngModel)]="typeFormModel.name"
+          required
+          #nameControl="ngModel"
+          [class.is-invalid]="nameControl.invalid && (nameControl.touched || typeNgForm.submitted)"
+          [attr.aria-invalid]="(nameControl.invalid && (nameControl.touched || typeNgForm.submitted)) ? 'true' : null"
+          [attr.aria-describedby]="(nameControl.invalid && (nameControl.touched || typeNgForm.submitted)) ? (formModal.formId + '_name_error') : null"
+          appTrimmedRequired />
+        <div *ngIf="nameControl.invalid && (nameControl.touched || typeNgForm.submitted)" [id]="formModal.formId + '_name_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter name.</div>
       </div>
       <!--end::Input group-->
     </form>

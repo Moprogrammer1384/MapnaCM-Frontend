@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import Swal from 'sweetalert2';
+import { MetronicAlertService } from 'src/app/core/services/metronic-alert.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
@@ -64,6 +64,7 @@ export class UnitComponent implements OnInit, OnDestroy {
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
+    private alertService: MetronicAlertService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -165,13 +166,13 @@ export class UnitComponent implements OnInit, OnDestroy {
     }
     if (form.invalid || !this.unitForm.name.trim() || this.unitForm.plantId === null) {
       form.control.markAllAsTouched();
-      this.showAlert('error', 'Error!', 'Please fill in all required fields.');
+      this.alertService.show('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
 
     const plantId = this.unitForm.plantId;
     if (!this.plantOptions.some((plant) => plant.id === plantId)) {
-      this.showAlert('error', 'Error!', 'The selected plant is no longer available. Please pick it again.');
+      this.alertService.show('error', 'Error!', 'The selected plant is no longer available. Please pick it again.');
       return;
     }
 
@@ -186,13 +187,13 @@ export class UnitComponent implements OnInit, OnDestroy {
       next: () => {
         this.saving = false;
         modal.dismiss('saved');
-        this.showAlert('success', 'Success!', isEdit ? 'Unit updated successfully!' : 'Unit created successfully!');
+        this.alertService.show('success', 'Success!', isEdit ? 'Unit updated successfully!' : 'Unit created successfully!');
         this.loadUnits();
       },
       error: (error) => {
         this.saving = false;
         this.cdr.detectChanges();
-        this.showAlert('error', 'Error!', error?.message || 'The request failed.');
+        this.alertService.show('error', 'Error!', error?.message || 'The request failed.');
       },
     });
   }
@@ -206,27 +207,14 @@ export class UnitComponent implements OnInit, OnDestroy {
       finalize(() => this.table.endDelete(unit))
     ).subscribe({
       next: () => {
-        this.showAlert('success', 'Deleted!', 'You have deleted ' + unit.name + '!.');
+        this.alertService.show('success', 'Deleted!', 'You have deleted ' + unit.name + '!.');
         this.loadUnits();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the unit.'),
+      error: (error) => this.alertService.show('error', 'Error!', error?.message || 'Unable to delete the unit.'),
     });
   }
 
   private emptyForm(): Unit {
     return { plantId: null, name: '' };
-  }
-
-  private showAlert(icon: 'success' | 'error', title: string, text: string): void {
-    Swal.fire({
-      icon,
-      title,
-      text,
-      buttonsStyling: false,
-      confirmButtonText: 'Ok, got it!',
-      customClass: {
-        confirmButton: 'btn fw-bold btn-' + (icon === 'error' ? 'danger' : 'primary'),
-      },
-    });
   }
 }

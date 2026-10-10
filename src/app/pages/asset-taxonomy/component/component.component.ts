@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component as AngularComponent, DestroyRef, inject, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import Swal from 'sweetalert2';
+import { MetronicAlertService } from 'src/app/core/services/metronic-alert.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
@@ -67,6 +67,7 @@ export class ComponentComponent implements OnInit, OnDestroy {
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
+    private alertService: MetronicAlertService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -233,12 +234,12 @@ export class ComponentComponent implements OnInit, OnDestroy {
     }
     if (form.invalid || !this.componentForm.name.trim() || this.componentForm.assetId === null) {
       form.control.markAllAsTouched();
-      this.showAlert('error', 'Error!', 'Please fill in all required fields.');
+      this.alertService.show('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
     const assetId = this.componentForm.assetId;
     if (!this.assetOptions.some((asset) => asset.id === assetId)) {
-      this.showAlert('error', 'Error!', 'The selected asset is no longer available. Please pick it again.');
+      this.alertService.show('error', 'Error!', 'The selected asset is no longer available. Please pick it again.');
       return;
     }
 
@@ -252,13 +253,13 @@ export class ComponentComponent implements OnInit, OnDestroy {
       next: () => {
         this.saving = false;
         modal.dismiss('saved');
-        this.showAlert('success', 'Success!', isEdit ? 'Component updated successfully!' : 'Component created successfully!');
+        this.alertService.show('success', 'Success!', isEdit ? 'Component updated successfully!' : 'Component created successfully!');
         this.loadComponents();
       },
       error: (error) => {
         this.saving = false;
         this.cdr.detectChanges();
-        this.showAlert('error', 'Error!', error?.message || 'The request failed.');
+        this.alertService.show('error', 'Error!', error?.message || 'The request failed.');
       },
     });
   }
@@ -272,27 +273,14 @@ export class ComponentComponent implements OnInit, OnDestroy {
       finalize(() => this.table.endDelete(component))
     ).subscribe({
       next: () => {
-        this.showAlert('success', 'Deleted!', 'You have deleted ' + component.name + '!.');
+        this.alertService.show('success', 'Deleted!', 'You have deleted ' + component.name + '!.');
         this.loadComponents();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the component.'),
+      error: (error) => this.alertService.show('error', 'Error!', error?.message || 'Unable to delete the component.'),
     });
   }
 
   private emptyForm(): Component {
     return { assetId: null, name: '', tag: '' };
-  }
-
-  private showAlert(icon: 'success' | 'error', title: string, text: string): void {
-    Swal.fire({
-      icon,
-      title,
-      text,
-      buttonsStyling: false,
-      confirmButtonText: 'Ok, got it!',
-      customClass: {
-        confirmButton: 'btn fw-bold btn-' + (icon === 'error' ? 'danger' : 'primary'),
-      },
-    });
   }
 }

@@ -466,6 +466,13 @@ Taxonomy forms use `NgForm`, required fields, `saving` guards, ng-bootstrap moda
 templates, Metronic alerts, and refresh after successful mutation. Async updates
 often call `ChangeDetectorRef.detectChanges()` to repaint within the shared layout.
 
+All seven taxonomy pages delegate success/error notifications to the stateless
+`MetronicAlertService` in `core/services/metronic-alert.service.ts`, provided in
+root. Call `show(icon, title, text)` with `success` or `error`; the service owns
+the common SweetAlert2 options and Metronic button classes. Messages and request
+workflows remain page-owned. Delete confirmation still belongs to the existing
+`TablePagination.confirmDelete()` integration.
+
 As of 2026-10-10, all nine taxonomy form modals use `FormModalComponent` from
 `shared/components/form-modal/`, exported by `SharedModule`. The component owns
 the Metronic close button, heading/optional description, responsive body spacing,
@@ -1471,3 +1478,25 @@ superseded by the user's later `components/` rename on 2026-10-10.
   Existing 2.77 MB initial-bundle warning and four CSS selector warnings remain.
   Browser tests, manual visual review and live backend integration were not run
   for this behavior-preserving cleanup; no new tests were added.
+
+### 2026-10-10 - Shared Metronic alert service
+
+- Added stateless, root-provided `MetronicAlertService` under `core/services/`.
+  Its `show(icon, title, text)` method preserves the existing success/error
+  SweetAlert2 configuration, acknowledgement text, disabled default button styling
+  and Metronic primary/danger button classes.
+- Replaced all 53 notification calls across Site, Plant, Unit, System, Asset,
+  Component and Measurement with injected-service delegation. Removed the seven
+  private `showAlert()` implementations and their direct SweetAlert2 imports.
+  Page messages, validation, API requests, modal lifecycle, cancellation,
+  refreshes and delete confirmations are retained. No templates, visual styles,
+  dependencies, API contracts or storage were changed.
+- Verified by TypeScript AST comparison that the extracted alert body matches
+  every original implementation and all retained page members and existing
+  constructor dependencies are unchanged apart from service delegation.
+  Application source has 63 fewer net lines, including the new service.
+- Production build with strict Angular templates, project lint, normal test
+  TypeScript compilation, stale-reference searches and `git diff --check` passed.
+  Existing 2.77 MB initial-bundle warning and four CSS selector warnings remain.
+  Browser tests, manual visual review and live backend integration were not run
+  for this behavior-preserving extraction; no new tests were added.

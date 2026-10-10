@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import Swal from 'sweetalert2';
+import { MetronicAlertService } from 'src/app/core/services/metronic-alert.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
@@ -69,6 +69,7 @@ export class AssetComponent implements OnInit, OnDestroy {
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
+    private alertService: MetronicAlertService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -218,13 +219,13 @@ export class AssetComponent implements OnInit, OnDestroy {
     }
     if (form.invalid || !this.assetForm.name.trim() || this.assetForm.systemId === null) {
       form.control.markAllAsTouched();
-      this.showAlert('error', 'Error!', 'Please fill in all required fields.');
+      this.alertService.show('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
 
     const systemId = this.assetForm.systemId;
     if (!this.systemOptions.some((system) => system.id === systemId)) {
-      this.showAlert('error', 'Error!', 'The selected system is no longer available. Please pick it again.');
+      this.alertService.show('error', 'Error!', 'The selected system is no longer available. Please pick it again.');
       return;
     }
 
@@ -239,13 +240,13 @@ export class AssetComponent implements OnInit, OnDestroy {
       next: () => {
         this.saving = false;
         modal.dismiss('saved');
-        this.showAlert('success', 'Success!', isEdit ? 'Asset updated successfully!' : 'Asset created successfully!');
+        this.alertService.show('success', 'Success!', isEdit ? 'Asset updated successfully!' : 'Asset created successfully!');
         this.loadAssets();
       },
       error: (error) => {
         this.saving = false;
         this.cdr.detectChanges();
-        this.showAlert('error', 'Error!', error?.message || 'The request failed.');
+        this.alertService.show('error', 'Error!', error?.message || 'The request failed.');
       },
     });
   }
@@ -259,27 +260,14 @@ export class AssetComponent implements OnInit, OnDestroy {
       finalize(() => this.table.endDelete(asset))
     ).subscribe({
       next: () => {
-        this.showAlert('success', 'Deleted!', 'You have deleted ' + asset.name + '!.');
+        this.alertService.show('success', 'Deleted!', 'You have deleted ' + asset.name + '!.');
         this.loadAssets();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the asset.'),
+      error: (error) => this.alertService.show('error', 'Error!', error?.message || 'Unable to delete the asset.'),
     });
   }
 
   private emptyForm(): Asset {
     return { systemId: null, name: '', tag: '' };
-  }
-
-  private showAlert(icon: 'success' | 'error', title: string, text: string): void {
-    Swal.fire({
-      icon,
-      title,
-      text,
-      buttonsStyling: false,
-      confirmButtonText: 'Ok, got it!',
-      customClass: {
-        confirmButton: 'btn fw-bold btn-' + (icon === 'error' ? 'danger' : 'primary'),
-      },
-    });
   }
 }

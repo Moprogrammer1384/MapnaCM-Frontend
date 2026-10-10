@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import Swal from 'sweetalert2';
+import { MetronicAlertService } from 'src/app/core/services/metronic-alert.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
@@ -58,6 +58,7 @@ export class SiteComponent implements OnInit, OnDestroy {
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
+    private alertService: MetronicAlertService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -115,13 +116,13 @@ export class SiteComponent implements OnInit, OnDestroy {
     if (form.invalid || !this.siteForm.city.trim() || !this.siteForm.address.trim() ||
       !this.siteForm.latitude.trim() || !this.siteForm.longitude.trim()) {
       form.control.markAllAsTouched();
-      this.showAlert('error', 'Error!', 'Please fill in all required fields.');
+      this.alertService.show('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
     const elevation = this.siteForm.elevation;
     if (typeof elevation !== 'number' || !Number.isFinite(elevation)) {
       form.control.markAllAsTouched();
-      this.showAlert('error', 'Error!', 'Please enter a valid elevation.');
+      this.alertService.show('error', 'Error!', 'Please enter a valid elevation.');
       return;
     }
 
@@ -143,13 +144,13 @@ export class SiteComponent implements OnInit, OnDestroy {
       next: () => {
         this.saving = false;
         modal.dismiss('saved');
-        this.showAlert('success', 'Success!', isEdit ? 'Site updated successfully!' : 'Site created successfully!');
+        this.alertService.show('success', 'Success!', isEdit ? 'Site updated successfully!' : 'Site created successfully!');
         this.loadSites();
       },
       error: (error) => {
         this.saving = false;
         this.cdr.detectChanges();
-        this.showAlert('error', 'Error!', error?.message || 'The request failed.');
+        this.alertService.show('error', 'Error!', error?.message || 'The request failed.');
       },
     });
   }
@@ -169,27 +170,14 @@ export class SiteComponent implements OnInit, OnDestroy {
       finalize(() => this.table.endDelete(site))
     ).subscribe({
       next: () => {
-        this.showAlert('success', 'Deleted!', 'You have deleted ' + site.city + '!.');
+        this.alertService.show('success', 'Deleted!', 'You have deleted ' + site.city + '!.');
         this.loadSites();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the site.'),
+      error: (error) => this.alertService.show('error', 'Error!', error?.message || 'Unable to delete the site.'),
     });
   }
 
   private emptySiteForm(): Site {
     return { city: '', address: '', latitude: '', longitude: '', location: '', elevation: null };
-  }
-
-  private showAlert(icon: 'success' | 'error', title: string, text: string): void {
-    Swal.fire({
-      icon,
-      title,
-      text,
-      buttonsStyling: false,
-      confirmButtonText: 'Ok, got it!',
-      customClass: {
-        confirmButton: 'btn fw-bold btn-' + (icon === 'error' ? 'danger' : 'primary'),
-      },
-    });
   }
 }

@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import Swal from 'sweetalert2';
+import { MetronicAlertService } from 'src/app/core/services/metronic-alert.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
@@ -90,6 +90,7 @@ export class MeasurementComponent implements OnInit, OnDestroy {
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
+    private alertService: MetronicAlertService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -292,21 +293,21 @@ export class MeasurementComponent implements OnInit, OnDestroy {
     if (form.invalid || !this.measurementForm.name.trim() || !this.measurementForm.componentId ||
       this.measurementForm.measurementTypeId === null || this.measurementForm.sensitivity === null) {
       form.control.markAllAsTouched();
-      this.showAlert('error', 'Error!', 'Please fill in all required fields.');
+      this.alertService.show('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
     if (!Number.isFinite(this.measurementForm.sensitivity)) {
-      this.showAlert('error', 'Error!', 'Please enter a valid number for sensitivity.');
+      this.alertService.show('error', 'Error!', 'Please enter a valid number for sensitivity.');
       return;
     }
     const componentId = this.measurementForm.componentId;
     if (!this.componentOptions.some((component) => component.id === componentId)) {
-      this.showAlert('error', 'Error!', 'The selected component is no longer available. Please pick it again.');
+      this.alertService.show('error', 'Error!', 'The selected component is no longer available. Please pick it again.');
       return;
     }
     const measurementTypeId = this.measurementForm.measurementTypeId;
     if (!this.typeOptions.some((type) => type.id === measurementTypeId)) {
-      this.showAlert('error', 'Error!', 'The selected measurement type is no longer available. Please pick it again.');
+      this.alertService.show('error', 'Error!', 'The selected measurement type is no longer available. Please pick it again.');
       return;
     }
 
@@ -326,13 +327,13 @@ export class MeasurementComponent implements OnInit, OnDestroy {
       next: () => {
         this.saving = false;
         modal.dismiss('saved');
-        this.showAlert('success', 'Success!', isEdit ? 'Measurement updated successfully!' : 'Measurement created successfully!');
+        this.alertService.show('success', 'Success!', isEdit ? 'Measurement updated successfully!' : 'Measurement created successfully!');
         this.loadMeasurements();
       },
       error: (error) => {
         this.saving = false;
         this.cdr.detectChanges();
-        this.showAlert('error', 'Error!', error?.message || 'The request failed.');
+        this.alertService.show('error', 'Error!', error?.message || 'The request failed.');
       },
     });
   }
@@ -346,10 +347,10 @@ export class MeasurementComponent implements OnInit, OnDestroy {
       finalize(() => this.table.endDelete(measurement))
     ).subscribe({
       next: () => {
-        this.showAlert('success', 'Deleted!', 'You have deleted ' + measurement.name + '!.');
+        this.alertService.show('success', 'Deleted!', 'You have deleted ' + measurement.name + '!.');
         this.loadMeasurements();
       },
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the measurement.'),
+      error: (error) => this.alertService.show('error', 'Error!', error?.message || 'Unable to delete the measurement.'),
     });
   }
 
@@ -396,7 +397,7 @@ export class MeasurementComponent implements OnInit, OnDestroy {
     const unit = this.typeFormModel.unit.trim();
     if (form.invalid || !name || !unit) {
       form.control.markAllAsTouched();
-      this.showAlert('error', 'Error!', 'Please fill in all required fields.');
+      this.alertService.show('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
     this.saving = true;
@@ -411,12 +412,12 @@ export class MeasurementComponent implements OnInit, OnDestroy {
         this.loadTypes();
         this.loadMeasurements();
         modal.dismiss('saved');
-        this.showAlert('success', 'Success!', isEdit ? 'Type updated successfully!' : 'Type created successfully!');
+        this.alertService.show('success', 'Success!', isEdit ? 'Type updated successfully!' : 'Type created successfully!');
       },
       error: (error) => {
         this.saving = false;
         this.cdr.detectChanges();
-        this.showAlert('error', 'Error!', error?.message || 'The request failed.');
+        this.alertService.show('error', 'Error!', error?.message || 'The request failed.');
       },
     });
   }
@@ -440,23 +441,10 @@ export class MeasurementComponent implements OnInit, OnDestroy {
         this.loadTypes();
         this.loadMeasurements();
         this.cdr.detectChanges();
-        this.showAlert('success', 'Deleted!', 'You have deleted ' + type.name + '!.');
+        this.alertService.show('success', 'Deleted!', 'You have deleted ' + type.name + '!.');
       },
       // The backend rejects types still used by measurements.
-      error: (error) => this.showAlert('error', 'Error!', error?.message || 'Unable to delete the measurement type.'),
-    });
-  }
-
-  private showAlert(icon: 'success' | 'error', title: string, text: string): void {
-    Swal.fire({
-      icon,
-      title,
-      text,
-      buttonsStyling: false,
-      confirmButtonText: 'Ok, got it!',
-      customClass: {
-        confirmButton: 'btn fw-bold btn-' + (icon === 'error' ? 'danger' : 'primary'),
-      },
+      error: (error) => this.alertService.show('error', 'Error!', error?.message || 'Unable to delete the measurement type.'),
     });
   }
 }

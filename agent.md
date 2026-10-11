@@ -137,6 +137,12 @@ Any violation is considered a UI architecture defect.
 **Project name: DARP**, confirmed by the user on 2026-10-10. Use DARP in project
 documentation and application metadata. MapnaCM and MOGSight are earlier names
 still present in historical references and existing repository/backend paths.
+**Text-only branding (2026-10-11):** application product text and browser-title
+suffixes use DARP, including `environment.appThemeName` in both builds. The user
+explicitly requires images to remain unchanged: preserve PNG/SVG/other assets,
+image tags (including alternative text), image sources and the favicon. Technical
+Metronic framework identifiers, paths, vendor URLs and styling-policy references
+retain their actual names.
 DARP is a frontend for a .NET backend (`Global.API`), built by adapting
 Metronic 8 demo1. The npm package name is `darp`, version `8.3.0`; the Angular
 workspace target remains `demo1`. Current dependencies use Angular **18.1**, TypeScript **5.5**,
@@ -1732,3 +1738,17 @@ superseded by the user's later `components/` rename on 2026-10-10.
   section uses the existing card-body padding; Measurements retains the gap
   after the Plant selector. Verified matching markup and `git diff --check`;
   tests/build were not repeated for this static typography edit.
+
+### 2026-10-11 - DARP text-only branding
+
+- Replaced Metronic product text in captions, tooltips, demo content and both
+  environments' `appThemeName`. Authenticated browser titles now end in ` - DARP`.
+- The user clarified that this change is text only and must not touch images.
+  The working tree was clean at the start, with original image references and
+  no DARP SVG assets from the previous attempt. Preserved all image tags/alt text,
+  SVG markup, asset files, logo sources and favicon; no images were created.
+- Retained framework imports/classes/types, `data-kt-name`, genuine vendor URLs
+  and accurate technical documentation. No styling, storage or behavior changed.
+- Verified strict Angular compilation and `git diff --check`. Compared image
+  markup with HEAD (normalizing Git working-tree line endings) and confirmed
+  no image-asset changes. Build/browser tests were not repeated for text edits.

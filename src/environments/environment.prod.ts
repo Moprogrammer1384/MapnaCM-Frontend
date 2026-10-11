@@ -9,7 +9,7 @@ export const environment = {
   isMockEnabled: false,
   // TODO: set the deployed MapnaCM backend base URL before shipping to production
   apiUrl: 'http://localhost:5245/api',
-  appThemeName: 'Metronic',
+  appThemeName: 'DARP',
   appPurchaseUrl: 'https://1.envato.market/EA4JP',
   appHTMLIntegration: 'https://preview.keenthemes.com/metronic8/demo1/documentation/base/helpers/flex-layouts.html',
   appPreviewUrl: 'https://preview.keenthemes.com/metronic8/angular/demo1/',

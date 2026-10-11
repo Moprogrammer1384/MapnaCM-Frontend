@@ -1590,3 +1590,16 @@ superseded by the user's later `components/` rename on 2026-10-10.
   No templates, styles, models, endpoints, serialization, dependencies or storage
   changed. Live API integration and manual visual inspection were not performed.
   Runtime performance gains were not measured; this change reduces duplication.
+
+### 2026-10-11 - Danger hover color for shared table delete buttons
+
+- Changed the shared table-record Delete button from `btn-active-color-primary`
+  to Metronic's `btn-active-color-danger`. Delete text/icons now use the danger
+  token on hover/focus; the Edit button retains its existing primary treatment.
+  No custom CSS, action logic, disabled/loading behavior or dependencies changed.
+- Verified the installed Metronic Sass and compiled hover rules apply
+  `var(--bs-text-danger)` to both the button and its icon. All five existing
+  table-record ChromeHeadless tests passed, including action emission and
+  independent table instances; `git diff --check` passed. No new tests were
+  added for this class-only change. Production build and manual hover/visual
+  inspection were not rerun.

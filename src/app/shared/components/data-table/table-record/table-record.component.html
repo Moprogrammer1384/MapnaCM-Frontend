@@ -28,7 +28,7 @@
           aria-label="Edit record" [disabled]="actionsDisabled || table.isDeleting(record)" (click)="editRecord.emit(record)">
           <i class="ki-duotone ki-pencil fs-2" aria-hidden="true"><span class="path1"></span><span class="path2"></span></i>
         </button>
-        <button pButton type="button" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm"
+        <button pButton type="button" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm"
           aria-label="Delete record" data-kt-site-table-filter="delete_row" [disabled]="actionsDisabled || table.isDeleting(record)"
           [attr.aria-busy]="table.isDeleting(record)" (click)="deleteRecord.emit(record)">
           <span *ngIf="table.isDeleting(record)" class="spinner-border spinner-border-sm" role="status" aria-label="Deleting record"></span>

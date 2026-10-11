@@ -7,6 +7,7 @@ import { finalize } from 'rxjs';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { Component, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
+import { buildParentIdMap, buildParentOptions, buildPlantEmployerMap, resolveInheritedEmployer } from 'src/app/core/utils/asset-taxonomy-hierarchy';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
 
 @AngularComponent({
@@ -107,18 +108,8 @@ export class ComponentComponent implements OnInit, OnDestroy {
   private loadAssets(): void {
     this.listState.track(this.apiService.getAllAssets(), 'Unable to load assets.', 'getAllAssets').subscribe({
       next: (assets) => {
-        this.assetOptions = [];
-        this.systemIdByAssetId = {};
-        for (const asset of assets) {
-          if (asset.id === undefined) {
-            continue;
-          }
-          this.assetOptions.push({ id: asset.id, label: asset.hierarchyLabel ?? asset.name });
-          if (asset.systemId !== null) {
-            this.systemIdByAssetId[asset.id] = asset.systemId;
-          }
-        }
-        this.assetOptions.sort((left, right) => left.label.localeCompare(right.label));
+        this.assetOptions = buildParentOptions(assets);
+        this.systemIdByAssetId = buildParentIdMap(assets, (asset) => asset.systemId);
         this.loadSystems();
       },
       error: () => this.cdr.detectChanges(),
@@ -128,15 +119,7 @@ export class ComponentComponent implements OnInit, OnDestroy {
   private loadSystems(): void {
     this.listState.track(this.apiService.getAllSystems(), 'Unable to load systems.', 'getAllSystems').subscribe({
       next: (systems) => {
-        this.unitIdBySystemId = {};
-        for (const system of systems) {
-          if (system.id === undefined) {
-            continue;
-          }
-          if (system.unitId !== null) {
-            this.unitIdBySystemId[system.id] = system.unitId;
-          }
-        }
+        this.unitIdBySystemId = buildParentIdMap(systems, (system) => system.unitId);
         this.loadUnits();
       },
       error: () => this.cdr.detectChanges(),
@@ -146,15 +129,7 @@ export class ComponentComponent implements OnInit, OnDestroy {
   private loadUnits(): void {
     this.listState.track(this.apiService.getAllUnits(), 'Unable to load units.', 'getAllUnits').subscribe({
       next: (units) => {
-        this.plantIdByUnitId = {};
-        for (const unit of units) {
-          if (unit.id === undefined) {
-            continue;
-          }
-          if (unit.plantId !== null) {
-            this.plantIdByUnitId[unit.id] = unit.plantId;
-          }
-        }
+        this.plantIdByUnitId = buildParentIdMap(units, (unit) => unit.plantId);
         this.loadPlants();
       },
       error: () => this.cdr.detectChanges(),
@@ -164,34 +139,18 @@ export class ComponentComponent implements OnInit, OnDestroy {
   private loadPlants(): void {
     this.listState.track(this.apiService.getAllPlants(), 'Unable to load plants.', 'getAllPlants').subscribe({
       next: (plants) => {
-        this.employerByPlantId = {};
-        for (const plant of plants) {
-          if (plant.id === undefined) {
-            continue;
-          }
-          this.employerByPlantId[plant.id] = {
-            id: plant.employerId ?? null,
-            name: plant.employerName || '—',
-          };
-        }
+        this.employerByPlantId = buildPlantEmployerMap(plants);
         this.loadComponents();
       },
       error: () => this.cdr.detectChanges(),
     });
   }
 
-  private employerOfAsset(assetId: number | null): InheritedEmployer | undefined {
-    if (assetId === null) {
-      return undefined;
-    }
-    const systemId = this.systemIdByAssetId[assetId];
-    const unitId = systemId !== undefined ? this.unitIdBySystemId[systemId] : undefined;
-    const plantId = unitId !== undefined ? this.plantIdByUnitId[unitId] : undefined;
-    return plantId !== undefined ? this.employerByPlantId[plantId] : undefined;
-  }
-
   private toComponentRow(component: Component): Component {
-    const employer = this.employerOfAsset(component.assetId);
+    const employer = resolveInheritedEmployer(
+      component.assetId, this.employerByPlantId,
+      this.systemIdByAssetId, this.unitIdBySystemId, this.plantIdByUnitId
+    );
     return {
       ...component,
       tag: component.tag ?? null,

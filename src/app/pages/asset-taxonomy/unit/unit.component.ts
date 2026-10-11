@@ -7,6 +7,7 @@ import { finalize } from 'rxjs';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { Unit, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
+import { buildParentOptions, buildPlantEmployerMap, resolveInheritedEmployer } from 'src/app/core/utils/asset-taxonomy-hierarchy';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
 
 @Component({
@@ -104,20 +105,8 @@ export class UnitComponent implements OnInit, OnDestroy {
   private loadPlants(): void {
     this.listState.track(this.apiService.getAllPlants(), 'Unable to load plants.', 'getAllPlants').subscribe({
       next: (plants) => {
-        this.plantOptions = [];
-        this.employerByPlantId = {};
-
-        for (const plant of plants) {
-          if (plant.id === undefined) {
-            continue;
-          }
-          this.plantOptions.push({ id: plant.id, label: plant.hierarchyLabel ?? plant.name });
-          this.employerByPlantId[plant.id] = {
-            id: plant.employerId ?? null,
-            name: plant.employerName || '—',
-          };
-        }
-        this.plantOptions.sort((left, right) => left.label.localeCompare(right.label));
+        this.plantOptions = buildParentOptions(plants);
+        this.employerByPlantId = buildPlantEmployerMap(plants);
 
         this.loadUnits();
       },
@@ -126,7 +115,7 @@ export class UnitComponent implements OnInit, OnDestroy {
   }
 
   private toUnitRow(unit: Unit): Unit {
-    const employer = unit.plantId === null ? undefined : this.employerByPlantId[unit.plantId];
+    const employer = resolveInheritedEmployer(unit.plantId, this.employerByPlantId);
     return {
       ...unit,
       employerName: employer?.name || '\u2014',

@@ -7,6 +7,7 @@ import { finalize } from 'rxjs';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { AssetSystem, Unit, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
+import { buildParentIdMap, buildParentOptions, buildPlantEmployerMap, resolveInheritedEmployer } from 'src/app/core/utils/asset-taxonomy-hierarchy';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
 
 @Component({
@@ -106,19 +107,8 @@ export class SystemComponent implements OnInit, OnDestroy {
   private loadUnits(): void {
     this.listState.track(this.apiService.getAllUnits(), 'Unable to load units.', 'getAllUnits').subscribe({
       next: (units: Unit[]) => {
-        this.unitOptions = [];
-        this.plantIdByUnitId = {};
-
-        for (const unit of units) {
-          if (unit.id === undefined) {
-            continue;
-          }
-          this.unitOptions.push({ id: unit.id, label: unit.hierarchyLabel ?? unit.name });
-          if (unit.plantId !== null) {
-            this.plantIdByUnitId[unit.id] = unit.plantId;
-          }
-        }
-        this.unitOptions.sort((left, right) => left.label.localeCompare(right.label));
+        this.unitOptions = buildParentOptions(units);
+        this.plantIdByUnitId = buildParentIdMap(units, (unit) => unit.plantId);
 
         this.loadPlants();
       },
@@ -129,16 +119,7 @@ export class SystemComponent implements OnInit, OnDestroy {
   private loadPlants(): void {
     this.listState.track(this.apiService.getAllPlants(), 'Unable to load plants.', 'getAllPlants').subscribe({
       next: (plants) => {
-        this.employerByPlantId = {};
-        for (const plant of plants) {
-          if (plant.id === undefined) {
-            continue;
-          }
-          this.employerByPlantId[plant.id] = {
-            id: plant.employerId ?? null,
-            name: plant.employerName || '—',
-          };
-        }
+        this.employerByPlantId = buildPlantEmployerMap(plants);
 
         this.loadSystems();
       },
@@ -147,20 +128,12 @@ export class SystemComponent implements OnInit, OnDestroy {
   }
 
   private toSystemRow(system: AssetSystem): AssetSystem {
-    const employer = this.employerOfUnit(system.unitId);
+    const employer = resolveInheritedEmployer(system.unitId, this.employerByPlantId, this.plantIdByUnitId);
     return {
       ...system,
       employerName: employer?.name || '\u2014',
       employerId: employer?.id ?? null,
     };
-  }
-
-  private employerOfUnit(unitId: number | null): InheritedEmployer | undefined {
-    if (unitId === null) {
-      return undefined;
-    }
-    const plantId = this.plantIdByUnitId[unitId];
-    return plantId !== undefined ? this.employerByPlantId[plantId] : undefined;
   }
 
   private loadSystems(): void {

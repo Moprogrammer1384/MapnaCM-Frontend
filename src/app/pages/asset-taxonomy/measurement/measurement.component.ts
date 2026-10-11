@@ -7,6 +7,7 @@ import { finalize } from 'rxjs';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { Measurement, MeasurementType, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
+import { buildParentIdMap, buildParentOptions, buildPlantEmployerMap, resolveInheritedEmployer } from 'src/app/core/utils/asset-taxonomy-hierarchy';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
 
 @Component({
@@ -137,15 +138,7 @@ export class MeasurementComponent implements OnInit, OnDestroy {
   private loadAssets(): void {
     this.listState.track(this.apiService.getAllAssets(), 'Unable to load assets.', 'getAllAssets').subscribe({
       next: (assets) => {
-        this.systemIdByAssetId = {};
-        for (const asset of assets) {
-          if (asset.id === undefined) {
-            continue;
-          }
-          if (asset.systemId !== null) {
-            this.systemIdByAssetId[asset.id] = asset.systemId;
-          }
-        }
+        this.systemIdByAssetId = buildParentIdMap(assets, (asset) => asset.systemId);
         this.loadSystems();
       },
       error: () => this.cdr.detectChanges(),
@@ -155,15 +148,7 @@ export class MeasurementComponent implements OnInit, OnDestroy {
   private loadSystems(): void {
     this.listState.track(this.apiService.getAllSystems(), 'Unable to load systems.', 'getAllSystems').subscribe({
       next: (systems) => {
-        this.unitIdBySystemId = {};
-        for (const system of systems) {
-          if (system.id === undefined) {
-            continue;
-          }
-          if (system.unitId !== null) {
-            this.unitIdBySystemId[system.id] = system.unitId;
-          }
-        }
+        this.unitIdBySystemId = buildParentIdMap(systems, (system) => system.unitId);
         this.loadUnits();
       },
       error: () => this.cdr.detectChanges(),
@@ -173,15 +158,7 @@ export class MeasurementComponent implements OnInit, OnDestroy {
   private loadUnits(): void {
     this.listState.track(this.apiService.getAllUnits(), 'Unable to load units.', 'getAllUnits').subscribe({
       next: (units) => {
-        this.plantIdByUnitId = {};
-        for (const unit of units) {
-          if (unit.id === undefined) {
-            continue;
-          }
-          if (unit.plantId !== null) {
-            this.plantIdByUnitId[unit.id] = unit.plantId;
-          }
-        }
+        this.plantIdByUnitId = buildParentIdMap(units, (unit) => unit.plantId);
         this.loadPlants();
       },
       error: () => this.cdr.detectChanges(),
@@ -191,16 +168,7 @@ export class MeasurementComponent implements OnInit, OnDestroy {
   private loadPlants(): void {
     this.listState.track(this.apiService.getAllPlants(), 'Unable to load plants.', 'getAllPlants').subscribe({
       next: (plants) => {
-        this.employerByPlantId = {};
-        for (const plant of plants) {
-          if (plant.id === undefined) {
-            continue;
-          }
-          this.employerByPlantId[plant.id] = {
-            id: plant.employerId ?? null,
-            name: plant.employerName || '—',
-          };
-        }
+        this.employerByPlantId = buildPlantEmployerMap(plants);
         this.loadComponents();
       },
       error: () => this.cdr.detectChanges(),
@@ -210,41 +178,19 @@ export class MeasurementComponent implements OnInit, OnDestroy {
   private loadComponents(): void {
     this.listState.track(this.apiService.getAllComponents(), 'Unable to load components.', 'getAllComponents').subscribe({
       next: (components) => {
-        this.componentOptions = [];
-        this.assetIdByComponentId = {};
-        for (const component of components) {
-          if (component.id === undefined) {
-            continue;
-          }
-          // Backend hierarchy label: "City - Plant - Unit - System - Asset - Component".
-          this.componentOptions.push({ id: component.id, label: component.hierarchyLabel ?? component.name });
-          if (component.assetId !== null) {
-            this.assetIdByComponentId[component.id] = component.assetId;
-          }
-        }
-        this.componentOptions.sort((left, right) => left.label.localeCompare(right.label));
+        this.componentOptions = buildParentOptions(components);
+        this.assetIdByComponentId = buildParentIdMap(components, (component) => component.assetId);
         this.loadMeasurements();
       },
       error: () => this.cdr.detectChanges(),
     });
   }
 
-  private employerOfComponent(componentId: number | null): InheritedEmployer | undefined {
-    if (componentId === null) {
-      return undefined;
-    }
-    const assetId = this.assetIdByComponentId[componentId];
-    if (assetId === undefined) {
-      return undefined;
-    }
-    const systemId = this.systemIdByAssetId[assetId];
-    const unitId = systemId !== undefined ? this.unitIdBySystemId[systemId] : undefined;
-    const plantId = unitId !== undefined ? this.plantIdByUnitId[unitId] : undefined;
-    return plantId !== undefined ? this.employerByPlantId[plantId] : undefined;
-  }
-
   private toMeasurementRow(measurement: Measurement): Measurement {
-    const employer = this.employerOfComponent(measurement.componentId);
+    const employer = resolveInheritedEmployer(
+      measurement.componentId, this.employerByPlantId,
+      this.assetIdByComponentId, this.systemIdByAssetId, this.unitIdBySystemId, this.plantIdByUnitId
+    );
     return {
       ...measurement,
       tag: measurement.tag ?? null,

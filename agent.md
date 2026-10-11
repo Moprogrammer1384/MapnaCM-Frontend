@@ -1,6 +1,7 @@
 # DARP frontend: development context
 
-Last studied: **2026-10-06 (Asia/Tehran)**. Latest focused maintenance: **2026-10-10**.
+Last studied: **2026-10-11 (Asia/Tehran)**, focused on taxonomy hierarchy helpers.
+Latest focused maintenance: **2026-10-11**.
 Latest source reviewed: `52233c9` (`Plant type fix`), plus the Tag and Measurement Type UI changes below.
 
 This is the project memory for development with Codex. Read it at the start of
@@ -516,6 +517,12 @@ both the type lookup table and the related main list, keeping joined names/units
   Its payload contains `employerId` and the employer display-name snapshot.
 - Plant candidate employers come from `getUsersByRole('Employer')`.
 - Unit/System/Asset/Component/Measurement inherit the Plant employer via parent-ID maps.
+- Their pure hierarchy transformations live in `core/utils/asset-taxonomy-hierarchy.ts`:
+  `buildParentOptions`, `buildParentIdMap`, `buildPlantEmployerMap`, and
+  `resolveInheritedEmployer`. Options retain saved numeric IDs and sort by the
+  existing display-label fallback; relationship selectors retain numeric zero
+  and skip null parents. Employer resolution follows supplied maps from parent
+  to Plant. Pages still own the maps, request order, request state and row snapshots.
 - Employer options come from `AssetApiService.getEmployerOptions()` as `{ id, name }`.
   All six employer filters compare Identity user IDs with row `employerId`,
   retaining the Plant's employer-name snapshot for display. Missing employer IDs
@@ -1500,3 +1507,42 @@ superseded by the user's later `components/` rename on 2026-10-10.
   Existing 2.77 MB initial-bundle warning and four CSS selector warnings remain.
   Browser tests, manual visual review and live backend integration were not run
   for this behavior-preserving extraction; no new tests were added.
+
+### 2026-10-11 - Extract pure taxonomy hierarchy transformations
+
+- Added four small, typed functions in `core/utils/taxonomy-hierarchy.ts` and
+  adopted them in Unit, System, Asset, Component and Measurement. Removed the
+  repeated parent-option, relationship-map and Plant employer-map loops and four
+  private employer traversal methods. Kept existing shared entity models.
+- Preserved saved/zero IDs, null-parent guards, duplicate-label order, nullish
+  hierarchy-label fallback, employer ID/name normalization, missing-ancestor
+  behavior and fresh map replacement on reload. HTTP order, keyed RequestState,
+  errors/retries, repaint calls, forms, writes and pagination behavior remain
+  page-owned. No endpoints, storage, dependencies, templates or styles changed.
+- Five pages decreased from 1,478 to 1,311 lines; the helper adds 55 lines:
+  **112 fewer production source lines**, excluding tests and documentation.
+  AST comparison verified 159 unaffected class members and identical loader API
+  calls, request keys, continuations and repaint calls against the original source.
+- Added 11 helper tests for labels/ordering, unsaved IDs, zero/null handling,
+  duplicate IDs, employer snapshots, independent maps and broken ancestor chains.
+  Added seven feature-level HTTP regressions exercising all five real pages:
+  sequential loading, inherited display/filter values, fresh reload/search state,
+  ancestor read failure/retry and cancellation on page destruction.
+- Verified production build with strict Angular templates, project lint, normal
+  test TypeScript compilation, `git diff --check`, and **81** ChromeHeadless tests
+  (18 new hierarchy regressions plus 63 existing shared tests). Existing 2.77 MB
+  initial-bundle warning and four CSS selector warnings remain. HTTP was mocked;
+  live API integration and manual visual inspection were not performed. This is
+  a reuse/maintenance improvement; runtime performance gains were not measured.
+
+### 2026-10-11 - Asset taxonomy hierarchy filename
+
+- Renamed the helper to `core/utils/asset-taxonomy-hierarchy.ts`, its adjacent
+  spec to `asset-taxonomy-hierarchy.spec.ts`, and the feature-level hierarchy spec
+  to `pages/asset-taxonomy/asset-taxonomy-hierarchy.spec.ts`. Updated all five page
+  imports, the helper spec import and current documentation. Function names and
+  behavior are unchanged; paths in the preceding extraction log are historical.
+- Verified strict Angular compilation, normal test TypeScript compilation,
+  project lint, `git diff --check`, absence of stale application imports and
+  removal of the old filenames. Production build and browser tests were not
+  rerun for this filename-only change; the prior 81 tests cover the extraction.

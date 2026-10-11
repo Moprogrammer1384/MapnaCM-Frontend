@@ -10,11 +10,13 @@ import { Subscription } from 'rxjs';
 import { LayoutService } from './core/layout.service';
 import { LayoutInitService } from './core/layout-init.service';
 import { ILayout, LayoutType } from './core/configs/config';
+import { VibrationSelectionService } from '../../core/services/vibration-selection.service';
 
 @Component({
   selector: 'app-layout',
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss'],
+  providers: [VibrationSelectionService],
 })
 export class LayoutComponent implements OnInit, OnDestroy {
   private unsubscribe: Subscription[] = [];
@@ -64,11 +66,14 @@ export class LayoutComponent implements OnInit, OnDestroy {
     private initService: LayoutInitService,
     private layout: LayoutService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    public vibrationSelection: VibrationSelectionService
   ) {
     // define layout type and load layout
-    this.router.events.subscribe((event) => {
+    this.vibrationSelection.setRoute(this.router.url);
+    this.unsubscribe.push(this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
+        this.vibrationSelection.setRoute(event.urlAfterRedirects);
         const currentLayoutType = this.layout.currentLayoutTypeSubject.value;
 
         const nextLayoutType: LayoutType =
@@ -80,7 +85,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
           this.initService.reInitProps(nextLayoutType);
         }
       }
-    });
+    }));
   }
 
   ngOnInit() {

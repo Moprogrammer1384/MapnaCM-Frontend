@@ -1,0 +1,76 @@
+<div #drawerElement [id]="drawerId" class="bg-body darp-taxonomy-drawer"
+  data-kt-drawer="true" data-kt-drawer-name="asset-taxonomy" data-kt-drawer-activate="true"
+  data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'300px', 'md':'600px'}" data-kt-drawer-direction="end"
+  role="dialog" [attr.aria-modal]="isOpen() ? 'true' : null" [attr.aria-hidden]="!isOpen()"
+  [attr.aria-labelledby]="drawerId + '_title'" [inert]="!isOpen()"
+  [cdkTrapFocus]="isOpen()" [cdkTrapFocusAutoCapture]="isOpen()" (keydown.escape)="close()">
+  <div class="card shadow-none rounded-0 w-100 h-100 overflow-hidden">
+    <div class="card-header flex-shrink-0">
+      <div class="card-title flex-column align-items-start py-3">
+        <h3 [id]="drawerId + '_title'" class="fw-bold text-gray-900 mb-1">Select measurements</h3>
+        <span class="fs-7 text-gray-500">Asset taxonomy</span>
+      </div>
+      <div class="card-toolbar">
+        <button type="button" class="btn btn-sm btn-icon btn-active-light-primary me-n3" aria-label="Close measurement selection"
+          cdkFocusInitial (click)="close()">
+          <app-keenicon name="cross" class="fs-1"></app-keenicon>
+        </button>
+      </div>
+    </div>
+    <div class="card-body p-5 p-md-7 overflow-auto flex-grow-1" [attr.aria-busy]="requestState.loading()">
+      <app-request-feedback [state]="requestState" loadingMessage="Loading asset hierarchy..." (retry)="load()"></app-request-feedback>
+      <div *ngIf="requestState.ready">
+        <h4 class="fs-6 fw-bold mb-3"><label [for]="drawerId + '_plant'">Plant</label></h4>
+        <select [id]="drawerId + '_plant'" class="form-select form-select-solid" appSelect2
+          data-placeholder="Select a plant" [attr.data-dropdown-parent]="'#' + drawerId"
+          aria-label="Plant" [ngModel]="plantId" (ngModelChange)="changePlant($event)">
+          <option [ngValue]="null">Select a plant...</option>
+          <option *ngFor="let plant of plants" [ngValue]="plant.id">{{ plant.label }}</option>
+        </select>
+        <div *ngIf="!plants.length" class="text-gray-600 fs-7 mt-3">No plants available.</div>
+        <h4 class="fs-6 fw-bold mt-7 mb-3">Measurements</h4>
+        <div class="d-flex align-items-center gap-3 mb-4" role="status" aria-live="polite">
+          <span class="badge badge-light-primary">{{ selectedNodes.length }} selected</span>
+        </div>
+        <p-tree *ngIf="plantId !== null && nodes.length" [value]="nodes" selectionMode="checkbox"
+          [selection]="selectedNodes" (selectionChange)="selectNodes($event)"
+          [propagateSelectionUp]="false" [propagateSelectionDown]="false" [highlightOnSelect]="true"
+          [filter]="true" filterMode="strict" filterPlaceholder="Search hierarchy" filterBy="label,data.tag"
+          styleClass="darp-taxonomy-tree" ariaLabel="Asset taxonomy measurements">
+          <ng-template pTemplate="togglericon" let-expanded>
+            <app-keenicon [name]="expanded ? 'down' : 'right'" class="fs-5"></app-keenicon>
+          </ng-template>
+          <ng-template pTemplate="filtericon"><app-keenicon name="magnifier" class="fs-4 text-gray-500"></app-keenicon></ng-template>
+          <ng-template pTemplate="checkboxicon" let-checked>
+            <app-keenicon *ngIf="checked" name="check" class="fs-6"></app-keenicon>
+          </ng-template>
+          <ng-template pTemplate="default" let-node>
+            <span class="d-flex align-items-center gap-2" [class.taxonomy-branch]="node.data.kind !== 'Measurement'"
+              [class.taxonomy-measurement]="node.data.kind === 'Measurement'">
+              <button *ngIf="node.data.kind !== 'Measurement'" type="button"
+                class="btn btn-flush btn-active-color-primary d-flex align-items-center gap-2 text-start text-gray-700 fw-semibold"
+                [disabled]="!node.children.length" [attr.aria-expanded]="node.children.length ? node.expanded : null"
+                (click)="node.expanded = !node.expanded; $event.stopPropagation()">
+                <span class="badge badge-light-primary fs-8">{{ node.data.kind }}</span>
+                <span class="text-break">{{ node.label }}</span>
+              </button>
+              <ng-container *ngIf="node.data.kind === 'Measurement'">
+                <span class="text-break">{{ node.label }}</span>
+                <span *ngIf="node.data.unit" class="fs-8 text-gray-500">({{ node.data.unit }})</span>
+              </ng-container>
+            </span>
+          </ng-template>
+          <ng-template pTemplate="empty"><span class="text-gray-600 fs-7">No matching measurements.</span></ng-template>
+        </p-tree>
+        <div *ngIf="plantId === null || !nodes.length" class="text-center rounded border border-dashed border-gray-300 p-7 text-gray-600">
+          <app-keenicon name="data" class="fs-2x text-gray-400 mb-3 d-block"></app-keenicon>
+          {{ plantId === null ? 'Choose a plant to explore its measurements.' : 'No Units available for this plant.' }}
+        </div>
+      </div>
+      <div *ngIf="status" class="alert alert-warning mt-5 mb-0 fs-7" role="status">{{ status }}</div>
+    </div>
+    <div class="card-footer d-flex align-items-center justify-content-end gap-3 py-5 px-5 px-md-7 flex-shrink-0">
+      <button type="button" class="btn btn-light" (click)="reset()" [disabled]="requestState.loading()">Reset</button>
+    </div>
+  </div>
+</div>

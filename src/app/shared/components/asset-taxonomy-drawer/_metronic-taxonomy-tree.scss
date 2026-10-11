@@ -1,0 +1,124 @@
+// PrimeNG 18 supplies hierarchy/keyboard behavior. Metronic supplies every visual token.
+.darp-taxonomy-drawer {
+  max-width: 100vw;
+
+  .card-body { min-height: 0; }
+}
+
+.darp-taxonomy-tree {
+  color: var(--#{$prefix}gray-700);
+
+  .p-tree-root-children,
+  .p-tree-node-children {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: map-get($spacers, 1);
+  }
+
+  .p-tree-node-children {
+    margin-inline-start: map-get($spacers, 3);
+    padding-inline-start: map-get($spacers, 3);
+    border-inline-start: $border-width solid var(--#{$prefix}gray-200);
+  }
+
+  .p-tree-node-content {
+    display: flex;
+    align-items: center;
+    gap: map-get($spacers, 2);
+    padding: map-get($spacers, 2) map-get($spacers, 1);
+    border-radius: $border-radius;
+
+    &.p-tree-node-selectable:hover { background-color: $component-hover-bg; }
+  }
+
+  // PrimeNG 18 checkbox nodes expose selection through the documented ARIA state.
+  .p-tree-node[aria-checked='true'] > .p-tree-node-content {
+    background-color: var(--#{$prefix}primary-light);
+  }
+
+  .p-tree-node:focus-visible > .p-tree-node-content {
+    outline: $focus-ring-width solid var(--#{$prefix}primary);
+    outline-offset: $border-width;
+  }
+
+  .p-tree-node-toggle-button {
+    @extend .w-25px, .h-25px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+    border: 0;
+    border-radius: $btn-border-radius-sm;
+    background: transparent;
+    color: var(--#{$prefix}gray-500);
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--#{$prefix}primary);
+      background-color: var(--#{$prefix}primary-light);
+    }
+    &:focus-visible { outline: $focus-ring-width solid var(--#{$prefix}primary); }
+  }
+
+  .p-tree-node-label { min-width: 0; }
+  .p-tree-node-content:has(.taxonomy-branch) > p-checkbox { display: none; }
+  .p-tree-node-content:has(.taxonomy-measurement):not(.p-tree-node-selectable) {
+    opacity: $form-check-input-disabled-opacity;
+    cursor: not-allowed;
+  }
+
+  .p-checkbox {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    width: $form-check-input-width-sm;
+    height: $form-check-input-width-sm;
+  }
+
+  .p-checkbox-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: inherit;
+  }
+
+  .p-checkbox-box {
+    @extend .form-check-input;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border: 0;
+    background-color: $form-check-input-bg-solid;
+  }
+
+  .p-checkbox-checked .p-checkbox-box {
+    background-color: $form-check-input-checked-bg-color-solid;
+    color: $form-check-input-checked-color;
+  }
+
+  .p-checkbox-checked .p-checkbox-box i { color: inherit; }
+  .p-iconfield {
+    position: relative;
+    margin-bottom: map-get($spacers, 4);
+  }
+  .p-tree-filter-input {
+    @extend .form-control, .form-control-solid;
+    padding-inline-start: map-get($spacers, 10);
+  }
+  .p-inputicon {
+    position: absolute;
+    inset-inline-start: map-get($spacers, 4);
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+}

@@ -2,6 +2,7 @@ import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { menuReinitialization } from 'src/app/_metronic/kt/kt-helpers';
 import { AuthService, UserType } from 'src/app/modules/auth';
+import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
 
 @Component({
 	selector: 'app-navbar',
@@ -17,7 +18,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
 	btnIconClass: string = 'fs-2 fs-md-1';
 	user$: Observable<UserType>;
 
-	constructor(private authService: AuthService) {
+	constructor(private authService: AuthService, public vibrationSelection: VibrationSelectionService) {
 		this.user$ = this.authService.currentUser$;
 	}
 

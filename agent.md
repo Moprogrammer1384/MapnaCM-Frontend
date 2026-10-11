@@ -235,6 +235,7 @@ maintenance entry for focused browser validation.
 | `src/app/shared/components/data-table/` | PrimeNG table/paginator/select/button adapters with Metronic visuals, typed pagination helper and adjacent tests, exposed through `SharedModule` |
 | `src/app/shared/components/form-modal/` | Shared Metronic presentation for nine taxonomy form modals, each serving add/edit; page-owned forms projected into the shell, exported through `SharedModule` |
 | `src/app/shared/components/request-state/` | Cancellable keyed read-state helper and shared Metronic loading/error/retry feedback, exported through `SharedModule` |
+| `src/app/shared/components/asset-taxonomy-drawer/` | Standalone Metronic drawer with Select2 Plant selection and PrimeNG Tree measurement selection; currently replaces Activity Drawer on vibration routes |
 | `src/app/_fake/` | Mixed legacy code: in-memory demo API plus services calling Keenthemes remotely |
 | `src/app/graphify-out/` | Generated graph reports/caches; historical, not application source |
 | `src/assets/` | Theme Sass, icons, media/plugins, generated Apache chart scripts/data/vendor files |
@@ -699,6 +700,52 @@ Vibration routes: overview, time-domain, frequency-domain, bode-analysis,
 rotor-position. Only Time Domain currently has content: a synthetic 10 Hz + 25 Hz
 velocity signal over two seconds with tooltip and zoom. It is sample data,
 not a connected condition-monitoring backend feed.
+
+### Vibration measurement selection (2026-10-11)
+
+The authenticated layout now mounts `AssetTaxonomyDrawerComponent` instead of the
+demo Activity Drawer on `/cm/vibration` routes, with a measurement selector button
+in the former Activity header position. Other routes do not mount this selector.
+The reusable standalone component lives in `shared/components/asset-taxonomy-drawer/`;
+its `visible`, `selection`, `selectionSave` and `closed` bindings let other features
+own independent values without sharing vibration state. Use a unique, stable
+`drawerId` if another consumer is mounted simultaneously.
+
+`VibrationSelectionService` under `core/services/` is provided by `LayoutComponent`.
+It holds the saved `{ plantId, unitId, measurementIds }` selection in memory across
+the five vibration pages, including navigation away and back. No browser storage
+or backend preference write is added. Selection ends when the authenticated layout
+is destroyed, including logout or a full page reload. Pages can inject this service
+and read `selection()` for future chart integrations; existing sample chart data
+has not been changed or presented as measurement-backed data.
+
+The drawer reloads six existing `AssetApiService.getAll*` reads on opening through
+`RequestState` and `forkJoin`, with loading/error/retry and cancellation on dismissal.
+Select2 uses the existing directive with the drawer as dropdown parent. The typed
+`core/utils/asset-taxonomy-tree.ts` builder joins numeric parent IDs into
+Unit -> System -> Asset -> Component -> Measurement, excluding incomplete chains
+and preserving ID zero. Only Measurement leaves are selectable; PrimeNG Tree owns
+expansion, search and keyboard interactions. Selection propagation is disabled.
+Selecting a leaf disables measurements from other Units, including filtered copies;
+clearing the last leaf releases the lock. Multiple Components within one Unit are
+allowed, replacing the reference page's older single-Component rule.
+
+As revised on 2026-10-11, measurement selection/unselection immediately commits
+IDs and keeps the drawer open. Deselecting the last measurement commits `null`.
+Changing Plant clears the previous saved selection. Save and Clear selection
+buttons and the "Other Units are locked" message are absent. Reset immediately
+commits `null`, clears plant/measurements and leaves the drawer open. Dismissal
+keeps the latest committed selection. Branch labels toggle PrimeNG's `expanded`
+property; branches remain non-selectable. The header uses the hierarchy-shaped
+Metronic `data` icon. Saved missing/reparented records produce a review message
+without automatically changing the saved value during loading/restoration.
+Metronic supplies drawer/overlay behavior and visuals; CDK supplies focus trapping,
+with Escape and focus return. Destruction removes the observer, requests, overlay
+and Metronic store entry. The scoped `_metronic-taxonomy-tree.scss` uses Metronic
+tokens and the existing empty PrimeNG preset; no independent theme is introduced.
+The installed PrimeNG 18 checkbox highlight/node `styleClass` inconsistencies are
+handled using documented `aria-checked` and our template markers. Vendor source
+files are unchanged. See the component README for usage and official references.
 
 ## Porting a static Mapna-UIUX page
 
@@ -1603,3 +1650,85 @@ superseded by the user's later `components/` rename on 2026-10-10.
   independent table instances; `git diff --check` passed. No new tests were
   added for this class-only change. Production build and manual hover/visual
   inspection were not rerun.
+
+### 2026-10-11 - Vibration asset taxonomy measurement drawer
+
+- Replaced the layout's demo Activity Drawer usage with the standalone reusable
+  taxonomy drawer, mounted only on vibration routes. Replaced its navbar toggle
+  with an accessible measurement selector button. Saved values are owned by the
+  layout-provided vibration selection service; other consumers supply independent
+  values. Preserved the vendor Activity Drawer source as a reference.
+- Adapted the local `customize/select-plant.html` and its JS dependencies, using
+  the existing Metronic Select2 directive and the documented installed PrimeNG
+  18 Tree checkbox/filter/template/selection APIs. Used actual taxonomy reads,
+  typed ID-based hierarchy conversion and the requested single-Unit constraint.
+  No endpoints, API payloads, dependencies, chart behavior or persistent storage
+  changed. Reset commits an empty selection, per the user's clarification.
+- Added 17 tests: three hierarchy builder tests, two feature-state tests and 12
+  actual-drawer tests with PrimeNG/Select2/Metronic. Verified zero IDs, incomplete
+  chains, cross-Component selection within one Unit, locks/releases, filtered and
+  keyboard selection, save/dismiss/reset, restoration/reconciliation, retries,
+  cancellation/overlay/store cleanup, initial open mount, Escape/focus return,
+  light/dark Metronic token colors and mobile/desktop rendered layout bounds.
+- Verified **91 ChromeHeadless tests** (17 new plus existing shared/Select2 tests),
+  production build with strict templates, project lint, normal test TypeScript
+  compilation and `git diff --check`. Initial bundle is 2.78 MB; the existing
+  initial-budget warning and four CSS selector warnings remain. Reduced adapter
+  Sass extension expansion to avoid increasing the theme bundle unnecessarily.
+- API behavior was exercised using mocked existing service reads. Live
+  authenticated API integration and manual screenshots were not verified:
+  computer-use reported no available browser surface and could not open IAB.
+  Theme and responsive acceptance were verified through actual ChromeHeadless
+  rendering/computed styles, including isolated 320px and 1280px viewports.
+
+### 2026-10-11 - Immediate measurement selection and clickable branch labels
+
+- Updated the taxonomy drawer per the user's six UI refinements. The header and
+  empty-state icon now use Metronic's `data` Keenicon (connected hierarchy nodes).
+  Select2 continues selecting Plant. Removed Save, Clear selection and the
+  "Other Units are locked" message; Reset remains in the footer.
+- Measurement selection and unselection immediately emit the updated saved IDs
+  without closing the drawer. Deselecting the last measurement saves `null` and
+  releases the Unit restriction. Changing Plant immediately clears the previous
+  saved measurements; restoring/loading a saved selection does not emit writes.
+  Pending/failed reads cannot trigger selection commits. Session scope and
+  backend/storage behavior are unchanged.
+- Branch names and level badges are part of a Metronic button that toggles
+  PrimeNG's documented `expanded` node state; stop propagation prevents branch
+  selection or duplicate toggling. Empty branches have disabled label buttons.
+  The existing tree arrows and keyboard selection remain available.
+- Updated the adjacent tests and README for immediate commits, persistence after
+  dismissal, Plant switching and removed controls. Added real-template coverage
+  for expanding/collapsing all four branch levels and filtered branch copies
+  without saving a branch. Verified **18 focused ChromeHeadless tests**, including
+  light/dark theme tokens, mobile/desktop layout bounds and cancellation/focus
+  regressions; production build, project lint, normal test TypeScript compilation
+  and `git diff --check` passed. Existing 2.78 MB initial-bundle and four selector
+  warnings remain. Live API integration/manual screenshots were not repeated.
+
+### 2026-10-11 - Remove taxonomy drawer heading and instructions
+
+- Removed the drawer body's "Measurements" heading and single-Unit instruction
+  paragraph at the user's request. Removed the tree's corresponding
+  `aria-describedby` reference so it does not point to a deleted element; retained
+  the tree's accessible name. Kept Metronic spacing between Plant and the selected
+  count. Selection behavior, Reset and session state are unchanged.
+- All **13 existing drawer ChromeHeadless tests** and `git diff --check` passed,
+  including theme and mobile/desktop rendering checks. No new tests were added
+  for this text-only change; production build and manual screenshots were not
+  repeated.
+
+### 2026-10-11 - Restore taxonomy drawer Measurements heading
+
+- Restored the "Measurements" heading above the selected count at the user's
+  request, using its original Metronic classes and spacing. The instruction
+  paragraph remains removed. Verified the focused template edit and
+  `git diff --check`; tests/build were not repeated for this static heading edit.
+
+### 2026-10-11 - Match Plant and Measurements drawer headings
+
+- Presented Plant using the same `h4`, `fs-6`, `fw-bold` and `mb-3` Metronic
+  styling as Measurements, retaining its associated select label. The first
+  section uses the existing card-body padding; Measurements retains the gap
+  after the Plant selector. Verified matching markup and `git diff --check`;
+  tests/build were not repeated for this static typography edit.

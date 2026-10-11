@@ -19,15 +19,16 @@
 </div>
 <!--end::Search-->
 
-<!--begin::Activities-->
-<div class="app-navbar-item" [ngClass]="itemClass">
-  <!--begin::Drawer toggle-->
-  <div [ngClass]="btnClass" id="kt_activities_toggle">
-    <app-keenicon name="messages" class="fs-2"></app-keenicon>
-  </div>
-  <!--end::Drawer toggle-->
+<!--begin::Vibration measurement selection-->
+<div *ngIf="vibrationSelection.active()" class="app-navbar-item" [ngClass]="itemClass">
+  <button type="button" [ngClass]="btnClass" id="kt_asset_taxonomy_toggle"
+    aria-label="Select vibration measurements" aria-controls="kt_asset_taxonomy"
+    [attr.aria-expanded]="vibrationSelection.drawerOpen()" title="Select measurements"
+    (click)="vibrationSelection.open()">
+    <app-keenicon name="data" class="fs-2"></app-keenicon>
+  </button>
 </div>
-<!--end::Activities-->
+<!--end::Vibration measurement selection-->
 
 <!--begin::Notifications-->
 <div class="app-navbar-item" [ngClass]="itemClass">

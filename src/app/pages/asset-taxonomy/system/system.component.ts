@@ -2,8 +2,7 @@ import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, Te
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { MetronicAlertService } from 'src/app/core/services/metronic-alert.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
+import { AssetTaxonomyMutations } from 'src/app/core/utils/asset-taxonomy-mutations';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { AssetSystem, Unit, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
@@ -46,7 +45,7 @@ export class SystemComponent implements OnInit, OnDestroy {
 
   readonly listState = new RequestState();
   readonly employersState = new RequestState();
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly mutations: AssetTaxonomyMutations;
   private activeModal?: NgbModalRef;
 
   get canAdd(): boolean {
@@ -69,7 +68,9 @@ export class SystemComponent implements OnInit, OnDestroy {
     private apiService: AssetApiService,
     private alertService: MetronicAlertService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.mutations = new AssetTaxonomyMutations(this, inject(DestroyRef), alertService, cdr);
+  }
 
   ngOnInit(): void {
     this.table.onConfirmedDelete = (row) => this.deleteSystemConfirmed(row);
@@ -178,42 +179,24 @@ export class SystemComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.saving = true;
     const payload = { name: this.systemForm.name.trim(), unitId };
     const isEdit = !!this.systemForm.id;
-    const request$ = isEdit
+    const request = () => isEdit
       ? this.apiService.updateSystem({ id: this.systemForm.id!, ...payload })
       : this.apiService.createSystem(payload);
 
-    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.saving = false;
-        modal.dismiss('saved');
-        this.alertService.show('success', 'Success!', isEdit ? 'System updated successfully!' : 'System created successfully!');
-        this.loadSystems();
-      },
-      error: (error) => {
-        this.saving = false;
-        this.cdr.detectChanges();
-        this.alertService.show('error', 'Error!', error?.message || 'The request failed.');
-      },
+    this.mutations.save(request, () => {
+      modal.dismiss('saved');
+      this.alertService.show('success', 'Success!', isEdit ? 'System updated successfully!' : 'System created successfully!');
+      this.loadSystems();
     });
   }
 
   private deleteSystemConfirmed(system: AssetSystem): void {
-    if (this.saving || system.id === undefined || !this.table.beginDelete(system)) {
-      return;
-    }
-    this.apiService.deleteSystem(system.id).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      finalize(() => this.table.endDelete(system))
-    ).subscribe({
-      next: () => {
-        this.alertService.show('success', 'Deleted!', 'You have deleted ' + system.name + '!.');
-        this.loadSystems();
-      },
-      error: (error) => this.alertService.show('error', 'Error!', error?.message || 'Unable to delete the system.'),
-    });
+    this.mutations.delete(system, this.table, (id) => this.apiService.deleteSystem(id), () => {
+      this.alertService.show('success', 'Deleted!', 'You have deleted ' + system.name + '!.');
+      this.loadSystems();
+    }, 'Unable to delete the system.');
   }
 
   private emptyForm(): AssetSystem {

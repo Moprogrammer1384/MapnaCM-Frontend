@@ -1,6 +1,6 @@
 # DARP frontend: development context
 
-Last studied: **2026-10-11 (Asia/Tehran)**, focused on taxonomy hierarchy helpers.
+Last studied: **2026-10-11 (Asia/Tehran)**, focused on taxonomy hierarchy and mutation helpers.
 Latest focused maintenance: **2026-10-11**.
 Latest source reviewed: `52233c9` (`Plant type fix`), plus the Tag and Measurement Type UI changes below.
 
@@ -466,6 +466,18 @@ bounds retain the page-number array even when the current page changes.
 Taxonomy forms use `NgForm`, required fields, `saving` guards, ng-bootstrap modal
 templates, Metronic alerts, and refresh after successful mutation. Async updates
 often call `ChangeDetectorRef.detectChanges()` to repaint within the shared layout.
+
+Each taxonomy page composes its own `AssetTaxonomyMutations` helper from
+`core/utils/asset-taxonomy-mutations.ts`, referencing the page's existing `saving`
+flag, DestroyRef, alert service and change detector. `save` takes a request factory
+and page-owned success callback; it marks saving before creating the request and
+clears it before success/error actions. `delete` takes a row/table, numeric-ID
+request factory, success callback and error fallback; it retains the saved-ID and
+saving guards and releases the ID-based deletion lock through `finalize` on
+success, error or cancellation. Pages keep validation/payloads, success messages,
+refresh/dismiss ordering, modal guards and destruction cleanup. State is not shared
+between pages; deletion does not set the saving flag. Plant and Measurement's two
+forms use the same helper/local flag within their page.
 
 All seven taxonomy pages delegate success/error notifications to the stateless
 `MetronicAlertService` in `core/services/metronic-alert.service.ts`, provided in
@@ -1546,3 +1558,35 @@ superseded by the user's later `components/` rename on 2026-10-10.
   project lint, `git diff --check`, absence of stale application imports and
   removal of the old filenames. Production build and browser tests were not
   rerun for this filename-only change; the prior 81 tests cover the extraction.
+
+### 2026-10-11 - Compose shared taxonomy save/delete lifecycles
+
+- Added a 52-line `AssetTaxonomyMutations` helper under `core/utils/` and composed
+  one instance in each of the seven page constructors. Replaced all nine save
+  subscriptions and nine confirmed-delete pipelines. Saving remains a page-local
+  boolean; requests remain lazy factories so the saving/deletion lock is set
+  before invoking the API. No new injectable service or global state was added.
+- Shared cancellation, duplicate/saved-ID guards, save failure repaint/alert and
+  deletion finalizers. Pages retain their explicit validation, payloads, requests,
+  success messages and callbacks. Kept Measurement Type's refresh-before-dismiss
+  ordering and success-only type-filter clearing; Plant Type still dismisses and
+  alerts before refreshing. Modal dismissal guards and destruction cleanup remain.
+- AST comparison against the captured pre-edit source verified 209 untouched
+  members, all nine save validation/payload prefixes and success callbacks, and
+  all nine delete callbacks, endpoint/table associations and error fallbacks.
+  Pages decreased from 1,814 to 1,659 lines, plus 52 helper lines: **103 fewer
+  production source lines**, excluding tests and documentation.
+- Added nine helper tests and 38 real-page mutation regressions covering all
+  nine entities: POST/PUT serialization and zero/null/tag handling, callback order,
+  duplicate submits/deletes, failed-edit value retention and retry, failed-delete
+  unlock/retry, cancellation on destruction, validation and the shared local
+  saving flag across Plant's two forms. API reads are stubbed and writes use the
+  real API service with mocked HTTP; the helper tests also verify page independence
+  and deletion locks across row snapshot replacement.
+- Verified production build with strict templates, project lint, normal test
+  TypeScript compilation, `git diff --check` and **128** focused ChromeHeadless
+  tests (47 new mutation regressions plus 81 existing hierarchy/shared tests).
+  Existing 2.77 MB initial-bundle warning and four CSS selector warnings remain.
+  No templates, styles, models, endpoints, serialization, dependencies or storage
+  changed. Live API integration and manual visual inspection were not performed.
+  Runtime performance gains were not measured; this change reduces duplication.

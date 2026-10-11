@@ -2,8 +2,7 @@ import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, Te
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { MetronicAlertService } from 'src/app/core/services/metronic-alert.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
+import { AssetTaxonomyMutations } from 'src/app/core/utils/asset-taxonomy-mutations';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { Unit, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
@@ -44,7 +43,7 @@ export class UnitComponent implements OnInit, OnDestroy {
 
   readonly listState = new RequestState();
   readonly employersState = new RequestState();
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly mutations: AssetTaxonomyMutations;
   private activeModal?: NgbModalRef;
 
   get canAdd(): boolean {
@@ -67,7 +66,9 @@ export class UnitComponent implements OnInit, OnDestroy {
     private apiService: AssetApiService,
     private alertService: MetronicAlertService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.mutations = new AssetTaxonomyMutations(this, inject(DestroyRef), alertService, cdr);
+  }
 
   ngOnInit(): void {
     this.table.onConfirmedDelete = (row) => this.deleteUnitConfirmed(row);
@@ -165,42 +166,24 @@ export class UnitComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.saving = true;
     const payload = { name: this.unitForm.name.trim(), plantId };
     const isEdit = !!this.unitForm.id;
-    const request$ = isEdit
+    const request = () => isEdit
       ? this.apiService.updateUnit({ id: this.unitForm.id!, ...payload })
       : this.apiService.createUnit(payload);
 
-    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.saving = false;
-        modal.dismiss('saved');
-        this.alertService.show('success', 'Success!', isEdit ? 'Unit updated successfully!' : 'Unit created successfully!');
-        this.loadUnits();
-      },
-      error: (error) => {
-        this.saving = false;
-        this.cdr.detectChanges();
-        this.alertService.show('error', 'Error!', error?.message || 'The request failed.');
-      },
+    this.mutations.save(request, () => {
+      modal.dismiss('saved');
+      this.alertService.show('success', 'Success!', isEdit ? 'Unit updated successfully!' : 'Unit created successfully!');
+      this.loadUnits();
     });
   }
 
   private deleteUnitConfirmed(unit: Unit): void {
-    if (this.saving || unit.id === undefined || !this.table.beginDelete(unit)) {
-      return;
-    }
-    this.apiService.deleteUnit(unit.id).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      finalize(() => this.table.endDelete(unit))
-    ).subscribe({
-      next: () => {
-        this.alertService.show('success', 'Deleted!', 'You have deleted ' + unit.name + '!.');
-        this.loadUnits();
-      },
-      error: (error) => this.alertService.show('error', 'Error!', error?.message || 'Unable to delete the unit.'),
-    });
+    this.mutations.delete(unit, this.table, (id) => this.apiService.deleteUnit(id), () => {
+      this.alertService.show('success', 'Deleted!', 'You have deleted ' + unit.name + '!.');
+      this.loadUnits();
+    }, 'Unable to delete the unit.');
   }
 
   private emptyForm(): Unit {

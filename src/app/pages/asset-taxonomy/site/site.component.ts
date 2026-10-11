@@ -2,8 +2,7 @@ import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, Te
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { MetronicAlertService } from 'src/app/core/services/metronic-alert.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
+import { AssetTaxonomyMutations } from 'src/app/core/utils/asset-taxonomy-mutations';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { Site } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
@@ -38,7 +37,7 @@ export class SiteComponent implements OnInit, OnDestroy {
   saving = false;
 
   readonly listState = new RequestState();
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly mutations: AssetTaxonomyMutations;
   private activeModal?: NgbModalRef;
 
   get canAdd(): boolean {
@@ -60,7 +59,9 @@ export class SiteComponent implements OnInit, OnDestroy {
     private apiService: AssetApiService,
     private alertService: MetronicAlertService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.mutations = new AssetTaxonomyMutations(this, inject(DestroyRef), alertService, cdr);
+  }
 
   ngOnInit(): void {
     this.table.onConfirmedDelete = (row) => this.deleteSiteConfirmed(row);
@@ -126,7 +127,6 @@ export class SiteComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.saving = true;
     const payload = {
       city: this.siteForm.city,
       address: this.siteForm.address,
@@ -136,22 +136,14 @@ export class SiteComponent implements OnInit, OnDestroy {
       elevation,
     };
     const isEdit = !!this.siteForm.id;
-    const request$ = isEdit
+    const request = () => isEdit
       ? this.apiService.updateSite({ id: this.siteForm.id!, ...payload })
       : this.apiService.createSite(payload);
 
-    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.saving = false;
-        modal.dismiss('saved');
-        this.alertService.show('success', 'Success!', isEdit ? 'Site updated successfully!' : 'Site created successfully!');
-        this.loadSites();
-      },
-      error: (error) => {
-        this.saving = false;
-        this.cdr.detectChanges();
-        this.alertService.show('error', 'Error!', error?.message || 'The request failed.');
-      },
+    this.mutations.save(request, () => {
+      modal.dismiss('saved');
+      this.alertService.show('success', 'Success!', isEdit ? 'Site updated successfully!' : 'Site created successfully!');
+      this.loadSites();
     });
   }
 
@@ -162,19 +154,10 @@ export class SiteComponent implements OnInit, OnDestroy {
   }
 
   private deleteSiteConfirmed(site: Site): void {
-    if (this.saving || site.id === undefined || !this.table.beginDelete(site)) {
-      return;
-    }
-    this.apiService.deleteSite(site.id).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      finalize(() => this.table.endDelete(site))
-    ).subscribe({
-      next: () => {
-        this.alertService.show('success', 'Deleted!', 'You have deleted ' + site.city + '!.');
-        this.loadSites();
-      },
-      error: (error) => this.alertService.show('error', 'Error!', error?.message || 'Unable to delete the site.'),
-    });
+    this.mutations.delete(site, this.table, (id) => this.apiService.deleteSite(id), () => {
+      this.alertService.show('success', 'Deleted!', 'You have deleted ' + site.city + '!.');
+      this.loadSites();
+    }, 'Unable to delete the site.');
   }
 
   private emptySiteForm(): Site {

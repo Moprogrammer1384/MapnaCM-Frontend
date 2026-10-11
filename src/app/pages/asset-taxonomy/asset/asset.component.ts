@@ -2,8 +2,7 @@ import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, Te
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { MetronicAlertService } from 'src/app/core/services/metronic-alert.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
+import { AssetTaxonomyMutations } from 'src/app/core/utils/asset-taxonomy-mutations';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { Asset, AssetSystem, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
@@ -49,7 +48,7 @@ export class AssetComponent implements OnInit, OnDestroy {
 
   readonly listState = new RequestState();
   readonly employersState = new RequestState();
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly mutations: AssetTaxonomyMutations;
   private activeModal?: NgbModalRef;
 
   get canAdd(): boolean {
@@ -72,7 +71,9 @@ export class AssetComponent implements OnInit, OnDestroy {
     private apiService: AssetApiService,
     private alertService: MetronicAlertService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.mutations = new AssetTaxonomyMutations(this, inject(DestroyRef), alertService, cdr);
+  }
 
   ngOnInit(): void {
     this.table.onConfirmedDelete = (row) => this.deleteAssetConfirmed(row);
@@ -195,42 +196,24 @@ export class AssetComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.saving = true;
     const payload = { name: this.assetForm.name.trim(), tag: this.assetForm.tag ?? '', systemId };
     const isEdit = !!this.assetForm.id;
-    const request$ = isEdit
+    const request = () => isEdit
       ? this.apiService.updateAsset({ id: this.assetForm.id!, ...payload })
       : this.apiService.createAsset(payload);
 
-    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.saving = false;
-        modal.dismiss('saved');
-        this.alertService.show('success', 'Success!', isEdit ? 'Asset updated successfully!' : 'Asset created successfully!');
-        this.loadAssets();
-      },
-      error: (error) => {
-        this.saving = false;
-        this.cdr.detectChanges();
-        this.alertService.show('error', 'Error!', error?.message || 'The request failed.');
-      },
+    this.mutations.save(request, () => {
+      modal.dismiss('saved');
+      this.alertService.show('success', 'Success!', isEdit ? 'Asset updated successfully!' : 'Asset created successfully!');
+      this.loadAssets();
     });
   }
 
   private deleteAssetConfirmed(asset: Asset): void {
-    if (this.saving || asset.id === undefined || !this.table.beginDelete(asset)) {
-      return;
-    }
-    this.apiService.deleteAsset(asset.id).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      finalize(() => this.table.endDelete(asset))
-    ).subscribe({
-      next: () => {
-        this.alertService.show('success', 'Deleted!', 'You have deleted ' + asset.name + '!.');
-        this.loadAssets();
-      },
-      error: (error) => this.alertService.show('error', 'Error!', error?.message || 'Unable to delete the asset.'),
-    });
+    this.mutations.delete(asset, this.table, (id) => this.apiService.deleteAsset(id), () => {
+      this.alertService.show('success', 'Deleted!', 'You have deleted ' + asset.name + '!.');
+      this.loadAssets();
+    }, 'Unable to delete the asset.');
   }
 
   private emptyForm(): Asset {

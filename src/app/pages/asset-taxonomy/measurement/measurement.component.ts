@@ -2,8 +2,7 @@ import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, Te
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { MetronicAlertService } from 'src/app/core/services/metronic-alert.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
+import { AssetTaxonomyMutations } from 'src/app/core/utils/asset-taxonomy-mutations';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { Measurement, MeasurementType, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
@@ -69,7 +68,7 @@ export class MeasurementComponent implements OnInit, OnDestroy {
   readonly listState = new RequestState();
   readonly employersState = new RequestState();
   readonly typesState = new RequestState();
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly mutations: AssetTaxonomyMutations;
   private activeModal?: NgbModalRef;
 
   get canAdd(): boolean {
@@ -93,7 +92,9 @@ export class MeasurementComponent implements OnInit, OnDestroy {
     private apiService: AssetApiService,
     private alertService: MetronicAlertService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.mutations = new AssetTaxonomyMutations(this, inject(DestroyRef), alertService, cdr);
+  }
 
   ngOnInit(): void {
     this.table.onConfirmedDelete = (row) => this.deleteMeasurementConfirmed(row);
@@ -257,7 +258,6 @@ export class MeasurementComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.saving = true;
     const payload = {
       name: this.measurementForm.name.trim(),
       tag: this.measurementForm.tag ?? '',
@@ -266,38 +266,21 @@ export class MeasurementComponent implements OnInit, OnDestroy {
       componentId,
     };
     const isEdit = !!this.measurementForm.id;
-    const request$ = isEdit
+    const request = () => isEdit
       ? this.apiService.updateMeasurement({ id: this.measurementForm.id!, ...payload })
       : this.apiService.createMeasurement(payload);
-    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.saving = false;
-        modal.dismiss('saved');
-        this.alertService.show('success', 'Success!', isEdit ? 'Measurement updated successfully!' : 'Measurement created successfully!');
-        this.loadMeasurements();
-      },
-      error: (error) => {
-        this.saving = false;
-        this.cdr.detectChanges();
-        this.alertService.show('error', 'Error!', error?.message || 'The request failed.');
-      },
+    this.mutations.save(request, () => {
+      modal.dismiss('saved');
+      this.alertService.show('success', 'Success!', isEdit ? 'Measurement updated successfully!' : 'Measurement created successfully!');
+      this.loadMeasurements();
     });
   }
 
   private deleteMeasurementConfirmed(measurement: Measurement): void {
-    if (this.saving || measurement.id === undefined || !this.table.beginDelete(measurement)) {
-      return;
-    }
-    this.apiService.deleteMeasurement(measurement.id).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      finalize(() => this.table.endDelete(measurement))
-    ).subscribe({
-      next: () => {
-        this.alertService.show('success', 'Deleted!', 'You have deleted ' + measurement.name + '!.');
-        this.loadMeasurements();
-      },
-      error: (error) => this.alertService.show('error', 'Error!', error?.message || 'Unable to delete the measurement.'),
-    });
+    this.mutations.delete(measurement, this.table, (id) => this.apiService.deleteMeasurement(id), () => {
+      this.alertService.show('success', 'Deleted!', 'You have deleted ' + measurement.name + '!.');
+      this.loadMeasurements();
+    }, 'Unable to delete the measurement.');
   }
 
   private emptyForm(): Measurement {
@@ -346,25 +329,16 @@ export class MeasurementComponent implements OnInit, OnDestroy {
       this.alertService.show('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
-    this.saving = true;
     const isEdit = this.typeFormModel.id !== undefined;
     const payload = { name, unit };
-    const request$ = isEdit
+    const request = () => isEdit
       ? this.apiService.updateMeasurementType({ id: this.typeFormModel.id!, ...payload })
       : this.apiService.createMeasurementType(payload);
-    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.saving = false;
-        this.loadTypes();
-        this.loadMeasurements();
-        modal.dismiss('saved');
-        this.alertService.show('success', 'Success!', isEdit ? 'Type updated successfully!' : 'Type created successfully!');
-      },
-      error: (error) => {
-        this.saving = false;
-        this.cdr.detectChanges();
-        this.alertService.show('error', 'Error!', error?.message || 'The request failed.');
-      },
+    this.mutations.save(request, () => {
+      this.loadTypes();
+      this.loadMeasurements();
+      modal.dismiss('saved');
+      this.alertService.show('success', 'Success!', isEdit ? 'Type updated successfully!' : 'Type created successfully!');
     });
   }
 
@@ -373,24 +347,15 @@ export class MeasurementComponent implements OnInit, OnDestroy {
   }
 
   private deleteTypeConfirmed(type: MeasurementType): void {
-    if (this.saving || type.id === undefined || !this.types.beginDelete(type)) {
-      return;
-    }
-    this.apiService.deleteMeasurementType(type.id).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      finalize(() => this.types.endDelete(type))
-    ).subscribe({
-      next: () => {
-        if (this.typeFilter === type.id) {
-          this.filterByType(null);
-        }
-        this.loadTypes();
-        this.loadMeasurements();
-        this.cdr.detectChanges();
-        this.alertService.show('success', 'Deleted!', 'You have deleted ' + type.name + '!.');
-      },
-      // The backend rejects types still used by measurements.
-      error: (error) => this.alertService.show('error', 'Error!', error?.message || 'Unable to delete the measurement type.'),
-    });
+    // The backend rejects types still used by measurements.
+    this.mutations.delete(type, this.types, (id) => this.apiService.deleteMeasurementType(id), () => {
+      if (this.typeFilter === type.id) {
+        this.filterByType(null);
+      }
+      this.loadTypes();
+      this.loadMeasurements();
+      this.cdr.detectChanges();
+      this.alertService.show('success', 'Deleted!', 'You have deleted ' + type.name + '!.');
+    }, 'Unable to delete the measurement type.');
   }
 }

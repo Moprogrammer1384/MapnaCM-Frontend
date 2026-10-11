@@ -2,8 +2,7 @@ import { ChangeDetectorRef, Component, DestroyRef, inject, OnDestroy, OnInit, Te
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { MetronicAlertService } from 'src/app/core/services/metronic-alert.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize } from 'rxjs';
+import { AssetTaxonomyMutations } from 'src/app/core/utils/asset-taxonomy-mutations';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { Plant, PlantType, TaxonomyParentOption, EmployerOption } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
@@ -53,7 +52,7 @@ export class PlantComponent implements OnInit, OnDestroy {
   readonly employersState = new RequestState();
   readonly typesState = new RequestState();
   readonly sitesState = new RequestState();
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly mutations: AssetTaxonomyMutations;
   private activeModal?: NgbModalRef;
 
   get canAdd(): boolean {
@@ -78,7 +77,9 @@ export class PlantComponent implements OnInit, OnDestroy {
     private apiService: AssetApiService,
     private alertService: MetronicAlertService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.mutations = new AssetTaxonomyMutations(this, inject(DestroyRef), alertService, cdr);
+  }
 
   ngOnInit(): void {
     this.plants.onConfirmedDelete = (row) => this.deletePlantConfirmed(row);
@@ -185,7 +186,6 @@ export class PlantComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.saving = true;
     // Employer is optional: a null id clears the assignment.
     const employer = this.employers.find((user) => user.id === this.plantFormModel.employerId);
     const payload = {
@@ -196,22 +196,14 @@ export class PlantComponent implements OnInit, OnDestroy {
       employerName: employer?.name ?? null,
     };
     const isEdit = !!this.plantFormModel.id;
-    const request$ = isEdit
+    const request = () => isEdit
       ? this.apiService.updatePlant({ id: this.plantFormModel.id!, ...payload })
       : this.apiService.createPlant(payload);
 
-    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.saving = false;
-        modal.dismiss('saved');
-        this.alertService.show('success', 'Success!', isEdit ? 'Plant updated successfully!' : 'Plant created successfully!');
-        this.loadPlants();
-      },
-      error: (error) => {
-        this.saving = false;
-        this.cdr.detectChanges();
-        this.alertService.show('error', 'Error!', error?.message || 'The request failed.');
-      },
+    this.mutations.save(request, () => {
+      modal.dismiss('saved');
+      this.alertService.show('success', 'Success!', isEdit ? 'Plant updated successfully!' : 'Plant created successfully!');
+      this.loadPlants();
     });
   }
 
@@ -222,19 +214,10 @@ export class PlantComponent implements OnInit, OnDestroy {
   }
 
   private deletePlantConfirmed(plant: Plant): void {
-    if (this.saving || plant.id === undefined || !this.plants.beginDelete(plant)) {
-      return;
-    }
-    this.apiService.deletePlant(plant.id).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      finalize(() => this.plants.endDelete(plant))
-    ).subscribe({
-      next: () => {
-        this.alertService.show('success', 'Deleted!', 'You have deleted ' + plant.name + '!.');
-        this.loadPlants();
-      },
-      error: (error) => this.alertService.show('error', 'Error!', error?.message || 'Unable to delete the plant.'),
-    });
+    this.mutations.delete(plant, this.plants, (id) => this.apiService.deletePlant(id), () => {
+      this.alertService.show('success', 'Deleted!', 'You have deleted ' + plant.name + '!.');
+      this.loadPlants();
+    }, 'Unable to delete the plant.');
   }
 
   // ---- Type modal -------------------------------------------------------
@@ -265,25 +248,16 @@ export class PlantComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.saving = true;
     const isEdit = !!this.typeFormModel.id;
-    const request$ = isEdit
+    const request = () => isEdit
       ? this.apiService.updatePlantType({ id: this.typeFormModel.id!, name: this.typeFormModel.name.trim() })
       : this.apiService.createPlantType({ name: this.typeFormModel.name.trim() });
 
-    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.saving = false;
-        modal.dismiss('saved');
-        this.alertService.show('success', 'Success!', isEdit ? 'Type updated successfully!' : 'Type created successfully!');
-        this.loadTypes();
-        this.loadPlants();
-      },
-      error: (error) => {
-        this.saving = false;
-        this.cdr.detectChanges();
-        this.alertService.show('error', 'Error!', error?.message || 'The request failed.');
-      },
+    this.mutations.save(request, () => {
+      modal.dismiss('saved');
+      this.alertService.show('success', 'Success!', isEdit ? 'Type updated successfully!' : 'Type created successfully!');
+      this.loadTypes();
+      this.loadPlants();
     });
   }
 
@@ -292,20 +266,11 @@ export class PlantComponent implements OnInit, OnDestroy {
   }
 
   private deleteTypeConfirmed(type: PlantType): void {
-    if (this.saving || type.id === undefined || !this.types.beginDelete(type)) {
-      return;
-    }
-    this.apiService.deletePlantType(type.id).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      finalize(() => this.types.endDelete(type))
-    ).subscribe({
-      next: () => {
-        this.alertService.show('success', 'Deleted!', 'You have deleted ' + type.name + '!.');
-        this.loadTypes();
-        this.loadPlants();
-      },
-      error: (error) => this.alertService.show('error', 'Error!', error?.message || 'Unable to delete the type.'),
-    });
+    this.mutations.delete(type, this.types, (id) => this.apiService.deletePlantType(id), () => {
+      this.alertService.show('success', 'Deleted!', 'You have deleted ' + type.name + '!.');
+      this.loadTypes();
+      this.loadPlants();
+    }, 'Unable to delete the type.');
   }
 
   // ---- Helpers --------------------------------------------------------

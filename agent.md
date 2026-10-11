@@ -137,12 +137,16 @@ Any violation is considered a UI architecture defect.
 **Project name: DARP**, confirmed by the user on 2026-10-10. Use DARP in project
 documentation and application metadata. MapnaCM and MOGSight are earlier names
 still present in historical references and existing repository/backend paths.
-**Text-only branding (2026-10-11):** application product text and browser-title
-suffixes use DARP, including `environment.appThemeName` in both builds. The user
-explicitly requires images to remain unchanged: preserve PNG/SVG/other assets,
-image tags (including alternative text), image sources and the favicon. Technical
-Metronic framework identifiers, paths, vendor URLs and styling-policy references
-retain their actual names.
+**DARP branding (2026-10-11):** application product text and browser-title suffixes
+use DARP, including `environment.appThemeName` in both builds. The user's later
+logo-replacement request supersedes the earlier text-only restriction for product
+logos and the favicon. Active branding uses SVG outlines traced from the supplied
+`DARP digital asset retrofit logo.png`; preserve that emblem and custom lettering,
+including the red details. Dark surfaces use white outlines, compact placements
+use the standalone D emblem, and the sidebar has no slogan. Unrelated images and
+original vendor logo assets are retained. Technical Metronic framework identifiers,
+paths, vendor URLs and styling-policy references retain their actual names.
+Variant mappings and dimensions are documented in `src/assets/media/logos/README.md`.
 DARP is a frontend for a .NET backend (`Global.API`), built by adapting
 Metronic 8 demo1. The npm package name is `darp`, version `8.3.0`; the Angular
 workspace target remains `demo1`. Current dependencies use Angular **18.1**, TypeScript **5.5**,
@@ -1752,3 +1756,40 @@ superseded by the user's later `components/` rename on 2026-10-10.
 - Verified strict Angular compilation and `git diff --check`. Compared image
   markup with HEAD (normalizing Git working-tree line endings) and confirmed
   no image-asset changes. Build/browser tests were not repeated for text edits.
+
+### 2026-10-11 - Replace product logos with the supplied official DARP design
+
+- The user explicitly authorized replacing the earlier product images using
+  their supplied DARP logo, including a standalone D for former M-only placements
+  and white lettering without a slogan wherever the old logo was white. This
+  supersedes the previous image-preservation restriction for these logo placements.
+- Traced the original image's dark/red silhouettes into transparent native SVG
+  paths, preserving the emblem gap, red node/connector, custom DARP lettering and
+  red A triangle. Dark variants share identical paths and change only dark fills
+  to white. Removed slogan text from compact assets; colors are from the supplied
+  brand, not a new UI palette. Original uploaded file and vendor assets are intact.
+- Sidebar wordmarks retain the previous 269x56 intrinsic canvas and `h-25px`;
+  small variants retain 27x18 and the existing `h-20px`/`h-30px` utilities. The
+  login asset reuses the former stacked symbol/wordmark composition and 240x147
+  canvas with `h-75px`. White/red lettering replaces the old login logo.
+- Updated sidebar light/dark/collapsed variants, mobile header, login aside and
+  both splash logo references. Early splash CSS mirrors existing Metronic theme
+  visibility classes so only one D appears before global theme CSS loads. Created
+  transparent D favicon frames at 16/32/48/64px; linked the ICO and provided the
+  same file at `src/favicon.ico`, already included by Angular's asset configuration.
+- Verified production build, project lint, `git diff --check`, SVG XML/asset
+  references, identical geometry between color variants and valid ICO PNG frames.
+  Visually inspected rendered light/dark SVG contact sheets and all favicon sizes.
+  Six temporary ChromeHeadless acceptance tests passed: four desktop checks for
+  real sidebar theme/minimize behavior, original logo dimensions and first-paint
+  splash visibility, plus two mobile checks for a single correctly sized header D
+  and the unchanged hidden login aside. Temporary specs/configuration were removed.
+- Existing 2.78 MB initial-bundle warning and four CSS selector warnings remain.
+  Full authenticated-page screenshots were unavailable because computer-use had
+  no browser surfaces and IAB creation failed. Live API integration was not tested;
+  API contracts/storage/layout scripts and non-logo imagery were unchanged.
+- Imagegen built-in extraction was tried with instructions to preserve exact
+  reference shapes, remove background/slogans and recolor dark parts white.
+  Raster results had edge/alpha defects and were not used in the application;
+  pending unused variants were cancelled. Final assets are native SVG traces of
+  the original reference, with ICO frames rasterized from the D-only SVG.

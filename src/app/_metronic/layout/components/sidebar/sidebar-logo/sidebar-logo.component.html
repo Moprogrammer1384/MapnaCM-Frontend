@@ -1,15 +1,23 @@
 <!--begin::Logo image-->
 <a routerLink="/dashboard">
   <ng-container *ngIf="currentLayoutType === 'dark-sidebar'">
-    <img alt="Logo" src="./assets/media/logos/default-dark.svg" class="h-25px app-sidebar-logo-default" />
+    <img alt="DARP logo" src="./assets/media/logos/darp-dark.svg" class="h-25px app-sidebar-logo-default" />
   </ng-container>
   <ng-container *ngIf="currentLayoutType !== 'dark-sidebar'">
-    <img alt="Logo" src="./assets/media/logos/default.svg" class="h-25px app-sidebar-logo-default theme-light-show" />
-    <img alt="Logo" src="./assets/media/logos/default-dark.svg"
+    <img alt="DARP logo" src="./assets/media/logos/darp.svg" class="h-25px app-sidebar-logo-default theme-light-show" />
+    <img alt="DARP logo" src="./assets/media/logos/darp-dark.svg"
       class="h-25px app-sidebar-logo-default theme-dark-show" />
   </ng-container>
 
-  <img alt="Logo" src="./assets/media/logos/default-small.svg" class="h-20px app-sidebar-logo-minimize" />
+  <ng-container *ngIf="currentLayoutType === 'dark-sidebar'">
+    <img alt="DARP logo" src="./assets/media/logos/darp-small-dark.svg" class="h-20px app-sidebar-logo-minimize" />
+  </ng-container>
+  <ng-container *ngIf="currentLayoutType !== 'dark-sidebar'">
+    <img alt="DARP logo" src="./assets/media/logos/darp-small.svg"
+      class="h-20px app-sidebar-logo-minimize theme-light-show" />
+    <img alt="DARP logo" src="./assets/media/logos/darp-small-dark.svg"
+      class="h-20px app-sidebar-logo-minimize theme-dark-show" />
+  </ng-container>
 </a>
 <!--end::Logo image-->
 

@@ -33,6 +33,19 @@ body {
   height: 30px !important;
 }
 
+/* Match Metronic's theme visibility before the main theme stylesheet loads. */
+.splash-screen .theme-dark-show {
+  display: none !important;
+}
+
+[data-bs-theme="dark"] .splash-screen .theme-light-show {
+  display: none !important;
+}
+
+[data-bs-theme="dark"] .splash-screen .theme-dark-show {
+  display: block !important;
+}
+
 [data-bs-theme="dark"] .splash-screen {
   background-color: #151521;
   color: #92929F;

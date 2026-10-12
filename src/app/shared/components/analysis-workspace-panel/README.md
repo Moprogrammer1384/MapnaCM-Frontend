@@ -6,21 +6,22 @@ folder contains `AnalysisPanelComponent` and its template.
 
 `AnalysisWorkspaceComponent` and `AnalysisPanelComponent` are standalone UI
 components for analysis screens in any module. They use shared `AnalysisTab`,
-`AnalysisDateRange` and `AnalysisDateRangeChange` types from
+`AnalysisDateRange`, `AnalysisTimeRange` and their change-event types from
 `core/models/analysis-panel.model.ts` and do not inject feature services, read
 routes or own storage. A consumer can supply a chart or explicitly enable the
 existing Vibration sample preview.
 
 The workspace accepts `title`, `tabs` and `activeId`. It emits
-`selectMeasurements`, `activeIdChange`, `tabClose` and `dateRangeChange` (containing
-`tabId` and `dateRange`). The consuming module owns tab creation/removal, active-tab
+`selectMeasurements`, `activeIdChange`, `tabClose`, `dateRangeChange` (containing
+`tabId` and `dateRange`) and `timeRangeChange` (containing `tabId` and `timeRange`).
+Each tab supplies its own required date/time ranges. The consuming module owns tab creation/removal, active-tab
 selection and data loading. A projected `ng-template` receives the active
 `AnalysisTab` as its implicit value, allowing each module to render its own chart.
 
 ```html
 <app-analysis-workspace [title]="title" [tabs]="tabs" [activeId]="activeId"
   (selectMeasurements)="openMeasurements()" (activeIdChange)="activeId = $event"
-  (tabClose)="closeTab($event)" (dateRangeChange)="updateDates($event)">
+  (tabClose)="closeTab($event)" (dateRangeChange)="updateDates($event)" (timeRangeChange)="updateTimes($event)">
   <ng-template let-tab>
     <!-- Render this module's chart using tab.selection and tab.dateRange. -->
   </ng-template>
@@ -28,11 +29,11 @@ selection and data loading. A projected `ng-template` receives the active
 ```
 
 `AnalysisPanelComponent` can also be used independently with its required `tab`
-input, optional `chartContent` template input and `dateRangeChange` output.
+input, optional `chartContent` template input and date/time range change outputs.
 
 Alternatively, pass a module-owned `AnalysisWorkspaceState` as `state`. The
 workspace reads its title/tabs/active ID and delegates selection, activation,
-closing and date updates to it. When `state` is supplied, its values take
+closing and date/time updates (`updateDateRange`/`updateTimeRange`) to it. When `state` is supplied, its values take
 precedence over `title`, `tabs` and `activeId`. Outputs are still emitted as action
 notifications; consumers using `state` should not bind them back to the same
 methods. No feature-service provider is required by the workspace itself.
@@ -109,9 +110,20 @@ is dismissed. Values remain local `YYYY-MM-DD` strings, with defaults and
 persistence supplied by the consumer. The component synchronizes external values
 without emitting changes and disposes its one plugin instance on destroy.
 
-The Vibration service retains independent tabs/dates per route in layout memory; Execute
+`../time-range/` uses the same installed Flatpickr runtime and Metronic styles.
+Two time-only selectors beside the dates let users enter hours/minutes or use
+the existing spinners, with 24-hour `HH:mm` values and one-minute increments.
+Buttons and Enter open the labeled dialogs and focus the hour input. Changes
+update only the edited endpoint; closing also commits pending debounced changes.
+External values synchronize silently and both instances are destroyed with the
+panel. The endpoints pair with their corresponding dates, allowing times across
+midnight on a multi-day date range; they are not automatically sorted.
+Metronic grid utilities place time beside dates from 768px, and below on mobile.
+
+The Vibration service retains independent tabs/dates/times per route in layout memory; Execute
 creates a new snapshot and activates it. Reload/logout clears that feature state.
-The synthetic waveform remains independent of the selected dates/measurements.
+New tabs default to `00:00` through `23:59`. The synthetic previews remain independent
+of the selected dates/times/measurements; no API or browser storage is added.
 Other modules can supply their own state and charts without a Vibration provider.
 
 References used:
@@ -119,3 +131,4 @@ References used:
 - [Metronic Flatpickr examples](https://preview.keenthemes.com/metronic8/react/docs/flatpickr)
 - [Flatpickr options](https://flatpickr.js.org/options/)
 - [Flatpickr range calendar](https://flatpickr.js.org/examples/#range-calendar)
+- [Flatpickr 24-hour time picker](https://flatpickr.js.org/examples/#24-hour-time-picker)

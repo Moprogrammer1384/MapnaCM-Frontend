@@ -64,6 +64,28 @@ describe('VibrationSelectionService', () => {
     expect(new VibrationSelectionService().tabs()).toEqual([]);
   });
 
+  it('copies time endpoints independently per tab and restores them after route changes', () => {
+    const state = new VibrationSelectionService();
+    const execution = buildAssetTaxonomyExecution(assetTaxonomyFixture(), { plantId: 0, unitId: 0, measurementIds: [0] })!;
+    state.setRoute('/cm/vibration/time-domain');
+    state.execute(execution);
+    const first = state.activeTab()!;
+    expect(first.timeRange).toEqual({ from: '00:00', to: '23:59' });
+    const range = { from: '08:07', to: '18:43' };
+    state.updateTimeRange(first.id, range);
+    range.from = '09:00';
+    state.execute(execution);
+    expect(state.activeTab()!.timeRange).toEqual({ from: '00:00', to: '23:59' });
+    expect(state.tabs()[0].timeRange).toEqual({ from: '08:07', to: '18:43' });
+    expect(state.tabs()[0].dateRange).toBe(first.dateRange);
+    state.setRoute('/cm/vibration/frequency-domain'); state.execute(execution);
+    state.updateTimeRange(state.activeTabId(), { from: '22:17', to: '05:04' });
+    state.setRoute('/cm/vibration/time-domain'); state.activateTab(first.id);
+    expect(state.activeTab()!.timeRange).toEqual({ from: '08:07', to: '18:43' });
+    state.setRoute('/cm/vibration/frequency-domain');
+    expect(state.activeTab()!.timeRange).toEqual({ from: '22:17', to: '05:04' });
+  });
+
   it('keeps an unrelated active tab and selects a surviving neighbor when closing the active tab', () => {
     const state = new VibrationSelectionService();
     const execution = buildAssetTaxonomyExecution(assetTaxonomyFixture(), { plantId: 0, unitId: 0, measurementIds: [0] })!;

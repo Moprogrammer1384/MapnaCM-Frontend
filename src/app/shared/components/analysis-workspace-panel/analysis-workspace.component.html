@@ -5,7 +5,8 @@
       (activeIdChange)="activateTab($event)" (tabClose)="closeTab($event)">
       <ng-template>
         <app-analysis-panel *ngIf="activeTab as tab" [tab]="tab" [chartContent]="chartContent || (showSampleChart ? sampleChart : undefined)"
-          (dateRangeChange)="updateDateRange({ tabId: tab.id, dateRange: $event })"></app-analysis-panel>
+          (dateRangeChange)="updateDateRange({ tabId: tab.id, dateRange: $event })"
+          (timeRangeChange)="updateTimeRange({ tabId: tab.id, timeRange: $event })"></app-analysis-panel>
       </ng-template>
     </app-closable-tabs>
   } @else {

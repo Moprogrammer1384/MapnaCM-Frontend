@@ -1,0 +1,26 @@
+<div class="row g-3">
+  <div class="col-6">
+    <label [for]="inputId + '_time_from'" class="visually-hidden">From time</label>
+    <div class="input-group input-group-solid flex-nowrap">
+      <span class="input-group-text px-3 fs-7">From</span>
+      <input #fromInput [id]="inputId + '_time_from'" type="text" class="form-control form-control-solid min-w-0 px-3"
+        placeholder="HH:mm" autocomplete="off" aria-haspopup="dialog" dir="ltr"
+        (keydown.enter)="open('from'); $event.preventDefault()">
+      <button type="button" class="btn btn-sm btn-icon btn-light" aria-label="Choose start time" (click)="open('from')">
+        <app-keenicon name="time" class="fs-2"></app-keenicon>
+      </button>
+    </div>
+  </div>
+  <div class="col-6">
+    <label [for]="inputId + '_time_to'" class="visually-hidden">To time</label>
+    <div class="input-group input-group-solid flex-nowrap">
+      <span class="input-group-text px-3 fs-7">To</span>
+      <input #toInput [id]="inputId + '_time_to'" type="text" class="form-control form-control-solid min-w-0 px-3"
+        placeholder="HH:mm" autocomplete="off" aria-haspopup="dialog" dir="ltr"
+        (keydown.enter)="open('to'); $event.preventDefault()">
+      <button type="button" class="btn btn-sm btn-icon btn-light" aria-label="Choose end time" (click)="open('to')">
+        <app-keenicon name="time" class="fs-2"></app-keenicon>
+      </button>
+    </div>
+  </div>
+</div>

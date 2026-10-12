@@ -248,6 +248,7 @@ maintenance entry for focused browser validation.
 | `src/app/shared/components/asset-taxonomy-drawer/` | Standalone Metronic drawer with Select2 Plant selection and PrimeNG Tree measurement selection; currently replaces Activity Drawer on vibration routes |
 | `src/app/shared/components/closable-tabs/` | Reusable PrimeNG Tabs adapter with Metronic visuals, close buttons, keyboard support, scrolling and active-only panel lifecycle |
 | `src/app/shared/components/date-range/` | Single Flatpickr range input/calendar using Metronic's existing styles and local calendar dates; commits only complete ranges |
+| `src/app/shared/components/time-range/` | Two Metronic Flatpickr time-only selectors with 24-hour hour/minute entry and local HH:mm endpoints |
 | `src/app/shared/components/analysis-workspace-panel/` | Shared analysis workspace with nested `analysis-panel/` measurement/date panel; inputs/events or a module-owned state connection, consumer-provided chart templates and opt-in Time Domain sample chart |
 | `src/app/_fake/` | Mixed legacy code: in-memory demo API plus services calling Keenthemes remotely |
 | `src/app/graphify-out/` | Generated graph reports/caches; historical, not application source |
@@ -711,7 +712,7 @@ application `EChartsOption` data to the reusable host.
 
 Vibration routes: overview, time-domain, frequency-domain, bode-analysis,
 rotor-position. All five now render `AnalysisWorkspaceComponent` directly. Each analysis
-tab has a From/To date range and measurement hierarchy details above its sample
+tab has a From/To date range, an adjacent hour/minute time range and measurement hierarchy details above its sample
 charts with tooltip and zoom. Frequency Domain now has a page-specific ideal
 velocity amplitude spectrum; the other pages retain the synthetic 10 Hz + 25 Hz
 time signal over two seconds. Both remain independent of selected measurements/
@@ -821,6 +822,16 @@ its base CSS sits below the already-loaded Metronic plugin customization). One
 input/calendar uses Flatpickr range mode, commits only completed inclusive ranges
 and synchronizes restored tab dates. Dismissing a partial selection restores the
 last committed range. Values remain local YYYY-MM-DD strings.
+As revised on 2026-10-12, `TimeRangeComponent` adds two time-only Flatpickr
+selectors alongside dates from 768px (stacked below on mobile), using existing
+Metronic classes/plugin styles. Required `AnalysisTab.timeRange` holds local
+24-hour HH:mm endpoints, initially 00:00 through 23:59. The panel/workspace
+emit timeRangeChange; `AnalysisWorkspaceState.updateTimeRange` delegates updates
+to the module-owned state. Vibration retains separate copied time values per
+tab/route in layout memory. Both picker instances are disposed on switch/close;
+time endpoints pair with the corresponding dates and are not auto-sorted.
+Sample chart data remains independent of time/date selection; no backend or
+browser storage is introduced.
 As revised on 2026-10-12, the selection heading displays the executed tab's
 `plantLabel` in Site - Plant Type - Plant order. The Unit - System - Asset path
 appears once below, alongside the count and without Component/Measurement lists.
@@ -2168,3 +2179,26 @@ superseded by the user's later `components/` rename on 2026-10-10.
   Time/Frequency Domain ChromeHeadless tests, project lint and git diff --check.
   No custom CSS was added. Production build, manual pointer-hover screenshots
   and live API integration were not repeated for this one-class styling change.
+
+### 2026-10-12 - Add an hour/minute time range beside the date range
+
+- Added reusable `shared/components/time-range/` using the existing Flatpickr
+  time-only mode and Metronic input groups, grid, buttons, icons and plugin styles.
+  From/To dialogs support typing hours/minutes, one-minute spinner increments,
+  24-hour HH:mm values, button/Enter opening and accessible endpoint labels.
+  Closing commits pending time changes; external synchronization stays silent
+  and destruction removes both pickers without late output events.
+- Added typed time-range values/events to the shared panel/workspace and
+  `updateTimeRange` to its module-state interface. Vibration tabs initialize to
+  00:00 through 23:59 and retain independent copied values per tab/route in
+  layout memory. Endpoints pair with the respective dates, including different
+  dates across midnight. Sample charts remain synthetic and independent of these
+  values. No API, dependency, custom styling or persistent storage was added.
+- Verified 24 focused ChromeHeadless tests covering actual hour/minute entry,
+  spinner precision, boundary times, external updates, debounce/cleanup, tab and
+  route restoration, unchanged charts/dates, existing date/Frequency Domain
+  behavior, light/dark Metronic colors and responsive widths 320/768/1280px.
+  All seven workspace presentation tests also passed with desktop content
+  constrained to 960px to account for the application sidebar. Production build,
+  project lint and git diff --check passed; existing 2.80 MB initial-bundle and
+  four CSS selector warnings remain. No live API or manual screenshots were tested.

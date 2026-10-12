@@ -120,7 +120,7 @@ describe('Analysis workspace simplified presentation and date range', () => {
   });
 
   it('commits the range to the correct tab, restores dates on switches and destroys its single calendar on close', async () => {
-    expect(root.querySelectorAll('input').length).toBe(1);
+    expect(root.querySelectorAll('app-date-range input').length).toBe(1);
     const firstId = state.activeTabId();
     const secondId = state.tabs()[1].id;
     const secondRange = state.tabs()[1].dateRange;
@@ -139,6 +139,31 @@ describe('Analysis workspace simplified presentation and date range', () => {
     expect(document.querySelectorAll('.darp-date-calendar').length).toBe(0);
   });
 
+  it('commits times to the active tab and restores both endpoints with popup cleanup on switch/close', async () => {
+    const timePickers = () => Array.from(root.querySelectorAll<HTMLInputElement>('app-time-range input'))
+      .map(input => (input as HTMLInputElement & { _flatpickr: Instance })._flatpickr);
+    const firstId = state.activeTabId();
+    const secondId = state.tabs()[1].id;
+    const initialDates = state.activeTab()!.dateRange;
+    const firstCharts = sections().map(section => getInstanceByDom(section.querySelector<HTMLElement>('[_echarts_instance_]')!)!);
+    timePickers()[0].setDate('08:07', true, 'H:i'); await settle();
+    timePickers()[1].setDate('18:43', true, 'H:i'); await settle();
+    expect(state.activeTab()!.timeRange).toEqual({ from: '08:07', to: '18:43' });
+    expect(state.activeTab()!.dateRange).toBe(initialDates);
+    sections().forEach((section, index) => {
+      expect(getInstanceByDom(section.querySelector<HTMLElement>('[_echarts_instance_]')!)).toBe(firstCharts[index]);
+    });
+    const oldPopups = timePickers().map(time => time.calendarContainer);
+    state.activateTab(secondId); await settle();
+    expect(oldPopups.every(popup => !popup.isConnected)).toBeTrue();
+    expect(timePickers().map(time => time.input.value)).toEqual(['00:00', '23:59']);
+    state.activateTab(firstId); await settle();
+    expect(timePickers().map(time => time.input.value)).toEqual(['08:07', '18:43']);
+    expect(document.querySelectorAll('.darp-time-picker').length).toBe(2);
+    state.closeTab(firstId); state.closeTab(secondId); await settle();
+    expect(document.querySelectorAll('.darp-time-picker').length).toBe(0);
+  });
+
   it('preserves Metronic heading and range calendar colors in light and dark themes', async () => {
     picker().open();
     for (const theme of ['light', 'dark']) {
@@ -155,6 +180,13 @@ describe('Analysis workspace simplified presentation and date range', () => {
       }
       reference.className = 'bg-body';
       expect(getComputedStyle(picker().calendarContainer).backgroundColor).toBe(getComputedStyle(reference).backgroundColor);
+      for (const input of Array.from(root.querySelectorAll<HTMLInputElement>('app-time-range input'))) {
+        const time = (input as HTMLInputElement & { _flatpickr: Instance })._flatpickr;
+        time.open();
+        expect(getComputedStyle(time.calendarContainer).backgroundColor).toBe(getComputedStyle(reference).backgroundColor);
+        expect(getComputedStyle(time.hourElement!).color).toBe(getComputedStyle(time.minuteElement!).color);
+        time.close();
+      }
       reference.className = 'bg-primary';
       expect(getComputedStyle(picker().calendarContainer.querySelector('.flatpickr-day.selected')!).backgroundColor).toBe(getComputedStyle(reference).backgroundColor);
       const buttonReference = document.createElement('button');
@@ -188,7 +220,10 @@ describe('Analysis workspace simplified presentation and date range', () => {
       }
       await Promise.all(loading); target.body.appendChild(workspace);
       for (const width of [320, 768, 1280]) {
-        iframe.width = String(width); await new Promise(resolve => setTimeout(resolve, 100));
+        iframe.width = String(width);
+        // Account for the application sidebar/content padding on desktop.
+        workspace.style.width = width >= 1280 ? '960px' : '100%';
+        await new Promise(resolve => setTimeout(resolve, 100));
         for (const paired of [false, true]) {
           if ((layoutToggle.getAttribute('aria-pressed') === 'true') !== paired) {
             layoutToggle.click(); await settle();
@@ -197,6 +232,13 @@ describe('Analysis workspace simplified presentation and date range', () => {
           expect(workspace.scrollWidth).toBeLessThanOrEqual(width);
           for (const element of Array.from(workspace.querySelectorAll('input, section, canvas'))) {
             expect(element.getBoundingClientRect().right).toBeLessThanOrEqual(width);
+          }
+          const dateSection = workspace.querySelector<HTMLElement>('section[aria-labelledby$="_dates"]')!.getBoundingClientRect();
+          const timeSection = workspace.querySelector<HTMLElement>('section[aria-labelledby$="_times"]')!.getBoundingClientRect();
+          if (width >= 768) { expect(timeSection.top).toBe(dateSection.top); }
+          else { expect(timeSection.top).toBeGreaterThan(dateSection.top); }
+          for (const input of Array.from(workspace.querySelectorAll<HTMLInputElement>('app-time-range input'))) {
+            expect(input.clientWidth).toBeGreaterThanOrEqual(45);
           }
           const chartSections = Array.from(workspace.querySelectorAll<HTMLElement>('section[aria-labelledby*="_chart_"]'));
           const [first, second, third] = chartSections.map(section => section.getBoundingClientRect());
@@ -213,6 +255,6 @@ describe('Analysis workspace simplified presentation and date range', () => {
           });
         }
       }
-    } finally { root.prepend(workspace); iframe.remove(); }
+    } finally { workspace.style.removeProperty('width'); root.prepend(workspace); iframe.remove(); }
   });
 });

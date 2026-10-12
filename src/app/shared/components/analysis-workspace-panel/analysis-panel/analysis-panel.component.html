@@ -1,6 +1,6 @@
 <div class="p-5 p-md-7">
   <div class="row g-7">
-      <section class="col-12 col-xl-8" [attr.aria-labelledby]="tab.id + '_measurements'">
+      <section class="col-12 col-xl-3" [attr.aria-labelledby]="tab.id + '_measurements'">
       <div class="d-flex align-items-center gap-3 mb-5">
         <h3 [id]="tab.id + '_measurements'" class="fs-6 fw-bold text-break mb-0">{{ tab.plantLabel || 'Analysis' }}</h3>
         <span class="badge badge-light-primary">{{ tab.measurements.length }} item(s) </span>
@@ -9,9 +9,13 @@
         <p class="fs-6 fw-semibold text-gray-900 text-break mb-4">{{ first.unit.name }} - {{ first.system.name }} - {{ first.asset.name }}</p>
       }
     </section>
-    <section class="col-12 col-xl-4" [attr.aria-labelledby]="tab.id + '_dates'">
+    <section class="col-12 col-md-6 col-xl-4" [attr.aria-labelledby]="tab.id + '_dates'">
       <h3 [id]="tab.id + '_dates'" class="fs-6 fw-bold mb-5">Date range</h3>
       <app-date-range [inputId]="tab.id" [value]="tab.dateRange" (valueChange)="dateRangeChange.emit($event)"></app-date-range>
+    </section>
+    <section class="col-12 col-md-6 col-xl-5" [attr.aria-labelledby]="tab.id + '_times'">
+      <h3 [id]="tab.id + '_times'" class="fs-6 fw-bold mb-5">Time range</h3>
+      <app-time-range [inputId]="tab.id" [value]="tab.timeRange" (valueChange)="timeRangeChange.emit($event)"></app-time-range>
     </section>
   </div>
 </div>

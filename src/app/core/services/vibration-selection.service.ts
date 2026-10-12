@@ -1,6 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import type { AssetTaxonomyExecution, AssetTaxonomySelection } from '../models/asset-taxonomy-selection.model';
-import { AnalysisDateRange, AnalysisTab } from '../models/analysis-panel.model';
+import { AnalysisDateRange, AnalysisTab, AnalysisTimeRange } from '../models/analysis-panel.model';
 import { VibrationPage, VIBRATION_PAGES } from '../models/vibration-page.model';
 
 interface PageTabs {
@@ -56,6 +56,7 @@ export class VibrationSelectionService {
     const tab: AnalysisTab = {
       ...structuredClone(execution), id: `vibration-${number}`, title: `Analysis ${number}`,
       dateRange: { from: date(from), to: date(today) },
+      timeRange: { from: '00:00', to: '23:59' },
     };
     this.updateWorkspace({ tabs: [...this.tabs(), tab], activeId: tab.id });
     this.drawerOpen.set(false);
@@ -78,6 +79,13 @@ export class VibrationSelectionService {
   updateDateRange(id: string, dateRange: AnalysisDateRange): void {
     this.updateWorkspace({
       tabs: this.tabs().map(tab => tab.id === id ? { ...tab, dateRange: { ...dateRange } } : tab),
+      activeId: this.activeTabId(),
+    });
+  }
+
+  updateTimeRange(id: string, timeRange: AnalysisTimeRange): void {
+    this.updateWorkspace({
+      tabs: this.tabs().map(tab => tab.id === id ? { ...tab, timeRange: { ...timeRange } } : tab),
       activeId: this.activeTabId(),
     });
   }

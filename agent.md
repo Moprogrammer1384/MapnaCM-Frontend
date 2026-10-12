@@ -711,10 +711,11 @@ application `EChartsOption` data to the reusable host.
 
 Vibration routes: overview, time-domain, frequency-domain, bode-analysis,
 rotor-position. All five now render `AnalysisWorkspaceComponent` directly. Each analysis
-tab has a From/To date range and measurement hierarchy details above the existing
-synthetic 10 Hz + 25 Hz velocity signal over two seconds with tooltip and zoom.
-It is labeled Sample data and remains independent of selected measurements/dates;
-no condition-monitoring backend feed or analysis API is connected.
+tab has a From/To date range and measurement hierarchy details above its sample
+charts with tooltip and zoom. Frequency Domain now has a page-specific ideal
+velocity amplitude spectrum; the other pages retain the synthetic 10 Hz + 25 Hz
+time signal over two seconds. Both remain independent of selected measurements/
+dates; no condition-monitoring backend feed or analysis API is connected.
 
 ### Vibration measurement selection (2026-10-11)
 
@@ -788,7 +789,11 @@ tabs and active ID inputs; the workspace delegates selection, activation, closin
 and date changes, while continuing to emit action notifications. Consumers using
 state must not wire those outputs back to the same state methods.
 All five Vibration pages pass their layout-owned `VibrationSelectionService`
-directly and enable `showSampleChart`. The Time Domain sample component/template
+directly and enable `showSampleChart`. Frequency Domain additionally supplies a
+page-owned `measurementChartContent` template to the shared per-Measurement grid;
+its implicit value is the executed Measurement detail, with the active tab as
+`tab`. The whole-tab projected `chartContent` still has highest precedence.
+The default Time Domain sample component/template
 now live in `analysis-workspace-panel/`; the former wrapper folder was deleted. Sample
 rendering defaults to false, and a projected chart template takes precedence.
 Route constants remain in `core/models/vibration-page.model.ts`. Other modules
@@ -821,8 +826,13 @@ As revised on 2026-10-12, the selection heading displays the executed tab's
 appears once below, alongside the count and without Component/Measurement lists.
 All snapshot metadata remains available for integration. Plant labels persist
 independently per tab; consumers without a label receive an Analysis heading.
-One independent Time Domain sample chart appears below per selected Measurement,
-titled with its Component - Measurement names and the Measurement tag when present.
+One independent sample chart appears below per selected Measurement, titled with
+its Component - Measurement names and the Measurement tag when present.
+Frequency Domain uses its dedicated spectrum component/data in that page folder,
+with Frequency (Hz) from 0 to 125 Hz and Amplitude (mm/s peak) axes. Its ideal
+one-sided sample spectrum has 0.5 Hz bins and peaks of 2 mm/s at 10 Hz and 1 mm/s
+at 25 Hz. The other pages retain their existing Time Domain waveform. These
+previews are synthetic and are not FFTs or API results for selected Measurements.
 The hierarchy path, Sample data badge and waveform description are absent above charts. Unique heading
 IDs preserve accessible labels, and each chart has independent zoom state.
 An accessible Metronic icon toggle above the sample charts switches from the
@@ -2125,3 +2135,25 @@ superseded by the user's later `components/` rename on 2026-10-10.
   git diff --check passed, including focus return, themes and responsive drawer
   geometry. Actual pointer-hover screenshots, production build and live API
   integration were not repeated for this focused markup/styling change.
+
+### 2026-10-12 - Dedicated Frequency Domain sample spectrum
+
+- Added a page-specific standalone sample chart and isolated synthetic spectrum
+  data under `pages/cm/vibration/frequency-domain/`. The chart uses Frequency (Hz)
+  from 0 to 125 Hz and nonnegative peak Amplitude (mm/s) with 10 Hz/2 mm/s and
+  25 Hz/1 mm/s peaks matching the existing time signal. The tooltip includes Hz
+  and mm/s peak. No selected Measurement FFT or backend integration is implied.
+- Added the generic optional `measurementChartContent` template input to the
+  shared workspace's existing per-Measurement chart layout. Frequency Domain
+  passes its own chart through this input; headings/tags, date range, one/two
+  columns, single-chart disable behavior and chart lifecycle remain shared.
+  The default time preview and whole-tab projected template precedence remain
+  intact. No custom styling, dependencies, API or browser storage were added.
+- Verified ten ChromeHeadless tests: four page-specific cases covering real
+  ECharts frequency axes/data/tooltip, independent zoom, dates, tab cleanup,
+  Metronic theme tokens and responsive one/two-column geometry at 320/768/1280px,
+  plus six existing Time Domain workspace presentation cases. Stabilized the
+  existing button-color test by flushing initial computed styles before waiting
+  for Metronic's transition, retaining its assertions. Production build, project
+  lint and git diff --check passed. Existing 2.80 MB initial-bundle and four CSS
+  selector warnings remain. No live API validation or manual screenshots ran.

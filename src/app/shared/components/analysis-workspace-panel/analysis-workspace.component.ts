@@ -16,6 +16,7 @@ import { VibrationSampleChartComponent } from './vibration-sample-chart.componen
 export class AnalysisWorkspaceComponent implements OnDestroy {
   @Input() state?: AnalysisWorkspaceState;
   @Input() showSampleChart = false;
+  @Input() measurementChartContent?: TemplateRef<{ $implicit: AnalysisTab['measurements'][number]; tab: AnalysisTab }>;
   @Input() title = 'Analysis';
   @Input() tabs: readonly AnalysisTab[] = [];
   @Input() activeId = '';

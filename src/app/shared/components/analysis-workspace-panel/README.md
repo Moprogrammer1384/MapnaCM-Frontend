@@ -59,6 +59,28 @@ the chart uses full width. The preference lives only in the workspace instance
 and survives tab switches; changing layout preserves chart instances and zoom.
 A consumer-projected chart template always takes precedence over the sample.
 
+To supply a page-specific chart for each Measurement while keeping these shared
+headings and layout controls, pass a `measurementChartContent` template input
+with `showSampleChart` enabled. Its implicit value is the Measurement's executed
+display snapshot, with the active `AnalysisTab` available as `tab`:
+
+```html
+<app-analysis-workspace [state]="state" [showSampleChart]="true"
+  [measurementChartContent]="measurementChart"></app-analysis-workspace>
+<ng-template #measurementChart let-measurement let-tab="tab">
+  <!-- Render one chart using measurement and tab.dateRange. -->
+</ng-template>
+```
+
+Frequency Domain uses this input with its dedicated standalone
+`pages/cm/vibration/frequency-domain/frequency-domain-sample-chart.component.ts`.
+It displays an ideal one-sided velocity peak-amplitude spectrum from 0 to 125 Hz
+in 0.5 Hz bins, with 2 mm/s at 10 Hz and 1 mm/s at 25 Hz, matching the existing
+synthetic time signal. The data is isolated in `frequency-domain-sample.data.ts`;
+it is not an FFT of selected Measurement data. Other Vibration pages continue to
+use the existing Time Domain sample. Both previews use Metronic tokens, the same
+400px ECharts host and its resize/zoom/disposal behavior.
+
 `../closable-tabs/` is the reusable PrimeNG Tabs adapter. The consumer supplies
 `tabs`, `activeId`, `activeIdChange`, `tabClose` and a projected `ng-template` for
 panel content. PrimeNG owns tab roles, IDs, arrow/Home/End keys and scrolling.

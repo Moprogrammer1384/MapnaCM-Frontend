@@ -37,7 +37,12 @@
           <div class="separator mb-7"></div>
         }
         <h3 [id]="tab.id + '_chart_' + item.measurement.id" class="fs-5 fw-bold text-break mb-4">{{ item.component.name }} - {{ item.measurement.name }}@if (item.measurement.tag) {<span class="text-gray-500 fw-normal">{{ ' ' + item.measurement.tag }}</span>}</h3>
-        <app-vibration-sample-chart></app-vibration-sample-chart>
+        @if (measurementChartContent) {
+          <ng-container [ngTemplateOutlet]="measurementChartContent"
+            [ngTemplateOutletContext]="{ $implicit: item, tab: tab }"></ng-container>
+        } @else {
+          <app-vibration-sample-chart></app-vibration-sample-chart>
+        }
       </section>
     }
   </div>

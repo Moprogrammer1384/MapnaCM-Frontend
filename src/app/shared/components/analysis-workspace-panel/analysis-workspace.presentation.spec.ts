@@ -143,7 +143,6 @@ describe('Analysis workspace simplified presentation and date range', () => {
     picker().open();
     for (const theme of ['light', 'dark']) {
       document.documentElement.setAttribute('data-bs-theme', theme); await settle();
-      await new Promise(resolve => setTimeout(resolve, 200));
       const reference = document.createElement('span');
       reference.className = 'fs-5 fw-bold bg-body'; root.appendChild(reference);
       for (const section of sections()) {
@@ -161,6 +160,10 @@ describe('Analysis workspace simplified presentation and date range', () => {
       const buttonReference = document.createElement('button');
       buttonReference.className = layoutButton().className;
       root.appendChild(buttonReference);
+      // Flush initial styles so Metronic's transition starts before waiting for it.
+      getComputedStyle(layoutButton()).backgroundColor;
+      getComputedStyle(buttonReference).backgroundColor;
+      await new Promise(resolve => setTimeout(resolve, 200));
       expect(getComputedStyle(layoutButton()).backgroundColor).toBe(getComputedStyle(buttonReference).backgroundColor);
       expect(getComputedStyle(layoutButton()).color).toBe(getComputedStyle(buttonReference).color);
       buttonReference.remove();

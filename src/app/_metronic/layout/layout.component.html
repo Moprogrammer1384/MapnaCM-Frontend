@@ -53,7 +53,8 @@
 <!-- begin:: Drawers -->
 <app-asset-taxonomy-drawer *ngIf="vibrationSelection.active()"
   [visible]="vibrationSelection.drawerOpen()" [selection]="vibrationSelection.selection()"
-  (selectionSave)="vibrationSelection.save($event)" (closed)="vibrationSelection.drawerOpen.set(false)">
+  (selectionSave)="vibrationSelection.save($event)" (executed)="vibrationSelection.execute($event)"
+  (closed)="vibrationSelection.drawerOpen.set(false)">
 </app-asset-taxonomy-drawer>
 <app-messenger-drawer></app-messenger-drawer>
 <!-- end:: Drawers -->

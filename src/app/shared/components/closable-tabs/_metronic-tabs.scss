@@ -1,0 +1,49 @@
+// PrimeNG's empty preset is in a lower layer. These scoped styles use Metronic's
+// nav-line-tabs spacing, colors and focus tokens, including the scroll controls.
+.darp-closable-tabs {
+  min-width: 0;
+
+  .p-tabs, .p-tablist, .p-tablist-content, .p-tabpanels { min-width: 0; }
+  .p-tablist { display: flex; }
+  .p-tablist-content { flex: 1; }
+  .p-tablist-tab-list {
+    border: 0;
+    border-bottom: $border-width solid var(--#{$prefix}border-color);
+    background: var(--#{$prefix}body-bg);
+  }
+  .p-tab {
+    gap: 0;
+    padding: map-get($spacers, 4) map-get($spacers, 5);
+    margin: 0;
+    border: 0;
+    border-bottom: $border-width solid transparent;
+    background: transparent;
+    color: var(--#{$prefix}gray-600);
+    font-weight: $font-weight-semibold;
+    transition: $transition-link;
+
+    &:hover, &[aria-selected='true'] {
+      color: var(--#{$prefix}primary);
+      border-bottom-color: var(--#{$prefix}primary);
+    }
+    &:focus-visible {
+      outline: $focus-ring-width solid var(--#{$prefix}primary);
+      outline-offset: -$focus-ring-width;
+    }
+  }
+  .p-tabpanels { padding: 0; background: transparent; color: inherit; }
+  .p-tablist-active-bar { display: none; }
+  .p-tablist-nav-button {
+    @extend .w-40px;
+    position: static !important;
+    height: auto;
+    border: 0;
+    padding: map-get($spacers, 2);
+    background: var(--#{$prefix}body-bg);
+    color: var(--#{$prefix}gray-600);
+    box-shadow: none;
+
+    &:hover { color: var(--#{$prefix}primary); background: var(--#{$prefix}primary-light); }
+    &:focus-visible { outline: $focus-ring-width solid var(--#{$prefix}primary); outline-offset: -$focus-ring-width; }
+  }
+}

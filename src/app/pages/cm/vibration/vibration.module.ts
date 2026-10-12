@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
-import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
+import { AnalysisWorkspaceComponent } from 'src/app/shared/components/analysis-workspace-panel/analysis-workspace.component';
 import { VibrationOverviewComponent } from './overview/overview.component';
 import { VibrationTimeDomainComponent } from './time-domain/time-domain.component';
 import { VibrationFrequencyDomainComponent } from './frequency-domain/frequency-domain.component';
@@ -20,7 +20,7 @@ import { VibrationRotorPositionComponent } from './rotor-position/rotor-position
   imports: [
     CommonModule,
     SharedModule,
-    ApacheEchartsComponent,
+    AnalysisWorkspaceComponent,
     RouterModule.forChild([
       {
         path: 'overview',

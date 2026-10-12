@@ -1,0 +1,23 @@
+<div class="p-5 p-md-7">
+  <div class="row g-7">
+      <section class="col-12 col-xl-8" [attr.aria-labelledby]="tab.id + '_measurements'">
+      <div class="d-flex align-items-center gap-3 mb-5">
+        <h3 [id]="tab.id + '_measurements'" class="fs-6 fw-bold text-break mb-0">{{ tab.plantLabel || 'Analysis' }}</h3>
+        <span class="badge badge-light-primary">{{ tab.measurements.length }} item(s) </span>
+      </div>
+      @if (tab.measurements[0]; as first) {
+        <p class="fs-6 fw-semibold text-gray-900 text-break mb-4">{{ first.unit.name }} - {{ first.system.name }} - {{ first.asset.name }}</p>
+      }
+    </section>
+    <section class="col-12 col-xl-4" [attr.aria-labelledby]="tab.id + '_dates'">
+      <h3 [id]="tab.id + '_dates'" class="fs-6 fw-bold mb-5">Date range</h3>
+      <app-date-range [inputId]="tab.id" [value]="tab.dateRange" (valueChange)="dateRangeChange.emit($event)"></app-date-range>
+    </section>
+  </div>
+</div>
+@if (chartContent) {
+  <div class="separator"></div>
+  <div class="p-5 p-md-7">
+    <ng-container [ngTemplateOutlet]="chartContent" [ngTemplateOutletContext]="{ $implicit: tab }"></ng-container>
+  </div>
+}

@@ -10,6 +10,7 @@ NgModule or standalone component.
   [visible]="drawerOpen"
   [selection]="selection"
   (selectionSave)="selection = $event"
+  (executed)="openAnalysis($event)"
   (closed)="drawerOpen = false">
 </app-asset-taxonomy-drawer>
 ```
@@ -31,7 +32,8 @@ measurement IDs. Other features can provide independent values and save handlers
   ancestor links and unsaved records are omitted.
 - PrimeNG's Tree supplies expansion, checkbox selection, search and keyboard
   navigation. Only measurements are selectable, with propagation disabled. The
-  first selection locks other Units; clearing the last selection releases them.
+  first selection locks other Assets, even within the same Unit; clearing the
+  last selection releases them.
   Filtered node copies are included in restriction updates. Clicking a branch
   label toggles its documented `expanded` property without selecting the branch.
 - Each measurement selection/unselection emits `selectionSave` immediately and
@@ -39,12 +41,20 @@ measurement IDs. Other features can provide independent values and save handlers
   Plant clears the previous saved measurements immediately. Close keeps the latest
   value; opening reloads and restores the caller's saved values. Save and Clear
   selection buttons are absent; the footer contains Reset and Execute. Execute
-  is a visual button only for now and has no click action.
+  emits `executed` with an `AssetTaxonomyExecution` and closes the drawer. It is
+  disabled during loading/errors and until at least one measurement is selected.
+  The execution resolves a fresh display snapshot from the loaded hierarchy by
+  IDs: Unit, System, Asset, Component, Measurement, tags, type, unit and sensitivity.
+  Measurement chains do not include joined hierarchy labels. The selected Plant's
+  `hierarchyLabel` is copied separately as `plantLabel` (Site - Plant Type - Plant)
+  for the analysis header, falling back to its name if the label is unavailable.
   Reset emits `null`, clears the plant and measurements and leaves the drawer open.
   Missing/reparented saved records require review; they do not overwrite the saved
   value automatically.
-- `VibrationSelectionService`, provided by `LayoutComponent`, retains only the
-  vibration selection across route changes, including a visit to another feature.
+- `VibrationSelectionService`, provided by `LayoutComponent`, retains the
+  vibration selection and separate analysis tabs per vibration route across
+  navigation, including a visit to another feature. Each Execute opens another
+  tab with copied details and independent dates; see `../analysis-workspace-panel/README.md`.
   Its state ends when the authenticated layout is destroyed (logout/reload).
   Vibration pages may inject it and read `selection()` when integrating real charts.
 
@@ -62,5 +72,7 @@ Uses the documented checkbox binding, templates, selection-propagation flags,
 filter and node-selectable options; no custom tree renderer is implemented.
 Layout/content were adapted from Metronic Activity Drawer and the local
 `Mapna-UIUX/customize/select-plant.html` reference. Its JavaScript's older
-single-Component constraint was replaced with the requested single-Unit rule.
+single-Component constraint was replaced with a single-Unit rule, then narrowed
+to the requested single-Asset rule on 2026-10-12. Multiple Components within
+one Asset remain selectable. Execute rejects cross-Asset selections as well.
 The header and empty-state `data` Keenicon depicts a parent with connected children.

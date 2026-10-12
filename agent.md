@@ -1,7 +1,7 @@
 # DARP frontend: development context
 
 Last studied: **2026-10-11 (Asia/Tehran)**, focused on taxonomy hierarchy and mutation helpers.
-Latest focused maintenance: **2026-10-11**.
+Latest focused maintenance: **2026-10-12**.
 Latest source reviewed: `52233c9` (`Plant type fix`), plus the Tag and Measurement Type UI changes below.
 
 This is the project memory for development with Codex. Read it at the start of
@@ -233,7 +233,7 @@ maintenance entry for focused browser validation.
 | `src/app/pages/user/` | Real MapnaCM user list, add/edit, activity toggle, delete, detail/audit view |
 | `src/app/pages/role/` | Real role list/create; role detail still uses the vendor demo API |
 | `src/app/pages/permission/` | Vendor demo API list/CRUD; detail component has no implementation logic |
-| `src/app/pages/cm/vibration/` | Five routes; Time Domain has a sample chart, other four templates are empty |
+| `src/app/pages/cm/vibration/` | Five routes share a tabbed measurement workspace; Execute opens independent analyses with dates, hierarchy details and the Time Domain sample chart |
 | `src/app/pages/dashboard/`, `builder/` | Metronic demo dashboard and persisted layout builder |
 | `src/app/modules/auth/` | Real login/profile restoration/revocation; registration and forgot-password placeholders |
 | `src/app/modules/account/` | Real profile overview/update/avatar; other settings retain demo behavior |
@@ -246,6 +246,9 @@ maintenance entry for focused browser validation.
 | `src/app/shared/components/form-modal/` | Shared Metronic presentation for nine taxonomy form modals, each serving add/edit; page-owned forms projected into the shell, exported through `SharedModule` |
 | `src/app/shared/components/request-state/` | Cancellable keyed read-state helper and shared Metronic loading/error/retry feedback, exported through `SharedModule` |
 | `src/app/shared/components/asset-taxonomy-drawer/` | Standalone Metronic drawer with Select2 Plant selection and PrimeNG Tree measurement selection; currently replaces Activity Drawer on vibration routes |
+| `src/app/shared/components/closable-tabs/` | Reusable PrimeNG Tabs adapter with Metronic visuals, close buttons, keyboard support, scrolling and active-only panel lifecycle |
+| `src/app/shared/components/date-range/` | Single Flatpickr range input/calendar using Metronic's existing styles and local calendar dates; commits only complete ranges |
+| `src/app/shared/components/analysis-workspace-panel/` | Shared analysis workspace with nested `analysis-panel/` measurement/date panel; inputs/events or a module-owned state connection, consumer-provided chart templates and opt-in Time Domain sample chart |
 | `src/app/_fake/` | Mixed legacy code: in-memory demo API plus services calling Keenthemes remotely |
 | `src/app/graphify-out/` | Generated graph reports/caches; historical, not application source |
 | `src/assets/` | Theme Sass, icons, media/plugins, generated Apache chart scripts/data/vendor files |
@@ -707,9 +710,11 @@ Do not manually rewrite generated wrappers for a new application chart; pass
 application `EChartsOption` data to the reusable host.
 
 Vibration routes: overview, time-domain, frequency-domain, bode-analysis,
-rotor-position. Only Time Domain currently has content: a synthetic 10 Hz + 25 Hz
-velocity signal over two seconds with tooltip and zoom. It is sample data,
-not a connected condition-monitoring backend feed.
+rotor-position. All five now render `AnalysisWorkspaceComponent` directly. Each analysis
+tab has a From/To date range and measurement hierarchy details above the existing
+synthetic 10 Hz + 25 Hz velocity signal over two seconds with tooltip and zoom.
+It is labeled Sample data and remains independent of selected measurements/dates;
+no condition-monitoring backend feed or analysis API is connected.
 
 ### Vibration measurement selection (2026-10-11)
 
@@ -717,7 +722,7 @@ The authenticated layout now mounts `AssetTaxonomyDrawerComponent` instead of th
 demo Activity Drawer on `/cm/vibration` routes, with a measurement selector button
 in the former Activity header position. Other routes do not mount this selector.
 The reusable standalone component lives in `shared/components/asset-taxonomy-drawer/`;
-its `visible`, `selection`, `selectionSave` and `closed` bindings let other features
+its `visible`, `selection`, `selectionSave`, `executed` and `closed` bindings let other features
 own independent values without sharing vibration state. Use a unique, stable
 `drawerId` if another consumer is mounted simultaneously.
 
@@ -736,9 +741,10 @@ Select2 uses the existing directive with the drawer as dropdown parent. The type
 Unit -> System -> Asset -> Component -> Measurement, excluding incomplete chains
 and preserving ID zero. Only Measurement leaves are selectable; PrimeNG Tree owns
 expansion, search and keyboard interactions. Selection propagation is disabled.
-Selecting a leaf disables measurements from other Units, including filtered copies;
-clearing the last leaf releases the lock. Multiple Components within one Unit are
-allowed, replacing the reference page's older single-Component rule.
+As revised on 2026-10-12, selecting a leaf disables measurements from other Assets,
+including Assets in the same Unit and filtered copies. Clearing the last leaf
+releases the lock. Multiple Components within one Asset are allowed; this
+supersedes the earlier single-Unit selection rule.
 
 As revised on 2026-10-11, measurement selection/unselection immediately commits
 IDs and keeps the drawer open. Deselecting the last measurement commits `null`.
@@ -749,9 +755,14 @@ keeps the latest committed selection. Branch labels toggle PrimeNG's `expanded`
 property; branches remain non-selectable. The header uses the hierarchy-shaped
 Metronic `data` icon. Saved missing/reparented records produce a review message
 without automatically changing the saved value during loading/restoration.
-As of 2026-10-12, the footer also shows a Metronic primary Execute button beside
-Reset. It has no click action yet, as requested; selection continues to commit
-immediately.
+As revised later on 2026-10-12, Execute emits an `AssetTaxonomyExecution` containing
+the current IDs and fresh measurement display details, then closes the drawer.
+Execution requires a successful load and at least one selected measurement. The
+`buildAssetTaxonomyExecution` helper validates complete numeric parent chains and
+single-Asset membership and the selected Unit, including ID zero. Measurement details
+omit joined hierarchy labels. The selected Plant's existing Site - Plant Type - Plant
+`hierarchyLabel` is captured separately as the optional execution `plantLabel`,
+falling back to its name when missing. Immediate selection saving remains active.
 Metronic supplies drawer/overlay behavior and visuals; CDK supplies focus trapping,
 with Escape and focus return. Destruction removes the observer, requests, overlay
 and Metronic store entry. The scoped `_metronic-taxonomy-tree.scss` uses Metronic
@@ -759,6 +770,69 @@ tokens and the existing empty PrimeNG preset; no independent theme is introduced
 The installed PrimeNG 18 checkbox highlight/node `styleClass` inconsistencies are
 handled using documented `aria-checked` and our template markers. Vendor source
 files are unchanged. See the component README for usage and official references.
+
+### Vibration analysis tabs (2026-10-12)
+
+The shared UI lives in `shared/components/analysis-workspace-panel/`, with the
+measurement/date component and template in its nested `analysis-panel/` folder,
+at the user's request. `AnalysisWorkspaceComponent` accepts title/tabs/activeId,
+emits selection/tab/date actions, and receives the consumer's chart template.
+`AnalysisPanelComponent` renders the shared measurement/date header and that
+template. Both use `core/models/analysis-panel.model.ts` (`AnalysisTab`,
+`AnalysisDateRange`, `AnalysisDateRangeChange`). The date picker imports the same
+generic model. Neither component injects a Vibration service or reads routes.
+
+As revised later on 2026-10-12, the workspace also accepts a module-owned `state`
+matching `AnalysisWorkspaceState`. State getters override the individual title,
+tabs and active ID inputs; the workspace delegates selection, activation, closing
+and date changes, while continuing to emit action notifications. Consumers using
+state must not wire those outputs back to the same state methods.
+All five Vibration pages pass their layout-owned `VibrationSelectionService`
+directly and enable `showSampleChart`. The Time Domain sample component/template
+now live in `analysis-workspace-panel/`; the former wrapper folder was deleted. Sample
+rendering defaults to false, and a projected chart template takes precedence.
+Route constants remain in `core/models/vibration-page.model.ts`. Other modules
+can still use the shared analysis components with their own state and charts,
+without providing a Vibration service.
+
+`VibrationSelectionService` additionally owns independent tab lists and active IDs
+per vibration route. Every Execute, including repeated identical selections, opens
+a new active tab with copied measurement details and its own local `YYYY-MM-DD`
+date range (initially seven days ago through today). Closing a tab removes its
+state and activates the next/previous surviving tab; closing the last shows the
+empty state. The current workspace has no internal selection button; consumers
+open selection externally. Navigation preserves tabs;
+all state ends with the authenticated layout. No browser persistence is added.
+
+The standalone reusable `ClosableTabsComponent` uses the installed PrimeNG 18 Tabs
+API and a scoped Metronic adapter with the existing empty preset. Native close
+buttons and Delete are supported alongside PrimeNG keyboard navigation and scroll
+controls. Inactive panel content is destroyed, while values remain in the service.
+Charts and the range calendar instance are disposed on close/switch. The sample chart
+mounts after tab projection so ECharts receives real dimensions.
+
+`DateRangeComponent` uses Metronic's Flatpickr integration (runtime 4.6.13 added;
+its base CSS sits below the already-loaded Metronic plugin customization). One
+input/calendar uses Flatpickr range mode, commits only completed inclusive ranges
+and synchronizes restored tab dates. Dismissing a partial selection restores the
+last committed range. Values remain local YYYY-MM-DD strings.
+As revised on 2026-10-12, the selection heading displays the executed tab's
+`plantLabel` in Site - Plant Type - Plant order. The Unit - System - Asset path
+appears once below, alongside the count and without Component/Measurement lists.
+All snapshot metadata remains available for integration. Plant labels persist
+independently per tab; consumers without a label receive an Analysis heading.
+One independent Time Domain sample chart appears below per selected Measurement,
+titled with its Component - Measurement names and the Measurement tag when present.
+The hierarchy path, Sample data badge and waveform description are absent above charts. Unique heading
+IDs preserve accessible labels, and each chart has independent zoom state.
+An accessible Metronic icon toggle above the sample charts switches from the
+default one-chart-per-row layout to two equal columns at 768px and above;
+smaller screens remain single-column. It is disabled for zero/one Measurement.
+The layout preference stays in the workspace instance across tab switches,
+without browser persistence; single-chart tabs always use full width. Layout
+changes retain ECharts instances/zoom and reuse their existing ResizeObserver.
+The charts use Metronic theme tokens; later backend work can connect the saved
+IDs/dates without an invented contract in this change.
 
 ## Porting a static Mapna-UIUX page
 
@@ -1806,3 +1880,234 @@ superseded by the user's later `components/` rename on 2026-10-10.
 - Verified the production build and `git diff --check`. Existing 2.78 MB initial
   bundle and four selector warnings remain. No browser visual inspection was run
   for this focused template change.
+
+### 2026-10-12 - Vibration analysis tabs, date ranges and Execute integration
+
+- Converted all five vibration pages to the shared workspace. The reusable
+  PrimeNG Tabs component includes close buttons, keyboard navigation, scroll
+  controls, focus recovery and active-only panel rendering with Metronic styling.
+- Execute now validates and emits a complete measurement snapshot, creates a new
+  active tab in the current route and closes the drawer. Each tab retains its
+  own selection details and From/To dates; later drawer changes/reset cannot alter
+  earlier tabs. Plant display metadata is excluded. Tabs persist only in the
+  layout's in-memory service and are independent across the five routes.
+- Added the Flatpickr 4.6.13 runtime to use Metronic's existing date picker styles.
+  Linked date controls enforce inclusive bounds, support restoring tab values and
+  clean up calendars on close/switch. Base CSS is layered below Metronic.
+- Reused the original synthetic Time Domain waveform under each tab's header,
+  labeled Sample data and adapted to Metronic theme tokens. Deferred chart mount
+  until the tab is projected to prevent zero-width initialization. Dates/IDs are
+  prepared for future integration; no analysis backend or date filtering of the
+  sample waveform was added.
+- Restored the missing shared `asset-taxonomy-fixture.ts` referenced by the
+  existing drawer/tree specs, and added execution/state/workspace behavior tests.
+- Verified 29 focused ChromeHeadless tests using real PrimeNG Tabs/Tree, Select2,
+  Flatpickr and ECharts. They cover repeated Execute, hierarchy snapshots, stale
+  and cross-Unit rejection, route isolation, date bounds/restoration, close/focus,
+  disposal, light/dark tokens and live responsive rendering at 320/768/1280px.
+  Production build, project lint, test TypeScript and `git diff --check` passed.
+  The existing initial-bundle warning is now 2.80 MB; four existing CSS selector
+  warnings remain. Live authenticated API integration was not exercised.
+
+### 2026-10-12 - Review of vibration-analysis folder responsibilities
+
+- Re-read all three standalone components, their templates, README and six
+  workspace integration test cases, alongside the tab/date adapters, state service
+  and models, to explain the current architecture. Confirmed the workspace
+  coordinates service-owned tabs, the panel presents one tab and emits date
+  changes, and the chart renders the same synthetic preview in all five routes.
+- Tab values persist in layout memory; inactive chart/calendar instances are
+  destroyed and recreated on activation, so chart zoom is not retained as tab
+  state. No implementation changed and no tests/build were rerun for this review;
+  the validation results in the preceding entry remain the latest execution.
+
+### 2026-10-12 - Rename and generalize the shared analysis panel
+
+- Renamed the shared UI folder to `shared/components/analysis-panel/`, with
+  `AnalysisWorkspaceComponent`, `AnalysisPanelComponent` and generic models in
+  `core/models/analysis-panel.model.ts`. Updated imports and component documentation;
+  no source references to the former `vibration-analysis` path remain.
+- The shared workspace receives tabs/title/active ID as inputs and emits selection,
+  close, activation and date actions. Consumer-provided chart templates receive the
+  active tab. It no longer injects Vibration state or hardcodes its sample chart.
+- Moved Vibration's state connection and sample chart to the separate reusable
+  `shared/components/vibration-workspace/` wrapper. All five existing Vibration
+  pages use it; route constants now live in `core/models/vibration-page.model.ts`.
+  No API contracts, browser storage or visual design were changed.
+- Verified 12 ChromeHeadless tests: two independent-consumer tests without feature
+  services, six existing workspace integration tests (including responsive/theme
+  behavior) and four selection-service tests. Project lint and `git diff --check`
+  passed. Production build passed after clearing stale Angular compiler cache
+  with `ng cache clean`; the existing 2.80 MB initial-bundle warning and four CSS
+  selector warnings remain. Live authenticated API integration was not tested.
+
+### 2026-10-12 - Verify vibration-workspace consumers before deletion
+
+- Inspected live routing, `VibrationModule`, all five page templates and the
+  workspace component/template. The folder is actively used: `VibrationModule`
+  imports `VibrationWorkspaceComponent`, and Overview, Time Domain, Frequency
+  Domain, Bode Analysis and Rotor Position render `app-vibration-workspace`.
+  The `cm/vibration` route lazy-loads that module.
+- The wrapper connects `VibrationSelectionService` to the shared analysis
+  workspace and supplies the Vibration sample chart. Retained the folder because
+  the user's deletion request was conditional on it being unused. No application
+  source changed; no build/tests were rerun for this source dependency audit.
+
+### 2026-10-12 - Transfer Vibration workspace connections and delete the wrapper
+
+- The user explicitly requested transferring every wrapper connection to
+  `AnalysisWorkspaceComponent` and deleting the former wrapper folder. All five
+  Vibration pages now import/render the shared workspace directly, passing the
+  existing layout-owned selection service through the generic
+  `AnalysisWorkspaceState` input. The workspace delegates drawer opening, tab
+  activation/closing and date updates; the service still owns session state.
+- Moved the unchanged sample-chart implementation into `analysis-panel/` and
+  transferred its template into the workspace behind explicit `showSampleChart`.
+  Projected charts override the sample, and existing input/output consumers still
+  work without any Vibration provider. Moved the six integration cases beside
+  the shared workspace and removed the old folder and its remaining wrapper files.
+- Verified no source references to the former wrapper path/class/selector remain,
+  and the folder is absent. Production build, project lint, `git diff --check`
+  and all 12 focused ChromeHeadless tests passed (two independent consumers, six
+  workspace/drawer/chart integration cases, four selection-service cases).
+  Browser tests include theme tokens, responsive widths, dates, focus and disposal.
+  The existing 2.80 MB initial-bundle warning and four selector warnings remain.
+  No live authenticated API integration or manual screenshots were performed;
+  API contracts and browser-storage behavior did not change.
+
+### 2026-10-12 - Compact selected measurements and restrict selection to one Asset
+
+- Replaced repeated per-Measurement hierarchy/metadata grids with one shared
+  Unit - System - Asset line and semantic Component groups. Each Component name
+  appears once beside its Measurement names and optional tags, matching the
+  requested `106 - Gas System - SGT 600` / `Bearing1 X vi508` presentation.
+  Metronic utilities provide all visuals; no new CSS or libraries were added.
+  Full display snapshots remain available for later chart/backend integration.
+- Narrowed the drawer restriction from one Unit to one Asset. Tree nodes carry
+  their ancestor Asset ID; multiple Components within that Asset remain allowed.
+  Other Assets, including siblings in the same Unit, are disabled for normal,
+  keyboard and filtered selection. Removing the last Measurement releases the
+  restriction. Restore reconciles older mixed-Asset values without writing during
+  loading; Execute independently rejects mixed-Asset snapshots. Saved selection
+  shape, existing API reads and in-memory storage are unchanged.
+- Updated the existing workspace tests to use an external selection opener,
+  matching the current template's absent internal button. Guarded its remaining
+  optional focus reference to avoid an exception when closing the last tab.
+- Verified 32 focused ChromeHeadless tests, including shared hierarchy appearing
+  once, Component grouping/tab changes, same-Unit Asset restrictions, restoration,
+  keyboard/filter interaction, Metronic light/dark colors, responsive rendering at
+  320/768/1280px, independent consumers, dates, chart disposal and feature state.
+  Production build, project lint and git diff --check passed. Existing 2.80 MB
+  initial-bundle and four CSS selector warnings remain. Live authenticated API
+  integration and manual application screenshots were not performed.
+
+### 2026-10-12 - Nest the analysis panel inside the analysis workspace folder
+
+- Moved the workspace, adjacent specs, sample chart and README into
+  `shared/components/analysis-workspace-panel/`. Its nested `analysis-panel/`
+  folder now contains the panel component and template. Updated the workspace,
+  date-picker and Vibration module imports and current documentation paths.
+  Component names, selectors, templates, styling and runtime behavior are unchanged.
+- Verified all nine existing workspace ChromeHeadless tests, project lint,
+  production build and `git diff --check`. The first build used stale cached
+  page imports; clearing the Angular cache resolved it. Existing 2.80 MB initial
+  bundle and four CSS selector warnings remain. No live API integration or
+  manual visual inspection was performed for this folder-only change.
+
+### 2026-10-12 - Render an individually titled chart for each selected Measurement
+
+- The opt-in workspace sample template now renders one independent ECharts
+  instance for each Measurement in the executed tab snapshot, tracked by its ID.
+  Replaced the static Time domain heading with that Measurement's
+  Unit - System - Asset path. Added Component/Measurement names and optional tags
+  below each heading to distinguish charts within the same Asset. Unique heading
+  IDs and existing Metronic classes provide accessible labels and responsive
+  spacing/separators. The compact selection header remains shared above them.
+- Consumer-projected chart templates retain their existing tab context and
+  precedence. The synthetic sample waveform, Execute/tab/date behavior, API reads
+  and in-memory storage are unchanged; no measurement-specific backend was added.
+- Verified all ten workspace ChromeHeadless tests, including three simultaneous
+  charts, per-selection headings/details, independent zoom, disposal on switch
+  and close, restored selections, light/dark heading colors and responsive layout
+  at 320/768/1280px. Production build, project lint and `git diff --check` passed.
+  Existing 2.80 MB initial-bundle and four CSS selector warnings remain. Live API
+  integration and manual application screenshots were not performed.
+
+### 2026-10-12 - Simplify chart headings and use one date range picker
+
+- Chart headings now display only Component - Measurement names. Removed the
+  repeated Unit/System/Asset path, Sample data badge, optional tag and waveform
+  description above charts. Removed the Component/Measurement groups from the
+  panel header and their unused grouping logic; retained the shared hierarchy
+  summary and selection count. Preserved the user's live header label/order edits.
+- Replaced the two linked Flatpickr controls with one input/calendar using the
+  installed runtime's documented range mode and existing Metronic visuals.
+  Complete ranges emit the same local `{ from, to }` model; reverse selections
+  are sorted by the picker and same-day ranges work. Partial selections do not
+  update tab state and restore the committed range when dismissed. External
+  values synchronize silently; the single calendar is destroyed on tab close/switch.
+- Verified eight focused ChromeHeadless tests for real calendar clicks, partial
+  dismissal, same-day/reverse selection, button/keyboard opening, tab-date
+  persistence, chart disposal, simplified accessible headings, light/dark colors
+  and responsive layout at 320/768/1280px. Production build, project lint and
+  `git diff --check` passed. Existing 2.80 MB initial-bundle and four CSS selector
+  warnings remain. Chart data is still synthetic; no API/storage contracts changed.
+  Live API integration and manual application screenshots were not performed.
+
+### 2026-10-12 - Include Measurement tags in chart headings
+
+- Added the optional Measurement tag after the Component - Measurement title,
+  for example `Bearing 1 - X vi508`. Untagged Measurements retain their existing
+  title without a trailing separator or placeholder. Existing Metronic styling,
+  accessible heading IDs, header summary and single date-range picker are unchanged.
+- Updated the current documentation and existing presentation assertions for both
+  tagged and untagged Measurements. All four focused ChromeHeadless presentation
+  tests, project lint and `git diff --check` passed. Production build and live API
+  validation were not repeated for this focused title change.
+
+### 2026-10-12 - Muted styling for Measurement tags
+
+- Wrapped the optional chart-heading tag in a span using Metronic's
+  `text-gray-500 fw-normal` utilities. Component/Measurement names retain the
+  existing bold heading; tag text remains part of its accessible label.
+- All four focused presentation ChromeHeadless tests and `git diff --check`
+  passed, including computed tag color/weight in light and dark themes and
+  existing mobile/desktop layout checks. No custom CSS was added. Production
+  build, project lint and live API validation were not repeated for this styling change.
+
+### 2026-10-12 - Show Site, Plant Type and Plant in the analysis header
+
+- Replaced Selected Items with the executed Plant's existing `hierarchyLabel`
+  (Site - Plant Type - Plant), already used in its Select2 options. The execution
+  builder captures it as optional `plantLabel` on `AssetTaxonomyExecution`, so
+  the existing service clone retains each tab's original heading independently
+  of later selections/resets. Measurement chains continue resolving solely by IDs.
+- A missing/blank joined label falls back to the Plant name; independent shared
+  consumers without `plantLabel` use Analysis. Added Metronic text wrapping to
+  the heading. No endpoint, API write contract, extra read or browser storage was added.
+- Verified 26 focused ChromeHeadless tests across the drawer, execution builder,
+  state service and workspace: emitted label, both Plants/tab restoration, zero
+  IDs, snapshot independence, missing-label fallback and existing date/chart/theme/
+  responsive behavior. Production build, project lint and `git diff --check`
+  passed. Existing 2.80 MB initial-bundle and four CSS selector warnings remain.
+  Live authenticated API labels and manual screenshots were not tested.
+
+### 2026-10-12 - Toggle between stacked and two-column analysis charts
+
+- Added a Metronic icon button above the shared workspace's sample charts with
+  accessible toggle state and action tooltips. Default layout remains one chart
+  per row; the alternate layout displays two equal-width charts per row from
+  768px upward, with one column on mobile. Zero/one-chart tabs disable the button
+  and keep full width. The preference survives tab switches in workspace memory
+  and resets when that workspace is destroyed; no storage or API change was added.
+- Reused Metronic grid/button/icons and existing ECharts resize behavior without
+  custom CSS or new dependencies. Switching layout preserves chart instances and
+  independent zoom. Consumer-projected chart templates retain their own layout.
+- Verified all six focused ChromeHeadless presentation tests, covering toggle
+  reversal, single-chart disabling, tab switches, retained instances/zoom,
+  light/dark button colors, dates/headings, and actual one/two-column geometry
+  and resized canvases at 320/768/1280px. The theme check waits for Metronic's
+  existing color transition before comparing computed button styles.
+  Production build, project lint and git diff --check passed. Existing 2.80 MB
+  initial-bundle and four CSS selector warnings remain. Live API integration and
+  manual application screenshots were not performed.

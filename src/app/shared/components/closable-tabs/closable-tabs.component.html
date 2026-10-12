@@ -1,0 +1,23 @@
+<p-tabs [value]="activeId" (valueChange)="select($event)" [scrollable]="true" [lazy]="true">
+  <p-tablist>
+    <ng-template pTemplate="previcon"><app-keenicon name="left" class="fs-4"></app-keenicon></ng-template>
+    <ng-template pTemplate="nexticon"><app-keenicon name="right" class="fs-4"></app-keenicon></ng-template>
+    @for (tab of tabs; track tab.id) {
+      <p-tab [value]="tab.id" [attr.aria-label]="tab.title" [attr.data-tab-id]="tab.id" (keydown.delete)="close($event, tab.id)">
+        <span>{{ tab.title }}</span>
+        <button type="button" class="btn btn-sm btn-icon btn-active-light-danger w-25px h-25px ms-3"
+          [attr.aria-label]="'Close ' + tab.title" (click)="close($event, tab.id)" (keydown)="$event.stopPropagation()">
+          <app-keenicon name="cross" class="fs-3"></app-keenicon>
+        </button>
+      </p-tab>
+    }
+  </p-tablist>
+  <p-tabpanels>
+    @for (tab of tabs; track tab.id) {
+      <p-tabpanel [value]="tab.id" [hidden]="activeId !== tab.id">
+        <ng-container *ngIf="activeId === tab.id && content" [ngTemplateOutlet]="content!"
+          [ngTemplateOutletContext]="{ $implicit: tab.id }"></ng-container>
+      </p-tabpanel>
+    }
+  </p-tabpanels>
+</p-tabs>

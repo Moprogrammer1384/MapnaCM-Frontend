@@ -1,0 +1,9 @@
+<label [for]="inputId + '_range'" class="visually-hidden">Date range</label>
+<div class="input-group input-group-solid flex-nowrap">
+  <input #rangeInput [id]="inputId + '_range'" type="text" class="form-control form-control-solid min-w-0"
+    placeholder="Select date range" autocomplete="off" aria-haspopup="dialog"
+    (keydown.enter)="open(); $event.preventDefault()">
+  <button type="button" class="btn btn-icon btn-light" aria-label="Choose date range" (click)="open()">
+    <app-keenicon name="calendar-8" class="fs-2"></app-keenicon>
+  </button>
+</div>

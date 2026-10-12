@@ -7,10 +7,11 @@ import { Tree, TreeModule } from 'primeng/tree';
 import { forkJoin } from 'rxjs';
 import { DrawerComponent, DrawerStore, defaultDrawerOptions } from 'src/app/_metronic/kt/components/_DrawerComponent';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
-import { AssetTaxonomyNode, AssetTaxonomySelection, AssetTaxonomySnapshot, TaxonomyNodeData } from 'src/app/core/models/asset-taxonomy-selection.model';
+import { AssetTaxonomyExecution, AssetTaxonomyNode, AssetTaxonomySelection, AssetTaxonomySnapshot, TaxonomyNodeData } from 'src/app/core/models/asset-taxonomy-selection.model';
 import { TaxonomyParentOption } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { buildParentOptions } from 'src/app/core/utils/asset-taxonomy-hierarchy';
+import { buildAssetTaxonomyExecution } from 'src/app/core/utils/asset-taxonomy-execution';
 import { buildAssetTaxonomyTree, flattenAssetTaxonomyTree } from 'src/app/core/utils/asset-taxonomy-tree';
 import { RequestState } from '../request-state/request-state';
 
@@ -27,6 +28,7 @@ export class AssetTaxonomyDrawerComponent implements AfterViewInit, OnChanges, O
   @Input() selection: AssetTaxonomySelection | null = null;
   @Output() readonly selectionSave = new EventEmitter<AssetTaxonomySelection | null>();
   @Output() readonly closed = new EventEmitter<void>();
+  @Output() readonly executed = new EventEmitter<AssetTaxonomyExecution>();
   @ViewChild('drawerElement', { static: true }) private element: ElementRef<HTMLElement>;
   @ViewChild(Tree) private tree?: Tree;
 
@@ -37,6 +39,7 @@ export class AssetTaxonomyDrawerComponent implements AfterViewInit, OnChanges, O
   nodes: AssetTaxonomyNode[] = [];
   selectedNodes: AssetTaxonomyNode[] = [];
   activeUnitId: number | null = null;
+  activeAssetId: number | null = null;
   status = '';
   private snapshot?: AssetTaxonomySnapshot;
   private drawer?: DrawerComponent;
@@ -118,6 +121,8 @@ export class AssetTaxonomyDrawerComponent implements AfterViewInit, OnChanges, O
     const ids = new Set(saved.measurementIds);
     this.selectedNodes = flattenAssetTaxonomyTree(this.nodes).filter(node =>
       node.data.kind === 'Measurement' && node.data.unitId === saved.unitId && ids.has(node.data.id));
+    const assetId = this.selectedNodes[0]?.data.assetId;
+    this.selectedNodes = this.selectedNodes.filter(node => node.data.assetId === assetId);
     const expandSelected = (nodes: AssetTaxonomyNode[]): boolean => {
       let hasSelection = false;
       for (const node of nodes) {
@@ -128,9 +133,9 @@ export class AssetTaxonomyDrawerComponent implements AfterViewInit, OnChanges, O
       return hasSelection;
     };
     expandSelected(this.nodes);
-    this.applyUnitRestriction();
+    this.applyAssetRestriction();
     if (this.selectedNodes.length !== ids.size) {
-      this.status = 'Some saved measurements are no longer available. Review and update the selection.';
+      this.status = 'Some saved measurements are no longer available or belong to another asset. Review and update the selection.';
     }
   }
 
@@ -142,10 +147,10 @@ export class AssetTaxonomyDrawerComponent implements AfterViewInit, OnChanges, O
     const leaves = flattenAssetTaxonomyTree(this.nodes).filter(node => node.data.kind === 'Measurement');
     const keys = new Set(candidates.map(node => node.key));
     // Validate against the current hierarchy, including filtered-node copies.
-    const unitId = this.activeUnitId ?? leaves.find(node => keys.has(node.key))?.data.unitId ?? null;
-    this.selectedNodes = leaves.filter(node => keys.has(node.key) && node.data.unitId === unitId);
+    const assetId = this.activeAssetId ?? leaves.find(node => keys.has(node.key))?.data.assetId ?? null;
+    this.selectedNodes = leaves.filter(node => keys.has(node.key) && node.data.assetId === assetId);
     this.status = '';
-    this.applyUnitRestriction();
+    this.applyAssetRestriction();
     this.selectionSave.emit(this.activeUnitId === null ? null : {
       plantId: this.plantId, unitId: this.activeUnitId,
       measurementIds: this.selectedNodes.map(node => node.data.id),
@@ -155,15 +160,16 @@ export class AssetTaxonomyDrawerComponent implements AfterViewInit, OnChanges, O
   private clearSelection(): void {
     this.selectedNodes = [];
     this.status = '';
-    this.applyUnitRestriction();
+    this.applyAssetRestriction();
   }
 
-  private applyUnitRestriction(): void {
+  private applyAssetRestriction(): void {
     this.activeUnitId = this.selectedNodes[0]?.data.unitId ?? null;
+    this.activeAssetId = this.selectedNodes[0]?.data.assetId ?? null;
     const update = (nodes: TreeNode<TaxonomyNodeData>[]) => {
       for (const node of nodes) {
         node.selectable = node.data?.kind === 'Measurement' &&
-          (this.activeUnitId === null || node.data.unitId === this.activeUnitId);
+          (this.activeAssetId === null || node.data.assetId === this.activeAssetId);
         update(node.children ?? []);
       }
     };
@@ -174,6 +180,25 @@ export class AssetTaxonomyDrawerComponent implements AfterViewInit, OnChanges, O
   reset(): void {
     this.changePlant(null);
     this.status = 'Selection reset.';
+  }
+
+  get canExecute(): boolean {
+    return this.isOpen() && this.requestState.ready && this.selectedNodes.length > 0;
+  }
+
+  executeSelection(): void {
+    if (!this.canExecute || !this.snapshot || this.plantId === null || this.activeUnitId === null) { return; }
+    const execution = buildAssetTaxonomyExecution(this.snapshot, {
+      plantId: this.plantId, unitId: this.activeUnitId,
+      measurementIds: this.selectedNodes.map(node => node.data.id),
+    });
+    if (!execution) {
+      this.status = 'The selected measurements are no longer available. Reload the hierarchy and select them again.';
+      return;
+    }
+    this.selectionSave.emit(execution.selection);
+    this.executed.emit(execution);
+    this.close();
   }
 
   close(): void {

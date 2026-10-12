@@ -2,11 +2,11 @@ import type { AssetTaxonomyNode, AssetTaxonomySnapshot, TaxonomyNodeKind } from 
 
 type NamedRecord = { id?: number; name: string; tag?: string | null; unit?: string | null };
 
-function createNode(row: NamedRecord & { id: number }, kind: TaxonomyNodeKind, unitId: number): AssetTaxonomyNode {
+function createNode(row: NamedRecord & { id: number }, kind: TaxonomyNodeKind, unitId: number, assetId: number | null = null): AssetTaxonomyNode {
   return {
     key: `${kind}:${row.id}`,
     label: row.name,
-    data: { id: row.id, unitId, kind, tag: row.tag, unit: row.unit },
+    data: { id: row.id, unitId, assetId, kind, tag: row.tag, unit: row.unit },
     children: [],
     selectable: kind === 'Measurement',
     expanded: kind === 'Unit',
@@ -25,7 +25,8 @@ function addLevel<T extends NamedRecord>(
     if (row.id === undefined || !parent || nodes.has(row.id)) {
       continue;
     }
-    const node = createNode({ ...row, id: row.id }, kind, parent.data.unitId);
+    const node = createNode({ ...row, id: row.id }, kind, parent.data.unitId,
+      kind === 'Asset' ? row.id : parent.data.assetId);
     parent.children.push(node);
     nodes.set(row.id, node);
   }

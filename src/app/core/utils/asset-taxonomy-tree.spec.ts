@@ -7,7 +7,7 @@ describe('buildAssetTaxonomyTree', () => {
     expect(nodes.map(node => node.data.id)).toEqual([0, 10]);
     expect(nodes[0].children[0].children[0].children[0].children[0].key).toBe('Measurement:0');
     const leaves = flattenAssetTaxonomyTree(nodes).filter(node => node.selectable);
-    expect(leaves.map(node => [node.data.id, node.data.unitId])).toEqual([[0, 0], [1, 0], [2, 0], [10, 10]]);
+    expect(leaves.map(node => [node.data.id, node.data.unitId, node.data.assetId])).toEqual([[0, 0, 0], [1, 0, 0], [2, 0, 0], [3, 0, 3], [10, 10, 10]]);
     expect(leaves[0].data.unit).toBe('mm/s');
   });
 

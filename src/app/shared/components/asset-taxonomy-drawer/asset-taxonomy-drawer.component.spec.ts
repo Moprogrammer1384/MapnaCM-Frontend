@@ -116,6 +116,22 @@ describe('AssetTaxonomyDrawerComponent with real PrimeNG Tree / Select2 / Metron
     expect(DrawerComponent.getInstance('test_taxonomy_drawer')!.isShown()).toBeTrue();
   });
 
+  it('executes a complete measurement snapshot and closes only after a valid selection', async () => {
+    const execute = spyOn(drawer.executed, 'emit');
+    await open();
+    expect(button('Execute').disabled).toBeTrue();
+    drawer.executeSelection();
+    expect(execute).not.toHaveBeenCalled();
+    await choosePlant(0); await expandAll(); await clickMeasurement('Velocity X');
+    expect(button('Execute').disabled).toBeFalse();
+    button('Execute').click(); await settle();
+    expect(execute).toHaveBeenCalledTimes(1);
+    expect(execute.calls.mostRecent().args[0]!.measurements[0].asset.name).toBe('Asset zero');
+    expect(execute.calls.mostRecent().args[0]!.plantLabel).toBe('Site zero - Gas turbine - First plant');
+    expect(execute.calls.mostRecent().args[0]!.selection).toEqual({ plantId: 0, unitId: 0, measurementIds: [0] });
+    expect(host.open).toBeFalse();
+  });
+
   it('returns focus to the opener after Escape', async () => {
     const trigger = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
     trigger.focus(); trigger.click(); await settle();
@@ -152,18 +168,24 @@ describe('AssetTaxonomyDrawerComponent with real PrimeNG Tree / Select2 / Metron
     expect(host.saved).toEqual({ plantId: 0, unitId: 0, measurementIds: [0] });
   });
 
-  it('selects multiple components in one Unit, blocks the other Unit and releases the lock on last unselect', async () => {
+  it('selects multiple components in one Asset, blocks other Assets including the same Unit and releases the lock on last unselect', async () => {
     await open(); await choosePlant(0); await expandAll();
     await clickMeasurement('Velocity X');
     await clickMeasurement('Displacement X');
     expect(drawer.selectedNodes.map(node => node.data.id)).toEqual([0, 2]);
     expect(host.saved).toEqual({ plantId: 0, unitId: 0, measurementIds: [0, 2] });
     expect(host.open).toBeTrue();
+    expect(drawer.activeAssetId).toBe(0);
+    expect(item('Another asset velocity').querySelector<HTMLInputElement>('input')!.disabled).toBeTrue();
+    await clickMeasurement('Another asset velocity');
+    expect(drawer.selectedNodes.map(node => node.data.id)).toEqual([0, 2]);
     expect(item('Other Unit velocity').querySelector<HTMLInputElement>('input')!.disabled).toBeTrue();
     await clickMeasurement('Other Unit velocity');
     expect(drawer.selectedNodes.map(node => node.data.id)).toEqual([0, 2]);
     await clickMeasurement('Velocity X'); await clickMeasurement('Displacement X');
     expect(drawer.activeUnitId).toBeNull();
+    expect(drawer.activeAssetId).toBeNull();
+    expect(item('Another asset velocity').querySelector<HTMLInputElement>('input')!.disabled).toBeFalse();
     expect(host.saved).toBeNull();
     expect(item('Other Unit velocity').querySelector<HTMLInputElement>('input')!.disabled).toBeFalse();
     await clickMeasurement('Other Unit velocity');
@@ -171,24 +193,24 @@ describe('AssetTaxonomyDrawerComponent with real PrimeNG Tree / Select2 / Metron
     expect(item('Velocity X').querySelector<HTMLInputElement>('input')!.disabled).toBeTrue();
   });
 
-  it('retains the one-Unit rule through keyboard selection and filtering', async () => {
+  it('retains the one-Asset rule through keyboard selection and filtering within the same Unit', async () => {
     await open(); await choosePlant(0); await expandAll();
     item('Velocity X').dispatchEvent(new KeyboardEvent('keydown', { key: ' ', code: 'Space', bubbles: true }));
     await settle();
     expect(drawer.selectedNodes.map(node => node.data.id)).toEqual([0]);
     const filter = root.querySelector<HTMLInputElement>('.p-tree-filter-input')!;
-    filter.value = 'Other Unit velocity'; filter.dispatchEvent(new Event('input', { bubbles: true }));
+    filter.value = 'Another asset velocity'; filter.dispatchEvent(new Event('input', { bubbles: true }));
     await settle();
-    await clickMeasurement('Other Unit velocity');
+    await clickMeasurement('Another asset velocity');
     expect(drawer.selectedNodes.map(node => node.data.id)).toEqual([0]);
     filter.value = ''; filter.dispatchEvent(new Event('input', { bubbles: true }));
     await settle();
     await clickMeasurement('Velocity X');
     expect(host.saved).toBeNull();
-    filter.value = 'Other Unit velocity'; filter.dispatchEvent(new Event('input', { bubbles: true }));
+    filter.value = 'Another asset velocity'; filter.dispatchEvent(new Event('input', { bubbles: true }));
     await settle();
-    await clickMeasurement('Other Unit velocity');
-    expect(drawer.selectedNodes.map(node => node.data.id)).toEqual([10]);
+    await clickMeasurement('Another asset velocity');
+    expect(drawer.selectedNodes.map(node => node.data.id)).toEqual([3]);
   });
 
   it('saves each measurement change immediately, stays open and restores the latest selection after close', async () => {
@@ -226,12 +248,12 @@ describe('AssetTaxonomyDrawerComponent with real PrimeNG Tree / Select2 / Metron
     expect(drawer.selectedNodes).toEqual([]);
   });
 
-  it('reconciles removed or reparented saved measurements and rejects cross-Unit candidates', async () => {
-    host.saved = { plantId: 0, unitId: 0, measurementIds: [0, 10, 999] };
+  it('reconciles removed or reparented saved measurements and rejects cross-Asset candidates', async () => {
+    host.saved = { plantId: 0, unitId: 0, measurementIds: [0, 3, 10, 999] };
     await open();
     expect(drawer.selectedNodes.map(node => node.data.id)).toEqual([0]);
     expect(drawer.status).toContain('no longer available');
-    expect(host.saved?.measurementIds).toEqual([0, 10, 999]);
+    expect(host.saved?.measurementIds).toEqual([0, 3, 10, 999]);
     drawer.selectNodes(flattenAssetTaxonomyTree(drawer.nodes).filter(node => node.data.kind === 'Measurement'));
     expect(drawer.selectedNodes.map(node => node.data.id)).toEqual([0, 1, 2]);
     expect(host.saved?.measurementIds).toEqual([0, 1, 2]);
@@ -242,6 +264,7 @@ describe('AssetTaxonomyDrawerComponent with real PrimeNG Tree / Select2 / Metron
     api.getAllMeasurements.and.returnValue(throwError(() => new Error('Measurements unavailable')));
     await open();
     expect(root.querySelector('[role="alert"]')!.textContent).toContain('Measurements unavailable');
+    expect(button('Execute').disabled).toBeTrue();
     drawer.selectNodes([]);
     expect(host.saved?.measurementIds).toEqual([0]);
     api.getAllMeasurements.and.returnValue(of(assetTaxonomyFixture().measurements));
@@ -257,6 +280,7 @@ describe('AssetTaxonomyDrawerComponent with real PrimeNG Tree / Select2 / Metron
     api.getAllPlants.and.returnValue(plants);
     await open();
     expect(drawer.requestState.loading()).toBeTrue();
+    expect(button('Execute').disabled).toBeTrue();
     const emitted = spyOn(drawer.selectionSave, 'emit');
     drawer.selectNodes([]);
     expect(emitted).not.toHaveBeenCalled();

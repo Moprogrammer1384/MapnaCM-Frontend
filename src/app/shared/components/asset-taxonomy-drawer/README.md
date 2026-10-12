@@ -38,7 +38,8 @@ measurement IDs. Other features can provide independent values and save handlers
   leaves the drawer open. Deselecting the last measurement emits `null`. Changing
   Plant clears the previous saved measurements immediately. Close keeps the latest
   value; opening reloads and restores the caller's saved values. Save and Clear
-  selection buttons are absent; the footer contains Reset only.
+  selection buttons are absent; the footer contains Reset and Execute. Execute
+  is a visual button only for now and has no click action.
   Reset emits `null`, clears the plant and measurements and leaves the drawer open.
   Missing/reparented saved records require review; they do not overwrite the saved
   value automatically.

@@ -71,6 +71,7 @@
     </div>
     <div class="card-footer d-flex align-items-center justify-content-end gap-3 py-5 px-5 px-md-7 flex-shrink-0">
       <button type="button" class="btn btn-light" (click)="reset()" [disabled]="requestState.loading()">Reset</button>
+      <button type="button" class="btn btn-primary" [disabled]="requestState.loading()">Execute</button>
     </div>
   </div>
 </div>

@@ -749,6 +749,9 @@ keeps the latest committed selection. Branch labels toggle PrimeNG's `expanded`
 property; branches remain non-selectable. The header uses the hierarchy-shaped
 Metronic `data` icon. Saved missing/reparented records produce a review message
 without automatically changing the saved value during loading/restoration.
+As of 2026-10-12, the footer also shows a Metronic primary Execute button beside
+Reset. It has no click action yet, as requested; selection continues to commit
+immediately.
 Metronic supplies drawer/overlay behavior and visuals; CDK supplies focus trapping,
 with Escape and focus return. Destruction removes the observer, requests, overlay
 and Metronic store entry. The scoped `_metronic-taxonomy-tree.scss` uses Metronic
@@ -1793,3 +1796,13 @@ superseded by the user's later `components/` rename on 2026-10-10.
   Raster results had edge/alpha defects and were not used in the application;
   pending unused variants were cancelled. Final assets are native SVG traces of
   the original reference, with ICO frames rasterized from the D-only SVG.
+
+### 2026-10-12 - Add Execute button to asset taxonomy drawer
+
+- Added a Metronic primary Execute button beside Reset in the drawer footer. The
+  user specified button-only behavior for now, so it has no click action. It is
+  disabled while the hierarchy loads, matching Reset; measurement changes still
+  save immediately.
+- Verified the production build and `git diff --check`. Existing 2.78 MB initial
+  bundle and four selector warnings remain. No browser visual inspection was run
+  for this focused template change.

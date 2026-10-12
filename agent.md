@@ -2111,3 +2111,17 @@ superseded by the user's later `components/` rename on 2026-10-10.
   Production build, project lint and git diff --check passed. Existing 2.80 MB
   initial-bundle and four CSS selector warnings remain. Live API integration and
   manual application screenshots were not performed.
+
+### 2026-10-12 - Match Measurement drawer close to the New Target reference
+
+- Matched the close control in `Mapna-UIUX/utilities/modals/forms/new-target.html`
+  using `btn btn-sm btn-icon btn-active-color-primary` and the reference's
+  `i.ki-duotone.ki-cross.fs-1` with both icon paths. Preserved the drawer's existing
+  alignment, native button accessibility, initial focus and Angular close action.
+  Metronic's hover/focus rules change icon color to the primary token without
+  adding the former light-primary background. No custom CSS was introduced.
+- Inspected the reference markup/CSS and the app's Metronic button mixin/theme
+  selectors. All 14 existing drawer ChromeHeadless tests, project lint and
+  git diff --check passed, including focus return, themes and responsive drawer
+  geometry. Actual pointer-hover screenshots, production build and live API
+  integration were not repeated for this focused markup/styling change.

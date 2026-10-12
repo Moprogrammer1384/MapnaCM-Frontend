@@ -18,7 +18,7 @@
 </div>
 <ng-template #sampleChart let-tab>
   <div class="d-flex justify-content-end mb-5">
-    <button type="button" class="btn btn-sm btn-icon btn-light-primary"
+    <button type="button" class="btn btn-sm btn-icon btn-active-light"
       aria-label="Two charts per row" [attr.aria-pressed]="twoChartsPerRow"
       [title]="tab.measurements.length <= 1 ? 'At least two charts are required to change layout' : (twoChartsPerRow ? 'Show one chart per row' : 'Show two charts per row')"
       [disabled]="tab.measurements.length <= 1" (click)="toggleChartLayout()">

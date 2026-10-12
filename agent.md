@@ -2157,3 +2157,14 @@ superseded by the user's later `components/` rename on 2026-10-10.
   for Metronic's transition, retaining its assertions. Production build, project
   lint and git diff --check passed. Existing 2.80 MB initial-bundle and four CSS
   selector warnings remain. No live API validation or manual screenshots ran.
+
+### 2026-10-12 - Gray hover for the chart layout toggle
+
+- Preserved the user's plain `btn btn-sm btn-icon` styling and added Metronic's
+  `btn-active-light`, also used by the header controls. Hover/focus now uses the
+  theme's light gray background token; idle state has no permanent tinted fill.
+  Chart layout, disabled behavior and native button accessibility are unchanged.
+- Verified the existing Metronic theme/mixin hover selectors, all ten focused
+  Time/Frequency Domain ChromeHeadless tests, project lint and git diff --check.
+  No custom CSS was added. Production build, manual pointer-hover screenshots
+  and live API integration were not repeated for this one-class styling change.

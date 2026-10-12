@@ -41,8 +41,10 @@ export class ThemeModeService {
       localStorage.setItem(themeModeLSKey, _mode);
     }
 
-    document.documentElement.setAttribute('data-bs-theme', _mode);
-    ThemeModeComponent.init();
+    // Metronic updates colors and theme images in place; repeat selections are harmless.
+    if (document.documentElement.getAttribute('data-bs-theme') !== _mode) {
+      ThemeModeComponent.setMode(_mode, this.menuMode.value);
+    }
   }
 
   public updateMenuMode(_menuMode: ThemeModeType) {
@@ -53,15 +55,13 @@ export class ThemeModeService {
   }
 
   public init() {
-    this.updateMode(this.mode.value);
+    ThemeModeComponent.init();
     this.updateMenuMode(this.menuMode.value);
+    this.updateMode(this.mode.value);
   }
 
   public switchMode(_mode: ThemeModeType) {
-    if (localStorage) {
-      localStorage.setItem(themeModeLSKey, _mode);
-      localStorage.setItem(themeMenuModeLSKey, _mode);
-    }
-    document.location.reload()
+    this.updateMenuMode(_mode);
+    this.updateMode(_mode);
   }
 }

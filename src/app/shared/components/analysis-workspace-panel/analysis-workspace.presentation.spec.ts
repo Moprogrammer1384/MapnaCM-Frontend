@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { getInstanceByDom } from 'echarts';
 import type { Instance } from 'flatpickr/dist/types/instance';
+import { ThemeModeService } from 'src/app/_metronic/partials/layout/theme-mode-switcher/theme-mode.service';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
 import { buildAssetTaxonomyExecution } from 'src/app/core/utils/asset-taxonomy-execution';
 import { assetTaxonomyFixture } from '../asset-taxonomy-drawer/testing/asset-taxonomy-fixture';
@@ -162,6 +163,41 @@ describe('Analysis workspace simplified presentation and date range', () => {
     expect(document.querySelectorAll('.darp-time-picker').length).toBe(2);
     state.closeTab(firstId); state.closeTab(secondId); await settle();
     expect(document.querySelectorAll('.darp-time-picker').length).toBe(0);
+  });
+
+  it('retains analysis tabs, ranges, selection, layout and chart zoom when the theme changes in place', async () => {
+    const service = TestBed.inject(ThemeModeService);
+    const storageKeys = ['kt_theme_mode_value', 'kt_theme_mode_menu', 'kt_true_theme_mode_value', 'kt_true_theme_mode_menu'];
+    const savedModes = storageKeys.map(key => localStorage.getItem(key));
+    try {
+      service.init(); await settle();
+      state.save({ plantId: 0, unitId: 0, measurementIds: [0, 1, 2] });
+      state.updateTimeRange(state.activeTabId(), { from: '08:07', to: '18:43' });
+      layoutButton().click(); await settle();
+      const tabId = state.activeTabId(); const tabs = state.tabs(); const selection = state.selection();
+      const datePicker = picker();
+      const instances = sections().map(section => getInstanceByDom(section.querySelector<HTMLElement>('[_echarts_instance_]')!)!);
+      instances[0].dispatchAction({ type: 'dataZoom', start: 20, end: 60 });
+      for (const theme of ['dark', 'light'] as const) {
+        service.switchMode(theme); await settle();
+        expect(document.documentElement.getAttribute('data-bs-theme')).toBe(theme);
+        expect(state.tabs()).toBe(tabs); expect(state.activeTabId()).toBe(tabId);
+        expect(state.selection()).toBe(selection);
+        expect(state.activeTab()!.timeRange).toEqual({ from: '08:07', to: '18:43' });
+        expect(state.activeTab()!.dateRange).toEqual({ from: '2026-10-01', to: '2026-10-12' });
+        expect(picker()).toBe(datePicker);
+        expect(layoutButton().getAttribute('aria-pressed')).toBe('true');
+        sections().forEach((section, index) => {
+          expect(getInstanceByDom(section.querySelector<HTMLElement>('[_echarts_instance_]')!)).toBe(instances[index]);
+        });
+        expect((instances[0].getOption()['dataZoom'] as Array<{ start: number; end: number }>)[0]).toEqual(jasmine.objectContaining({ start: 20, end: 60 }));
+      }
+    } finally {
+      storageKeys.forEach((key, index) => {
+        if (savedModes[index] === null) { localStorage.removeItem(key); }
+        else { localStorage.setItem(key, savedModes[index]!); }
+      });
+    }
   });
 
   it('preserves Metronic heading and range calendar colors in light and dark themes', async () => {

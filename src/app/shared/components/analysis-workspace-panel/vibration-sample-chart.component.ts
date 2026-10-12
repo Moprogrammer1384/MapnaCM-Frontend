@@ -7,7 +7,7 @@ import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widge
   selector: 'app-vibration-sample-chart',
   standalone: true,
   imports: [ApacheEchartsComponent],
-  template: `@if (ready()) { <app-apache-echarts [options]="chartOptions" height="400px"></app-apache-echarts> }`,
+  template: `@if (ready()) { <app-apache-echarts [options]="chartOptions" [mergeOptions]="true" height="400px"></app-apache-echarts> }`,
   host: { class: 'd-block mw-100' },
 })
 export class VibrationSampleChartComponent implements OnInit, AfterViewInit, OnDestroy {

@@ -8,7 +8,7 @@ import { createFrequencyDomainSampleData } from './frequency-domain-sample.data'
   selector: 'app-frequency-domain-sample-chart',
   standalone: true,
   imports: [ApacheEchartsComponent],
-  template: `@if (ready()) { <app-apache-echarts [options]="chartOptions" height="400px"></app-apache-echarts> }`,
+  template: `@if (ready()) { <app-apache-echarts [options]="chartOptions" [mergeOptions]="true" height="400px"></app-apache-echarts> }`,
   host: { class: 'd-block mw-100' },
 })
 export class FrequencyDomainSampleChartComponent implements OnInit, AfterViewInit, OnDestroy {

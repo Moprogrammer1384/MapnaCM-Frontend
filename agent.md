@@ -681,7 +681,12 @@ mixins for pagination, form/select, dropdown and focus styling. Theme colors tra
 `data-bs-theme`. The default PrimeNG accessibility translations are retained.
 
 Theme mode uses `data-bs-theme` and storage keys `kt_theme_mode_value` and
-`kt_theme_mode_menu`. Layout config uses versioned `layoutConfig` and
+`kt_theme_mode_menu`. As fixed on 2026-10-12, the existing ThemeModeService
+initializes the Metronic theme helper once at application startup and applies
+Light/Dark selections in place via its setMode API. Angular mode/menu observables
+and the same saved preference update immediately; no page reload/navigation or
+layout reconstruction occurs. Selecting the current mode again does not flip
+theme images a second time. Layout config uses versioned `layoutConfig` and
 `baseLayoutType` keys. Translations use ngx-translate with en/ch/es/jp/de/fr vocabularies;
 selected language uses `language`. Many custom page labels are currently English.
 
@@ -854,6 +859,9 @@ without browser persistence; single-chart tabs always use full width. Layout
 changes retain ECharts instances/zoom and reuse their existing ResizeObserver.
 The charts use Metronic theme tokens; later backend work can connect the saved
 IDs/dates without an invented contract in this change.
+Time/Frequency sample previews opt into `ApacheEchartsComponent.mergeOptions`
+to merge visual theme updates and retain zoom. The default remains false so
+other consumers retain replacement behavior on option changes.
 
 ## Porting a static Mapna-UIUX page
 
@@ -2202,3 +2210,28 @@ superseded by the user's later `components/` rename on 2026-10-10.
   constrained to 960px to account for the application sidebar. Production build,
   project lint and git diff --check passed; existing 2.80 MB initial-bundle and
   four CSS selector warnings remain. No live API or manual screenshots were tested.
+
+### 2026-10-12 - Switch Light/Dark without reloading or losing analysis state
+
+- Removed the direct document reload from the existing ThemeModeService's
+  switchMode. It now updates the Angular mode/menu streams and established
+  preference keys, then uses Metronic's setMode to change the live document.
+  The helper initializes at startup instead of reinitializing for every choice;
+  selecting the current mode again does not overwrite the light image variant.
+  Verified switching both ways after the layout adds its data-kt-name attribute.
+- Theme-color updates also exposed a separate sample-chart zoom reset. Added
+  opt-in mergeOptions to the custom ApacheEchartsComponent wrapper and enabled
+  it only for the Time/Frequency previews. Their theme updates merge options,
+  retaining each chart instance and zoom. Other consumers and initialization
+  retain the existing replacement behavior. Vendor sources, visual styles,
+  layout configuration, analysis data, APIs and storage contracts are unchanged.
+- Verified 24 ChromeHeadless cases: four real menu-click regressions for live
+  colors/icons/menu, unchanged document/URL and unsaved input, saved preference,
+  layout naming and repeat-selection images; eight Time Domain workspace and
+  four Frequency Domain cases including tabs, selections, dates/times, layout,
+  chart identity/zoom, Metronic theme colors and responsive geometry; and eight
+  Apache wrapper cases including merge/replacement semantics and five generated
+  example smoke tests. Example smoke tests logged disposed-instance warnings but
+  passed. Production build, project lint and git diff --check passed. Existing
+  2.80 MB initial-bundle and four CSS selector warnings remain. No authenticated
+  live API or manual application screenshots were tested.

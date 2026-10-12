@@ -82,6 +82,8 @@ export class ApacheEchartsComponent
   private chartElement!: ElementRef<HTMLDivElement>;
 
   @Input() options: EChartsOption | null = null;
+  /** Merge incremental visual updates without resetting chart interaction state. */
+  @Input() mergeOptions = false;
   @Input() demoId: string | null = null;
   @Input() initializer: ApacheEchartsInitializer | null = null;
   @Input() renderer: ApacheEchartsRenderer = 'canvas';
@@ -134,7 +136,7 @@ export class ApacheEchartsComponent
     }
 
     if (changes['options'] && this.chart && this.options) {
-      this.chart.setOption(this.options, true);
+      this.chart.setOption(this.options, !this.mergeOptions);
     }
   }
 

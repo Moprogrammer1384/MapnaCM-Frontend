@@ -9,6 +9,12 @@ custom `initializer`, or a generated `demoId`:
 <app-apache-echarts demoId="bar-simple" renderer="svg" />
 ```
 
+Option changes replace the existing configuration by default. For incremental
+visual changes to a stable chart (such as light/dark colors), set
+`[mergeOptions]="true"` to merge updates and retain zoom/interaction state.
+The Time/Frequency Domain previews use this mode; initialization and other
+consumers keep the existing replacement behavior.
+
 The `/crafted/widgets/apache-charts` gallery exposes 370 examples. Its
 cards use `IntersectionObserver`, so chart code and data are fetched only when
 a card approaches the viewport. Search and category filters operate on the

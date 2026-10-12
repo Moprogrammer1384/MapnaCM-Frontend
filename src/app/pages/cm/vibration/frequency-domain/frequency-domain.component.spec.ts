@@ -98,11 +98,14 @@ describe('Frequency Domain page with its dedicated sample spectrum', () => {
 
   it('uses live Metronic tokens for the frequency curve, axes and tooltip in light and dark themes', async () => {
     const instances = charts();
+    instances[0].dispatchAction({ type: 'dataZoom', start: 5, end: 40 });
     for (const theme of ['light', 'dark']) {
       document.documentElement.setAttribute('data-bs-theme', theme); await settle();
       const styles = getComputedStyle(document.documentElement);
       const token = (name: string) => styles.getPropertyValue(`--bs-${name}`).trim();
       expect(charts()).toEqual(instances);
+      expect((charts()[0].getOption()['dataZoom'] as Array<{ start: number; end: number }>)[0])
+        .toEqual(jasmine.objectContaining({ start: 5, end: 40 }));
       for (const chart of charts()) {
         const options = chart.getOption();
         expect((options['color'] as string[])[0]).toBe(token('primary'));

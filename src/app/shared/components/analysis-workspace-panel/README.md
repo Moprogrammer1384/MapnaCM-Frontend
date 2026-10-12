@@ -58,6 +58,8 @@ default) and two equal columns at widths of 768px and above. Smaller screens
 remain single-column. With zero or one Measurement, the button is disabled and
 the chart uses full width. The preference lives only in the workspace instance
 and survives tab switches; changing layout preserves chart instances and zoom.
+Theme changes apply in place and also retain the active tab, ranges, chart
+instances and zoom; both sample previews opt into merged ECharts option updates.
 A consumer-projected chart template always takes precedence over the sample.
 
 To supply a page-specific chart for each Measurement while keeping these shared

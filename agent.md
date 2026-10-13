@@ -854,8 +854,14 @@ IDs preserve accessible labels, and each chart has independent zoom state.
 An accessible Metronic icon toggle above the sample charts switches from the
 default one-chart-per-row layout to two equal columns at 768px and above;
 smaller screens remain single-column. It is disabled for zero/one Measurement.
-The layout preference stays in the workspace instance across tab switches,
-without browser persistence; single-chart tabs always use full width. Layout
+As requested on 2026-10-12, the layout preference is now shared by the root-provided
+`core/services/chart-layout-preference.service.ts`. It saves 1/2 columns in the
+browser under `darp.chart-layout-columns`, surviving navigation, workspace
+destruction and browser/application restarts and applying across all five analysis
+pages. Missing/invalid values default to one column; unavailable storage retains
+the shared in-memory choice. Single-chart tabs always use full width without
+overwriting the saved choice. Tabs, selection and dates/times remain in layout
+memory; no measurement data is persisted by this preference. Layout
 changes retain ECharts instances/zoom and reuse their existing ResizeObserver.
 The charts use Metronic theme tokens; later backend work can connect the saved
 IDs/dates without an invented contract in this change.
@@ -2235,3 +2241,28 @@ superseded by the user's later `components/` rename on 2026-10-10.
   passed. Production build, project lint and git diff --check passed. Existing
   2.80 MB initial-bundle and four CSS selector warnings remain. No authenticated
   live API or manual application screenshots were tested.
+
+### 2026-10-12 - Persist one/two-column chart layout across all analysis pages
+
+- Replaced the workspace-local layout boolean with the root-provided
+  `core/services/chart-layout-preference.service.ts`. Its readonly signal shares
+  one choice across analysis workspaces, and explicit user toggles save `1`/`2`
+  under `darp.chart-layout-columns` in localStorage. New application sessions
+  restore this browser preference; missing/unsupported values default to one
+  column. Blocked reads/writes fall back to the shared in-memory choice without
+  preventing page use. This persistence is explicitly requested by the user and
+  supersedes the earlier workspace-only/no-persistence layout decision.
+- Single-chart/empty tabs still use full width and disable the toggle without
+  overwriting the preference. Mobile remains one column through the existing
+  Metronic grid breakpoint. All five Vibration pages consume the same setting;
+  charts/zoom, per-route tabs, selections and date/time state are otherwise
+  unchanged. No API, backend, custom styling or measurement persistence was added.
+- Verified 18 ChromeHeadless tests: four preference cases including reload-style
+  new-service restoration, invalid values and storage failures; two real Angular
+  router cases traversing all five pages, leaving/returning, reversing the saved
+  choice, restoring a saved two-column initial load and retaining it through a
+  single-chart tab; plus 12 existing Time/Frequency Domain cases for chart/zoom,
+  dates/times, theme switching, light/dark colors and responsive geometry.
+  Production build, project lint and git diff --check passed. Existing 2.80 MB
+  initial-bundle and four CSS selector warnings remain. No authenticated live
+  API or manual application screenshots were tested.

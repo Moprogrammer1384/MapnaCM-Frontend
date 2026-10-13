@@ -56,8 +56,14 @@ Each chart has its own heading ID and zoom state; all inactive charts are dispos
 An icon button above the sample charts toggles between one chart per row (the
 default) and two equal columns at widths of 768px and above. Smaller screens
 remain single-column. With zero or one Measurement, the button is disabled and
-the chart uses full width. The preference lives only in the workspace instance
-and survives tab switches; changing layout preserves chart instances and zoom.
+the chart uses full width without changing the saved choice. The root-provided
+`core/services/chart-layout-preference.service.ts` shares the preference across
+all analysis workspaces and saves `1` or `2` in localStorage under
+`darp.chart-layout-columns`. It survives navigation, workspace destruction and
+application/browser restarts on the same browser. A missing/invalid preference
+defaults to one column; blocked storage falls back to shared in-memory state.
+Changing layout preserves chart instances and zoom. This browser preference is
+separate from the route-owned tabs/measurement/date/time state, which stays in memory.
 Theme changes apply in place and also retain the active tab, ranges, chart
 instances and zoom; both sample previews opt into merged ECharts option updates.
 A consumer-projected chart template always takes precedence over the sample.

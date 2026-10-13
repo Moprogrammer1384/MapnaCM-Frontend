@@ -1,7 +1,7 @@
 # DARP frontend: development context
 
 Last studied: **2026-10-11 (Asia/Tehran)**, focused on taxonomy hierarchy and mutation helpers.
-Latest focused maintenance: **2026-10-12**.
+Latest focused maintenance: **2026-10-13**.
 Latest source reviewed: `52233c9` (`Plant type fix`), plus the Tag and Measurement Type UI changes below.
 
 This is the project memory for development with Codex. Read it at the start of
@@ -248,6 +248,7 @@ maintenance entry for focused browser validation.
 | `src/app/shared/components/asset-taxonomy-drawer/` | Standalone Metronic drawer with Select2 Plant selection and PrimeNG Tree measurement selection; currently replaces Activity Drawer on vibration routes |
 | `src/app/shared/components/closable-tabs/` | Reusable PrimeNG Tabs adapter with Metronic visuals, close buttons, keyboard support, scrolling and active-only panel lifecycle |
 | `src/app/shared/components/date-range/` | Single Flatpickr range input/calendar using Metronic's existing styles and local calendar dates; commits only complete ranges |
+| `src/app/shared/components/date-time-range/` | Combined picker used by all five Vibration analysis pages: single-input range calendar, independent start/end hour/minute fields in its Metronic footer, and Apply for ordered local values |
 | `src/app/shared/components/time-range/` | Two Metronic Flatpickr time-only selectors with 24-hour hour/minute entry and local HH:mm endpoints |
 | `src/app/shared/components/analysis-workspace-panel/` | Shared analysis workspace with nested `analysis-panel/` measurement/date panel; inputs/events or a module-owned state connection, consumer-provided chart templates and opt-in Time Domain sample chart |
 | `src/app/_fake/` | Mixed legacy code: in-memory demo API plus services calling Keenthemes remotely |
@@ -822,21 +823,23 @@ controls. Inactive panel content is destroyed, while values remain in the servic
 Charts and the range calendar instance are disposed on close/switch. The sample chart
 mounts after tab projection so ECharts receives real dimensions.
 
-`DateRangeComponent` uses Metronic's Flatpickr integration (runtime 4.6.13 added;
-its base CSS sits below the already-loaded Metronic plugin customization). One
-input/calendar uses Flatpickr range mode, commits only completed inclusive ranges
-and synchronizes restored tab dates. Dismissing a partial selection restores the
-last committed range. Values remain local YYYY-MM-DD strings.
-As revised on 2026-10-12, `TimeRangeComponent` adds two time-only Flatpickr
-selectors alongside dates from 768px (stacked below on mobile), using existing
-Metronic classes/plugin styles. Required `AnalysisTab.timeRange` holds local
-24-hour HH:mm endpoints, initially 00:00 through 23:59. The panel/workspace
-emit timeRangeChange; `AnalysisWorkspaceState.updateTimeRange` delegates updates
-to the module-owned state. Vibration retains separate copied time values per
-tab/route in layout memory. Both picker instances are disposed on switch/close;
-time endpoints pair with the corresponding dates and are not auto-sorted.
-Sample chart data remains independent of time/date selection; no backend or
-browser storage is introduced.
+As revised on 2026-10-13, `DateTimeRangeComponent` replaces the separate date-only
+and time-only controls in the shared analysis panel on all five Vibration pages.
+One input opens the existing Metronic Flatpickr range calendar (runtime 4.6.13;
+base CSS below Metronic customization), with independent Start/End hour/minute
+fields and Apply/Cancel inside its footer. It commits only complete, ordered
+local YYYY-MM-DDTHH:mm ranges. Cancel, Escape or outside dismissal discards drafts;
+same-day, equal-endpoint and overnight intervals work. The original standalone
+`DateRangeComponent` and `TimeRangeComponent` remain available for other uses.
+The panel combines existing `AnalysisTab.dateRange` (YYYY-MM-DD) and `timeRange`
+(HH:mm, initially 00:00/23:59) into one stable picker input, then splits confirmed
+values into the existing dateRangeChange/timeRangeChange outputs only for changed
+parts. Workspace/state interfaces and separate tab date/time fields are unchanged.
+Unrelated renders and tab snapshots with identical ranges preserve drafts.
+Vibration retains independent copied date/time values per tab/route in layout
+memory. The calendar is disposed on switch/close; returning restores committed
+values. Sample chart data remains independent of time/date selection; no backend
+or browser storage is introduced.
 As revised on 2026-10-12, the selection heading displays the executed tab's
 `plantLabel` in Site - Plant Type - Plant order. The Unit - System - Asset path
 appears once below, alongside the count and without Component/Measurement lists.
@@ -2266,3 +2269,65 @@ superseded by the user's later `components/` rename on 2026-10-10.
   Production build, project lint and git diff --check passed. Existing 2.80 MB
   initial-bundle and four CSS selector warnings remain. No authenticated live
   API or manual application screenshots were tested.
+
+### 2026-10-13 - Reusable combined date and time range picker
+
+- Added standalone `shared/components/date-time-range/` with selector
+  `app-date-time-range`, required unique `inputId` and `value` inputs, optional
+  `disabled`, and `valueChange` supporting two-way value binding. Its single
+  input opens the installed Flatpickr range calendar. An Angular-owned footer
+  inside that calendar provides independent Start/End hour/minute number fields,
+  using only existing Metronic classes, plus Apply/Cancel controls. No custom
+  styling, new dependency or third-party source modification was introduced.
+- Added generic `core/models/date-time-range.model.ts`: readonly `{ from, to }`
+  strings in local `YYYY-MM-DDTHH:mm` format with no UTC conversion. Apply (or
+  Enter in a time field) emits only complete, ordered, changed values. Same-day,
+  equal-endpoint and overnight ranges are supported; missing/invalid times and
+  reversed same-day intervals show accessible errors. Cancel, Escape and outside
+  dismissal restore the committed range. External values synchronize silently;
+  malformed external selections require date reselection. Disabled state closes
+  pending drafts; destruction releases the plugin and Angular-owned footer.
+- Documented direct standalone import and binding in the adjacent README. The
+  new component is available for consumers; existing date-only/time-only pickers
+  and analysis pages were not replaced. No API, backend or storage changes.
+- Verified 21 ChromeHeadless tests (13 new and eight existing date/time picker
+  regressions), including real calendar clicks, numeric input, keyboard actions,
+  validation, external updates, independent consumers, disable/cleanup, computed
+  Metronic light/dark colors and popup/control geometry at 320/768/1280px.
+  Project lint and production build passed; existing 2.80 MB initial-bundle and
+  four CSS selector warnings remain. New component/template compilation was
+  exercised by its Angular browser tests; it has no production consumer yet.
+  No authenticated API integration or manual application screenshots were tested.
+
+### 2026-10-13 - Use the combined picker on every Vibration analysis page
+
+- Replaced the shared panel's date-only picker and separate time controls with
+  `app-date-time-range`, labeled Date and time range. This applies to Overview,
+  Time Domain, Frequency Domain, Bode Analysis and Rotor Position through their
+  existing shared workspace. Reused Metronic grid classes for a single responsive
+  range section alongside the existing hierarchy heading/count.
+- The panel combines existing tab dates/times for display, then splits a confirmed
+  result back into existing date/time outputs, emitting only changed parts. No
+  service, public workspace/state contract, API or storage migration was needed.
+  Input references stay stable for identical ranges, avoiding draft resets when
+  chart layout or an unrelated state update causes another render.
+- Verified 17 ChromeHeadless tests: 13 picker cases plus four new integration
+  cases using actual Angular routes/pages, all five route-specific saved ranges,
+  date/time event payloads, midnight values, tab switch/close restoration and
+  calendar cleanup, unrelated-update draft preservation, Cancel, retained real
+  Frequency Domain chart instances and light/dark header geometry at
+  320/768/1280px. The responsive test waits for the existing chart ResizeObserver
+  before checking overflow. Production build, project lint and git diff --check
+  passed; existing 2.80 MB initial-bundle and four CSS selector warnings remain.
+  Manual application screenshots and authenticated API integration were not run.
+
+### 2026-10-13 - Retain the combined picker at the user's request
+
+- The user reversed the request for native Flatpickr time controls before that
+  migration was completed. Restored the previous single-input combined picker:
+  Flatpickr range calendar with Angular-owned independent start/end hour/minute
+  fields and Apply/Cancel. This is the user's current preferred design; retain it.
+  Existing integration on all five Vibration pages and tab state are unchanged.
+- All 17 picker/page integration ChromeHeadless tests and git diff --check passed
+  after restoration. No new behavior, API or storage change was introduced;
+  production build and lint were not repeated for this exact restoration.

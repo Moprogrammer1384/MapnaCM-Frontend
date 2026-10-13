@@ -109,24 +109,24 @@ charts below. Presentation uses Metronic utilities and semantic headings.
 Full snapshot metadata remains available to consumers.
 The drawer and execution builder enforce selection within a single Asset.
 
-`../date-range/` wraps the Flatpickr picker used by Metronic. The installed runtime
-is pinned to 4.6.13; its base CSS is in a lower cascade layer, under the existing
-Metronic `_flatpickr.scss`. A single input/calendar uses Flatpickr's `range` mode
-to select inclusive start/end dates, including the same day. It emits only a
-complete range and restores the last committed value if an unfinished selection
-is dismissed. Values remain local `YYYY-MM-DD` strings, with defaults and
-persistence supplied by the consumer. The component synchronizes external values
-without emitting changes and disposes its one plugin instance on destroy.
+`../date-time-range/` supplies the combined picker for all five Vibration pages.
+A single input opens the installed Flatpickr 4.6.13 range calendar with independent
+Start/End hour/minute fields and Apply/Cancel in its Metronic footer. Select both
+dates (the same day twice for a same-day range), then adjust 24-hour times. Apply
+or Enter in a time field commits a complete, ordered range; Cancel, Escape or
+outside dismissal discards pending edits. Same-day and overnight ranges work.
+The existing lower-layer Flatpickr CSS and Metronic `_flatpickr.scss` provide
+calendar styling; the footer uses existing Metronic forms/buttons/grid utilities.
 
-`../time-range/` uses the same installed Flatpickr runtime and Metronic styles.
-Two time-only selectors beside the dates let users enter hours/minutes or use
-the existing spinners, with 24-hour `HH:mm` values and one-minute increments.
-Buttons and Enter open the labeled dialogs and focus the hour input. Changes
-update only the edited endpoint; closing also commits pending debounced changes.
-External values synchronize silently and both instances are destroyed with the
-panel. The endpoints pair with their corresponding dates, allowing times across
-midnight on a multi-day date range; they are not automatically sorted.
-Metronic grid utilities place time beside dates from 768px, and below on mobile.
+The picker accepts local `YYYY-MM-DDTHH:mm` values. `AnalysisPanelComponent`
+combines the tab's existing `dateRange`/`timeRange` for that input and splits a
+confirmed result back into the existing `dateRangeChange`/`timeRangeChange`
+events, emitting only the parts that changed. The workspace/state interface and
+separate local date/time storage shape remain compatible with existing consumers.
+The combined input keeps a stable reference across unrelated renders and tab
+updates with identical ranges, preserving unfinished selections. Switching or
+closing tabs disposes the calendar; returning restores the committed range.
+The original date-only and time-only standalone components remain available.
 
 The Vibration service retains independent tabs/dates/times per route in layout memory; Execute
 creates a new snapshot and activates it. Reload/logout clears that feature state.

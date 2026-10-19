@@ -1,7 +1,7 @@
 # DARP frontend: development context
 
 Last studied: **2026-10-11 (Asia/Tehran)**, focused on taxonomy hierarchy and mutation helpers.
-Latest focused maintenance: **2026-10-13**.
+Latest focused maintenance: **2026-10-14**.
 Latest source reviewed: `52233c9` (`Plant type fix`), plus the Tag and Measurement Type UI changes below.
 
 This is the project memory for development with Codex. Read it at the start of
@@ -286,8 +286,10 @@ by `PageInfoService`; keep menu labels and `data-link` values meaningful.
 ## Backend contracts and environment
 
 Development API base: `https://localhost:7064/api`.
-Production API base is still `http://localhost:5245/api`, marked as a deployment
-placeholder in `environment.prod.ts`. Production builds replace the development
+Production API base is `http://185.81.99.32:758/api`, using the user's deployment
+IP/port supplied on 2026-10-14 and the existing `/api` path. The user said the
+backend is not built yet; availability at that path is an unverified deployment
+expectation. Production builds replace the development
 environment. Both configurations set `isMockEnabled: false`.
 
 Related local projects are outside this frontend repository:
@@ -2331,3 +2333,87 @@ superseded by the user's later `components/` rename on 2026-10-10.
 - All 17 picker/page integration ChromeHeadless tests and git diff --check passed
   after restoration. No new behavior, API or storage change was introduced;
   production build and lint were not repeated for this exact restoration.
+
+### 2026-10-14 - Production package for IIS
+
+- Added `src/web.config` and registered it as a build asset. IIS now supplies
+  the default HTML document, JSON/SVG/WebP/font MIME mappings, GET/HEAD HTML
+  route fallback excluding APIs/assets/file extensions, and entry-point
+  `Cache-Control: no-cache`. No Angular UI or backend implementation changed.
+- Set production `apiUrl` to `http://185.81.99.32:758/api`, using the IP/port
+  supplied by the user and the existing `/api` path. The user said the backend
+  is not built yet; this is an expected deployment URL, not a verified live
+  API contract. Development keeps `https://localhost:7064/api`.
+- Added `docs/iis-deployment.md`. Generated `dist/DARP-IIS-2026-10-14.zip`
+  with site contents at the archive root, plus adjacent installation guide,
+  browser/HTTP validation report and SHA256 checksum. Verified all **2713**
+  archived files byte-for-byte against the final production directory.
+- Final production build and project lint passed; the compiled main bundle
+  contains the new API URL and no old localhost production URL. Existing
+  2.80 MB initial-bundle warning and four CSS-selector warnings remain.
+- Served the final production output using IIS Express 10 with its real
+  Rewrite module and an isolated temporary configuration. Six HTML paths,
+  cache headers and **81** resource URLs passed. Missing JS/JSON/API paths
+  returned 404 and POST was not rewritten to Angular's HTML document.
+- Chrome Headless successfully bootstrapped and refreshed five paths (root,
+  login, forgot-password, error/404 and guarded Time Domain), with zero
+  uncaught runtime exceptions or failed local responses. Guarded routes
+  returned to login without a session. Inspected the login screenshot.
+- Full Karma run: **182 passed, 14 failed / 196**. The existing creation specs
+  for DrawerChat, Navbar, SidebarLogo, UserDetails, Topbar, Header, UserListing,
+  Toolbar, RoleListing, PermissionListing, RoleDetails, Sidebar, Classic and
+  Crud have incomplete TestBed imports/providers/declarations. These unrelated
+  tests were not changed; detailed logs are in `tmp/iis-validation/tests.log`.
+  Full-suite success is not claimed. No authenticated backend operation,
+  target Windows Server deployment or IIS subdirectory deployment was tested.
+
+### 2026-10-14 - Investigate HTTP 500 on the deployed IIS site
+
+- User deployed the frontend at `http://185.81.99.32:759/`. Verified remotely
+  that `/`, `/index.html` and `/assets/media/logos/darp-small.svg` each return
+  HTTP 500 and IIS 10's generic error page. The remote response contains no
+  detailed IIS substatus/HRESULT or configuration line, so the root cause
+  remains unverified. This prevents loading the frontend before Angular/API calls.
+- Requested the local server's `HTTP Error`, `Error Code` and `Config Error`.
+  Missing URL Rewrite or a locked configuration section are hypotheses based
+  on the supplied configuration and Microsoft's IIS 500.19 guidance, not a
+  confirmed diagnosis. Added targeted troubleshooting to `docs/iis-deployment.md`.
+- No application source, IIS configuration, API URL or ZIP was changed for this
+  investigation. Frontend binding is now known to be port 759; API target remains
+  the previously supplied port 758 pending backend availability. No remote
+  administration session is available, so no server setting was changed.
+
+### 2026-10-14 - Explain direct file preview and recheck HTTP output
+
+- User opened `dist/demo1/index.html` with `file://`. Inspected the current
+  built document and verified URL resolution: its root `<base href="/">`
+  makes relative CSS/JS/logo paths resolve under `file:///C:/`, where those
+  resources do not exist. This build targets the IIS website root and needs
+  HTTP serving; the base path was not changed to accommodate double-clicking.
+- Started the same final production directory under the isolated local IIS
+  Express configuration at `http://localhost:8187/` and retained this preview
+  for the user. Repeated HTTP checks: all six navigation paths and 81 local
+  resources passed; HTML cache headers and missing-resource/API exclusions
+  passed. Browser bootstrap checks were not repeated in this turn; the earlier
+  production browser validation remains documented above.
+- The remote `/index.html` on port 759 still returns generic HTTP 500. Local
+  file loading failure does not identify that remote IIS configuration issue;
+  the detailed server error remains required. Added local-preview guidance
+  to the installation document. No application source or package was changed.
+
+### 2026-10-14 - Target server supplied the IIS configuration error
+
+- User provided IIS Web Core `HTTP 500.19`, HRESULT `0x8007000d`, empty Config
+  Error, and Config Source lines -1/0 for the deployed site's
+  `C:\inetpub\wwwroot\darp-frontend\web.config`. This narrows investigation to
+  invalid/unrecognized IIS configuration data rather than Angular execution.
+- Verified both source/built web.config XML parse successfully and have the
+  identical SHA256 `D122724D7A6E4D42703E38864CCFF3CC6564977DC27F9F3426CE286EE9011B71`.
+  Local IIS Express previously processed this configuration with Rewrite installed.
+  Missing URL Rewrite on the target is the leading hypothesis, not confirmed
+  without the server module inventory; corruption of the deployed copy is not
+  excluded. No blanket configuration unlocking or Angular changes were made.
+- Added the read-only server `appcmd list modules` check, official Microsoft
+  URL Rewrite 2.1 x64 installer link, and deployed XML/hash fallback to the
+  installation guide. The remote website still returned generic HTTP 500 when
+  rechecked. Server-side installation and recovery remain unverified.

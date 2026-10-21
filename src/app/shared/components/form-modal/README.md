@@ -1,8 +1,8 @@
 # DARP form modal
 
-`FormModalComponent` is exported by `SharedModule`. It presents all 18 add/edit
+`FormModalComponent` is exported by `SharedModule`. It presents all 16 add/edit
 dialogs in asset taxonomy: Site, Plant, Plant Type, Unit, System, Asset, Component,
-Measurement and Measurement Type.
+and Measurement.
 
 Use it inside an existing `NgbModal` template. Project the complete page-owned
 `NgForm`, retaining its fields, validation and `(ngSubmit)` handler. Set `formId`

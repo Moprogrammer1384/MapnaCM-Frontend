@@ -1,12 +1,12 @@
 import type { AssetTaxonomyNode, AssetTaxonomySnapshot, TaxonomyNodeKind } from '../models/asset-taxonomy-selection.model';
 
-type NamedRecord = { id?: number; name: string; tag?: string | null; unit?: string | null };
+type NamedRecord = { id?: number; name: string; tag?: string | null };
 
 function createNode(row: NamedRecord & { id: number }, kind: TaxonomyNodeKind, unitId: number, assetId: number | null = null): AssetTaxonomyNode {
   return {
     key: `${kind}:${row.id}`,
     label: row.name,
-    data: { id: row.id, unitId, assetId, kind, tag: row.tag, unit: row.unit },
+    data: { id: row.id, unitId, assetId, kind, tag: row.tag },
     children: [],
     selectable: kind === 'Measurement',
     expanded: kind === 'Unit',

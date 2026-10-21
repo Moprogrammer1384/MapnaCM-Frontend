@@ -7,7 +7,7 @@ const execution: AssetTaxonomyExecution = {
   selection: { plantId: 1, unitId: 2, measurementIds: [6] },
   measurements: [{ measurement: { id: 6, name: 'X', tag: null }, component: { id: 5, name: 'Bearing', tag: null },
     asset: { id: 4, name: 'Asset', tag: null }, system: { id: 3, name: 'System', tag: null },
-    unit: { id: 2, name: 'Unit', tag: null }, typeName: null, measurementUnit: null, sensitivity: null }],
+    unit: { id: 2, name: 'Unit', tag: null }, sensitivity: null }],
 };
 
 describe('Vibration page analysis numbering', () => {

@@ -37,8 +37,8 @@ export function buildAssetTaxonomyExecution(
     }
     details.push({
       measurement: summary(measurement), component: summary(component), asset: summary(asset),
-      system: summary(system), unit: summary(unit), typeName: measurement.typeName ?? null,
-      measurementUnit: measurement.unit ?? null, sensitivity: measurement.sensitivity,
+      system: summary(system), unit: summary(unit),
+      sensitivity: measurement.sensitivity,
     });
   }
   return details.length ? {

@@ -55,6 +55,7 @@ describe('AssetTaxonomyDrawerComponent with real PrimeNG Tree / Select2 / Metron
 
   beforeEach(async () => {
     const data = assetTaxonomyFixture();
+    Object.assign(data.measurements[0], { measurementTypeId: 9, typeName: 'Retired type', unit: 'mm/s' });
     api = jasmine.createSpyObj<AssetApiService>('AssetApiService', [
       'getAllPlants', 'getAllUnits', 'getAllSystems', 'getAllAssets', 'getAllComponents', 'getAllMeasurements',
     ]);
@@ -123,12 +124,17 @@ describe('AssetTaxonomyDrawerComponent with real PrimeNG Tree / Select2 / Metron
     drawer.executeSelection();
     expect(execute).not.toHaveBeenCalled();
     await choosePlant(0); await expandAll(); await clickMeasurement('Velocity X');
+    expect(item('Velocity X').textContent).not.toContain('mm/s');
+    expect(item('Velocity X').textContent).not.toContain('Retired type');
     expect(button('Execute').disabled).toBeFalse();
     button('Execute').click(); await settle();
     expect(execute).toHaveBeenCalledTimes(1);
     expect(execute.calls.mostRecent().args[0]!.measurements[0].asset.name).toBe('Asset zero');
     expect(execute.calls.mostRecent().args[0]!.plantLabel).toBe('Site zero - Gas turbine - First plant');
     expect(execute.calls.mostRecent().args[0]!.selection).toEqual({ plantId: 0, unitId: 0, measurementIds: [0] });
+    const details = execute.calls.mostRecent().args[0]!.measurements[0];
+    expect('typeName' in details).toBeFalse();
+    expect('measurementUnit' in details).toBeFalse();
     expect(host.open).toBeFalse();
   });
 

@@ -4,7 +4,7 @@ import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstr
 import { MetronicAlertService } from 'src/app/core/services/metronic-alert.service';
 import { AssetTaxonomyMutations } from 'src/app/core/utils/asset-taxonomy-mutations';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
-import type { Measurement, MeasurementType, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
+import type { Measurement, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { buildParentIdMap, buildParentOptions, buildPlantEmployerMap, resolveInheritedEmployer } from 'src/app/core/utils/asset-taxonomy-hierarchy';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
@@ -23,31 +23,14 @@ export class MeasurementComponent implements OnInit, OnDestroy {
   table = new TablePagination<Measurement>(
     [],
     [
-      // Widths are relaxed so the 8-column table fits the viewport like the
-      // other taxonomy tables and the Actions column stays visible; long
-      // hierarchy labels wrap instead of forcing horizontal overflow.
       { key: 'name', title: 'Name', class: 'min-w-100px' },
       { key: 'tag', title: 'Tag', class: '' },
-      { key: 'typeName', title: 'Type', class: '' },
-      { key: 'unit', title: 'Unit', class: '' },
       { key: 'sensitivity', title: 'Sensitivity', class: '' },
       { key: 'componentLabel', title: 'Component Name', class: 'min-w-150px' },
       { key: 'employerName', title: 'Employer', class: 'min-w-125px' },
     ] satisfies readonly TablePaginationColumn<Measurement>[],
-    { searchKeys: ['name', 'tag', 'typeName', 'unit', 'sensitivity', 'componentLabel', 'employerName'] satisfies readonly Extract<keyof Measurement, string>[] }
+    { searchKeys: ['name', 'tag', 'sensitivity', 'componentLabel', 'employerName'] satisfies readonly Extract<keyof Measurement, string>[] }
   );
-
-  types = new TablePagination<MeasurementType>(
-    [],
-    [
-      { key: 'name', title: 'Name', class: 'min-w-125px' },
-      { key: 'unit', title: 'Unit', class: 'min-w-100px' },
-    ] satisfies readonly TablePaginationColumn<MeasurementType>[],
-    { searchKeys: ['name', 'unit'] satisfies readonly Extract<keyof MeasurementType, string>[] }
-  );
-  typeOptions: MeasurementType[] = [];
-  typeFormModel: MeasurementType = { name: '', unit: '' };
-  typeFilter: number | null = null;
 
   // Options carry the backend hierarchy labels ("City - Plant - Unit -
   // System - Asset - Component"); the select binds the numeric component id.
@@ -67,22 +50,20 @@ export class MeasurementComponent implements OnInit, OnDestroy {
 
   readonly listState = new RequestState();
   readonly employersState = new RequestState();
-  readonly typesState = new RequestState();
   private readonly mutations: AssetTaxonomyMutations;
   private activeModal?: NgbModalRef;
 
   get canAdd(): boolean {
-    return !this.saving && this.listState.ready && this.componentOptions.length > 0 && this.typesState.ready && this.typeOptions.length > 0;
+    return !this.saving && this.listState.ready && this.componentOptions.length > 0;
   }
 
   get actionsDisabled(): boolean {
-    return this.saving || this.listState.loading() || !this.typesState.ready;
+    return this.saving || this.listState.loading();
   }
 
   ngOnDestroy(): void {
     this.listState.destroy();
     this.employersState.destroy();
-    this.typesState.destroy();
     this.saving = false;
     this.activeModal?.dismiss('page destroyed');
   }
@@ -98,8 +79,6 @@ export class MeasurementComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.table.onConfirmedDelete = (row) => this.deleteMeasurementConfirmed(row);
-    this.types.onConfirmedDelete = (row) => this.deleteTypeConfirmed(row);
-    this.loadTypes();
     this.loadEmployerOptions();
     this.refresh();
   }
@@ -122,11 +101,6 @@ export class MeasurementComponent implements OnInit, OnDestroy {
   filterByComponent(componentId: number | null): void {
     this.componentFilter = componentId;
     this.table.setFilter('componentId', componentId);
-  }
-
-  filterByType(typeId: number | null): void {
-    this.typeFilter = typeId;
-    this.table.setFilter('measurementTypeId', typeId);
   }
 
   refresh(): void {
@@ -227,7 +201,6 @@ export class MeasurementComponent implements OnInit, OnDestroy {
       componentId: measurement.componentId,
       name: measurement.name,
       tag: measurement.tag ?? '',
-      measurementTypeId: measurement.measurementTypeId,
       sensitivity: measurement.sensitivity,
     };
     this.activeModal = this.modalService.open(content, this.modalConfig);
@@ -238,7 +211,7 @@ export class MeasurementComponent implements OnInit, OnDestroy {
       return;
     }
     if (form.invalid || !this.measurementForm.name.trim() || !this.measurementForm.componentId ||
-      this.measurementForm.measurementTypeId === null || this.measurementForm.sensitivity === null) {
+      this.measurementForm.sensitivity === null) {
       form.control.markAllAsTouched();
       this.alertService.show('error', 'Error!', 'Please fill in all required fields.');
       return;
@@ -252,16 +225,9 @@ export class MeasurementComponent implements OnInit, OnDestroy {
       this.alertService.show('error', 'Error!', 'The selected component is no longer available. Please pick it again.');
       return;
     }
-    const measurementTypeId = this.measurementForm.measurementTypeId;
-    if (!this.typeOptions.some((type) => type.id === measurementTypeId)) {
-      this.alertService.show('error', 'Error!', 'The selected measurement type is no longer available. Please pick it again.');
-      return;
-    }
-
     const payload = {
       name: this.measurementForm.name.trim(),
       tag: this.measurementForm.tag ?? '',
-      measurementTypeId,
       sensitivity: this.measurementForm.sensitivity,
       componentId,
     };
@@ -284,78 +250,7 @@ export class MeasurementComponent implements OnInit, OnDestroy {
   }
 
   private emptyForm(): Measurement {
-    return { componentId: null, name: '', tag: '', measurementTypeId: null, sensitivity: null };
+    return { componentId: null, name: '', tag: '', sensitivity: null };
   }
 
-  loadTypes(): void {
-    this.typesState.track(this.apiService.getAllMeasurementTypes(), 'Unable to load measurement types.', 'getAllMeasurementTypes').subscribe({
-      next: (types) => {
-        this.typeOptions = types;
-        this.types.setRows(types.map((type) => ({ id: type.id, name: type.name, unit: type.unit })));
-        this.cdr.detectChanges();
-      },
-      error: () => this.cdr.detectChanges(),
-    });
-  }
-
-  get selectedTypeUnit(): string {
-    return this.typeOptions.find((type) => type.id === this.measurementForm.measurementTypeId)?.unit ?? '';
-  }
-
-  openAddTypeModal(content: TemplateRef<any>): void {
-    if (this.saving || this.typesState.loading()) {
-      return;
-    }
-    this.typeFormModel = { name: '', unit: '' };
-    this.activeModal = this.modalService.open(content, this.modalConfig);
-  }
-
-  openEditTypeModal(content: TemplateRef<any>, type: MeasurementType): void {
-    if (this.saving || this.typesState.loading() || this.types.isDeleting(type)) {
-      return;
-    }
-    this.typeFormModel = { id: type.id, name: type.name, unit: type.unit };
-    this.activeModal = this.modalService.open(content, this.modalConfig);
-  }
-
-  submitType(form: NgForm, modal: { dismiss: (reason: string) => void }): void {
-    if (this.saving) {
-      return;
-    }
-    const name = this.typeFormModel.name.trim();
-    const unit = this.typeFormModel.unit.trim();
-    if (form.invalid || !name || !unit) {
-      form.control.markAllAsTouched();
-      this.alertService.show('error', 'Error!', 'Please fill in all required fields.');
-      return;
-    }
-    const isEdit = this.typeFormModel.id !== undefined;
-    const payload = { name, unit };
-    const request = () => isEdit
-      ? this.apiService.updateMeasurementType({ id: this.typeFormModel.id!, ...payload })
-      : this.apiService.createMeasurementType(payload);
-    this.mutations.save(request, () => {
-      this.loadTypes();
-      this.loadMeasurements();
-      modal.dismiss('saved');
-      this.alertService.show('success', 'Success!', isEdit ? 'Type updated successfully!' : 'Type created successfully!');
-    });
-  }
-
-  deleteType(type: MeasurementType): void {
-    this.types.confirmDelete(type, type.name);
-  }
-
-  private deleteTypeConfirmed(type: MeasurementType): void {
-    // The backend rejects types still used by measurements.
-    this.mutations.delete(type, this.types, (id) => this.apiService.deleteMeasurementType(id), () => {
-      if (this.typeFilter === type.id) {
-        this.filterByType(null);
-      }
-      this.loadTypes();
-      this.loadMeasurements();
-      this.cdr.detectChanges();
-      this.alertService.show('success', 'Deleted!', 'You have deleted ' + type.name + '!.');
-    }, 'Unable to delete the measurement type.');
-  }
 }

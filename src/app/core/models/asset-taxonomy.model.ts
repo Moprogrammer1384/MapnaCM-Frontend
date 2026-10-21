@@ -116,12 +116,6 @@ export interface Measurement {
   id?: number;
   name: string;
   tag?: string | null;
-  /** Null on rows created before measurement types existed. */
-  measurementTypeId: number | null;
-  /** Type display name, joined by the backend (null on legacy rows). */
-  typeName?: string | null;
-  /** Unit of the measurement type, joined by the backend (null on legacy rows). */
-  unit?: string | null;
   sensitivity: number | null;
   componentId: number | null;
   componentName?: string;
@@ -134,15 +128,6 @@ export interface Measurement {
   /** Employer inherited from the ancestor Plant for display/filtering. */
   employerId?: string | null;
   employerName?: string | null;
-}
-
-/** The type of a measurement (Name + Unit), managed like plant types. */
-export interface MeasurementType {
-  id?: number;
-  name: string;
-  unit: string;
-  createdAtUtc?: string | null;
-  lastModifiedAtUtc?: string | null;
 }
 
 /** Row of GET /User/GetUsersByRole (Identity users carrying a role). */

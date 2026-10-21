@@ -30,12 +30,12 @@ export function assetTaxonomyFixture(): AssetTaxonomySnapshot {
       { id: 80, name: 'Other plant bearing', assetId: 80 },
     ],
     measurements: [
-      { id: 0, name: 'Velocity X', tag: 'VEL-X', componentId: 0, measurementTypeId: 0, typeName: 'Velocity', unit: 'mm/s', sensitivity: 100 },
-      { id: 1, name: 'Velocity Y', tag: 'VEL-Y', componentId: 0, measurementTypeId: 0, typeName: 'Velocity', unit: 'mm/s', sensitivity: 100 },
-      { id: 2, name: 'Displacement X', componentId: 2, measurementTypeId: 1, typeName: 'Displacement', unit: 'µm', sensitivity: 0 },
-      { id: 10, name: 'Other Unit velocity', componentId: 10, measurementTypeId: 0, unit: 'mm/s', sensitivity: null },
-      { id: 3, name: 'Another asset velocity', componentId: 3, measurementTypeId: 0, unit: 'mm/s', sensitivity: null },
-      { id: 80, name: 'Other plant velocity', componentId: 80, measurementTypeId: 0, unit: 'mm/s', sensitivity: null },
+      { id: 0, name: 'Velocity X', tag: 'VEL-X', componentId: 0, sensitivity: 100 },
+      { id: 1, name: 'Velocity Y', tag: 'VEL-Y', componentId: 0, sensitivity: 100 },
+      { id: 2, name: 'Displacement X', componentId: 2, sensitivity: 0 },
+      { id: 10, name: 'Other Unit velocity', componentId: 10, sensitivity: null },
+      { id: 3, name: 'Another asset velocity', componentId: 3, sensitivity: null },
+      { id: 80, name: 'Other plant velocity', componentId: 80, sensitivity: null },
     ],
   };
 }

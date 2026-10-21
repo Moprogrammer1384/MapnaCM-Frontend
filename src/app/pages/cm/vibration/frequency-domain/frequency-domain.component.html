@@ -1,5 +1,5 @@
-<app-analysis-workspace [state]="state" [showSampleChart]="true"
+<app-analysis-workspace [state]="state" [showSampleChart]="true" domain="frequency"
   [measurementChartContent]="frequencyChart"></app-analysis-workspace>
-<ng-template #frequencyChart>
-  <app-frequency-domain-sample-chart></app-frequency-domain-sample-chart>
+<ng-template #frequencyChart let-tab="tab">
+  <app-frequency-domain-sample-chart [settings]="tab.chartSettings"></app-frequency-domain-sample-chart>
 </ng-template>

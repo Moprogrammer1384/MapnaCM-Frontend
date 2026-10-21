@@ -2,6 +2,7 @@ import { computed, Injectable, signal } from '@angular/core';
 import type { AssetTaxonomyExecution, AssetTaxonomySelection } from '../models/asset-taxonomy-selection.model';
 import { AnalysisDateRange, AnalysisTab, AnalysisTimeRange } from '../models/analysis-panel.model';
 import { VibrationPage, VIBRATION_PAGES } from '../models/vibration-page.model';
+import { AnalysisChartSettings, defaultChartSettings } from '../models/analysis-chart-settings.model';
 
 interface PageTabs {
   readonly tabs: readonly AnalysisTab[];
@@ -57,6 +58,7 @@ export class VibrationSelectionService {
       ...structuredClone(execution), id: `vibration-${number}`, title: `Analysis ${number}`,
       dateRange: { from: date(from), to: date(today) },
       timeRange: { from: '00:00', to: '23:59' },
+      chartSettings: defaultChartSettings(this.page() === 'frequency-domain' ? 'frequency' : 'time'),
     };
     this.updateWorkspace({ tabs: [...this.tabs(), tab], activeId: tab.id });
     this.drawerOpen.set(false);
@@ -86,6 +88,13 @@ export class VibrationSelectionService {
   updateTimeRange(id: string, timeRange: AnalysisTimeRange): void {
     this.updateWorkspace({
       tabs: this.tabs().map(tab => tab.id === id ? { ...tab, timeRange: { ...timeRange } } : tab),
+      activeId: this.activeTabId(),
+    });
+  }
+
+  updateChartSettings(id: string, chartSettings: AnalysisChartSettings): void {
+    this.updateWorkspace({
+      tabs: this.tabs().map(tab => tab.id === id ? { ...tab, chartSettings: { ...chartSettings } } : tab),
       activeId: this.activeTabId(),
     });
   }

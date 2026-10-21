@@ -3,23 +3,45 @@ import { Component, EventEmitter, Input, OnChanges, Output, TemplateRef } from '
 import { AnalysisDateRange, AnalysisTab, AnalysisTimeRange } from 'src/app/core/models/analysis-panel.model';
 import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
 import { DateTimeRangeComponent } from '../../date-time-range/date-time-range.component';
+import { FormsModule } from '@angular/forms';
+import { SharedModule } from 'src/app/_metronic/shared/shared.module';
+import { AnalysisChartSettings, AnalysisDomain, defaultChartSettings, SAMPLE_REFERENCE_HZ, VIBRATION_UNITS, vibrationUnit } from 'src/app/core/models/analysis-chart-settings.model';
 
 @Component({
   selector: 'app-analysis-panel',
   standalone: true,
-  imports: [CommonModule, DateTimeRangeComponent],
+  imports: [CommonModule, FormsModule, SharedModule, DateTimeRangeComponent],
   templateUrl: './analysis-panel.component.html',
   host: { class: 'd-block mw-100' },
 })
 export class AnalysisPanelComponent implements OnChanges {
   @Input({ required: true }) tab: AnalysisTab;
+  @Input() domain: AnalysisDomain = 'time';
   @Input() chartContent?: TemplateRef<{ $implicit: AnalysisTab }>;
   @Output() readonly dateRangeChange = new EventEmitter<AnalysisDateRange>();
   @Output() readonly timeRangeChange = new EventEmitter<AnalysisTimeRange>();
+  @Output() readonly chartSettingsChange = new EventEmitter<AnalysisChartSettings>();
+
+  chartSettings = defaultChartSettings();
+  readonly sampleRpm = SAMPLE_REFERENCE_HZ * 60;
+
+  get unitOptions() { return VIBRATION_UNITS[this.chartSettings.quantity]; }
+
+  updateChartSetting<K extends keyof AnalysisChartSettings>(key: K, value: AnalysisChartSettings[K]): void {
+    const settings = { ...this.chartSettings, [key]: value };
+    this.chartSettings = { ...settings, unit: vibrationUnit(settings).value };
+    this.chartSettingsChange.emit(this.chartSettings);
+  }
 
   dateTimeRange: DateTimeRange = { from: '', to: '' };
 
   ngOnChanges(): void {
+    const settings = this.tab.chartSettings ?? defaultChartSettings(this.domain);
+    this.chartSettings = {
+      ...settings,
+      unit: vibrationUnit(settings).value,
+      xAxis: this.domain === 'time' ? 'time' : settings.xAxis === 'time' ? 'hz' : settings.xAxis,
+    };
     const from = `${this.tab.dateRange.from}T${this.tab.timeRange.from}`;
     const to = `${this.tab.dateRange.to}T${this.tab.timeRange.to}`;
     // Keep a stable input reference so unrelated renders preserve picker drafts.

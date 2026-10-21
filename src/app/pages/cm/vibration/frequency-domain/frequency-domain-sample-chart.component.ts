@@ -1,7 +1,8 @@
-import { AfterViewInit, Component, NgZone, OnDestroy, OnInit, signal } from '@angular/core';
+import { AfterViewInit, Component, Input, NgZone, OnChanges, OnDestroy, OnInit, signal } from '@angular/core';
 import type { EChartsOption } from 'echarts';
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
-import { createFrequencyDomainSampleData } from './frequency-domain-sample.data';
+import { AMPLITUDE_LABELS, AnalysisChartSettings, defaultChartSettings, VIBRATION_QUANTITIES, vibrationUnit } from 'src/app/core/models/analysis-chart-settings.model';
+import { createFrequencyDomainSampleData, frequencyAxis } from './frequency-domain-sample.data';
 
 /** Page-specific frequency spectrum preview; independent of Measurement/date data. */
 @Component({
@@ -11,7 +12,8 @@ import { createFrequencyDomainSampleData } from './frequency-domain-sample.data'
   template: `@if (ready()) { <app-apache-echarts [options]="chartOptions" [mergeOptions]="true" height="400px"></app-apache-echarts> }`,
   host: { class: 'd-block mw-100' },
 })
-export class FrequencyDomainSampleChartComponent implements OnInit, AfterViewInit, OnDestroy {
+export class FrequencyDomainSampleChartComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+  @Input() settings?: AnalysisChartSettings;
   readonly ready = signal(false);
   chartOptions: EChartsOption;
   private observer?: MutationObserver;
@@ -25,6 +27,8 @@ export class FrequencyDomainSampleChartComponent implements OnInit, AfterViewIni
     this.observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
   }
 
+  ngOnChanges(): void { this.updateTheme(); }
+
   ngAfterViewInit(): void {
     // Wait for the workspace to project the active panel before ECharts measures it.
     this.mountTimer = setTimeout(() => this.ready.set(true));
@@ -33,6 +37,11 @@ export class FrequencyDomainSampleChartComponent implements OnInit, AfterViewIni
   private updateTheme(): void {
     const styles = getComputedStyle(document.documentElement);
     const token = (name: string) => styles.getPropertyValue(`--bs-${name}`).trim();
+    const settings = this.settings ?? defaultChartSettings('frequency');
+    const quantity = VIBRATION_QUANTITIES[settings.quantity];
+    const unit = vibrationUnit(settings).value;
+    const amplitude = AMPLITUDE_LABELS[settings.amplitude];
+    const axis = frequencyAxis(settings.xAxis);
     this.chartOptions = {
       animation: true,
       color: [token('primary')],
@@ -42,19 +51,20 @@ export class FrequencyDomainSampleChartComponent implements OnInit, AfterViewIni
         formatter: params => {
           const point = Array.isArray(params) ? params[0] : params;
           if (!Array.isArray(point.value)) { return ''; }
-          return `${Number(point.value[0])} Hz<br/>Amplitude: ${Number(point.value[1]).toFixed(2)} mm/s peak`;
+          return `${Number(point.value[0])} ${axis.unit}<br/>${quantity.label}: ${Number(Number(point.value[1]).toPrecision(6))} ${unit} ${amplitude}`;
         },
         backgroundColor: token('body-bg'), borderColor: token('border-color'),
         textStyle: { color: token('body-color') },
       },
       grid: { left: 20, right: 24, top: 45, bottom: 75, containLabel: true },
       xAxis: {
-        type: 'value', name: 'Frequency (Hz)', nameLocation: 'middle', nameGap: 30,
-        min: 0, max: 125, splitLine: { show: false },
+        type: 'value', name: `Frequency (${axis.unit})`, nameLocation: 'middle', nameGap: 30,
+        min: 0, max: 125 * axis.scale, splitLine: { show: false },
         axisLine: { lineStyle: { color: token('gray-500') } },
       },
       yAxis: {
-        type: 'value', name: 'Amplitude (mm/s peak)', min: 0,
+        type: 'value', name: `${quantity.label} (${unit} ${amplitude})`, min: 0,
+        nameTextStyle: { align: 'left' },
         splitLine: { lineStyle: { color: token('border-color') } },
       },
       dataZoom: [
@@ -74,8 +84,9 @@ export class FrequencyDomainSampleChartComponent implements OnInit, AfterViewIni
         },
       ],
       series: [{
-        name: 'Velocity amplitude', type: 'line', showSymbol: false,
-        lineStyle: { width: 2 }, data: createFrequencyDomainSampleData(),
+        id: 'sample',
+        name: `${quantity.label} ${amplitude}`, type: 'line', showSymbol: false,
+        lineStyle: { width: 2 }, data: createFrequencyDomainSampleData(settings),
       }],
     };
   }

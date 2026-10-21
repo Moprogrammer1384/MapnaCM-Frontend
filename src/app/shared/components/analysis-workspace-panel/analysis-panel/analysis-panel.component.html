@@ -15,6 +15,57 @@
         (valueChange)="updateDateTimeRange($event)"></app-date-time-range>
     </section>
   </div>
+  <div class="row g-5 mt-0">
+    <div class="col-12 col-sm-6 col-lg-3">
+      <label class="form-label" [for]="tab.id + '_quantity'">Quantity</label>
+      <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+        [id]="tab.id + '_quantity'" aria-label="Quantity" [ngModel]="chartSettings.quantity"
+        (ngModelChange)="updateChartSetting('quantity', $event)">
+        <option value="displacement">Displacement</option>
+        <option value="velocity">Velocity</option>
+        <option value="acceleration">Acceleration</option>
+      </select>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <label class="form-label" [for]="tab.id + '_unit'">Unit</label>
+      <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+        [id]="tab.id + '_unit'" aria-label="Unit" [ngModel]="chartSettings.unit"
+        (ngModelChange)="updateChartSetting('unit', $event)">
+        @for (unit of unitOptions; track unit.value) {
+          <option [value]="unit.value">{{ unit.value }}</option>
+        }
+      </select>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <label class="form-label" [for]="tab.id + '_x_axis'">X axis</label>
+      <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+        [id]="tab.id + '_x_axis'" aria-label="X axis" [ngModel]="chartSettings.xAxis"
+        [attr.aria-describedby]="domain === 'frequency' ? tab.id + '_reference_speed' : null"
+        (ngModelChange)="updateChartSetting('xAxis', $event)">
+        @if (domain === 'frequency') {
+          <option value="hz">Hz</option>
+          <option value="cpm">CPM</option>
+          <option value="order">Order</option>
+        } @else {
+          <option value="time">Time</option>
+        }
+      </select>
+      @if (domain === 'frequency') {
+        <div [id]="tab.id + '_reference_speed'" class="form-text">Sample reference speed: {{ sampleRpm }} RPM (10 Hz)</div>
+      }
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <label class="form-label" [for]="tab.id + '_amplitude'">Amplitude</label>
+      <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+        [id]="tab.id + '_amplitude'" aria-label="Amplitude" [ngModel]="chartSettings.amplitude"
+        (ngModelChange)="updateChartSetting('amplitude', $event)">
+        <option value="rms">RMS</option>
+        <option value="0p">0p</option>
+        <option value="pp">pp</option>
+      </select>
+      <div class="form-text">RMS · 0p (zero-to-peak) · pp (peak-to-peak)</div>
+    </div>
+  </div>
 </div>
 @if (chartContent) {
   <div class="separator"></div>

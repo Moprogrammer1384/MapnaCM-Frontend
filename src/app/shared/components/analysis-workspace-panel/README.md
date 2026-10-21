@@ -83,12 +83,62 @@ display snapshot, with the active `AnalysisTab` available as `tab`:
 
 Frequency Domain uses this input with its dedicated standalone
 `pages/cm/vibration/frequency-domain/frequency-domain-sample-chart.component.ts`.
-It displays an ideal one-sided velocity peak-amplitude spectrum from 0 to 125 Hz
+By default it displays an ideal one-sided velocity peak-amplitude spectrum from 0 to 125 Hz
 in 0.5 Hz bins, with 2 mm/s at 10 Hz and 1 mm/s at 25 Hz, matching the existing
 synthetic time signal. The data is isolated in `frequency-domain-sample.data.ts`;
 it is not an FFT of selected Measurement data. Other Vibration pages continue to
 use the existing Time Domain sample. Both previews use Metronic tokens, the same
 400px ECharts host and its resize/zoom/disposal behavior.
+
+## Chart controls (2026-10-19)
+
+The nested analysis panel includes four Metronic Select2 controls, using the
+existing `SharedModule` directive (no extra plugin initialization):
+
+- Quantity: Displacement, Velocity, Acceleration.
+- Unit (2026-10-21): directly after Quantity, with compatible choices only:
+  Displacement: µm (default), mm, mil, in; Velocity: mm/s (default), cm/s,
+  m/s, in/s; Acceleration: m/s² (default), mm/s², g, in/s². Changing Quantity
+  selects its default unit. Unit changes convert both previews' actual values,
+  Y-axis labels and tooltips, retaining chart instances and zoom.
+- X axis: Time (seconds) for `domain="time"` (the default); Hz, CPM, Order for
+  `domain="frequency"`. Frequency Domain explicitly sets this input.
+- Amplitude: RMS, 0p (zero-to-peak), pp (peak-to-peak). Defaults remain Velocity,
+  Time/Hz and 0p, matching the original sample.
+
+`AnalysisTab.chartSettings` is optional for backward compatibility; omitted
+values use those defaults. `AnalysisPanelComponent.chartSettingsChange` emits
+the complete `AnalysisChartSettings`. The workspace emits `{ tabId,
+chartSettings }`; controlled consumers update the corresponding tab immutably.
+State consumers implement `updateChartSettings(id, settings)` (an optional
+extension of `AnalysisWorkspaceState`). `VibrationSelectionService` implements
+it and retains independent settings per tab and route in layout memory; there
+is no new browser persistence or API contract. Projected templates read
+`tab.chartSettings`; Frequency Domain binds it to its per-measurement chart.
+The optional `chartSettings.unit` also supports older unitless settings; missing
+or incompatible units fall back to the Quantity default. Units are retained per
+tab/route along with the other settings. Conversion factors use 1 in = 25.4 mm,
+1 mil = 0.001 in and standard gravity 1 g = 9.80665 m/s²
+([NIST conversion table](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9)).
+
+Both previews update actual point values, axes and tooltips in place for every
+choice. Each measurement retains its independent chart instance and zoom.
+The synthetic base velocity is `2 sin(2π10t) + sin(2π25t)` mm/s, sampled at 250 Hz
+over two seconds. Displacement integrates each harmonic (including its phase)
+and converts mm to µm; acceleration differentiates and converts mm/s² to m/s².
+Selected units scale those default-unit values without rounding the data;
+tooltips use six significant digits to retain small converted values.
+Spectrum peaks use the corresponding harmonic magnitudes. RMS scales each
+harmonic's peak amplitude by `1/√2`, 0p by `1`, and pp by `2`; the time preview
+uses the same display scaling. These are harmonic amplitude conventions, not
+the overall RMS or peak-to-peak statistic of the combined time waveform.
+
+CPM is Hz × 60. Order is Hz / 10, using the explicit synthetic reference speed
+600 RPM (10 Hz), also shown below the X-axis control. Thus the two peaks appear
+at 10/25 Hz, 600/1500 CPM or 1/2.5 Order. This reference is not a measured asset
+speed. Sample data helpers are isolated in `vibration-sample.data.ts` and the
+page's `frequency-domain-sample.data.ts`; measurements and date/time filters
+remain independent of these synthetic previews.
 
 `../closable-tabs/` is the reusable PrimeNG Tabs adapter. The consumer supplies
 `tabs`, `activeId`, `activeIdChange`, `tabClose` and a projected `ng-template` for

@@ -1,6 +1,8 @@
-import { AfterViewInit, Component, NgZone, OnDestroy, OnInit, signal } from '@angular/core';
+import { AfterViewInit, Component, Input, NgZone, OnChanges, OnDestroy, OnInit, signal } from '@angular/core';
 import type { EChartsOption } from 'echarts';
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
+import { AMPLITUDE_LABELS, AnalysisChartSettings, defaultChartSettings, VIBRATION_QUANTITIES, vibrationUnit } from 'src/app/core/models/analysis-chart-settings.model';
+import { createTimeDomainSampleData } from './vibration-sample.data';
 
 /** Opt-in Time Domain preview for the shared analysis workspace. */
 @Component({
@@ -10,7 +12,8 @@ import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widge
   template: `@if (ready()) { <app-apache-echarts [options]="chartOptions" [mergeOptions]="true" height="400px"></app-apache-echarts> }`,
   host: { class: 'd-block mw-100' },
 })
-export class VibrationSampleChartComponent implements OnInit, AfterViewInit, OnDestroy {
+export class VibrationSampleChartComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+  @Input() settings?: AnalysisChartSettings;
   readonly ready = signal(false);
   chartOptions: EChartsOption;
   private observer?: MutationObserver;
@@ -24,6 +27,8 @@ export class VibrationSampleChartComponent implements OnInit, AfterViewInit, OnD
     this.observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
   }
 
+  ngOnChanges(): void { this.updateTheme(); }
+
   ngAfterViewInit(): void {
     // PrimeNG first projects the active panel; initialize ECharts once it has layout dimensions.
     this.mountTimer = setTimeout(() => this.ready.set(true));
@@ -32,12 +37,21 @@ export class VibrationSampleChartComponent implements OnInit, AfterViewInit, OnD
   private updateTheme(): void {
     const styles = getComputedStyle(document.documentElement);
     const token = (name: string) => styles.getPropertyValue(`--bs-${name}`).trim();
+    const settings = this.settings ?? defaultChartSettings();
+    const quantity = VIBRATION_QUANTITIES[settings.quantity];
+    const unit = vibrationUnit(settings).value;
+    const amplitude = AMPLITUDE_LABELS[settings.amplitude];
     this.chartOptions = {
       animation: true,
       color: [token('primary')],
       textStyle: { color: token('gray-600'), fontFamily: styles.fontFamily },
       tooltip: {
-        trigger: 'axis', valueFormatter: value => `${value} mm/s`,
+        trigger: 'axis',
+        formatter: params => {
+          const point = Array.isArray(params) ? params[0] : params;
+          if (!Array.isArray(point.value)) { return ''; }
+          return `${Number(point.value[0]).toFixed(3)} s<br/>${quantity.label}: ${Number(Number(point.value[1]).toPrecision(6))} ${unit} ${amplitude}`;
+        },
         backgroundColor: token('body-bg'), borderColor: token('border-color'),
         textStyle: { color: token('body-color') },
       },
@@ -48,7 +62,8 @@ export class VibrationSampleChartComponent implements OnInit, AfterViewInit, OnD
         axisLine: { lineStyle: { color: token('gray-500') } },
       },
       yAxis: {
-        type: 'value', name: 'Velocity (mm/s)',
+        type: 'value', name: `${quantity.label} (${unit} ${amplitude})`,
+        nameTextStyle: { align: 'left' },
         splitLine: { lineStyle: { color: token('border-color') } },
       },
       dataZoom: [
@@ -68,12 +83,9 @@ export class VibrationSampleChartComponent implements OnInit, AfterViewInit, OnD
         },
       ],
       series: [{
-        name: 'Vibration velocity', type: 'line', showSymbol: false, lineStyle: { width: 2 },
-        data: Array.from({ length: 501 }, (_, index) => {
-          const time = index / 250;
-          const velocity = 2 * Math.sin(2 * Math.PI * 10 * time) + Math.sin(2 * Math.PI * 25 * time);
-          return [time, Number(velocity.toFixed(3))];
-        }),
+        id: 'sample',
+        name: `${quantity.label} ${amplitude}`, type: 'line', showSymbol: false, lineStyle: { width: 2 },
+        data: createTimeDomainSampleData(settings),
       }],
     };
   }

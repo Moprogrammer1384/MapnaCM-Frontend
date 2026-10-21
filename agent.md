@@ -1,7 +1,7 @@
 # DARP frontend: development context
 
 Last studied: **2026-10-11 (Asia/Tehran)**, focused on taxonomy hierarchy and mutation helpers.
-Latest focused maintenance: **2026-10-14**.
+Latest focused maintenance: **2026-10-21**.
 Latest source reviewed: `52233c9` (`Plant type fix`), plus the Tag and Measurement Type UI changes below.
 
 This is the project memory for development with Codex. Read it at the start of
@@ -2417,3 +2417,65 @@ superseded by the user's later `components/` rename on 2026-10-10.
   URL Rewrite 2.1 x64 installer link, and deployed XML/hash fallback to the
   installation guide. The remote website still returned generic HTTP 500 when
   rechecked. Server-side installation and recovery remain unverified.
+
+### 2026-10-19 - Analysis chart Select2 controls and reactive sample data
+
+- Added Quantity (Displacement/Velocity/Acceleration), X axis and Amplitude
+  (RMS/0p/pp) controls in the shared nested `analysis-panel/`, reusing the
+  existing Select2 directive and Metronic form/grid classes without new CSS,
+  dependencies or duplicate plugin initialization. The explicit `domain` input
+  defaults to time (only Time); Frequency Domain passes frequency (Hz/CPM/Order).
+- Added optional `AnalysisTab.chartSettings` and typed settings/change models in
+  `core/models/analysis-chart-settings.model.ts` / `analysis-panel.model.ts`.
+  Panel emits settings, workspace emits `{ tabId, chartSettings }` and delegates
+  to optional `AnalysisWorkspaceState.updateChartSettings`. The existing central
+  `VibrationSelectionService` owns copied independent settings per tab/route in
+  layout memory. Controlled generic consumers update their own tab in response
+  to the event. Default Velocity/0p and Time/Hz retain the original sample.
+- Both sample charts bind settings and update point values, units, axes and
+  tooltips in place, retaining instances and independent zoom. Isolated synthetic
+  time data integrates/differentiates the existing 10/25 Hz velocity harmonics
+  for displacement (µm) / acceleration (m/s²). Spectrum uses matching magnitudes.
+  RMS/0p/pp scale individual harmonic amplitudes by 1/√2, 1 and 2 respectively;
+  the time sample uses the same display scaling, not an overall statistic of the
+  combined waveform. CPM = Hz × 60; Order = Hz / 10 with the displayed synthetic
+  reference 600 RPM. This is not the selected asset's measured speed. No API,
+  backend, date-filtered sample feed or new persistent storage was introduced.
+- Verified **21 ChromeHeadless tests**: six new panel/page cases plus existing
+  date-time integration and Select2 regressions. Coverage includes all 27
+  frequency combinations, nine time quantity/amplitude combinations, real
+  Select2 dropdown selection, per-tab/route restoration, multiple charts/zoom,
+  unchanged ranges, plugin/chart cleanup, Metronic light/dark colors and control
+  geometry at 320/768/1280px. Production build and project lint passed; existing
+  2.80 MB initial-bundle warning remains. No authenticated backend integration
+  or manual application screenshots were performed. Component README documents
+  consumer bindings and the sample conventions.
+
+### 2026-10-21 - Quantity-dependent vibration Unit selection
+
+- Extended the existing in-progress chart controls with a Unit Select2 directly
+  after Quantity in the shared analysis panel. Reused Metronic form/grid classes
+  and the existing directive; four columns on large screens, two from small
+  screens, one on phones. No new CSS, library, initialization or persistence.
+- Frontend `AnalysisChartSettings.unit` is optional for older consumers. Defaults:
+  Velocity mm/s, Displacement µm, Acceleration m/s². Available units are velocity
+  mm/s, cm/s, m/s, in/s; displacement µm, mm, mil, in; acceleration m/s², mm/s²,
+  g, in/s². Quantity changes replace incompatible units with the quantity default.
+  Existing copied per-tab/per-route chart settings also retain the selected unit.
+- Central typed unit options and conversion scales live in
+  `core/models/analysis-chart-settings.model.ts`. Time and frequency sample
+  generators convert actual amplitudes; chart Y axes and tooltips use the same
+  resolved unit. Data is no longer rounded to six decimals before charting;
+  tooltips use six significant digits to preserve small converted values.
+  Exact conversions use 1 in = 25.4 mm, 1 mil = 0.001 in and standard gravity
+  1 g = 9.80665 m/s², checked against the NIST SI conversion table:
+  https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9
+- Verified production build, project lint and **19 ChromeHeadless tests** (eight
+  panel/page cases plus eleven existing Select2 cases). Coverage includes every
+  supported unit in both sample domains, compatible option lists/default resets,
+  value/axis/tooltip conversions, legacy/mismatched-unit fallback, visible
+  dropdown changes, per-tab/route restoration, multiple charts/zoom, unchanged
+  dates/times, cleanup and Metronic light/dark geometry at 320/768/1280px.
+  Existing 2.80 MB bundle-budget warning and four CSS optimizer selector warnings
+  remain. No manual application screenshots or authenticated backend validation;
+  these are synthetic previews, with no API/backend changes.

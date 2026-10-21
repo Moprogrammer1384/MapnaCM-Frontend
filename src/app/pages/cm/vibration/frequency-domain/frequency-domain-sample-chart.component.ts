@@ -3,6 +3,7 @@ import type { EChartsOption } from 'echarts';
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
 import { AMPLITUDE_LABELS, AnalysisChartSettings, defaultChartSettings, VIBRATION_QUANTITIES, vibrationUnit } from 'src/app/core/models/analysis-chart-settings.model';
 import { createFrequencyDomainSampleData, frequencyAxis } from './frequency-domain-sample.data';
+import { formatAnalysisNumber } from 'src/app/shared/components/analysis-workspace-panel/analysis-number-format';
 
 /** Page-specific frequency spectrum preview; independent of Measurement/date data. */
 @Component({
@@ -51,7 +52,7 @@ export class FrequencyDomainSampleChartComponent implements OnInit, OnChanges, A
         formatter: params => {
           const point = Array.isArray(params) ? params[0] : params;
           if (!Array.isArray(point.value)) { return ''; }
-          return `${Number(point.value[0])} ${axis.unit}<br/>${quantity.label}: ${Number(Number(point.value[1]).toPrecision(6))} ${unit} ${amplitude}`;
+          return `${formatAnalysisNumber(Number(point.value[0]))} ${axis.unit}<br/>${quantity.label}: ${formatAnalysisNumber(Number(point.value[1]))} ${unit} ${amplitude}`;
         },
         backgroundColor: token('body-bg'), borderColor: token('border-color'),
         textStyle: { color: token('body-color') },
@@ -60,17 +61,22 @@ export class FrequencyDomainSampleChartComponent implements OnInit, OnChanges, A
       xAxis: {
         type: 'value', name: `Frequency (${axis.unit})`, nameLocation: 'middle', nameGap: 30,
         min: 0, max: 125 * axis.scale, splitLine: { show: false },
+        axisLabel: { formatter: formatAnalysisNumber },
+        axisPointer: { label: { formatter: params => formatAnalysisNumber(Number(params.value)) } },
         axisLine: { lineStyle: { color: token('gray-500') } },
       },
       yAxis: {
         type: 'value', name: `${quantity.label} (${unit} ${amplitude})`, min: 0,
         nameTextStyle: { align: 'left' },
+        axisLabel: { formatter: formatAnalysisNumber },
+        axisPointer: { label: { formatter: params => formatAnalysisNumber(Number(params.value)) } },
         splitLine: { lineStyle: { color: token('border-color') } },
       },
       dataZoom: [
         { type: 'inside', xAxisIndex: 0 },
         {
           type: 'slider', xAxisIndex: 0, height: 20, bottom: 10,
+          labelFormatter: formatAnalysisNumber,
           borderColor: token('border-color'), backgroundColor: token('gray-100'),
           fillerColor: token('primary-light'), textStyle: { color: token('gray-600') },
           handleStyle: { color: token('primary'), borderColor: token('primary') },

@@ -86,11 +86,21 @@ Frequency Domain uses this input with its dedicated standalone
 By default it displays an ideal one-sided velocity peak-amplitude spectrum from 0 to 125 Hz
 in 0.5 Hz bins, with 2 mm/s at 10 Hz and 1 mm/s at 25 Hz, matching the existing
 synthetic time signal. The data is isolated in `frequency-domain-sample.data.ts`;
-it is not an FFT of selected Measurement data. Other Vibration pages continue to
-use the existing Time Domain sample. Both previews use Metronic tokens, the same
+it is not an FFT of selected Measurement data. Overview, Bode Analysis and Rotor
+Position retain the synthetic time preview; Time Domain now uses the Book1 raw
+record described below. These charts use Metronic tokens, the same
 400px ECharts host and its resize/zoom/disposal behavior.
 
 ## Chart controls (2026-10-19)
+
+**Time Domain update (2026-10-21):** that page now provides the reusable
+`vibration-time-domain-chart` template, loading all Book1 X-direction raw samples
+through the replaceable `RAW_VIBRATION_DATA_SOURCE` adapter. It initializes Quantity
+and Unit from raw metadata, performs numerical conversions in a shared Web Worker,
+and displays true full-record RMS/0p/pp as a separate scalar without rescaling the
+instantaneous waveform. See [processing and API-adapter documentation](../../../core/services/vibration/README.md).
+The synthetic sample conventions below apply to the other pages' existing
+previews, not to the new raw Time Domain chart.
 
 The nested analysis panel includes four Metronic Select2 controls, using the
 existing `SharedModule` directive (no extra plugin initialization):
@@ -127,7 +137,11 @@ The synthetic base velocity is `2 sin(2π10t) + sin(2π25t)` mm/s, sampled at 25
 over two seconds. Displacement integrates each harmonic (including its phase)
 and converts mm to µm; acceleration differentiates and converts mm/s² to m/s².
 Selected units scale those default-unit values without rounding the data;
-tooltips use six significant digits to retain small converted values.
+`analysis-number-format.ts` formats displayed measurements to two decimal places
+in tooltips, numeric axes, pointer labels and zoom details. The raw Time Domain
+chart also uses it for amplitude annotations. Source/calculated values, chart
+coordinates, reference positions and bounds retain full numerical precision;
+formatted strings never feed back into calculations. Sample counts stay integers.
 Spectrum peaks use the corresponding harmonic magnitudes. RMS scales each
 harmonic's peak amplitude by `1/√2`, 0p by `1`, and pp by `2`; the time preview
 uses the same display scaling. These are harmonic amplitude conventions, not
@@ -180,6 +194,10 @@ The original date-only and time-only standalone components remain available.
 
 The Vibration service retains independent tabs/dates/times per route in layout memory; Execute
 creates a new snapshot and activates it. Reload/logout clears that feature state.
+`Analysis N` titles use an independent increasing counter for each Vibration
+page, starting at 1. Returning to a page continues its own counter, including
+after tabs are closed. Internal tab IDs use a separate sequence and remain unique
+across pages. Both counters share the layout service's existing in-memory lifetime.
 New tabs default to `00:00` through `23:59`. The synthetic previews remain independent
 of the selected dates/times/measurements; no API or browser storage is added.
 Other modules can supply their own state and charts without a Vibration provider.

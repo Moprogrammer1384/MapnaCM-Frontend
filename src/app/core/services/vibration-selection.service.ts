@@ -18,7 +18,8 @@ export class VibrationSelectionService {
   readonly selection = this.savedSelection.asReadonly();
   private readonly page = signal<VibrationPage>('overview');
   private readonly workspaces = signal<Partial<Record<VibrationPage, PageTabs>>>({});
-  private sequence = 0;
+  private tabSequence = 0;
+  private readonly analysisNumbers: Partial<Record<VibrationPage, number>> = {};
   readonly tabs = computed(() => this.workspaces()[this.page()]?.tabs ?? []);
   readonly activeTabId = computed(() => this.workspaces()[this.page()]?.activeId ?? '');
   readonly activeTab = computed(() => this.tabs().find(tab => tab.id === this.activeTabId()));
@@ -49,16 +50,20 @@ export class VibrationSelectionService {
 
   execute(execution: AssetTaxonomyExecution): void {
     if (!this.active() || !execution.measurements.length) { return; }
-    const number = ++this.sequence;
+    const page = this.page();
+    const number = (this.analysisNumbers[page] ?? 0) + 1;
+    this.analysisNumbers[page] = number;
     const today = new Date();
     const from = new Date(today);
     from.setDate(from.getDate() - 7);
     const date = (value: Date) => `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
     const tab: AnalysisTab = {
-      ...structuredClone(execution), id: `vibration-${number}`, title: `Analysis ${number}`,
+      ...structuredClone(execution), id: `vibration-${++this.tabSequence}`, title: `Analysis ${number}`,
       dateRange: { from: date(from), to: date(today) },
       timeRange: { from: '00:00', to: '23:59' },
-      chartSettings: defaultChartSettings(this.page() === 'frequency-domain' ? 'frequency' : 'time'),
+      // Time Domain initializes its display from the arriving raw record's metadata.
+      chartSettings: page === 'time-domain' ? undefined
+        : defaultChartSettings(page === 'frequency-domain' ? 'frequency' : 'time'),
     };
     this.updateWorkspace({ tabs: [...this.tabs(), tab], activeId: tab.id });
     this.drawerOpen.set(false);

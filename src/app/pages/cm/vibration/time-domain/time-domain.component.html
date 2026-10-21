@@ -1,1 +1,7 @@
-<app-analysis-workspace [state]="state" [showSampleChart]="true"></app-analysis-workspace>
+<app-analysis-workspace [state]="state" [showSampleChart]="true" [measurementChartContent]="timeChart"></app-analysis-workspace>
+<ng-template #timeChart let-item let-tab="tab">
+  <app-vibration-time-domain-chart [measurementId]="item.measurement.id" [settings]="tab.chartSettings"
+    (sourceSettings)="initializeSettings(tab.id, $event)"
+    [from]="tab.dateRange.from + 'T' + tab.timeRange.from"
+    [to]="tab.dateRange.to + 'T' + tab.timeRange.to"></app-vibration-time-domain-chart>
+</ng-template>

@@ -20,10 +20,10 @@ const execution: AssetTaxonomyExecution = {
 };
 
 interface ChartSnapshot {
-  xAxis: { name: string; max: number }[];
-  yAxis: { name: string }[];
+  xAxis: { name: string; max: number; axisLabel: { formatter: (value: number) => string } }[];
+  yAxis: { name: string; axisLabel: { formatter: (value: number) => string } }[];
   series: { data: [number, number][] }[];
-  dataZoom: { start: number; end: number }[];
+  dataZoom: { start: number; end: number; labelFormatter?: (value: number) => string }[];
   color: string[];
   tooltip: { formatter: (params: { value: [number, number] }) => string }[];
 }
@@ -63,8 +63,8 @@ describe('Analysis panel Select2 chart controls', () => {
   });
   afterEach(() => harness.fixture.destroy());
 
-  it('limits Time Domain to Time and updates real waveform values for all quantities and amplitude modes', async () => {
-    await navigate('time-domain'); await createTab();
+  it('limits the legacy time preview to Time and updates real waveform values for all quantities and amplitude modes', async () => {
+    await navigate('overview'); await createTab();
     expect(root().querySelectorAll('select').length).toBe(4);
     expect(Array.from(select('X axis').options, option => option.value)).toEqual(['time']);
     const instance = chart();
@@ -132,14 +132,14 @@ describe('Analysis panel Select2 chart controls', () => {
     expect(select('Quantity').value).toBe('displacement'); expect(select('X axis').value).toBe('order');
     expect(select('Amplitude').value).toBe('pp');
     expect(select('Unit').value).toBe('mil');
-    await navigate('time-domain'); await createTab(); await change('Quantity', 'acceleration'); await change('Unit', 'g');
+    await navigate('overview'); await createTab(); await change('Quantity', 'acceleration'); await change('Unit', 'g');
     expect(select('X axis').value).toBe('time');
     await navigate('frequency-domain');
     expect(select('X axis').value).toBe('order');
     expect(select('Unit').value).toBe('mil');
     state.closeTab(first); await settle(); expect(state.activeTabId()).toBe(second);
     expect(select('Quantity').value).toBe('velocity'); expect(select('X axis').value).toBe('hz');
-    await navigate('time-domain'); expect(select('Quantity').value).toBe('acceleration');
+    await navigate('overview'); expect(select('Quantity').value).toBe('acceleration');
     expect(select('Unit').value).toBe('g');
   });
 
@@ -156,7 +156,7 @@ describe('Analysis panel Select2 chart controls', () => {
         time: 2 * (2 * Math.PI * 10) / 1000 * Math.cos(2 * Math.PI * 10 / 250)
           + (2 * Math.PI * 25) / 1000 * Math.cos(2 * Math.PI * 25 / 250) },
     ];
-    for (const page of ['time-domain', 'frequency-domain']) {
+    for (const page of ['overview', 'frequency-domain']) {
       await navigate(page); await createTab();
       const instance = chart();
       for (const item of cases) {
@@ -166,10 +166,16 @@ describe('Analysis panel Select2 chart controls', () => {
         for (const [unit, scale] of item.units) {
           await change('Unit', unit);
           const options = snapshot();
-          const point = options.series[0].data[page === 'time-domain' ? 1 : 20];
-          expect(point[1]).toBeCloseTo((page === 'time-domain' ? item.time : item.spectrum) * scale, 10);
+          const point = options.series[0].data[page === 'overview' ? 1 : 20];
+          expect(point[1]).toBeCloseTo((page === 'overview' ? item.time : item.spectrum) * scale, 10);
           expect(options.yAxis[0].name).toContain(`(${unit} 0p)`);
           expect(options.tooltip[0].formatter({ value: point })).toContain(` ${unit} 0p`);
+          const displayedValues = options.tooltip[0].formatter({ value: point }).split('<br/>');
+          expect(displayedValues[0].split(' ')[0]).toMatch(/^-?\d+\.\d{2}$/);
+          expect(displayedValues[1]).toMatch(/: -?\d+\.\d{2} /);
+          expect(options.xAxis[0].axisLabel.formatter(1.23456789)).toBe('1.23');
+          expect(options.yAxis[0].axisLabel.formatter(-0.00049)).toBe('0.00');
+          expect(options.dataZoom[1].labelFormatter!(12.3456789)).toBe('12.35');
           expect(state.activeTab()!.chartSettings!.unit).toBe(unit);
           expect(chart()).toBe(instance);
         }
@@ -204,7 +210,7 @@ describe('Analysis panel Select2 chart controls', () => {
   });
 
   it('supports visible Select2 selection, accessible labels and cleanup of open dropdowns and charts', async () => {
-    await navigate('time-domain'); await createTab();
+    await navigate('overview'); await createTab();
     const combobox = root().querySelector<HTMLElement>('[role="combobox"][aria-label="Quantity"]')!;
     expect(combobox.tabIndex).toBe(0);
     window.jQuery(combobox).trigger(window.jQuery.Event('mousedown', { which: 1 })); await settle();

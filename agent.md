@@ -39,6 +39,20 @@ Never treat this file as a substitute for inspecting files that have changed.
   `src/app/core/services/`.** Do not create service implementations in page folders;
   import them from this central directory. Asset taxonomy uses
   `src/app/core/services/asset-taxonomy-api.service.ts`.
+- **Vibration analysis organization (user clarification, 2026-10-21):** group
+  processing by its data domain. Every operation on time-sampled vibration data
+  belongs to `core/services/vibration/time-domain/`, including preparation,
+  derivatives/integrals, quantity/unit conversion and time-record statistics.
+  Potential reuse by another page does not make it generic infrastructure.
+  The parent vibration folder holds domain-independent data access; actual
+  FFT/frequency-spectrum processing belongs to its own `frequency-domain/`
+  folder when implemented. Time preprocessing before an FFT remains Time Domain.
+- **Vibration number precision (user requirement, 2026-10-21):** always retain
+  full available numerical precision in raw records, analysis, cached/worker
+  results and chart coordinates/reference bounds. Format measured values only
+  when creating display text, using two decimal places for tooltips, axis and
+  pointer labels, amplitude labels and zoom details. Never feed formatted text
+  back into calculations. Sample counts remain integers.
 - **Reusable component location rule (2026-10-10): from now on, every reusable
   component must be placed under `src/app/shared/components/`.** Create or extract
   reusable components into this directory, using a feature subfolder when needed.
@@ -817,6 +831,9 @@ state and activates the next/previous surviving tab; closing the last shows the
 empty state. The current workspace has no internal selection button; consumers
 open selection externally. Navigation preserves tabs;
 all state ends with the authenticated layout. No browser persistence is added.
+Visible `Analysis N` numbering is independent for each of the five Vibration
+pages, starting at 1 and continuing on return or after closing tabs. Internal tab
+IDs use a separate globally unique sequence within that layout service instance.
 
 The standalone reusable `ClosableTabsComponent` uses the installed PrimeNG 18 Tabs
 API and a scoped Metronic adapter with the existing empty preset. Native close
@@ -873,6 +890,42 @@ IDs/dates without an invented contract in this change.
 Time/Frequency sample previews opt into `ApacheEchartsComponent.mergeOptions`
 to merge visual theme updates and retain zoom. The default remains false so
 other consumers retain replacement behavior on option changes.
+
+### Raw Time Domain data and processing (2026-10-21)
+
+Time Domain now overrides the synthetic per-measurement preview with the reusable
+`shared/components/vibration-time-domain-chart/` component. Its data comes from
+the replaceable `RAW_VIBRATION_DATA_SOURCE` adapter in `core/services/vibration/`;
+currently all measurement/date requests use Book1's X-direction fixture. The
+other routes retain their synthetic previews. See that directory's README for
+the source provenance, numerical assumptions, API wiring and performance notes.
+Raw time is confirmed milliseconds; displacement/µm is a user-authorized sample
+assumption, not verified sensor metadata. The source asset preserves all 40,960
+rows; the sample adapter repeats them ten times to supply 409,600 points.
+New Time Domain tabs start without chart settings and initialize Quantity/Unit
+from arriving raw metadata; later choices are retained per tab/route. Only the
+page initializes still-unset settings, avoiding resets from multiple charts.
+Pure, separate numerical functions implement quantity calculus, units, time-axis
+validation and sample RMS/absolute peak/peak-to-peak on the complete raw record.
+Amplitude is a full-record statistic retained in the analysis result; it does not multiply
+instantaneous time samples by sinusoidal constants. A shared reference-counted
+Web Worker per raw record, bounded caches, transferable Float64 results, 16 ms
+input coalescing and stale-response guards keep processing off the UI thread.
+
+All time-signal computation now lives in the `time-domain/` subfolder:
+`time-domain-preparation.ts`, `time-domain-quantity-conversion.ts`,
+`time-domain-calculus.ts`, `time-domain-statistics.ts`,
+`time-domain-unit-conversion.ts`, `time-domain-amplitude.ts`, plus analysis,
+session service, worker and their tests. The parent folder contains only
+`raw-data-source.service.ts` (`RawVibrationDataSource`, `SampleVibrationDataSource`)
+and documentation. Prepared records/statistics and public computational entry
+points use TimeDomain names. Worker request/response types are named
+`TimeDomainWorkerRequest` / `TimeDomainWorkerResponse` in the existing model file.
+Calculus supports recorded nonuniform timestamps. Integration is explicitly AC:
+time-weighted mean removal before/after trapezoidal integration; no unknown
+initial motion, DC/static position or sensor drift is recovered. Differentiation
+uses second-order nonuniform Lagrange differences and can amplify noise. No
+undocumented filter cutoff, actual API endpoint or new storage is introduced.
 
 ## Porting a static Mapna-UIUX page
 
@@ -2479,3 +2532,241 @@ superseded by the user's later `components/` rename on 2026-10-10.
   Existing 2.80 MB bundle-budget warning and four CSS optimizer selector warnings
   remain. No manual application screenshots or authenticated backend validation;
   these are synthetic previews, with no API/backend changes.
+
+### 2026-10-21 - Book1 raw Time Domain and vibration processing services
+
+- Imported sheet `X direction`, A2:B40961, into lazy-loaded
+  `assets/data/vibration/book1-x.json` (about 550 KB). Independent comparison
+  confirmed exact numeric equality of all 40,960 time/value pairs with the
+  workbook; source workbook was read only. `tools/import-vibration-workbook.ps1`
+  provides repeatable numeric-only extraction, including Excel-shared file access.
+  Time spans 0–2499.94 ms; no inferred uniform sampling grid replaces the rounded
+  0.06/0.07 ms increments. User confirmed Time in ms and explicitly authorized
+  the sample assumption Displacement/µm after stating the quantity was uncertain.
+  Metadata assumption and fixture/date behavior are disclosed in the chart.
+- Added frontend raw/prepared/result/request models and an injectable source
+  adapter seam, without inventing an API contract. An API adapter can later map
+  a real response and provide raw quantity/unit/time metadata, measurement ID and
+  date range. Current sample is shared across all selected measurements.
+- Separated unit conversion, numerical calculus, quantity conversion, amplitude
+  statistics and Time-axis handling into pure functions under
+  `core/services/vibration/`. Every conversion starts from the original raw
+  signal in SI. All nine quantity pairs are supported. RMS includes any DC in
+  the selected waveform and uses sqrt(sum(y²)/N); 0p is max(abs(y)), pp is
+  max(y)-min(y). Amplitude changes update the measured scalar, not waveform scale.
+  Numerical methods, AC-integration policy, noise/drift limitations and primary
+  MathWorks/B&K/NIST references are documented in the service README.
+- Added a shared reference-counted worker/session with at most three quantity
+  arrays and six display-result promises per active raw record. Final release
+  terminates the worker. Workerless environments use the same functions in a
+  scheduled fallback. Components coalesce rapid changes, ignore stale replies,
+  handle load/analysis errors with Retry, and dispose all resources. ECharts
+  receives all samples with minmax drawing/zoom, retains instances and zoom, and
+  reuses existing points for theme/amplitude-only changes. Metronic tokens and
+  existing primitives supply all visuals; no new theme/CSS dependencies.
+- Verified final production build, project lint and **40 ChromeHeadless tests**:
+  numerical accuracy/all nine quantity pairs, all units, true non-sinusoidal
+  RMS/peak/pp, nonuniform calculus/endpoints, raw preservation, real worker and
+  fallback, shared session cleanup, request races/retry, actual Book1 HTTP asset
+  and all-sample chart conversion, metadata defaults/tab restoration, theme/
+  geometry/zoom, existing date-time and Select2 regressions. The actual Book1
+  benchmark measured 30.8 ms for preparation plus twelve complete numerical
+  analyses locally, excluding HTTP/worker startup/Angular/rendering; this is not
+  a device-independent guarantee. Existing 2.80 MB initial bundle warning and
+  four CSS optimizer selector warnings remain. No authenticated backend testing
+  or manual application screenshot audit was performed.
+
+### 2026-10-21 - Time Domain requires only one parameter selection
+
+- Reproduced the reported delayed rendering with actual Book1 data and worker:
+  the app root uses OnPush, but the raw chart only entered NgZone after analysis
+  and did not mark its ancestors for checking. UI updates waited for a later
+  interaction. Previous integration tests forced fixture.detectChanges and hid
+  the issue.
+- The raw chart now marks for check after analysis completion, including cached
+  and amplitude-only results, source loading/errors, numerical errors and theme
+  updates. Existing coalescing, worker caches and stale-response guards remain.
+- Strengthened the three Book1 integration cases with an OnPush page ancestor
+  and automatic change detection; no forced refresh after responses. Each
+  Quantity/Unit/Amplitude selection runs once and verifies actual chart values,
+  axes, loading completion and the visible amplitude label/unit. State-driven
+  tab actions run inside Angular's zone, as real application events do.
+- Verified red before the fix (all three timed out), green afterward, then all
+  40 focused ChromeHeadless cases plus production build and project lint passed.
+  Includes real worker, error/retry, races, tab restoration, zoom, themes,
+  responsive geometry, date/time and Select2 coverage. Existing 2.80 MB initial
+  bundle warning and four CSS optimizer warnings remain. No manual authenticated
+  application test or backend integration was performed.
+
+### 2026-10-21 - Simplified Time Domain chart information
+
+- Per user request, removed the workbook label, amplitude summary, sample
+  metadata note, waveform explanation and numerical notices from the chart UI.
+  Kept only the formatted total sample count in a small, muted, end-aligned
+  footer below the chart, using existing Metronic utilities. Source assumptions
+  and numerical notices remain in domain metadata/results and service docs.
+- Updated existing integration assertions for the removed copy and retained
+  count; single-selection processing, actual chart conversions and independent
+  amplitude computation remain covered. No processing/API contract changes.
+- Verified six focused ChromeHeadless chart/page tests, production build and
+  project lint. Existing initial bundle and four CSS optimizer warnings remain.
+  No manual visual browser audit was performed for this small template change.
+
+### 2026-10-21 - Expanded vibration sample to 409,600 points
+
+- User requested roughly 400k total samples by repeating Book1. The fixture
+  adapter now uses 10 copies total (40,960 x 10 = 409,600), preserving every
+  original Y value. Each copy offsets the original ms timestamps by 2500 ms;
+  the combined range is 0..24999.94 ms with strictly increasing times and no
+  duplicated boundary timestamps. Joins retain the original waveform jumps.
+- Expansion allocates arrays once before the existing shareReplay cache. The
+  original 550 KB JSON/workbook is unchanged; all charts/conversions share the
+  expanded immutable record. Repetition is confined to the sample adapter and
+  does not change the future API interface or the numerical analysis pipeline.
+- Integration assertions now check every repeated source value, continuous
+  times, all 409,600 chart points, unit/quantity conversions, amplitude choices,
+  displayed total, tab/zoom/theme behavior and single-selection rendering. The
+  full control-sweep case allows 60s for the larger rendering workload.
+- Verified 17 focused ChromeHeadless numerical/worker/chart/page tests with
+  the expanded fixture, plus production build and project lint. One local run
+  measured 137.6 ms for preparation and 12 full-record numerical analyses at
+  409,600 points, excluding HTTP/worker startup/Angular/rendering. This is not
+  an end-to-end or device-independent latency guarantee. Existing initial
+  bundle/CSS optimizer warnings remain; no manual application audit was done.
+
+### 2026-10-21 - Vibration service file walkthrough
+
+- Reviewed all ten files in `core/services/vibration/` to explain their roles:
+  fixture/API source seam, analysis/session orchestration, worker execution,
+  numerical pipeline, calculus, units, amplitude statistics, two test files and
+  README. Verified current source still uses the 409,600-point fixture, six
+  cached display results and at most three cached SI quantity arrays per record.
+- This was a source walkthrough only; no runtime behavior changed and no new
+  tests or build were run. Previous validation results remain recorded above.
+
+### 2026-10-21 - Vibration naming and Time Domain separation
+
+- Renamed shared modules by responsibility: `raw-data-source.service.ts`,
+  `signal-processing.ts`, `signal-calculus.ts`, `signal-statistics.ts` and
+  `unit-conversion.ts`. Shared raw preparation/quantity conversion now have no
+  dependency on Time Domain analysis or rendering.
+- Extracted Time Domain result assembly/axis checks into
+  `time-domain/time-domain-analysis.ts`; moved its worker, session service and
+  associated tests into that same folder. Split the original numerical suite
+  into shared and domain suites; the combined invalid-input case is now two
+  cases with the original assertions retained in their appropriate layers.
+- Renamed the service/session/engine and worker message types to TimeDomain
+  names. The raw-source interface/token/default implementation are now
+  `RawVibrationDataSource`, `RAW_VIBRATION_DATA_SOURCE` and
+  `SampleVibrationDataSource`. Updated every consumer, test provider, import,
+  worker entry URL and active documentation. No old names/paths remain in src.
+- Verified production build, project lint and **41 ChromeHeadless tests**,
+  including real relocated worker, fallback/session cleanup, 409,600-point
+  chart/control conversions, single-selection OnPush rendering, tab/zoom/theme,
+  date/time and Select2 coverage. Existing 2.80 MB initial bundle and four CSS
+  optimizer warnings remain. No new backend integration or manual UI audit.
+
+### 2026-10-21 - Make Time Domain Amplitude visibly effective
+
+- Confirmed the control reached the worker and selected the correct scalar,
+  but removing the former summary left no visible amplitude output. The chart
+  also skipped option updates when only amplitude changed.
+- Added `time-domain/time-domain-amplitude.ts` and a typed `amplitudeReference`
+  in the TimeDomainAnalysis result. RMS and absolute 0p use symmetric reference
+  levels; pp uses the actual record min/max and reports their difference.
+  References use full-record statistics in the selected display unit. Physical
+  instantaneous samples retain their values, following B&K Measuring Vibration
+  (https://www.bksv.com/doc/br0094.pdf); sine-only amplitude multipliers are not
+  applied to arbitrary raw waveforms.
+- ECharts now shows Metronic-token dashed reference lines and an in-chart
+  mode/value/unit label; tooltip reports the current selected statistic. Y-axis
+  bounds include references. Amplitude changes merge only annotation/tooltip/
+  axis options, reusing the existing series points, chart instance and zoom.
+  Source/explanation paragraphs remain removed; total samples stays below chart.
+- New actual 409,600-point OnPush regression failed before and passed afterward:
+  RMS/pp/0p/cached RMS each update after one selection, preserve waveform/zoom,
+  and omit waveform arrays from setOption deltas. Verified 19 focused numerical,
+  worker, chart and page tests, production build and project lint. Existing
+  bundle/CSS warnings remain. No manual screenshot or backend audit performed.
+
+### 2026-10-21 - Organize Vibration strictly by analysis domain
+
+- User clarified the architecture: operations on time-sampled data are Time
+  Domain regardless of potential reuse by FFT or another page. This supersedes
+  the earlier choice to keep numerical helpers in the parent vibration folder.
+  Only domain-independent infrastructure such as data retrieval belongs there.
+- Moved calculus, time-record statistics, amplitude selection and waveform-unit
+  conversion into `time-domain/`, using explicit `time-domain-*` filenames.
+  Replaced the former `signal-processing.ts` with
+  `time-domain-preparation.ts` and `time-domain-quantity-conversion.ts`, separating
+  validation/SI normalization from derivative/integral quantity conversion.
+  Moved its numerical suite to `time-domain-preprocessing.spec.ts`.
+- Renamed prepared records/statistics to `PreparedTimeDomainRecord` and
+  `TimeDomainStatistics`, and computational entry points to TimeDomain names.
+  Updated imports, tests, model references, parent README and the active project
+  architecture/rules above. Root vibration now contains only the raw source and
+  README. No old production imports/names remain. Future actual FFT/spectrum
+  work belongs to frequency-domain; existing page sample previews stay as-is.
+- Verified **42 ChromeHeadless tests**, production build and project lint:
+  time preprocessing/calculus/conversions, real worker/fallback/cleanup,
+  409,600-point chart, visible/cached amplitude, OnPush single-selection, tab/
+  zoom/theme, dates and Select2. Existing bundle/CSS optimizer warnings remain.
+  No backend/API implementation or manual UI audit was performed.
+
+### 2026-10-21 - Two decimal places for display, full calculation precision
+
+- Added the presentation-only `analysis-number-format.ts` helper beside the
+  shared analysis chart components. It returns a two-decimal string and displays
+  rounded negative zero as `0.00`. Used by the raw Time Domain chart, legacy
+  time preview and frequency preview for tooltip values, numeric axis labels,
+  axis-pointer labels and slider details; raw amplitude reference labels use it
+  too. Total sample counts remain integers.
+- All changes are in presentation code. Source values, Float64 numerical
+  operations, worker/cache results, series coordinates, amplitude reference
+  positions and axis/zoom bounds retain their original precision. Formatters
+  run on displayed labels/hover, not over the complete sample array.
+- Extended existing integration assertions to verify two-decimal output while
+  retaining high-precision chart data and conversions across every unit. For
+  example, the real endpoint remains 24.99994 seconds and displays as `25.00`.
+- Verified **42 ChromeHeadless tests**, production build and project lint,
+  including the 409,600-point raw chart, amplitude updates, synthetic time/
+  frequency previews and numerical regressions. Existing bundle/CSS optimizer
+  warnings remain. No backend changes or manual screenshot audit performed.
+
+### 2026-10-21 - Compact full-record Min/Max below Time Domain chart
+
+- Added Min/Max to the existing footer beside the total sample count. Uses
+  Metronic flex/wrap/gap/type utilities so the chart/layout stays in place and
+  footer items wrap on small screens. A polite live group labels the summary.
+- Values come directly from analysis.statistics for the entire converted record,
+  independent of zoom, in the current quantity's selected unit. Reuses existing
+  worker statistics with no additional sample scan; the UI formatter displays
+  two decimals while calculations/reference values retain full precision.
+- Extended existing integration cases for full-record extrema across every
+  quantity/unit with zoom active, plus footer overflow checks in light/dark
+  themes at 320/768/1280px. Verified seven focused chart/page ChromeHeadless
+  tests, production build and project lint. Existing bundle/CSS warnings remain;
+  no manual screenshot or backend audit was performed.
+
+### 2026-10-21 - Independent Analysis numbering per Vibration page
+
+- Reproduced the shared counter bug: opening analyses on another page continued
+  the previous page's visible number. VibrationSelectionService now tracks a
+  separate Analysis title counter per VibrationPage. Each starts at 1 and
+  continues when returning to that page, even after its previous tabs close.
+- The separate tabSequence still supplies unique internal IDs across every
+  page. Counters live only in the existing layout-scoped service and reset with
+  its state on reload/logout; no storage or backend contract was added.
+- Added two focused service regressions covering all five pages in forward/
+  reverse navigation, unique IDs and closing/returning. Both failed before the
+  fix. The real five-route integration case also checks the rendered first-tab
+  title/accessibility label is Analysis 1 on every page.
+- Verified **14 ChromeHeadless tests** (service, real-route date/time and chart
+  control/tab state), production build and project lint. Existing bundle/CSS
+  optimizer warnings remain. No manual screenshot or backend audit performed.
+
+### 2026-10-21 - Data count label
+
+- Changed the Time Domain footer count suffix from `samples` to the requested
+  `Data` (for example, `409,600 Data`) and updated existing test expectations.
+  Copy-only change checked statically; no new build or runtime test was run.

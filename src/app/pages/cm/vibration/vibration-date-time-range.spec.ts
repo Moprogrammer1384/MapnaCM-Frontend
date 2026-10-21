@@ -13,6 +13,8 @@ import { VibrationSelectionService } from 'src/app/core/services/vibration-selec
 import { METRONIC_PRIMENG_CONFIG } from 'src/app/shared/components/metronic-primeng.config';
 import { AnalysisWorkspaceComponent } from 'src/app/shared/components/analysis-workspace-panel/analysis-workspace.component';
 import { VibrationModule } from './vibration.module';
+import { of } from 'rxjs';
+import { RAW_VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/raw-data-source.service';
 
 const execution: AssetTaxonomyExecution = {
   selection: { plantId: 1, unitId: 2, measurementIds: [6] },
@@ -65,6 +67,8 @@ describe('Combined date/time range on Vibration pages', () => {
       providers: [
         provideRouter([{ path: 'cm/vibration', loadChildren: () => VibrationModule }]),
         providePrimeNG(METRONIC_PRIMENG_CONFIG), VibrationSelectionService,
+        { provide: RAW_VIBRATION_DATA_SOURCE, useValue: { load: () => of({ id: 'dates', label: 'Date test',
+          quantity: 'displacement', unit: 'µm', timeUnit: 'ms', time: [0, 1, 2], values: [1, 2, 3] }) } },
       ],
     }).compileComponents();
     state = TestBed.inject(VibrationSelectionService);
@@ -77,6 +81,8 @@ describe('Combined date/time range on Vibration pages', () => {
     for (const [index, page] of Object.keys(VIBRATION_PAGES).entries()) {
       await navigate(page); await createTab();
       const root = harness.routeNativeElement!;
+      expect(state.activeTab()!.title).toBe('Analysis 1');
+      expect(root.querySelector(`[data-tab-id="${state.activeTabId()}"]`)!.getAttribute('aria-label')).toBe('Analysis 1');
       expect(root.querySelectorAll('app-date-time-range').length).toBe(1);
       expect(root.querySelector('app-date-range')).toBeNull();
       expect(root.querySelector('app-time-range')).toBeNull();

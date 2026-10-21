@@ -6,7 +6,7 @@ import { AnalysisWorkspaceComponent } from 'src/app/shared/components/analysis-w
 import { VibrationOverviewComponent } from './overview/overview.component';
 import { VibrationTimeDomainComponent } from './time-domain/time-domain.component';
 import { VibrationFrequencyDomainComponent } from './frequency-domain/frequency-domain.component';
-import { FrequencyDomainSampleChartComponent } from './frequency-domain/frequency-domain-sample-chart.component';
+import { VibrationFrequencyDomainChartComponent } from 'src/app/shared/components/vibration-frequency-domain-chart/vibration-frequency-domain-chart.component';
 import { VibrationTimeDomainChartComponent } from 'src/app/shared/components/vibration-time-domain-chart/vibration-time-domain-chart.component';
 import { VibrationBodeAnalysisComponent } from './bode-analysis/bode-analysis.component';
 import { VibrationRotorPositionComponent } from './rotor-position/rotor-position.component';
@@ -23,7 +23,7 @@ import { VibrationRotorPositionComponent } from './rotor-position/rotor-position
     CommonModule,
     SharedModule,
     AnalysisWorkspaceComponent,
-    FrequencyDomainSampleChartComponent,
+    VibrationFrequencyDomainChartComponent,
     VibrationTimeDomainChartComponent,
     RouterModule.forChild([
       {

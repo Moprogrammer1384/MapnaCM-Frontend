@@ -46,7 +46,11 @@ Never treat this file as a substitute for inspecting files that have changed.
   Potential reuse by another page does not make it generic infrastructure.
   The parent vibration folder holds domain-independent data access; actual
   FFT/frequency-spectrum processing belongs to its own `frequency-domain/`
-  folder when implemented. Time preprocessing before an FFT remains Time Domain.
+  folder. **Later clarification (2026-10-21): FFT-specific input resampling and
+  windowing belong in `frequency-domain/`, not Time Domain, even though they
+  operate before the transform.** Reuse existing validation/unit factors without
+  adding FFT-only files to `time-domain/`. This supersedes the earlier blanket
+  classification of all FFT preprocessing as Time Domain.
 - **Vibration number precision (user requirement, 2026-10-21):** always retain
   full available numerical precision in raw records, analysis, cached/worker
   results and chart coordinates/reference bounds. Format measured values only
@@ -247,7 +251,7 @@ maintenance entry for focused browser validation.
 | `src/app/pages/user/` | Real MapnaCM user list, add/edit, activity toggle, delete, detail/audit view |
 | `src/app/pages/role/` | Real role list/create; role detail still uses the vendor demo API |
 | `src/app/pages/permission/` | Vendor demo API list/CRUD; detail component has no implementation logic |
-| `src/app/pages/cm/vibration/` | Five routes share a tabbed measurement workspace; Execute opens independent analyses with dates, hierarchy details and the Time Domain sample chart |
+| `src/app/pages/cm/vibration/` | Five routes share a tabbed measurement workspace; Execute opens independent analyses with dates, hierarchy details and raw-record Time/Frequency Domain charts |
 | `src/app/pages/dashboard/`, `builder/` | Metronic demo dashboard and persisted layout builder |
 | `src/app/modules/auth/` | Real login/profile restoration/revocation; registration and forgot-password placeholders |
 | `src/app/modules/account/` | Real profile overview/update/avatar; other settings retain demo behavior |
@@ -735,10 +739,11 @@ application `EChartsOption` data to the reusable host.
 Vibration routes: overview, time-domain, frequency-domain, bode-analysis,
 rotor-position. All five now render `AnalysisWorkspaceComponent` directly. Each analysis
 tab has a From/To date range, an adjacent hour/minute time range and measurement hierarchy details above its sample
-charts with tooltip and zoom. Frequency Domain now has a page-specific ideal
-velocity amplitude spectrum; the other pages retain the synthetic 10 Hz + 25 Hz
-time signal over two seconds. Both remain independent of selected measurements/
-dates; no condition-monitoring backend feed or analysis API is connected.
+charts with tooltip and zoom. As of 2026-10-21, Time Domain and Frequency Domain
+share the same Book1 raw source; Frequency Domain computes an actual FFT. Overview,
+Bode Analysis and Rotor Position retain synthetic previews. No condition-monitoring
+backend feed or analysis API is connected. The fixture remains independent of
+measurement/date filters; requests still reach the replaceable source adapter.
 
 ### Vibration measurement selection (2026-10-11)
 
@@ -866,11 +871,12 @@ All snapshot metadata remains available for integration. Plant labels persist
 independently per tab; consumers without a label receive an Analysis heading.
 One independent sample chart appears below per selected Measurement, titled with
 its Component - Measurement names and the Measurement tag when present.
-Frequency Domain uses its dedicated spectrum component/data in that page folder,
-with Frequency (Hz) from 0 to 125 Hz and Amplitude (mm/s peak) axes. Its ideal
-one-sided sample spectrum has 0.5 Hz bins and peaks of 2 mm/s at 10 Hz and 1 mm/s
-at 25 Hz. The other pages retain their existing Time Domain waveform. These
-previews are synthetic and are not FFTs or API results for selected Measurements.
+Frequency Domain uses the reusable raw-record FFT component in
+`shared/components/vibration-frequency-domain-chart/`. The old ideal spectrum/data
+files were removed. All 409,600 observations feed an N-point FFT with 204,801
+one-sided bins; axis/amplitude/quantity/unit/window/RPM selections use numerical
+modules under `core/services/vibration/frequency-domain/`. Overview, Bode Analysis
+and Rotor Position retain their synthetic previews.
 The hierarchy path, Sample data badge and waveform description are absent above charts. Unique heading
 IDs preserve accessible labels, and each chart has independent zoom state.
 An accessible Metronic icon toggle above the sample charts switches from the
@@ -926,6 +932,44 @@ time-weighted mean removal before/after trapezoidal integration; no unknown
 initial motion, DC/static position or sensor drift is recovered. Differentiation
 uses second-order nonuniform Lagrange differences and can amplify noise. No
 undocumented filter cutoff, actual API endpoint or new storage is introduced.
+
+### Raw Frequency Domain data and processing (2026-10-21)
+
+Frequency Domain now uses the exact same immutable raw source as Time Domain.
+New frequency tabs leave chartSettings unset until source metadata initializes
+Quantity/Unit (Book1: displacement/µm assumption). Existing user choices remain
+independent per tab/route. The source adapter/date fixture behavior is unchanged.
+
+Actual FFT work is in `core/services/vibration/frequency-domain/`, split into
+FFT, line amplitude, Fourier quantity conversion, spectrum unit conversion, axis,
+analysis assembly, worker/session and adjacent tests. Existing validation/SI
+normalization is reused from Time Domain. FFT-only `fft-input-resampling.ts` and
+`fft-input-window.ts` live in Frequency Domain per the later user clarification.
+Nonuniform recorded timestamps use
+linear interpolation at the same N/endpoints; Fs=(N-1)/(tLast-tFirst). No raw
+values are changed, no truncation and no instrument filter/metadata is invented.
+
+The arbitrary-N Float64 FFT returns Fs/N spacing and properly handles even/odd
+one-sided bins, DC/Nyquist and coherent gain. Quantity conversion uses complex
+(j*2*pi*f)^order differences, with zero DC when quantity changes. Amplitude is
+sinusoidal **line** RMS/0p/pp, not waveform extrema or PSD/broadband RMS. DC pp is
+zero; Nyquist uses sampled-signal RMS. Full-spectrum Min/Max, df and source Data
+count appear below the chart, all display numbers using two decimals only.
+Repeating Book1 gives approximately 0.04 Hz bin spacing without adding independent
+information or improving the original record's physical resolving power.
+
+Frequency controls add Window (Rectangular default, Hann optional) and, only for
+Order, a positive finite reference RPM input. No 600 RPM synthetic default remains.
+Order = Hz*60/RPM is constant-speed axis normalization, not variable-speed tracking.
+The shared session computes each supported window FFT once per active raw record,
+keeps at most two spectra and six display results, and transfers output buffers.
+Charts coalesce changes, reject stale replies, support Retry, mark OnPush ancestors,
+retain chart/zoom for successful updates and date reloads, and release resources.
+
+See [Frequency Domain documentation](src/app/core/services/vibration/frequency-domain/README.md)
+for each file's purpose, formulas, primary references, acquisition/interpolation/
+DC/window/Nyquist limitations and ISO 13373-2/18431-2 context. Public ISO scopes
+were checked; full normative/instrument compliance is **not** claimed.
 
 ## Porting a static Mapna-UIUX page
 
@@ -2770,3 +2814,59 @@ superseded by the user's later `components/` rename on 2026-10-10.
 - Changed the Time Domain footer count suffix from `samples` to the requested
   `Data` (for example, `409,600 Data`) and updated existing test expectations.
   Copy-only change checked statically; no new build or runtime test was run.
+
+### 2026-10-21 - Full raw-data Frequency Domain FFT and mechanical conversions
+
+- Replaced the synthetic frequency preview with the same immutable 409,600-point
+  Book1 record used by Time Domain. Removed the obsolete spectrum preview/data
+  files. Source requests retain measurement/from/to parameters; the existing
+  fixture still ignores those filters. No backend, storage or dependencies added.
+- Added named FFT, amplitude, Fourier quantity conversion, spectrum unit, axis,
+  assembly and worker/session modules under `core/services/vibration/frequency-domain/`.
+  Time interpolation and windowing stay in `time-domain/`. Arbitrary-N Float64
+  FFT uses radix-2/Bluestein without truncating/padding the source record; 409,600
+  samples yield 204,801 one-sided bins, about 0.04 Hz spacing. Interpolation
+  uses actual timestamps and the same N/endpoints; raw arrays stay unchanged.
+- Verified direct-DFT agreement, analytical tones, Parseval and correct even/odd
+  DC/Nyquist RMS/0p/pp normalization. Quantity conversion uses complex `(jω)^p`
+  for all nine pairs with explicit zero-DC conversion. Exact existing unit
+  factors and full numerical precision are retained. Added Rectangular/Hann
+  selection with coherent-gain correction and an explicit positive reference
+  RPM input for Order; removed the fabricated 600 RPM reference. Order is
+  constant-speed axis normalization, not variable-speed tracking.
+- New frequency tabs initialize Quantity/Unit from raw metadata like Time
+  Domain. Shared worker sessions cache two window spectra and six results;
+  other selectors reuse FFT results. Charts coalesce updates, ignore stale
+  responses, mark OnPush ancestors, support Retry, preserve chart/zoom on
+  successful/date updates, and release workers/subscriptions on teardown.
+  Load failures remain actionable when controls change (no endless spinner).
+- Compact Metronic footer shows full-spectrum line-amplitude Min/Max, df and
+  original Data count; all measured display values use two decimals. Processing
+  formulas, file purposes, source/interpolation/window/DC/Nyquist limitations,
+  primary MathWorks/NI/B&K references and ISO 13373-2/18431-2 scope are documented
+  in `frequency-domain/README.md`. ISO public scope was reviewed; full normative
+  compliance, calibrated sensor bandwidth and physical resolution gains from
+  repeating a record are not claimed.
+- Verified production build, project lint and **63 ChromeHeadless tests**:
+  numerical/real-worker/fallback/session cases, adapter errors/retry/races,
+  actual Book1 raw FFT and single-selection OnPush updates, all quantities and
+  units, amplitudes/windows/Hz/CPM/Order, independent RPM/tab state, zoom and
+  multiple charts, Metronic light/dark at 320/768/1280px, date/time and Select2
+  regressions. One local full-record FFT preparation+analysis took 418.9 ms,
+  excluding HTTP/worker startup/rendering; not a device-independent guarantee.
+  Existing 2.80 MB initial-bundle warning and four CSS optimizer warnings remain.
+  No authenticated backend integration or manual screenshot audit performed.
+
+### 2026-10-21 - Keep FFT-only preparation inside Frequency Domain
+
+- User corrected the placement of the two newly added FFT-only preparation
+  files. This later clarification supersedes the previous blanket rule placing
+  all operations on time samples in Time Domain when they are exclusive FFT stages.
+- Moved uniform FFT-input interpolation to
+  `frequency-domain/fft-input-resampling.ts` (`resampleFftInput`) and FFT input
+  windowing to `frequency-domain/fft-input-window.ts` (`windowFftInput`). Updated
+  production/test imports, module documentation and the active organization rule.
+  No numerical formulas changed; no new or modified files remain in `time-domain/`.
+- Verified 17 focused ChromeHeadless FFT numerical/worker/chart/Book1 tests,
+  production build, project lint and diff whitespace checks. Existing initial
+  bundle/CSS optimizer warnings remain. No UI behavior or backend changes.

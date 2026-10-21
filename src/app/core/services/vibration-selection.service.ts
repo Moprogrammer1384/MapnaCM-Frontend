@@ -62,8 +62,8 @@ export class VibrationSelectionService {
       dateRange: { from: date(from), to: date(today) },
       timeRange: { from: '00:00', to: '23:59' },
       // Time Domain initializes its display from the arriving raw record's metadata.
-      chartSettings: page === 'time-domain' ? undefined
-        : defaultChartSettings(page === 'frequency-domain' ? 'frequency' : 'time'),
+      chartSettings: page === 'time-domain' || page === 'frequency-domain' ? undefined
+        : defaultChartSettings('time'),
     };
     this.updateWorkspace({ tabs: [...this.tabs(), tab], activeId: tab.id });
     this.drawerOpen.set(false);

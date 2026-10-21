@@ -1,14 +1,18 @@
 # DARP raw vibration processing
 
-Time Domain now reads the user's Book1 X-direction record through
-`RAW_VIBRATION_DATA_SOURCE`, rather than synthesizing a waveform. The other analysis
-pages retain their existing synthetic previews; no FFT/API results are implied.
+Time Domain and Frequency Domain read the same Book1 X-direction raw record through
+`RAW_VIBRATION_DATA_SOURCE`. Frequency Domain now computes an actual full-record FFT;
+see [Frequency Domain modules, equations, standards context and limitations](frequency-domain/README.md).
+Overview, Bode Analysis and Rotor Position retain synthetic previews.
 
 ## File organization
 
 ```text
 vibration/
   raw-data-source.service.ts          Raw source interface, injection token and sample adapter
+  frequency-domain/                   FFT, spectrum amplitude/quantity/unit/axis modules, worker and tests
+    fft-input-resampling.ts          Actual-timestamp interpolation for FFT input
+    fft-input-window.ts              Rectangular/periodic Hann FFT input window
   time-domain/
     time-domain-preparation.ts       Time-record validation and SI normalization
     time-domain-quantity-conversion.ts  Quantity conversion using time derivatives/integrals
@@ -28,10 +32,11 @@ Organization follows the **domain of the data being analyzed**, as specified by
 the user. Every operation on a time record belongs to `time-domain/`, including
 preparation, quantity calculus, sample-unit conversion and RMS/peak statistics.
 The parent folder holds only domain-independent infrastructure such as raw-data
-retrieval. Future FFT/frequency-spectrum analysis belongs to `frequency-domain/`;
-any preprocessing performed on time samples still belongs to Time Domain even
-if its output will later feed an FFT. The existing frequency-page sample preview
-does not implement an actual raw-data FFT, so no empty service folder is added.
+retrieval. Actual FFT/frequency-spectrum analysis lives in `frequency-domain/`.
+As clarified by the user on 2026-10-21, FFT-specific input resampling and windowing
+also belong there; they do not extend the Time Domain pipeline. Existing validation
+and exact SI factors are reused from Time Domain. The old frequency preview was
+removed. Frequency Domain has its own worker entry/session service.
 The worker entry URL points to the colocated `time-domain-analysis.worker.ts`.
 
 ## Source and later API wiring
@@ -66,7 +71,7 @@ The worker entry URL points to the colocated `time-domain-analysis.worker.ts`.
   carries measurement ID and local from/to date-times. No endpoint, server
   schema, timezone conversion, or database/storage implementation is introduced.
   API adapters must return a new immutable record object when data changes.
-- Time Domain initializes each new tab's Quantity/Unit from the arriving record.
+- Time Domain and Frequency Domain initialize each new tab's Quantity/Unit from the arriving record.
   Subsequent user settings remain independent per tab and route. There is no
   new persistent browser storage.
 

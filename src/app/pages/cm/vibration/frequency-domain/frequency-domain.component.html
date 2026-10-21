@@ -1,5 +1,8 @@
 <app-analysis-workspace [state]="state" [showSampleChart]="true" domain="frequency"
   [measurementChartContent]="frequencyChart"></app-analysis-workspace>
-<ng-template #frequencyChart let-tab="tab">
-  <app-frequency-domain-sample-chart [settings]="tab.chartSettings"></app-frequency-domain-sample-chart>
+<ng-template #frequencyChart let-item let-tab="tab">
+  <app-vibration-frequency-domain-chart [measurementId]="item.measurement.id" [settings]="tab.chartSettings"
+    (sourceSettings)="initializeSettings(tab.id, $event)"
+    [from]="tab.dateRange.from + 'T' + tab.timeRange.from"
+    [to]="tab.dateRange.to + 'T' + tab.timeRange.to"></app-vibration-frequency-domain-chart>
 </ng-template>

@@ -1,3 +1,4 @@
+import { AnalysisChartSettings } from 'src/app/core/models/analysis-chart-settings.model';
 import { Component } from '@angular/core';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
 
@@ -8,4 +9,10 @@ import { VibrationSelectionService } from 'src/app/core/services/vibration-selec
 })
 export class VibrationFrequencyDomainComponent {
   constructor(public state: VibrationSelectionService) {}
+
+  initializeSettings(tabId: string, settings: AnalysisChartSettings): void {
+    if (this.state.tabs().some(tab => tab.id === tabId && !tab.chartSettings)) {
+      this.state.updateChartSettings(tabId, settings);
+    }
+  }
 }

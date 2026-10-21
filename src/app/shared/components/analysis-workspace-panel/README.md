@@ -81,15 +81,12 @@ display snapshot, with the active `AnalysisTab` available as `tab`:
 </ng-template>
 ```
 
-Frequency Domain uses this input with its dedicated standalone
-`pages/cm/vibration/frequency-domain/frequency-domain-sample-chart.component.ts`.
-By default it displays an ideal one-sided velocity peak-amplitude spectrum from 0 to 125 Hz
-in 0.5 Hz bins, with 2 mm/s at 10 Hz and 1 mm/s at 25 Hz, matching the existing
-synthetic time signal. The data is isolated in `frequency-domain-sample.data.ts`;
-it is not an FFT of selected Measurement data. Overview, Bode Analysis and Rotor
-Position retain the synthetic time preview; Time Domain now uses the Book1 raw
-record described below. These charts use Metronic tokens, the same
-400px ECharts host and its resize/zoom/disposal behavior.
+Frequency Domain uses the shared raw-data FFT chart in
+`shared/components/vibration-frequency-domain-chart/`. It loads the same Book1
+record as Time Domain, initializes quantity/unit from source metadata, and plots
+all one-sided FFT bins with unit/amplitude/axis conversions. The old ideal spectrum
+preview was removed. See [Frequency Domain methods and limitations](../../../core/services/vibration/frequency-domain/README.md).
+Overview, Bode Analysis and Rotor Position retain synthetic time previews.
 
 ## Chart controls (2026-10-19)
 
@@ -99,10 +96,11 @@ through the replaceable `RAW_VIBRATION_DATA_SOURCE` adapter. It initializes Quan
 and Unit from raw metadata, performs numerical conversions in a shared Web Worker,
 and displays true full-record RMS/0p/pp as a separate scalar without rescaling the
 instantaneous waveform. See [processing and API-adapter documentation](../../../core/services/vibration/README.md).
-The synthetic sample conventions below apply to the other pages' existing
-previews, not to the new raw Time Domain chart.
+Frequency Domain also uses the raw record, with Fourier quantity conversion and
+RMS/0p/pp line amplitudes. The synthetic conventions below only apply to Overview,
+Bode Analysis and Rotor Position.
 
-The nested analysis panel includes four Metronic Select2 controls, using the
+The nested analysis panel includes four base Metronic Select2 controls, using the
 existing `SharedModule` directive (no extra plugin initialization):
 
 - Quantity: Displacement, Velocity, Acceleration.
@@ -113,8 +111,11 @@ existing `SharedModule` directive (no extra plugin initialization):
   Y-axis labels and tooltips, retaining chart instances and zoom.
 - X axis: Time (seconds) for `domain="time"` (the default); Hz, CPM, Order for
   `domain="frequency"`. Frequency Domain explicitly sets this input.
-- Amplitude: RMS, 0p (zero-to-peak), pp (peak-to-peak). Defaults remain Velocity,
-  Time/Hz and 0p, matching the original sample.
+- Amplitude: RMS, 0p (zero-to-peak), pp (peak-to-peak). Raw Time/Frequency tabs
+  initialize Quantity/Unit from source metadata. Synthetic previews default to Velocity.
+- Frequency-only Window: Rectangular (default) or Hann, with coherent-gain correction.
+- Frequency Order adds an accessible reference RPM input, independently retained
+  per tab; a positive finite value is required. No synthetic speed is prefilled.
 
 `AnalysisTab.chartSettings` is optional for backward compatibility; omitted
 values use those defaults. `AnalysisPanelComponent.chartSettingsChange` emits
@@ -131,7 +132,7 @@ tab/route along with the other settings. Conversion factors use 1 in = 25.4 mm,
 1 mil = 0.001 in and standard gravity 1 g = 9.80665 m/s²
 ([NIST conversion table](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9)).
 
-Both previews update actual point values, axes and tooltips in place for every
+All charts update point values, axes and tooltips in place for every
 choice. Each measurement retains its independent chart instance and zoom.
 The synthetic base velocity is `2 sin(2π10t) + sin(2π25t)` mm/s, sampled at 250 Hz
 over two seconds. Displacement integrates each harmonic (including its phase)
@@ -142,17 +143,17 @@ in tooltips, numeric axes, pointer labels and zoom details. The raw Time Domain
 chart also uses it for amplitude annotations. Source/calculated values, chart
 coordinates, reference positions and bounds retain full numerical precision;
 formatted strings never feed back into calculations. Sample counts stay integers.
-Spectrum peaks use the corresponding harmonic magnitudes. RMS scales each
-harmonic's peak amplitude by `1/√2`, 0p by `1`, and pp by `2`; the time preview
-uses the same display scaling. These are harmonic amplitude conventions, not
-the overall RMS or peak-to-peak statistic of the combined time waveform.
+The legacy synthetic time preview scales its harmonics by `1/√2`, `1` or `2`.
+The raw FFT chart uses one-sided line amplitude conventions with explicit
+DC/Nyquist exceptions, as documented in its processing README. Raw Time Domain
+continues to show the full-record statistic while preserving waveform samples.
 
-CPM is Hz × 60. Order is Hz / 10, using the explicit synthetic reference speed
-600 RPM (10 Hz), also shown below the X-axis control. Thus the two peaks appear
-at 10/25 Hz, 600/1500 CPM or 1/2.5 Order. This reference is not a measured asset
-speed. Sample data helpers are isolated in `vibration-sample.data.ts` and the
-page's `frequency-domain-sample.data.ts`; measurements and date/time filters
-remain independent of these synthetic previews.
+CPM is Hz * 60; Order is Hz * 60 / the user-entered reference RPM. Missing
+or invalid RPM produces validation; it is never inferred from a spectral peak.
+The axis is constant-reference normalization, not variable-speed order tracking.
+Both raw charts pass measurement/date/time to the source adapter; Book1 remains
+a shared fixture that does not filter by those dates. Spectral Min/Max are line
+amplitude extrema, while Time Domain Min/Max are instantaneous waveform extrema.
 
 `../closable-tabs/` is the reusable PrimeNG Tabs adapter. The consumer supplies
 `tabs`, `activeId`, `activeIdChange`, `tabClose` and a projected `ng-template` for

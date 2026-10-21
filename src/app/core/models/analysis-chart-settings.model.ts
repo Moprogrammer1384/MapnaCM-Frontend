@@ -17,6 +17,9 @@ export interface AnalysisChartSettings {
   readonly unit?: VibrationUnit;
   readonly xAxis: AnalysisXAxis;
   readonly amplitude: AmplitudeMode;
+  /** Constant reference speed for frequency-axis Order; never inferred from a spectrum peak. */
+  readonly referenceRpm?: number;
+  readonly window?: 'rectangular' | 'hann';
 }
 
 export function defaultChartSettings(domain: AnalysisDomain = 'time'): AnalysisChartSettings {

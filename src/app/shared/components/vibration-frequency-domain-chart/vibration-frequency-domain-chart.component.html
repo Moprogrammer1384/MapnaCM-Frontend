@@ -1,0 +1,24 @@
+@if (loading) {
+  <div class="d-flex align-items-center gap-3 py-3 text-gray-600" role="status">
+    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>Processing vibration data…
+  </div>
+}
+@if (error) {
+  <div class="alert alert-danger d-flex flex-wrap align-items-center gap-3" role="alert">
+    <span>{{ error }}</span><button class="btn btn-sm btn-light-danger" type="button" (click)="reload()">Retry</button>
+  </div>
+}
+@if (chartOptions) {
+  <app-apache-echarts [options]="chartOptions" [mergeOptions]="true" height="400px"></app-apache-echarts>
+}
+@if (analysis; as result) {
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 text-gray-500 fs-7 mt-2"
+    data-testid="record-summary" role="group" aria-label="Spectrum line amplitudes" aria-live="polite">
+    <div class="d-flex flex-wrap gap-3">
+      <span class="text-nowrap" data-testid="record-min">Min: <span class="text-gray-700 fw-semibold">{{ formatNumber(result.min) }} {{ result.unit }}</span></span>
+      <span class="text-nowrap" data-testid="record-max">Max: <span class="text-gray-700 fw-semibold">{{ formatNumber(result.max) }} {{ result.unit }}</span></span>
+    </div>
+    <span class="text-nowrap">Δf: {{ formatNumber(result.resolutionHz) }} Hz</span>
+    <span class="ms-auto text-nowrap" data-testid="record-sample-count">{{ result.sampleCount | number }} Data</span>
+  </div>
+}

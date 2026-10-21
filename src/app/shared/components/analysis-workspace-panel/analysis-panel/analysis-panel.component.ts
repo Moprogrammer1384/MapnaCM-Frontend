@@ -5,7 +5,7 @@ import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
 import { DateTimeRangeComponent } from '../../date-time-range/date-time-range.component';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
-import { AnalysisChartSettings, AnalysisDomain, defaultChartSettings, SAMPLE_REFERENCE_HZ, VIBRATION_UNITS, vibrationUnit } from 'src/app/core/models/analysis-chart-settings.model';
+import { AnalysisChartSettings, AnalysisDomain, defaultChartSettings, VIBRATION_UNITS, vibrationUnit } from 'src/app/core/models/analysis-chart-settings.model';
 
 @Component({
   selector: 'app-analysis-panel',
@@ -23,7 +23,6 @@ export class AnalysisPanelComponent implements OnChanges {
   @Output() readonly chartSettingsChange = new EventEmitter<AnalysisChartSettings>();
 
   chartSettings = defaultChartSettings();
-  readonly sampleRpm = SAMPLE_REFERENCE_HZ * 60;
 
   get unitOptions() { return VIBRATION_UNITS[this.chartSettings.quantity]; }
 

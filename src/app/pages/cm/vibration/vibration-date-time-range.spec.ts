@@ -58,6 +58,9 @@ describe('Combined date/time range on Vibration pages', () => {
     const id = state.activeTabId();
     state.updateDateRange(id, { from: '2026-10-01', to: '2026-10-12' });
     detect(); await harness.fixture.whenStable(); detect();
+    for (let attempt = 0; harness.routeNativeElement!.querySelector('app-vibration-frequency-domain-chart[aria-busy="true"]') && attempt < 200; attempt++) {
+      await new Promise(resolve => setTimeout(resolve, 10)); detect();
+    }
     return id;
   };
 

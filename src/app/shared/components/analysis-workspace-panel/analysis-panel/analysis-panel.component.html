@@ -40,7 +40,7 @@
       <label class="form-label" [for]="tab.id + '_x_axis'">X axis</label>
       <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
         [id]="tab.id + '_x_axis'" aria-label="X axis" [ngModel]="chartSettings.xAxis"
-        [attr.aria-describedby]="domain === 'frequency' ? tab.id + '_reference_speed' : null"
+        [attr.aria-describedby]="chartSettings.xAxis === 'order' ? tab.id + '_reference_speed' : null"
         (ngModelChange)="updateChartSetting('xAxis', $event)">
         @if (domain === 'frequency') {
           <option value="hz">Hz</option>
@@ -50,9 +50,6 @@
           <option value="time">Time</option>
         }
       </select>
-      @if (domain === 'frequency') {
-        <div [id]="tab.id + '_reference_speed'" class="form-text">Sample reference speed: {{ sampleRpm }} RPM (10 Hz)</div>
-      }
     </div>
     <div class="col-12 col-sm-6 col-lg-3">
       <label class="form-label" [for]="tab.id + '_amplitude'">Amplitude</label>
@@ -65,6 +62,27 @@
       </select>
       <div class="form-text">RMS · 0p (zero-to-peak) · pp (peak-to-peak)</div>
     </div>
+    @if (domain === 'frequency') {
+      <div class="col-12 col-sm-6 col-lg-3">
+        <label class="form-label" [for]="tab.id + '_window'">Window</label>
+        <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+          [id]="tab.id + '_window'" aria-label="Window" [ngModel]="chartSettings.window || 'rectangular'"
+          (ngModelChange)="updateChartSetting('window', $event)">
+          <option value="rectangular">Rectangular</option>
+          <option value="hann">Hann</option>
+        </select>
+      </div>
+      @if (chartSettings.xAxis === 'order') {
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="form-label" [for]="tab.id + '_rpm'">Reference speed (RPM)</label>
+          <input type="number" class="form-control form-control-solid" min="0" step="any"
+            [id]="tab.id + '_rpm'" aria-label="Reference speed (RPM)" [attr.aria-describedby]="tab.id + '_reference_speed'"
+            [ngModel]="chartSettings.referenceRpm" (ngModelChange)="updateChartSetting('referenceRpm', $event)"
+            [attr.aria-invalid]="!(chartSettings.referenceRpm && chartSettings.referenceRpm > 0)" />
+          <div [id]="tab.id + '_reference_speed'" class="form-text">Enter a positive, constant reference RPM. Order = Hz × 60 / RPM.</div>
+        </div>
+      }
+    }
   </div>
 </div>
 @if (chartContent) {

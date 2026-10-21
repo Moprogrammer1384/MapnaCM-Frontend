@@ -1,3 +1,5 @@
+import { of } from 'rxjs';
+import { RAW_VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/raw-data-source.service';
 import { TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
@@ -39,11 +41,18 @@ describe('Analysis panel Select2 chart controls', () => {
     harness.fixture.detectChanges();
     await harness.fixture.whenStable();
     harness.fixture.detectChanges();
+    for (let attempt = 0; root().querySelector('app-vibration-frequency-domain-chart[aria-busy="true"]') && attempt < 200; attempt++) {
+      await new Promise(resolve => setTimeout(resolve, 10)); harness.fixture.detectChanges();
+    }
   };
   const change = async (label: string, value: string) => {
     // Exercise Select2's synthetic event bridge to Angular, rather than component methods.
     window.jQuery(select(label)).val(value).trigger('change');
     await settle();
+    if (label === 'X axis' && value === 'order') {
+      const rpm = root().querySelector<HTMLInputElement>('input[aria-label="Reference speed (RPM)"]')!;
+      rpm.value = '600'; rpm.dispatchEvent(new Event('input', { bubbles: true })); await settle();
+    }
   };
   const navigate = async (page: string) => {
     state.setRoute(`/cm/vibration/${page}`);
@@ -56,7 +65,12 @@ describe('Analysis panel Select2 chart controls', () => {
     await TestBed.configureTestingModule({
       imports: [NoopAnimationsModule],
       providers: [provideRouter([{ path: 'cm/vibration', loadChildren: () => VibrationModule }]),
-        providePrimeNG(METRONIC_PRIMENG_CONFIG), VibrationSelectionService],
+        providePrimeNG(METRONIC_PRIMENG_CONFIG), VibrationSelectionService,
+        { provide: RAW_VIBRATION_DATA_SOURCE, useValue: { load: () => of({
+          id: 'analytic', label: 'Analytical fixture', quantity: 'velocity', unit: 'mm/s', timeUnit: 's',
+          time: Array.from({ length: 500 }, (_, i) => i / 250),
+          values: Array.from({ length: 500 }, (_, i) => 2 * Math.sin(2 * Math.PI * 10 * i / 250) + Math.sin(2 * Math.PI * 25 * i / 250)),
+        }) } }],
     }).compileComponents();
     state = TestBed.inject(VibrationSelectionService);
     harness = await RouterTestingHarness.create();
@@ -95,7 +109,7 @@ describe('Analysis panel Select2 chart controls', () => {
   it('converts actual spectrum peaks across all 27 combinations of quantity, frequency unit and amplitude', async () => {
     await navigate('frequency-domain'); await createTab();
     expect(Array.from(select('X axis').options, option => option.value)).toEqual(['hz', 'cpm', 'order']);
-    expect(root().textContent).toContain('600 RPM (10 Hz)');
+    expect(root().textContent).not.toContain('600 RPM (10 Hz)');
     for (const quantity of ['displacement', 'velocity', 'acceleration'] as VibrationQuantity[]) {
       await change('Quantity', quantity);
       for (const unit of ['hz', 'cpm', 'order'] as AnalysisXAxis[]) {
@@ -111,11 +125,11 @@ describe('Analysis panel Select2 chart controls', () => {
           expect(options.series[0].data[20][0]).toBe(10 * xFactor);
           expect(options.series[0].data[20][1]).toBeCloseTo(peak * factor, 6);
           expect(options.series[0].data[50][0]).toBe(25 * xFactor);
-          expect(options.series[0].data.filter(point => point[1] > 0).length).toBe(2);
+          expect(options.series[0].data.filter(point => point[1] > 1e-8).length).toBe(2);
           expect(options.xAxis[0].max).toBe(125 * xFactor);
-          expect(state.activeTab()!.chartSettings).toEqual({ quantity,
+          expect(state.activeTab()!.chartSettings).toEqual(jasmine.objectContaining({ quantity,
             unit: quantity === 'displacement' ? 'µm' : quantity === 'acceleration' ? 'm/s²' : 'mm/s',
-            xAxis: unit, amplitude: mode });
+            xAxis: unit, amplitude: mode }));
         }
       }
     }
@@ -247,7 +261,7 @@ describe('Analysis panel Select2 chart controls', () => {
           const panel = root().querySelector<HTMLElement>('app-analysis-panel')!;
           expect(panel.scrollWidth).toBeLessThanOrEqual(panel.clientWidth);
           const controls = Array.from(panel.querySelectorAll<HTMLElement>('.select2-selection'));
-          expect(controls.length).toBe(4);
+          expect(controls.length).toBe(5);
           controls.forEach(control => {
             expect(control.classList).toContain('form-select-solid');
             expect(control.getBoundingClientRect().width).toBeGreaterThan(0);

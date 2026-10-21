@@ -2,7 +2,7 @@
 
 Last studied: **2026-10-11 (Asia/Tehran)**, focused on taxonomy hierarchy and mutation helpers.
 Latest focused maintenance: **2026-10-21**.
-Latest source reviewed: `52233c9` (`Plant type fix`), plus the Tag and Measurement Type UI changes below.
+Latest source reviewed: `52233c9` (`Plant type fix`), plus the Tag changes and Measurement Type removal documented below.
 
 This is the project memory for development with Codex. Read it at the start of
 each task, inspect the relevant current source, and update it after meaningful
@@ -261,7 +261,7 @@ maintenance entry for focused browser validation.
 | `src/app/modules/widgets-examples/` | Widget galleries, including the standalone Apache Charts gallery |
 | `src/app/_metronic/` | Shared layout, icons, directives, theme DOM helpers, widgets |
 | `src/app/shared/components/data-table/` | PrimeNG table/paginator/select/button adapters with Metronic visuals, typed pagination helper and adjacent tests, exposed through `SharedModule` |
-| `src/app/shared/components/form-modal/` | Shared Metronic presentation for nine taxonomy form modals, each serving add/edit; page-owned forms projected into the shell, exported through `SharedModule` |
+| `src/app/shared/components/form-modal/` | Shared Metronic presentation for eight taxonomy form modals, each serving add/edit; page-owned forms projected into the shell, exported through `SharedModule` |
 | `src/app/shared/components/request-state/` | Cancellable keyed read-state helper and shared Metronic loading/error/retry feedback, exported through `SharedModule` |
 | `src/app/shared/components/asset-taxonomy-drawer/` | Standalone Metronic drawer with Select2 Plant selection and PrimeNG Tree measurement selection; currently replaces Activity Drawer on vibration routes |
 | `src/app/shared/components/closable-tabs/` | Reusable PrimeNG Tabs adapter with Metronic visuals, close buttons, keyboard support, scrolling and active-only panel lifecycle |
@@ -401,7 +401,7 @@ for taxonomy pages. `AssetApiService` lives in `src/app/core/services/asset-taxo
 and requests up to 10,000 rows for client-side
 search/filter/sort/paging; this is a current limit, not unlimited pagination.
 
-All nine tables across the seven taxonomy pages use `<app-data-table>` from
+All eight tables across the seven taxonomy pages use `<app-data-table>` from
 `shared/components/data-table/`, declared/exported by `SharedModule`. This generic
 wrapper owns the responsive table scroller and composes `<app-table-record>`
 with `<app-paginationbar>`, passing the same required `TablePagination<T>` instance
@@ -428,7 +428,7 @@ The underlying `<app-table-record>` remains available independently from
 typed `table: TablePagination<T>` input supplies column definitions, sorting and
 paged rows; cells render native values by each column key (null/undefined stay
 blank). The optional `tableId` input defaults to `kt_profile_overview_table`;
-existing distinct Plant Type/Measurement/Measurement Type IDs are preserved on the
+existing distinct Plant Type/Measurement IDs are preserved on the
 PrimeNG table host; its native table has a generated ID. Query `#<tableId> table`
 when accessing the native table. `p-table` owns row/empty-state rendering and
 `pButton` supplies sort and row-action buttons with Metronic classes and Keenicons.
@@ -438,7 +438,7 @@ renders the table only; the data-table wrapper supplies its responsive container
 and pagination bar. Toolbar/search/filter controls remain in host pages. Empty-state colspan derives
 from the configured columns plus Actions. No DataTables plugin is initialized.
 
-All nine taxonomy table footers use `<app-paginationbar [table]="table">` inside
+All eight taxonomy table footers use `<app-paginationbar [table]="table">` inside
 the data-table wrapper. Plant passes separate `plants`/`types` instances to its
 wrappers; Measurement passes separate `table`/`types` instances. The pagination
 bar and its `pagination-records` and `pagination-pages` children live under
@@ -465,7 +465,7 @@ Only one confirmation may be open per table. Hosts call `beginDelete(row)` befor
 the confirmed API mutation and `endDelete(row)` in its finalizer. Pending rows
 disable Edit/Delete and show a spinner; ID-based locks survive row snapshot
 replacement. Failed or cancelled mutations release the lock for another attempt.
-Column keys use `Extract<keyof T, string>` and all nine column arrays use
+Column keys use `Extract<keyof T, string>` and all eight column arrays use
 `satisfies readonly TablePaginationColumn<RowType>[]`. Numbers sort numerically;
 text sorts textually, including digit-prefixed names/tags. Columns may supply
 typed `(left: T, right: T) => number` comparators. Site latitude/longitude use
@@ -487,7 +487,7 @@ snapshots and array, preserves/clamps the page by default, and accepts
 `{ resetPage: true }` for reloads that previously reset to page 1. Measurement
 Type reloads and local deletion preserve/clamp the page. Rows/filters/results
 are readonly to consumers; submit forms must continue using their own models.
-The constructor requires typed `searchKeys`; all nine instances explicitly
+The constructor requires typed `searchKeys`; all eight instances explicitly
 include visible fields and exclude entity, parent, employer and type IDs.
 Case-insensitive search safely treats null/undefined as empty text. Constructor
 options can configure immutable finite positive integer `pageSizes`; the default
@@ -522,7 +522,7 @@ the common SweetAlert2 options and Metronic button classes. Messages and request
 workflows remain page-owned. Delete confirmation still belongs to the existing
 `TablePagination.confirmDelete()` integration.
 
-As of 2026-10-10, all nine taxonomy form modals use `FormModalComponent` from
+As of 2026-10-10, all eight taxonomy form modals use `FormModalComponent` from
 `shared/components/form-modal/`, exported by `SharedModule`. The component owns
 the Metronic close button, heading/optional description, responsive body spacing,
 cancel/submit actions and loading indicator. Each page projects its complete
@@ -536,12 +536,11 @@ all actions; successful saves close the modal. Dismiss outputs
 retain `Cross click` and `cancel`; ng-bootstrap still owns modal lifecycle.
 Site's existing action IDs and edit description are retained. Select2 continues
 to use the existing directive without additional plugin initialization.
-Each entity has one modal template for both Add and Edit, including Plant Type
-and Measurement Type. The page's form-model ID selects the title, submit label
+Each entity has one modal template for both Add and Edit, including Plant Type. The page's form-model ID selects the title, submit label
 and existing mode-specific DOM IDs; both actions open the same `TemplateRef`.
 Opening Add resets the page-owned model; opening Edit copies the selected row.
 
-All nine forms use shared `appTrimmedRequired` and `appFiniteNumber` validators
+All eight forms use shared `appTrimmedRequired` and `appFiniteNumber` validators
 from `shared/components/form-validation/`, exported by `SharedModule`. Required
 text rejects whitespace-only values; numeric validators expose the existing
 finite-number rules to NgForm. Errors use Metronic invalid-feedback classes and
@@ -555,8 +554,8 @@ required/invalid state and error descriptions onto its visible combobox.
 Navigation order: **Site -> Plant -> Unit -> System -> Asset -> Component -> Measurement**.
 The relationship chain is Measurement -> Component -> Asset -> System -> Unit -> Plant -> Site.
 Plant Type is managed as a second table on the Plant page.
-Successful Plant Type and Measurement Type create/update/delete operations refresh
-both the type lookup table and the related main list, keeping joined names/units current.
+Successful Plant Type create/update/delete operations refresh both its lookup
+table and the Plant list. Measurement Type has been removed (2026-10-21).
 
 - Site stores city/address/coordinates/location as strings. Elevation is numeric
   (`number | null` in the shared model for blank, required forms); Site Add/Update
@@ -604,23 +603,23 @@ use `hierarchyLabel` and rows use `componentLabel`. The former
 `MeasurementStorageService` has been removed. Measurement defines a named
 taxonomy record, not a live numeric reading or sensor data stream.
 
-Measurement also manages **Measurement Types** in a second table, reusing the
-Plant page's table/modal pattern. Both table containers use `col-12`, stacked
-at full width on every breakpoint. Types have required Name and Unit fields
-and support add/edit, search, sorting, pagination, and confirmed deletion. Each
-Measurement add/edit form requires a numeric type ID and finite numeric Sensitivity
-(zero, negative numbers, and decimals are accepted; no range was specified).
-The main table displays Type, Unit, and Sensitivity after Tag and filters types by ID.
-Current source (verified 2026-10-06) uses `AssetApiService` for Measurement Types:
-GET `/MeasurementType/GetAll`, POST `/MeasurementType/Add`, PUT
-`/MeasurementType/Update`, DELETE `/MeasurementType/Delete?Id=...`.
-The former Measurement UI-state service is absent. This API migration preceded
-the native-row refactor; the session-memory notes in older log entries are historical.
-Measurement payloads already include numeric `measurementTypeId` and `sensitivity`.
-`Measurement` and its row retain nullable type ID, type name, unit, and
-sensitivity for legacy records. Null cells render blank; required fields must be
-selected/filled when editing those records. Type deletion failures are surfaced from
-the API. These are verified frontend contracts, not verified live backend behavior.
+**Measurement Type removed (user instruction, 2026-10-21).** Measurement has
+one table and one Add/Edit modal. Type management, Type filter/selection/validation,
+Type/derived Unit columns and readonly form unit are removed. Required finite
+Sensitivity remains independent (zero, negative numbers and decimals accepted).
+Add requires the Component hierarchy only; no type data is requested.
+
+`AssetApiService` no longer contains Measurement Type CRUD endpoints/methods.
+Measurement Add/Update sends only name, tag, componentId and sensitivity (plus id
+for Update); no measurementTypeId or unit is read/sent. GET Measurement projects
+only supported fields so obsolete backend type/unit joins are ignored. This is
+verified frontend behavior; the changed write payload is not live-backend tested.
+
+The shared Measurement model has no type ID/name/unit, and there is no
+MeasurementType entity model. The selector tree shows measurement names only;
+node data and executed selection snapshots omit type/measurement-unit metadata.
+Unit hierarchy IDs/names and Sensitivity are preserved. Actual analysis quantity/
+unit metadata still comes from the separate raw vibration source, not taxonomy.
 
 Asset, Component, and Measurement have an optional free-text Tag field in their
 shared add/edit modal and a sortable Tag column after Name. Rows retain tags as
@@ -635,17 +634,17 @@ frontend models/bindings only; backend/database work belongs to the other team.
   **one shared model per entity**, defined in `core/models/asset-taxonomy.model.ts` and
   used directly for API data, table state and Add/Edit forms across all seven pages.
   Models are `Site`, `PlantType`, `Plant`, `Unit`, `AssetSystem`, `Asset`,
-  `Component`, `Measurement` and `MeasurementType`.
+  `Component` and `Measurement`.
 - Removed the seven page `.models.ts` files, separate Row/Form interfaces,
   standalone Payload interfaces and `asset-taxonomy-options.model.ts`.
   Parent/employer option helpers and `RoleUser` also live in `asset-taxonomy.model.ts`.
 - Canonical entity name fields use `name`; parent display fields use the API's
   `plantLabel`, `unitLabel`, `systemLabel`, `assetLabel` and `componentLabel`.
-  Plant/Measurement display types use `typeName`; inherited employer display uses
+  Plant display types use `typeName`; inherited employer display uses
   `employerName`. Table/search keys and form bindings use these same fields.
 - IDs are optional for unsaved forms; required parent selections can be null
   until validation; joined labels and audit data are optional. Measurement legacy
-  null type/sensitivity values and tag normalization remain supported. Rows still
+  null sensitivity values and tag normalization remain supported. Rows still
   use immutable snapshots; edit forms copy values to retain cancellation isolation.
 - API write method types derive allowed fields from the shared model with `Pick`
   and required numeric ID constraints, instead of separate payload declarations.
@@ -2870,3 +2869,28 @@ superseded by the user's later `components/` rename on 2026-10-10.
 - Verified 17 focused ChromeHeadless FFT numerical/worker/chart/Book1 tests,
   production build, project lint and diff whitespace checks. Existing initial
   bundle/CSS optimizer warnings remain. No UI behavior or backend changes.
+
+### 2026-10-21 - Remove Measurement Type and its Measurement/tree/API dependencies
+
+- Removed the Measurement Type table, Add/Edit modal, CRUD handlers, load state,
+  lookup prerequisites, Type filter/form selection/validation, and Type/derived
+  Unit columns from Measurement. Sensitivity, Tag, Component and inherited
+  employer behavior remain. Measurement creation no longer waits for type data.
+- Removed MeasurementType from shared models and all four Measurement Type API
+  methods. Measurement Add/Update explicitly omits the former type ID/unit;
+  GET Measurement retains only supported fields, ignoring legacy type/unit joins.
+  No backend/database changes or new endpoints were introduced.
+- Removed type/measurement-unit fields from Measurement, tree nodes and executed
+  selection snapshots, plus the unit suffix in the drawer. Preserved the Unit
+  hierarchy and raw-vibration Quantity/Unit selectors. Updated affected typed
+  fixtures, tree/execution expectations and form-modal/current project docs.
+- Verified 62 ChromeHeadless tests (48 taxonomy/Measurement cases plus 14
+  downstream Vibration state, routed date/time and chart-control regressions),
+  covering real Measurement table/modals,
+  create/edit without types, zero/negative sensitivity, required fields, API
+  errors/retry, exact HTTP write bodies and retired-response-field rejection,
+  hierarchy/mutation helpers, drawer selection and absent unit/type output.
+  Production build, project lint and diff whitespace checks passed. Existing
+  2.80 MB initial-bundle and four CSS optimizer warnings remain. No live backend
+  validation or manual screenshot audit; backend acceptance of the reduced
+  Measurement write body remains unverified.

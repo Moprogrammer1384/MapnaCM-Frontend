@@ -30,8 +30,6 @@ export interface SelectedMeasurementDetails {
   readonly asset: TaxonomyEntitySummary;
   readonly system: TaxonomyEntitySummary;
   readonly unit: TaxonomyEntitySummary;
-  readonly typeName: string | null;
-  readonly measurementUnit: string | null;
   readonly sensitivity: number | null;
 }
 
@@ -50,7 +48,6 @@ export interface TaxonomyNodeData {
   assetId: number | null;
   kind: TaxonomyNodeKind;
   tag?: string | null;
-  unit?: string | null;
 }
 
 export interface AssetTaxonomyNode extends TreeNode<TaxonomyNodeData> {

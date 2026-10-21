@@ -25,7 +25,7 @@ const execution: AssetTaxonomyExecution = {
     asset: { id: 4, name: 'SGT 600', tag: null },
     system: { id: 3, name: 'Gas System', tag: null },
     unit: { id: 2, name: '106', tag: null },
-    typeName: null, measurementUnit: null, sensitivity: null,
+    sensitivity: null,
   }],
 };
 

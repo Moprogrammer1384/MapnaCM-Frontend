@@ -34,12 +34,6 @@
             </select>
           </div>
           <!--end::Component filter-->
-          <div class="my-1 me-md-4 w-100 w-md-150px">
-            <select [disabled]="saving || !typesState.ready" class="form-select form-select-sm form-select-solid" data-control="select2" data-width="100%" aria-label="Filter by measurement type" [ngModel]="typeFilter" (ngModelChange)="filterByType($event)">
-              <option [ngValue]="null">All Types</option>
-              <option *ngFor="let type of typeOptions" [ngValue]="type.id">{{ type.name }} ({{ type.unit }})</option>
-            </select>
-          </div>
           <!--begin::Button-->
           <button type="button" [disabled]="!canAdd" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddModal(measurementModal)">Add Measurement</button>
           <!--end::Button-->
@@ -50,8 +44,6 @@
       <!--begin::Card body-->
       <div class="card-body pt-0">
         <app-request-feedback [state]="employersState" loadingMessage="Loading employers..." [retryDisabled]="saving" (retry)="loadEmployerOptions()"></app-request-feedback>
-        <app-request-feedback [state]="typesState" loadingMessage="Loading measurement types..." [retryDisabled]="saving" (retry)="loadTypes()"></app-request-feedback>
-        <div *ngIf="typesState.ready && typeOptions.length === 0" class="alert alert-warning">Add a Measurement Type below before creating a Measurement.</div>
         <div *ngIf="listState.ready && componentOptions.length === 0" class="alert alert-warning">Add a <a routerLink="/asset-taxonomy/component" class="alert-link">Component</a> before creating a Measurement.</div>
         <!--begin::Table container-->
         <app-data-table
@@ -65,52 +57,6 @@
           tableId="kt_measurement_table"
           (editRecord)="openEditModal(measurementModal, $event)"
           (deleteRecord)="table.confirmDelete($event, $event.name)">
-        </app-data-table>
-        <!--end::Table container-->
-      </div>
-      <!--end::Card body-->
-    </div>
-    <!--end::Card-->
-  </div>
-  <div class="col-12 mb-5 mb-xl-10">
-    <!--begin::Table-->
-    <div class="card card-flush mt-6 mt-xl-9">
-      <!--begin::Card header-->
-      <div class="card-header mt-5">
-        <!--begin::Card title-->
-        <div class="card-title flex-column">
-          <h3 class="fw-bold mb-1">Measurement Type</h3>
-        </div>
-        <!--begin::Card title-->
-        <!--begin::Card toolbar-->
-        <div class="card-toolbar my-1 w-100 w-md-auto gap-3 gap-md-0">
-          <!--begin::Search-->
-          <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
-            <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
-            <input type="text" [disabled]="typesState.loading()" id="kt_measurement_type_search" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Type" aria-label="Search measurement types" #typesSearch (input)="types.search(typesSearch.value)" />
-          </div>
-          <!--end::Search-->
-          <!--begin::Button-->
-          <button type="button" [disabled]="saving || typesState.loading()" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" (click)="openAddTypeModal(typeModal)">Add Type</button>
-          <!--end::Button-->
-        </div>
-        <!--begin::Card toolbar-->
-      </div>
-      <!--end::Card header-->
-      <!--begin::Card body-->
-      <div class="card-body pt-0">
-        <!--begin::Table container-->
-        <app-data-table
-          [table]="types"
-          [loading]="typesState.loading()"
-          [error]="typesState.error()"
-          [actionsDisabled]="saving"
-          [retryDisabled]="saving"
-          emptyMessage="No measurement types yet."
-          (retry)="loadTypes()"
-          tableId="kt_measurement_type_table"
-          (editRecord)="openEditTypeModal(typeModal, $event)"
-          (deleteRecord)="deleteType($event)">
         </app-data-table>
         <!--end::Table container-->
       </div>
@@ -160,48 +106,23 @@
         <label class="d-flex align-items-center fs-6 fw-semibold mb-2" [for]="formModal.formId + '_tag'">Tag</label>
         <input [id]="formModal.formId + '_tag'" type="text" class="form-control form-control-solid" placeholder="Enter Tag Name" name="tag" [(ngModel)]="measurementForm.tag" />
       </div>
-      <div class="row g-5 g-md-9 mb-8">
-        <div class="col-md-6 fv-row">
-          <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_measurementTypeId'">Type</label>
-          <select
-            [id]="formModal.formId + '_measurementTypeId'"
-            class="form-select form-select-solid"
-            data-control="select2"
-            data-placeholder="Select a Type"
-            name="measurementTypeId"
-            [(ngModel)]="measurementForm.measurementTypeId"
-            #measurementType="ngModel"
-            required
-            aria-label="Type"
-            [class.is-invalid]="measurementType.invalid && (measurementType.touched || measurementNgForm.submitted)"
-            [attr.aria-invalid]="(measurementType.invalid && (measurementType.touched || measurementNgForm.submitted)) ? 'true' : null"
-            [attr.aria-describedby]="(measurementType.invalid && (measurementType.touched || measurementNgForm.submitted)) ? (formModal.formId + '_measurementTypeId_error') : null">
-            <option [ngValue]="null">Select type...</option>
-            <option *ngFor="let type of typeOptions" [ngValue]="type.id">{{ type.name }} ({{ type.unit }})</option>
-          </select>
-          <div *ngIf="measurementType.invalid && (measurementType.touched || measurementNgForm.submitted)" [id]="formModal.formId + '_measurementTypeId_error'" class="fv-plugins-message-container invalid-feedback d-block">Select type.</div>
-          <div *ngIf="typeOptions.length === 0" class="form-text">Add a Measurement Type with its name and unit first.</div>        </div>
-        <div class="col-md-6 fv-row">
-          <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_sensitivity'">Sensitivity</label>
-          <input
-            [id]="formModal.formId + '_sensitivity'"
-            type="number"
-            step="any"
-            class="form-control form-control-solid"
-            placeholder="Enter Sensitivity"
-            name="sensitivity"
-            [(ngModel)]="measurementForm.sensitivity"
-            #sensitivity="ngModel"
-            required
-            [class.is-invalid]="sensitivity.invalid && (sensitivity.touched || measurementNgForm.submitted)"
-            [attr.aria-invalid]="(sensitivity.invalid && (sensitivity.touched || measurementNgForm.submitted)) ? 'true' : null"
-            [attr.aria-describedby]="(sensitivity.invalid && (sensitivity.touched || measurementNgForm.submitted)) ? (formModal.formId + '_sensitivity_error') : null"
-            appFiniteNumber />
-          <div *ngIf="sensitivity.invalid && (sensitivity.touched || measurementNgForm.submitted)" [id]="formModal.formId + '_sensitivity_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter a valid number for sensitivity.</div>        </div>
-      </div>
-      <div *ngIf="selectedTypeUnit" class="d-flex flex-column mb-8 fv-row">
-        <label class="fs-6 fw-semibold mb-2" [for]="formModal.formId + '_unit'">Unit</label>
-        <input [id]="formModal.formId + '_unit'" type="text" class="form-control form-control-solid" [value]="selectedTypeUnit" readonly />
+      <div class="d-flex flex-column mb-8 fv-row">
+        <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_sensitivity'">Sensitivity</label>
+        <input
+          [id]="formModal.formId + '_sensitivity'"
+          type="number"
+          step="any"
+          class="form-control form-control-solid"
+          placeholder="Enter Sensitivity"
+          name="sensitivity"
+          [(ngModel)]="measurementForm.sensitivity"
+          #sensitivity="ngModel"
+          required
+          [class.is-invalid]="sensitivity.invalid && (sensitivity.touched || measurementNgForm.submitted)"
+          [attr.aria-invalid]="(sensitivity.invalid && (sensitivity.touched || measurementNgForm.submitted)) ? 'true' : null"
+          [attr.aria-describedby]="(sensitivity.invalid && (sensitivity.touched || measurementNgForm.submitted)) ? (formModal.formId + '_sensitivity_error') : null"
+          appFiniteNumber />
+        <div *ngIf="sensitivity.invalid && (sensitivity.touched || measurementNgForm.submitted)" [id]="formModal.formId + '_sensitivity_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter a valid number for sensitivity.</div>
       </div>
       <div class="d-flex flex-column mb-15 fv-row">
         <!--begin::Label-->
@@ -232,58 +153,3 @@
   </app-form-modal>
 </ng-template>
 <!--end::Modal - Measurement (Add / Edit)-->
-
-<!--begin::Modal - Measurement Type (Add / Edit)-->
-<ng-template #typeModal let-modal>
-  <app-form-modal
-    #formModal
-    [title]="typeFormModel.id ? 'Edit Measurement Type' : 'Add Measurement Type'"
-    [formId]="typeFormModel.id ? 'kt_modal_edit_measurement_type_form' : 'kt_modal_add_measurement_type_form'"
-    [submitLabel]="typeFormModel.id ? 'Save' : 'Submit'"
-    [saving]="saving"
-    (dismiss)="modal.dismiss($event)">
-    <form [id]="formModal.formId" [attr.aria-labelledby]="formModal.formId + '_title'" class="form" (ngSubmit)="submitType(typeNgForm, modal)" #typeNgForm="ngForm" novalidate>
-      <!--begin::Input group-->
-      <div class="d-flex flex-column mb-8 fv-row">
-        <!--begin::Label-->
-        <label class="d-flex align-items-center fs-6 fw-semibold mb-2" [for]="formModal.formId + '_name'">
-          <span class="required">Name</span>
-        </label>
-        <!--end::Label-->
-        <input
-          [id]="formModal.formId + '_name'"
-          type="text"
-          class="form-control form-control-solid"
-          placeholder="Enter Type Name"
-          name="name"
-          [(ngModel)]="typeFormModel.name"
-          required
-          #nameControl="ngModel"
-          [class.is-invalid]="nameControl.invalid && (nameControl.touched || typeNgForm.submitted)"
-          [attr.aria-invalid]="(nameControl.invalid && (nameControl.touched || typeNgForm.submitted)) ? 'true' : null"
-          [attr.aria-describedby]="(nameControl.invalid && (nameControl.touched || typeNgForm.submitted)) ? (formModal.formId + '_name_error') : null"
-          appTrimmedRequired />
-        <div *ngIf="nameControl.invalid && (nameControl.touched || typeNgForm.submitted)" [id]="formModal.formId + '_name_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter name.</div>
-      </div>
-      <!--end::Input group-->
-      <div class="d-flex flex-column mb-15 fv-row">
-        <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_unit'">Unit</label>
-        <input
-          [id]="formModal.formId + '_unit'"
-          type="text"
-          class="form-control form-control-solid"
-          placeholder="Enter Unit (e.g. mm/s)"
-          name="unit"
-          [(ngModel)]="typeFormModel.unit"
-          required
-          #unitControl="ngModel"
-          [class.is-invalid]="unitControl.invalid && (unitControl.touched || typeNgForm.submitted)"
-          [attr.aria-invalid]="(unitControl.invalid && (unitControl.touched || typeNgForm.submitted)) ? 'true' : null"
-          [attr.aria-describedby]="(unitControl.invalid && (unitControl.touched || typeNgForm.submitted)) ? (formModal.formId + '_unit_error') : null"
-          appTrimmedRequired />
-        <div *ngIf="unitControl.invalid && (unitControl.touched || typeNgForm.submitted)" [id]="formModal.formId + '_unit_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter unit.</div>
-      </div>
-    </form>
-  </app-form-modal>
-</ng-template>
-<!--end::Modal - Measurement Type (Add / Edit)-->

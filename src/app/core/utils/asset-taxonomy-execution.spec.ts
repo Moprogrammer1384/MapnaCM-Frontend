@@ -14,7 +14,7 @@ describe('buildAssetTaxonomyExecution', () => {
       asset: { id: 0, name: 'Asset zero', tag: 'ASSET-0' },
       system: { id: 0, name: 'System zero', tag: null },
       unit: { id: 0, name: 'Unit zero', tag: null },
-      typeName: 'Velocity', measurementUnit: 'mm/s', sensitivity: 100,
+      sensitivity: 100,
     });
     expect(result.measurements[1].sensitivity).toBe(0);
     expect(JSON.stringify(result.measurements)).not.toContain('plant');

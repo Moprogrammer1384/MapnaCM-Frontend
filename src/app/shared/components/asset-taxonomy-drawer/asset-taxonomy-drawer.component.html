@@ -59,7 +59,6 @@
               </button>
               <ng-container *ngIf="node.data.kind === 'Measurement'">
                 <span class="text-break">{{ node.label }}</span>
-                <span *ngIf="node.data.unit" class="fs-8 text-gray-500">({{ node.data.unit }})</span>
               </ng-container>
             </span>
           </ng-template>

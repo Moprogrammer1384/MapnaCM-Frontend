@@ -10,7 +10,6 @@ import type {
   EmployerOption,
   Asset,
   AssetSystem,
-  MeasurementType,
   Plant,
   PlantType,
   RoleUser,
@@ -314,30 +313,42 @@ export class AssetApiService {
   // ---- Measurements -------------------------------------------------------
 
   getAllMeasurements(): Observable<Measurement[]> {
+    // Retain only supported Measurement fields; ignore retired joins in older responses.
     return this.http
       .get<ApiEnvelope<PaginatedResult<Measurement>>>(`${this.apiUrl}/Measurement/GetAll`, { params: ALL_ROWS_PARAMS })
-      .pipe(map((response) => this.unwrapPage(response)));
+      .pipe(map((response) => this.unwrapPage(response).map((measurement) => ({
+        id: measurement.id,
+        name: measurement.name,
+        tag: measurement.tag,
+        sensitivity: measurement.sensitivity,
+        componentId: measurement.componentId,
+        componentName: measurement.componentName,
+        componentLabel: measurement.componentLabel,
+        hierarchyLabel: measurement.hierarchyLabel,
+        createdAtUtc: measurement.createdAtUtc,
+        lastModifiedAtUtc: measurement.lastModifiedAtUtc,
+        employerId: measurement.employerId,
+        employerName: measurement.employerName,
+      }))));
   }
 
-  createMeasurement(payload: Pick<Measurement, 'name'> & { componentId: number; measurementTypeId: number; sensitivity: number; tag?: string }): Observable<void> {
+  createMeasurement(payload: Pick<Measurement, 'name'> & { componentId: number; sensitivity: number; tag?: string }): Observable<void> {
     return this.http
       .post<ApiEnvelope<object>>(`${this.apiUrl}/Measurement/Add`, {
         name: payload.name,
         tag: payload.tag,
-        measurementTypeId: payload.measurementTypeId,
         sensitivity: payload.sensitivity,
         componentId: payload.componentId,
       })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
-  updateMeasurement(payload: Pick<Measurement, 'name'> & { componentId: number; measurementTypeId: number; sensitivity: number; tag?: string } & { id: number }): Observable<void> {
+  updateMeasurement(payload: Pick<Measurement, 'name'> & { componentId: number; sensitivity: number; tag?: string } & { id: number }): Observable<void> {
     return this.http
       .put<ApiEnvelope<object>>(`${this.apiUrl}/Measurement/Update`, {
         id: payload.id,
         name: payload.name,
         tag: payload.tag,
-        measurementTypeId: payload.measurementTypeId,
         sensitivity: payload.sensitivity,
         componentId: payload.componentId,
       })
@@ -347,39 +358,6 @@ export class AssetApiService {
   deleteMeasurement(id: number): Observable<void> {
     return this.http
       .delete<ApiEnvelope<object>>(`${this.apiUrl}/Measurement/Delete`, { params: { Id: String(id) } })
-      .pipe(map((response) => this.unwrapVoid(response)));
-  }
-
-  // ---- Measurement types -------------------------------------------------
-
-  getAllMeasurementTypes(): Observable<MeasurementType[]> {
-    return this.http
-      .get<ApiEnvelope<PaginatedResult<MeasurementType>>>(`${this.apiUrl}/MeasurementType/GetAll`, { params: ALL_ROWS_PARAMS })
-      .pipe(map((response) => this.unwrapPage(response)));
-  }
-
-  createMeasurementType(payload: Pick<MeasurementType, 'name' | 'unit'>): Observable<void> {
-    return this.http
-      .post<ApiEnvelope<object>>(`${this.apiUrl}/MeasurementType/Add`, {
-        name: payload.name,
-        unit: payload.unit,
-      })
-      .pipe(map((response) => this.unwrapVoid(response)));
-  }
-
-  updateMeasurementType(payload: Pick<MeasurementType, 'name' | 'unit'> & { id: number }): Observable<void> {
-    return this.http
-      .put<ApiEnvelope<object>>(`${this.apiUrl}/MeasurementType/Update`, {
-        id: payload.id,
-        name: payload.name,
-        unit: payload.unit,
-      })
-      .pipe(map((response) => this.unwrapVoid(response)));
-  }
-
-  deleteMeasurementType(id: number): Observable<void> {
-    return this.http
-      .delete<ApiEnvelope<object>>(`${this.apiUrl}/MeasurementType/Delete`, { params: { Id: String(id) } })
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 

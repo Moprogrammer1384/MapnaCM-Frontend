@@ -228,10 +228,10 @@
     "semantic_hash": "14842651e4d12e2436c13dc44c279e0e"
   },
   "_metronic/layout/components/header/navbar/navbar.component.ts": {
-    "mtime": 1789487583.9730098,
-    "seen": 1789489467.6441216,
-    "ast_hash": "a710686574d52fa965306e9f2bc1ea9d",
-    "semantic_hash": "a710686574d52fa965306e9f2bc1ea9d"
+    "mtime": 1792746757.717119,
+    "seen": 1792750448.1493618,
+    "ast_hash": "d60f3c3ff40281d8bd3262ec21340c29",
+    "semantic_hash": ""
   },
   "_metronic/layout/components/header/page-title/page-title.component.ts": {
     "mtime": 1683870916.0,
@@ -240,10 +240,10 @@
     "semantic_hash": "6f97c9d0657c147915efce07cce29510"
   },
   "_metronic/layout/components/scripts-init/scripts-init.component.ts": {
-    "mtime": 1709539296.0,
-    "seen": 1789489467.6441216,
-    "ast_hash": "35d4bd95d5ca35a2e1a671a87127d180",
-    "semantic_hash": "35d4bd95d5ca35a2e1a671a87127d180"
+    "mtime": 1792746757.7181063,
+    "seen": 1792750448.1493618,
+    "ast_hash": "9bdb49105ff50287ea94e4ac1c9d430a",
+    "semantic_hash": ""
   },
   "_metronic/layout/components/sidebar/sidebar-footer/sidebar-footer.component.spec.ts": {
     "mtime": 1683870916.0,
@@ -420,16 +420,16 @@
     "semantic_hash": "7718bdd5155bf87da350cddd9f475da5"
   },
   "_metronic/layout/layout.component.ts": {
-    "mtime": 1789487583.9772482,
-    "seen": 1789489467.6441216,
-    "ast_hash": "baa793ec9b5bd34f70e346a69c1e146f",
-    "semantic_hash": "baa793ec9b5bd34f70e346a69c1e146f"
+    "mtime": 1792746757.7211173,
+    "seen": 1792750448.1493618,
+    "ast_hash": "c714355c87e068189a3cfdbe33b25286",
+    "semantic_hash": ""
   },
   "_metronic/layout/layout.module.ts": {
-    "mtime": 1789487583.9772482,
-    "seen": 1789489467.6441216,
-    "ast_hash": "bda3b099443bbe4993394568c270f707",
-    "semantic_hash": "bda3b099443bbe4993394568c270f707"
+    "mtime": 1792746757.7224138,
+    "seen": 1792750448.1493618,
+    "ast_hash": "cfef56de036647bf1d43322e7b8c8520",
+    "semantic_hash": ""
   },
   "_metronic/partials/content/cards/card1/card1.component.ts": {
     "mtime": 1683870916.0,
@@ -1188,10 +1188,10 @@
     "semantic_hash": "d00bd35a21bf5fd43fa0a8a53922b7f3"
   },
   "_metronic/partials/layout/theme-mode-switcher/theme-mode.service.ts": {
-    "mtime": 1789487583.9772482,
-    "seen": 1789489467.6441216,
-    "ast_hash": "8a1e8d2ed906270a78def2a0a3b8fadd",
-    "semantic_hash": "8a1e8d2ed906270a78def2a0a3b8fadd"
+    "mtime": 1792746757.735117,
+    "seen": 1792750448.1503603,
+    "ast_hash": "82e937ec0e3e1ce8997104d6c2826e6e",
+    "semantic_hash": ""
   },
   "_metronic/shared/keenicon/icons.json": {
     "mtime": 1683870916.0,
@@ -1212,9 +1212,9 @@
     "semantic_hash": "aecd290165f9178ef9e28a6eb01930f5"
   },
   "_metronic/shared/shared.module.ts": {
-    "mtime": 1790790649.493105,
-    "seen": 1790797014.0009453,
-    "ast_hash": "b48b73e8eb8adf54d6133b9c2cf9bf5c",
+    "mtime": 1792746757.7371175,
+    "seen": 1792750448.1503603,
+    "ast_hash": "b84396f0fcee4ffa0bbbe197ebcab064",
     "semantic_hash": ""
   },
   "app-routing.module.ts": {
@@ -1230,10 +1230,10 @@
     "semantic_hash": "ecf058f30247b97628b4f30337828f1a"
   },
   "app.module.ts": {
-    "mtime": 1788085048.8747332,
-    "seen": 1789489467.6441216,
-    "ast_hash": "39ba2e5a0bfaf58402dbce0ec86c4374",
-    "semantic_hash": "39ba2e5a0bfaf58402dbce0ec86c4374"
+    "mtime": 1792746757.7381163,
+    "seen": 1792750448.1503603,
+    "ast_hash": "eed34f0619e21c05ef51ad09f9616afb",
+    "semantic_hash": ""
   },
   "core/interceptors/auth.interceptor.ts": {
     "mtime": 1790796179.3410513,
@@ -1944,15 +1944,15 @@
     "semantic_hash": ""
   },
   "_metronic/layout/components/header/header.component.html": {
-    "mtime": 1789487583.9647958,
-    "seen": 1789493454.759906,
-    "ast_hash": "9fc820a49b1cdc6089b1b70e7ef833ce",
+    "mtime": 1792746757.715126,
+    "seen": 1792750448.1513603,
+    "ast_hash": "94863a2c8ef7caf2ce61f59f4fd6fb6e",
     "semantic_hash": ""
   },
   "_metronic/layout/components/header/navbar/navbar.component.html": {
-    "mtime": 1789487583.9687088,
-    "seen": 1789493454.759906,
-    "ast_hash": "bbe895958602ca2505ecfc1f3707a07e",
+    "mtime": 1792746757.7163193,
+    "seen": 1792750448.1513603,
+    "ast_hash": "53e1fe2ba72b5ac9909813d41b7ebff1",
     "semantic_hash": ""
   },
   "_metronic/layout/components/header/page-title/page-title.component.html": {
@@ -1968,15 +1968,15 @@
     "semantic_hash": ""
   },
   "_metronic/layout/components/sidebar/sidebar-footer/sidebar-footer.component.html": {
-    "mtime": 1788112847.8248086,
-    "seen": 1789493454.759906,
-    "ast_hash": "bb609c2bdb51b092242dc849b0f0a385",
+    "mtime": 1792746757.7191224,
+    "seen": 1792750448.1513603,
+    "ast_hash": "c335eb441b48296cbd56b6b22c08be70",
     "semantic_hash": ""
   },
   "_metronic/layout/components/sidebar/sidebar-logo/sidebar-logo.component.html": {
-    "mtime": 1683870916.0,
-    "seen": 1789493454.759906,
-    "ast_hash": "9b80766bf35892561264b2d58ff4d929",
+    "mtime": 1792746757.7201228,
+    "seen": 1792750448.1513603,
+    "ast_hash": "ed72854d5d2abea990ce407b8a47651e",
     "semantic_hash": ""
   },
   "_metronic/layout/components/sidebar/sidebar-menu/sidebar-menu.component.html": {
@@ -2034,9 +2034,9 @@
     "semantic_hash": ""
   },
   "_metronic/layout/layout.component.html": {
-    "mtime": 1789487583.9772482,
-    "seen": 1789493454.759906,
-    "ast_hash": "a3a3adab04245b240996a17e298f921d",
+    "mtime": 1792746757.7204342,
+    "seen": 1792750448.1513603,
+    "ast_hash": "396b364daa2c2993c981da9b33943438",
     "semantic_hash": ""
   },
   "_metronic/partials/content/cards/card1/card1.component.html": {
@@ -2154,15 +2154,15 @@
     "semantic_hash": ""
   },
   "_metronic/partials/content/widgets/advance-tables/advance-tables-widget2/advance-tables-widget2.component.html": {
-    "mtime": 1709539296.0,
-    "seen": 1789493454.759906,
-    "ast_hash": "3a24b30ae0add6ecd7773dfc2d707fdb",
+    "mtime": 1792746757.7238202,
+    "seen": 1792750448.1513603,
+    "ast_hash": "de0ecaa56480b05b9f4fcc3c286762dc",
     "semantic_hash": ""
   },
   "_metronic/partials/content/widgets/advance-tables/advance-tables-widget7/advance-tables-widget7.component.html": {
-    "mtime": 1709539296.0,
-    "seen": 1789493454.759906,
-    "ast_hash": "9e0d02fea46e171fe61b84c1e8371640",
+    "mtime": 1792746757.7251973,
+    "seen": 1792750448.1513603,
+    "ast_hash": "6b0e89801863e6c757d7b8307aa5ae51",
     "semantic_hash": ""
   },
   "_metronic/partials/content/widgets/base-tables/base-tables-widget1/base-tables-widget1.component.html": {
@@ -2172,9 +2172,9 @@
     "semantic_hash": ""
   },
   "_metronic/partials/content/widgets/base-tables/base-tables-widget2/base-tables-widget2.component.html": {
-    "mtime": 1702361196.0,
-    "seen": 1789493454.759906,
-    "ast_hash": "f61266bbe7450d31452ad94f31f8dee1",
+    "mtime": 1792746757.7261171,
+    "seen": 1792750448.1513603,
+    "ast_hash": "df0f654e45f962b140ba9bb7fca35e0d",
     "semantic_hash": ""
   },
   "_metronic/partials/content/widgets/base-tables/base-tables-widget6/base-tables-widget6.component.html": {
@@ -2454,9 +2454,9 @@
     "semantic_hash": ""
   },
   "_metronic/partials/content/widgets/tables/tables-widget3/tables-widget3.component.html": {
-    "mtime": 1702361196.0,
-    "seen": 1789493454.759906,
-    "ast_hash": "c509c708c5db3ee74d46b208267d677b",
+    "mtime": 1792746757.7301204,
+    "seen": 1792750448.1513603,
+    "ast_hash": "7b445a1942e9e3929f0d113d361dd84e",
     "semantic_hash": ""
   },
   "_metronic/partials/content/widgets/tables/tables-widget4/tables-widget4.component.html": {
@@ -2466,9 +2466,9 @@
     "semantic_hash": ""
   },
   "_metronic/partials/content/widgets/tables/tables-widget5/tables-widget5.component.html": {
-    "mtime": 1702361196.0,
-    "seen": 1789493454.759906,
-    "ast_hash": "8ea6a0b0d8ddfac5e5e8a99d48b12d17",
+    "mtime": 1792746757.7312808,
+    "seen": 1792750448.1513603,
+    "ast_hash": "752cb3b1d9f4c82345cf94aaa82d9ca7",
     "semantic_hash": ""
   },
   "_metronic/partials/content/widgets/tables/tables-widget6/tables-widget6.component.html": {
@@ -2538,9 +2538,9 @@
     "semantic_hash": ""
   },
   "_metronic/partials/layout/drawers/activity-drawer/activity-drawer.component.html": {
-    "mtime": 1702361196.0,
-    "seen": 1789493454.759906,
-    "ast_hash": "9fd84ced1679dfc7985c7888e5cdcd17",
+    "mtime": 1792746757.7326188,
+    "seen": 1792750448.1513603,
+    "ast_hash": "cfde1b6612895537f1c1275217bc6d9a",
     "semantic_hash": ""
   },
   "_metronic/partials/layout/drawers/messenger-drawer/messenger-drawer.component.html": {
@@ -2556,9 +2556,9 @@
     "semantic_hash": ""
   },
   "_metronic/partials/layout/engages/explore-main-drawer/explore-main-drawer.component.html": {
-    "mtime": 1702361196.0,
-    "seen": 1789493454.759906,
-    "ast_hash": "e1fa22f0df694082b6e523d72ca36a58",
+    "mtime": 1792746757.7331185,
+    "seen": 1792750448.1513603,
+    "ast_hash": "7da7c503cfed3d924fef8ba646166169",
     "semantic_hash": ""
   },
   "_metronic/partials/layout/engages/help-drawer/help-drawer.component.html": {
@@ -2628,9 +2628,9 @@
     "semantic_hash": ""
   },
   "_metronic/partials/layout/splash-screen/splash-screen.component.html": {
-    "mtime": 1683870916.0,
-    "seen": 1789493454.759906,
-    "ast_hash": "717ae73d024a2c4c3f617d6faf9908e1",
+    "mtime": 1792746757.7341163,
+    "seen": 1792750448.1513603,
+    "ast_hash": "bc870720281548886b4ae9e283dc842e",
     "semantic_hash": ""
   },
   "_metronic/partials/layout/theme-mode-switcher/theme-mode-switcher.component.html": {
@@ -2730,9 +2730,9 @@
     "semantic_hash": ""
   },
   "modules/auth/auth.component.html": {
-    "mtime": 1683870916.0,
-    "seen": 1789493454.759906,
-    "ast_hash": "f43d925872748a27dec4bc1a235c208a",
+    "mtime": 1792746757.7721188,
+    "seen": 1792750448.1513603,
+    "ast_hash": "9c981f00d34473f66efdb52444ef7451",
     "semantic_hash": ""
   },
   "modules/auth/components/forgot-password/forgot-password.component.html": {
@@ -2796,9 +2796,9 @@
     "semantic_hash": ""
   },
   "modules/profile/documents/documents.component.html": {
-    "mtime": 1702361196.0,
-    "seen": 1789493454.759906,
-    "ast_hash": "581ad622a8671d8210006aa62c79a810",
+    "mtime": 1792746757.773119,
+    "seen": 1792750448.1513603,
+    "ast_hash": "72eb9c4feb478c1e36b1e5fc29ae83e3",
     "semantic_hash": ""
   },
   "modules/profile/overview/overview.component.html": {
@@ -2958,15 +2958,15 @@
     "semantic_hash": ""
   },
   "_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component.spec.ts": {
-    "mtime": 1790010922.1256802,
-    "seen": 1790014760.4049284,
-    "ast_hash": "9c7f5efdf88409e7426d140fa89fddaf",
+    "mtime": 1792746757.7281191,
+    "seen": 1792750448.1493618,
+    "ast_hash": "6e80e9b10b94636dd4a16307cbe15df2",
     "semantic_hash": ""
   },
   "_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component.ts": {
-    "mtime": 1790010922.1256802,
-    "seen": 1790014760.4049284,
-    "ast_hash": "756b0236920998570bad8b03cb08bc26",
+    "mtime": 1792746757.7294858,
+    "seen": 1792750448.1493618,
+    "ast_hash": "0c571fbbd341c7f02596038a723fd0cf",
     "semantic_hash": ""
   },
   "_metronic/partials/content/widgets/charts/Apache-Widgets/apache-echarts-demo.registry.ts": {
@@ -5201,12 +5201,6 @@
     "ast_hash": "d7434357c9b88728331bcd88e8d093e9",
     "semantic_hash": ""
   },
-  "core/models/asset.model.ts": {
-    "mtime": 1791184746.0313468,
-    "seen": 1791185065.5061805,
-    "ast_hash": "122609c76e661e990edfc64a39a70e3c",
-    "semantic_hash": ""
-  },
   "modules/widgets-examples/apache-charts/apache-charts.component.spec.ts": {
     "mtime": 1790010922.4204323,
     "seen": 1790014760.4049284,
@@ -5231,70 +5225,58 @@
     "ast_hash": "1606fe8061da43d03092a703e7392dc1",
     "semantic_hash": ""
   },
-  "pages/asset-taxonomy/client-table.ts": {
-    "mtime": 1790796178.7168114,
-    "seen": 1790797014.0009453,
-    "ast_hash": "0ff553e40a2ed0fb577cc53e8d735d07",
-    "semantic_hash": ""
-  },
   "pages/asset-taxonomy/plant/plant.component.ts": {
-    "mtime": 1791101730.6549642,
-    "seen": 1791102161.5196211,
-    "ast_hash": "221aa427cfce45f3cb73886e2616b600",
-    "semantic_hash": ""
-  },
-  "pages/asset-taxonomy/services/asset-api.service.ts": {
-    "mtime": 1791183744.896521,
-    "seen": 1791184096.023906,
-    "ast_hash": "ead0030c8eb34a44e8819a83b77e4129",
+    "mtime": 1792746757.7901213,
+    "seen": 1792750448.1503603,
+    "ast_hash": "57aa485bcd35415a5cdd36caf839234d",
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/site/site.component.ts": {
-    "mtime": 1790797844.2578366,
-    "seen": 1790798632.0310903,
-    "ast_hash": "45e97e8a18b3378efaf6df13e42644e3",
+    "mtime": 1792746757.7931209,
+    "seen": 1792750448.1503603,
+    "ast_hash": "25695fe9c4f3b1ee3554d543fc9a4b43",
     "semantic_hash": ""
   },
   "pages/cm/vibration/bode-analysis/bode-analysis.component.ts": {
-    "mtime": 1790010922.4287324,
-    "seen": 1790014760.4049284,
-    "ast_hash": "0014130e822232a3c972b5f23badf7c6",
+    "mtime": 1792746757.80112,
+    "seen": 1792750448.1503603,
+    "ast_hash": "0b40d9aaef98f0427b63aabe588e33bd",
     "semantic_hash": ""
   },
   "pages/cm/vibration/frequency-domain/frequency-domain.component.ts": {
-    "mtime": 1790010922.429712,
-    "seen": 1790014760.4049284,
-    "ast_hash": "64bad7a0eac25d0c702abb4a1661a7dc",
+    "mtime": 1792746757.80512,
+    "seen": 1792750448.1503603,
+    "ast_hash": "3f538a98aa1be2c9486682a49a5b0b76",
     "semantic_hash": ""
   },
   "pages/cm/vibration/overview/overview.component.ts": {
-    "mtime": 1790010922.4307244,
-    "seen": 1790014760.4049284,
-    "ast_hash": "630821fd642bd58f22bea41e7945fe9b",
+    "mtime": 1792746757.8061972,
+    "seen": 1792750448.1503603,
+    "ast_hash": "413a80ab5750a5e93a23d346e9dd4b7e",
     "semantic_hash": ""
   },
   "pages/cm/vibration/rotor-position/rotor-position.component.ts": {
-    "mtime": 1790010922.4317236,
-    "seen": 1790014760.4049284,
-    "ast_hash": "62b9286aa25d997bd0cc6405e79801d3",
+    "mtime": 1792746757.8073773,
+    "seen": 1792750448.1513603,
+    "ast_hash": "437cee566a24ecb6094d4b7452d99b7a",
     "semantic_hash": ""
   },
   "pages/cm/vibration/time-domain/time-domain.component.ts": {
-    "mtime": 1790010922.432724,
-    "seen": 1790014760.4049284,
-    "ast_hash": "12a42a404a53846e48f7a2b8ea43946e",
+    "mtime": 1792746757.8091178,
+    "seen": 1792750448.1513603,
+    "ast_hash": "58a34ccfbb8cd0b02f534e8857318a5b",
     "semantic_hash": ""
   },
   "pages/cm/vibration/vibration.module.ts": {
-    "mtime": 1790010922.4337263,
-    "seen": 1790014760.4049284,
-    "ast_hash": "3c3d8f2d94c475e45e7f990931e5a4fe",
+    "mtime": 1792746757.8121223,
+    "seen": 1792750448.1513603,
+    "ast_hash": "fb536293bf5d7ac433be8ed3dd732c2e",
     "semantic_hash": ""
   },
   "_metronic/partials/content/widgets/charts/Apache-Echarts/README.md": {
-    "mtime": 1790010922.1238682,
-    "seen": 1790014760.4049284,
-    "ast_hash": "3b4a779286192d2ace29dfeec6881593",
+    "mtime": 1792746757.7271228,
+    "seen": 1792750448.1513603,
+    "ast_hash": "3ae73fa1da4369025661cad7863504b1",
     "semantic_hash": ""
   },
   "_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component.html": {
@@ -5310,57 +5292,57 @@
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/plant/plant.component.html": {
-    "mtime": 1791101730.953931,
-    "seen": 1791102161.5206192,
-    "ast_hash": "c5eae7814f71285161de18f15097a720",
+    "mtime": 1792746757.7891192,
+    "seen": 1792750448.1513603,
+    "ast_hash": "cbcab52efee7e39614efe5c5917859d7",
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/site/site.component.html": {
-    "mtime": 1790790649.527088,
-    "seen": 1790797014.0029433,
-    "ast_hash": "84f764504182ceeb269e3f6662b555a5",
+    "mtime": 1792746757.7921193,
+    "seen": 1792750448.1513603,
+    "ast_hash": "672f70879864d5838a76ef57708d4b1c",
     "semantic_hash": ""
   },
   "pages/cm/vibration/bode-analysis/bode-analysis.component.html": {
-    "mtime": 1790010922.4279075,
-    "seen": 1790014760.40895,
-    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "mtime": 1792746757.7981176,
+    "seen": 1792750448.1513603,
+    "ast_hash": "13d28383703ada758664e83adfd8e460",
     "semantic_hash": ""
   },
   "pages/cm/vibration/frequency-domain/frequency-domain.component.html": {
-    "mtime": 1790010922.4287324,
-    "seen": 1790014760.40895,
-    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "mtime": 1792746757.8021188,
+    "seen": 1792750448.1513603,
+    "ast_hash": "f24db87c00c002a8c7e799117ea12353",
     "semantic_hash": ""
   },
   "pages/cm/vibration/overview/overview.component.html": {
-    "mtime": 1790010922.429712,
-    "seen": 1790014760.40895,
-    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "mtime": 1792746757.805629,
+    "seen": 1792750448.1513603,
+    "ast_hash": "13d28383703ada758664e83adfd8e460",
     "semantic_hash": ""
   },
   "pages/cm/vibration/rotor-position/rotor-position.component.html": {
-    "mtime": 1790010922.4307244,
-    "seen": 1790014760.40895,
-    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "mtime": 1792746757.8068008,
+    "seen": 1792750448.1513603,
+    "ast_hash": "13d28383703ada758664e83adfd8e460",
     "semantic_hash": ""
   },
   "pages/cm/vibration/time-domain/time-domain.component.html": {
-    "mtime": 1790010922.432724,
-    "seen": 1790014760.40895,
-    "ast_hash": "e4d83af742cf14274017278be09f8a30",
+    "mtime": 1792746757.8081174,
+    "seen": 1792750448.1513603,
+    "ast_hash": "0eb6b99c43c1d37059ba50f25df4f1f7",
     "semantic_hash": ""
   },
   "_metronic/shared/select2/select2.directive.spec.ts": {
-    "mtime": 1790790649.488089,
-    "seen": 1790797014.0009453,
-    "ast_hash": "6b1effff6bf09cc1764b7c55fad7b418",
+    "mtime": 1792746757.7361166,
+    "seen": 1792750448.1503603,
+    "ast_hash": "722ebcce8840ae1f48091815f1d9fb7a",
     "semantic_hash": ""
   },
   "_metronic/shared/select2/select2.directive.ts": {
-    "mtime": 1790790649.4890885,
-    "seen": 1790797014.0009453,
-    "ast_hash": "948bf785120d0c8bbcd628c823b126c4",
+    "mtime": 1792746757.7371175,
+    "seen": 1792750448.1503603,
+    "ast_hash": "4f77288d12e464f57ffaaa6f88f81abd",
     "semantic_hash": ""
   },
   "core/utils/query-params.ts": {
@@ -5370,33 +5352,21 @@
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/asset/asset.component.ts": {
-    "mtime": 1791182323.509717,
-    "seen": 1791184096.0229056,
-    "ast_hash": "6c2a90bc3a30ee8b0091b8a36fce47b3",
-    "semantic_hash": ""
-  },
-  "pages/asset-taxonomy/client-table.spec.ts": {
-    "mtime": 1790790649.5010889,
-    "seen": 1790797014.0009453,
-    "ast_hash": "be869e307cd28197b0075da8c433b762",
-    "semantic_hash": ""
-  },
-  "pages/asset-taxonomy/plant/plant.component.spec.ts": {
-    "mtime": 1791101858.155612,
-    "seen": 1791102161.5196211,
-    "ast_hash": "9dd735f11b6a510a47be62ebed0cd8a5",
+    "mtime": 1792746757.7761192,
+    "seen": 1792750448.1503603,
+    "ast_hash": "822f47fcebf57b7f912b7414a21c6180",
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/system/system.component.ts": {
-    "mtime": 1791101788.3957083,
-    "seen": 1791102161.5196211,
-    "ast_hash": "0d0c8c67778a3f8edfbad2adc1441750",
+    "mtime": 1792746757.7951233,
+    "seen": 1792750448.1503603,
+    "ast_hash": "76eeb7d9d3baa2ba27479e1b7804b2f6",
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/unit/unit.component.ts": {
-    "mtime": 1791101768.4767451,
-    "seen": 1791102161.5196211,
-    "ast_hash": "da77e03f3bfd1759a959bedcca0a277e",
+    "mtime": 1792746757.797122,
+    "seen": 1792750448.1503603,
+    "ast_hash": "f80c965b83bc0dc8832c1e073ecaffa9",
     "semantic_hash": ""
   },
   "_metronic/shared/select2/README.md": {
@@ -5406,63 +5376,753 @@
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/asset/asset.component.html": {
-    "mtime": 1791182323.5088837,
-    "seen": 1791184096.023906,
-    "ast_hash": "d6c1fed6e71145d5f2faca494c9d2959",
+    "mtime": 1792746757.7741165,
+    "seen": 1792750448.1513603,
+    "ast_hash": "ef75c78827193eed93dd8ab2b58f0190",
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/system/system.component.html": {
-    "mtime": 1790802833.013355,
-    "seen": 1790803695.773393,
-    "ast_hash": "ef4845ad2330d4a8d5c53e1e48795943",
+    "mtime": 1792746757.7941225,
+    "seen": 1792750448.1513603,
+    "ast_hash": "31624dcfb6c95675dcd45398185a415a",
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/unit/unit.component.html": {
-    "mtime": 1790802648.9880023,
-    "seen": 1790803695.773393,
-    "ast_hash": "67c4e4f3cb8f13315911f1928a7d228b",
-    "semantic_hash": ""
-  },
-  "pages/asset-taxonomy/component/component.component.spec.ts": {
-    "mtime": 1791182323.5111084,
-    "seen": 1791184096.023906,
-    "ast_hash": "cce3c6ff92487ea3c2a8ffd2d992d557",
+    "mtime": 1792746757.7961216,
+    "seen": 1792750448.1513603,
+    "ast_hash": "5e63afe2867e0962f0309a8c960f3137",
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/component/component.component.ts": {
-    "mtime": 1791182323.5117192,
-    "seen": 1791184096.023906,
-    "ast_hash": "0af81088aba799b7d2c352c713b776f1",
+    "mtime": 1792746757.7781203,
+    "seen": 1792750448.1503603,
+    "ast_hash": "c915c4011d89567ef7442b52ccaa0f7b",
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/measurement/measurement.component.spec.ts": {
-    "mtime": 1791183904.102829,
-    "seen": 1791184096.023906,
-    "ast_hash": "91f94bbfd71ed585f84e67bb9f7aa226",
+    "mtime": 1792746757.7801187,
+    "seen": 1792750448.1503603,
+    "ast_hash": "3cf54cc4df28d5d5b397bd9e6984344f",
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/measurement/measurement.component.ts": {
-    "mtime": 1791185546.5156102,
-    "seen": 1791185786.2414682,
-    "ast_hash": "5a7ebc392249451cfba72ba887f1bc07",
+    "mtime": 1792746757.7811196,
+    "seen": 1792750448.1503603,
+    "ast_hash": "8501ef6b8728153edc98ade30d067f4d",
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/component/component.component.html": {
-    "mtime": 1791182323.5107155,
-    "seen": 1791184096.023906,
-    "ast_hash": "db8808265f8f15d2a122462f99c1d2e4",
+    "mtime": 1792746757.7771418,
+    "seen": 1792750448.1513603,
+    "ast_hash": "b9aa2abd7ace15236b2abf716055a92b",
     "semantic_hash": ""
   },
   "pages/asset-taxonomy/measurement/measurement.component.html": {
-    "mtime": 1791182323.5137148,
-    "seen": 1791184096.023906,
-    "ast_hash": "952168c592161ca2879b149d556eb56a",
+    "mtime": 1792746757.7791219,
+    "seen": 1792750448.1513603,
+    "ast_hash": "ce10de795aca77d442c5d5c73fb817f6",
     "semantic_hash": ""
   },
-  "pages/asset-taxonomy/taxonomy-tags.spec.ts": {
-    "mtime": 1791183904.1668305,
-    "seen": 1791184096.023906,
-    "ast_hash": "24bfb1a9b412ea8383c6ef628d8dbceb",
+  "_metronic/partials/layout/theme-mode-switcher/theme-mode-switcher.component.spec.ts": {
+    "mtime": 1792746757.7341163,
+    "seen": 1792750448.1503603,
+    "ast_hash": "9f523514898c33b01f4359931e76340a",
+    "semantic_hash": ""
+  },
+  "core/models/analysis-chart-settings.model.ts": {
+    "mtime": 1792746757.7391222,
+    "seen": 1792750448.1503603,
+    "ast_hash": "e70398b60fa85eb7bdd7e51cb215fc34",
+    "semantic_hash": ""
+  },
+  "core/models/analysis-panel.model.ts": {
+    "mtime": 1792746757.7394626,
+    "seen": 1792750448.1503603,
+    "ast_hash": "6298f30f1d7b81113a27a25397832f64",
+    "semantic_hash": ""
+  },
+  "core/models/asset-taxonomy-selection.model.ts": {
+    "mtime": 1792746757.740188,
+    "seen": 1792750448.1503603,
+    "ast_hash": "4bc15437ca058b98bb2002e1f5e4f5d5",
+    "semantic_hash": ""
+  },
+  "core/models/asset-taxonomy.model.ts": {
+    "mtime": 1792746757.741117,
+    "seen": 1792750448.1503603,
+    "ast_hash": "a83f9f887824cf6f99934a2150c69e62",
+    "semantic_hash": ""
+  },
+  "core/models/date-time-range.model.ts": {
+    "mtime": 1792746757.741117,
+    "seen": 1792750448.1503603,
+    "ast_hash": "6cbd496929d752cd35e315e2fdb9311f",
+    "semantic_hash": ""
+  },
+  "core/models/frequency-domain.model.ts": {
+    "mtime": 1792746757.742115,
+    "seen": 1792750448.1503603,
+    "ast_hash": "270b8ec6c79eae97507954b7ad051757",
+    "semantic_hash": ""
+  },
+  "core/models/vibration-data.model.ts": {
+    "mtime": 1792746757.742115,
+    "seen": 1792750448.1503603,
+    "ast_hash": "9e4d397961ca4155c564080caa7f1b04",
+    "semantic_hash": ""
+  },
+  "core/models/vibration-page.model.ts": {
+    "mtime": 1792746757.7431202,
+    "seen": 1792750448.1503603,
+    "ast_hash": "0f4166cfe366a7da3798f74e90713e16",
+    "semantic_hash": ""
+  },
+  "core/services/asset-taxonomy-api.service.spec.ts": {
+    "mtime": 1792746757.7441187,
+    "seen": 1792750448.1503603,
+    "ast_hash": "3088f9ef224bd04c4f5f4877840a0376",
+    "semantic_hash": ""
+  },
+  "core/services/asset-taxonomy-api.service.ts": {
+    "mtime": 1792746757.745124,
+    "seen": 1792750448.1503603,
+    "ast_hash": "74be6cb27145f24ee8b7ceb75ee0b5a7",
+    "semantic_hash": ""
+  },
+  "core/services/chart-layout-preference.service.ts": {
+    "mtime": 1792746757.7462082,
+    "seen": 1792750448.1503603,
+    "ast_hash": "380bb28dfe7d097227f1249fd963ec8a",
+    "semantic_hash": ""
+  },
+  "core/services/metronic-alert.service.ts": {
+    "mtime": 1792746757.7471256,
+    "seen": 1792750448.1503603,
+    "ast_hash": "8883a3737f0fd0ba99f2dc5e22d8443e",
+    "semantic_hash": ""
+  },
+  "core/services/vibration-selection.service.spec.ts": {
+    "mtime": 1792746757.7481177,
+    "seen": 1792750448.1503603,
+    "ast_hash": "adc1821dc0b0f2fe682b58ab284dac04",
+    "semantic_hash": ""
+  },
+  "core/services/vibration-selection.service.ts": {
+    "mtime": 1792746757.7481737,
+    "seen": 1792750448.1503603,
+    "ast_hash": "309d490273990ca36a3107c8eb565039",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/api-vibration-data-source.service.ts": {
+    "mtime": 1792750124.0481608,
+    "seen": 1792750448.1503603,
+    "ast_hash": "eb2fd7df9cc72823c1aeeadd9700db9e",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/frequency-domain/fft-input-resampling.ts": {
+    "mtime": 1792746757.7515311,
+    "seen": 1792750448.1503603,
+    "ast_hash": "13cefdd7e3e8644c2ff045e512a0e08f",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/frequency-domain/fft-input-window.ts": {
+    "mtime": 1792746757.7521162,
+    "seen": 1792750448.1503603,
+    "ast_hash": "7427f9ca364293029dfff489c23d3339",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/frequency-domain/frequency-domain-amplitude.ts": {
+    "mtime": 1792746757.7525487,
+    "seen": 1792750448.1503603,
+    "ast_hash": "7d1d7e3eed95412d77139a00f7ebae63",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/frequency-domain/frequency-domain-analysis.service.spec.ts": {
+    "mtime": 1792746757.7530956,
+    "seen": 1792750448.1503603,
+    "ast_hash": "823c80a4266daaafb6339cf355ba9bc5",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/frequency-domain/frequency-domain-analysis.service.ts": {
+    "mtime": 1792746757.7535858,
+    "seen": 1792750448.1503603,
+    "ast_hash": "5d17005822c07715766d2dca90da49d9",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/frequency-domain/frequency-domain-analysis.spec.ts": {
+    "mtime": 1792746757.7540689,
+    "seen": 1792750448.1503603,
+    "ast_hash": "b095d5131ff7f15fb3f98db970ed5614",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/frequency-domain/frequency-domain-analysis.ts": {
+    "mtime": 1792746757.7540689,
+    "seen": 1792750448.1503603,
+    "ast_hash": "da90968b9459c2de56d52638a47a5a94",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/frequency-domain/frequency-domain-analysis.worker.ts": {
+    "mtime": 1792746757.7552576,
+    "seen": 1792750448.1503603,
+    "ast_hash": "7e29d558500468b47e28cf235fd4f417",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/frequency-domain/frequency-domain-axis.ts": {
+    "mtime": 1792746757.7561183,
+    "seen": 1792750448.1503603,
+    "ast_hash": "9e5fa9f9a9ebf8bff8ff0c3ebf4e7c12",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/frequency-domain/frequency-domain-fft.ts": {
+    "mtime": 1792746757.7561183,
+    "seen": 1792750448.1503603,
+    "ast_hash": "0e644d1b612d74530d430a4972539c16",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/frequency-domain/frequency-domain-quantity-conversion.ts": {
+    "mtime": 1792746757.7571166,
+    "seen": 1792750448.1503603,
+    "ast_hash": "7a4916ad221466297749c0bbabe6149c",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/frequency-domain/frequency-domain-unit-conversion.ts": {
+    "mtime": 1792746757.7581189,
+    "seen": 1792750448.1503603,
+    "ast_hash": "57e37a3ed0cf1239281cd258123e6d51",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/raw-data-source.service.ts": {
+    "mtime": 1792750124.554865,
+    "seen": 1792750448.1503603,
+    "ast_hash": "18588c2d661cadaf8d370c342484fd0e",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/time-domain/time-domain-amplitude.ts": {
+    "mtime": 1792746757.7592895,
+    "seen": 1792750448.1503603,
+    "ast_hash": "43993e3fafa2edfb61e4fc3b4977e249",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/time-domain/time-domain-analysis.service.spec.ts": {
+    "mtime": 1792746757.760118,
+    "seen": 1792750448.1503603,
+    "ast_hash": "daa3a8d9cffafcf6ed840500e66c6195",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/time-domain/time-domain-analysis.service.ts": {
+    "mtime": 1792746757.7611222,
+    "seen": 1792750448.1503603,
+    "ast_hash": "c5431633a68a7dcabe65fff052489f0c",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/time-domain/time-domain-analysis.spec.ts": {
+    "mtime": 1792746757.7611222,
+    "seen": 1792750448.1503603,
+    "ast_hash": "de16cffd7214655a56f99249f1a03681",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/time-domain/time-domain-analysis.ts": {
+    "mtime": 1792746757.7627206,
+    "seen": 1792750448.1503603,
+    "ast_hash": "eb27853917d1dc4eb16aef0e2c6f7d44",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/time-domain/time-domain-analysis.worker.ts": {
+    "mtime": 1792746757.763202,
+    "seen": 1792750448.1503603,
+    "ast_hash": "60ce6e5f11889650685c9af150a16e2b",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/time-domain/time-domain-calculus.ts": {
+    "mtime": 1792746757.763202,
+    "seen": 1792750448.1503603,
+    "ast_hash": "2f48075c1883adb6fb0ee4cc92705e09",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/time-domain/time-domain-preparation.ts": {
+    "mtime": 1792746757.7641184,
+    "seen": 1792750448.1503603,
+    "ast_hash": "143718c7b199817a328388c6509c8792",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/time-domain/time-domain-preprocessing.spec.ts": {
+    "mtime": 1792746757.7651162,
+    "seen": 1792750448.1503603,
+    "ast_hash": "ebab45cfff86a2b6192f3bae0b513fe4",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/time-domain/time-domain-quantity-conversion.ts": {
+    "mtime": 1792746757.7651162,
+    "seen": 1792750448.1503603,
+    "ast_hash": "916b212c4548a3668bc71028960ee2eb",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/time-domain/time-domain-statistics.ts": {
+    "mtime": 1792746757.7661176,
+    "seen": 1792750448.1503603,
+    "ast_hash": "d03899d888f95f367ac58133e3d58d13",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/time-domain/time-domain-unit-conversion.ts": {
+    "mtime": 1792746757.7661176,
+    "seen": 1792750448.1503603,
+    "ast_hash": "33fbdb96f9c323761a24f4b2f39d50cc",
+    "semantic_hash": ""
+  },
+  "core/utils/asset-taxonomy-execution.spec.ts": {
+    "mtime": 1792746757.7671175,
+    "seen": 1792750448.1503603,
+    "ast_hash": "42311a575bf3f91f119dda936974ff63",
+    "semantic_hash": ""
+  },
+  "core/utils/asset-taxonomy-execution.ts": {
+    "mtime": 1792746757.7681177,
+    "seen": 1792750448.1503603,
+    "ast_hash": "2634fe627a877b1a537a121a020d2bfa",
+    "semantic_hash": ""
+  },
+  "core/utils/asset-taxonomy-hierarchy.spec.ts": {
+    "mtime": 1792746757.7681177,
+    "seen": 1792750448.1503603,
+    "ast_hash": "0ff71cb74d4fc399c78a131ed742da92",
+    "semantic_hash": ""
+  },
+  "core/utils/asset-taxonomy-hierarchy.ts": {
+    "mtime": 1792746757.7691183,
+    "seen": 1792750448.1503603,
+    "ast_hash": "2a45b0561e5a3ae2e00e6e54ba8310eb",
+    "semantic_hash": ""
+  },
+  "core/utils/asset-taxonomy-mutations.spec.ts": {
+    "mtime": 1792746757.7701185,
+    "seen": 1792750448.1503603,
+    "ast_hash": "f52e6f5bd7d3bcc7f86ccb4a403d1e4e",
+    "semantic_hash": ""
+  },
+  "core/utils/asset-taxonomy-mutations.ts": {
+    "mtime": 1792746757.7701185,
+    "seen": 1792750448.1503603,
+    "ast_hash": "7a0e1ab18f84ee88524a44399ffa5db8",
+    "semantic_hash": ""
+  },
+  "core/utils/asset-taxonomy-tree.spec.ts": {
+    "mtime": 1792746757.7711177,
+    "seen": 1792750448.1503603,
+    "ast_hash": "7c6c0f54951b4fce1a191feea611071d",
+    "semantic_hash": ""
+  },
+  "core/utils/asset-taxonomy-tree.ts": {
+    "mtime": 1792746757.7721188,
+    "seen": 1792750448.1503603,
+    "ast_hash": "8a88b3a2c88f4d7c59bbff4cdecf22ce",
+    "semantic_hash": ""
+  },
+  "pages/cm/vibration/frequency-domain/frequency-domain.component.spec.ts": {
+    "mtime": 1792746757.8041205,
+    "seen": 1792750448.1503603,
+    "ast_hash": "b7876a0ec8cd3c0d6d2a9e4e641fe29d",
+    "semantic_hash": ""
+  },
+  "pages/cm/vibration/time-domain/time-domain.component.spec.ts": {
+    "mtime": 1792746757.8086772,
+    "seen": 1792750448.1513603,
+    "ast_hash": "4cc6726ef76c4fc5835e464e84607a1b",
+    "semantic_hash": ""
+  },
+  "pages/cm/vibration/vibration-date-time-range.spec.ts": {
+    "mtime": 1792746757.8101215,
+    "seen": 1792750448.1513603,
+    "ast_hash": "c32ddeea7ffafb2b444797d324d5726f",
+    "semantic_hash": ""
+  },
+  "shared/components/analysis-workspace-panel/analysis-number-format.ts": {
+    "mtime": 1792746757.8143468,
+    "seen": 1792750448.1513603,
+    "ast_hash": "7537de6b94cea5527f15e70f4a4ad8ed",
+    "semantic_hash": ""
+  },
+  "shared/components/analysis-workspace-panel/analysis-panel/analysis-panel.component.spec.ts": {
+    "mtime": 1792746757.8161168,
+    "seen": 1792750448.1513603,
+    "ast_hash": "08522e33affe64935e824a9d446112da",
+    "semantic_hash": ""
+  },
+  "shared/components/analysis-workspace-panel/analysis-panel/analysis-panel.component.ts": {
+    "mtime": 1792746757.8171153,
+    "seen": 1792750448.1513603,
+    "ast_hash": "ef4f7543c5217edc7048b449acd80c38",
+    "semantic_hash": ""
+  },
+  "shared/components/analysis-workspace-panel/analysis-workspace.component.ts": {
+    "mtime": 1792746757.8181872,
+    "seen": 1792750448.1513603,
+    "ast_hash": "02f0eec67bb62286c70467dd3fac1885",
+    "semantic_hash": ""
+  },
+  "shared/components/analysis-workspace-panel/vibration-sample-chart.component.ts": {
+    "mtime": 1792746757.8191211,
+    "seen": 1792750448.1513603,
+    "ast_hash": "0812e5a1ec90bbdf801fac1ae8bee9ab",
+    "semantic_hash": ""
+  },
+  "shared/components/analysis-workspace-panel/vibration-sample.data.ts": {
+    "mtime": 1792746757.82012,
+    "seen": 1792750448.1513603,
+    "ast_hash": "3001ef498714a451e656f27364bcf6ae",
+    "semantic_hash": ""
+  },
+  "shared/components/asset-taxonomy-drawer/asset-taxonomy-drawer.component.spec.ts": {
+    "mtime": 1792746757.8237317,
+    "seen": 1792750448.1513603,
+    "ast_hash": "3375f117b507a099d58c92fb621890f9",
+    "semantic_hash": ""
+  },
+  "shared/components/asset-taxonomy-drawer/asset-taxonomy-drawer.component.ts": {
+    "mtime": 1792746757.8245637,
+    "seen": 1792750448.1513603,
+    "ast_hash": "a443b32aff1e7eb8c0b042457f383746",
+    "semantic_hash": ""
+  },
+  "shared/components/asset-taxonomy-drawer/testing/asset-taxonomy-fixture.ts": {
+    "mtime": 1792746757.8257046,
+    "seen": 1792750448.1513603,
+    "ast_hash": "112541848c8769bf4b276c83283991f6",
+    "semantic_hash": ""
+  },
+  "shared/components/closable-tabs/closable-tabs.component.ts": {
+    "mtime": 1792746757.8291225,
+    "seen": 1792750448.1513603,
+    "ast_hash": "47e9abbcadab0dad9f4f423792297173",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/data-table.component.spec.ts": {
+    "mtime": 1792746757.832257,
+    "seen": 1792750448.1513603,
+    "ast_hash": "8c382dcdac3f3b76838e84da98f273ef",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/data-table.component.ts": {
+    "mtime": 1792746757.832257,
+    "seen": 1792750448.1513603,
+    "ast_hash": "b1bf090b5367a6e49bccfd2705d9dd4e",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/pagination/paginationbar/pagination-pages/pagination-pages.component.ts": {
+    "mtime": 1792746757.8351173,
+    "seen": 1792750448.1513603,
+    "ast_hash": "7d82a1a73635d124c769924ba221c3f6",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/pagination/paginationbar/pagination-records/pagination-records.component.ts": {
+    "mtime": 1792746757.8361168,
+    "seen": 1792750448.1513603,
+    "ast_hash": "4c053b683b6fcb40b9132f5661a7e443",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/pagination/paginationbar/pagination-state.ts": {
+    "mtime": 1792746757.8371205,
+    "seen": 1792750448.1513603,
+    "ast_hash": "d35858919b9a1ab5c2970562eca6dba4",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/pagination/paginationbar/paginationbar.component.spec.ts": {
+    "mtime": 1792746757.8381164,
+    "seen": 1792750448.1513603,
+    "ast_hash": "afe75288fbd80195e285c382d72002eb",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/pagination/paginationbar/paginationbar.component.ts": {
+    "mtime": 1792746757.8391182,
+    "seen": 1792750448.1513603,
+    "ast_hash": "ff31963bffd72cc75e9a978f5b1b5a79",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/pagination/table-delete-state.spec.ts": {
+    "mtime": 1792746757.8395061,
+    "seen": 1792750448.1513603,
+    "ast_hash": "2f090dd8cfa8ac46fc116d658f17ec3e",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/pagination/table-pagination-comparators.spec.ts": {
+    "mtime": 1792746757.8401165,
+    "seen": 1792750448.1513603,
+    "ast_hash": "952b40f3a3f0ce5da7143d95822c887f",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/pagination/table-pagination-comparators.ts": {
+    "mtime": 1792746757.8405912,
+    "seen": 1792750448.1513603,
+    "ast_hash": "1812a14d305d0be69beeae0d1909c41b",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/pagination/table-pagination.spec.ts": {
+    "mtime": 1792746757.8411179,
+    "seen": 1792750448.1513603,
+    "ast_hash": "c46f7c37ea602326261dfa39d20ae8ea",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/pagination/table-pagination.ts": {
+    "mtime": 1792746757.84212,
+    "seen": 1792750448.1513603,
+    "ast_hash": "4f13c66a42f42078e730909399b3433b",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/table-record/table-record.component.spec.ts": {
+    "mtime": 1792746757.844118,
+    "seen": 1792750448.1513603,
+    "ast_hash": "5c7c6450cb9333a081cfecfea848dbf7",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/table-record/table-record.component.ts": {
+    "mtime": 1792746757.844118,
+    "seen": 1792750448.1513603,
+    "ast_hash": "d4b78eee6a918c98c68b735a4ede1170",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/testing/prime-table-test-support.ts": {
+    "mtime": 1792746757.8451188,
+    "seen": 1792750448.1513603,
+    "ast_hash": "a29cc197b5e97fbceb764a46a12fa446",
+    "semantic_hash": ""
+  },
+  "shared/components/date-range/date-range.component.spec.ts": {
+    "mtime": 1792746757.8471177,
+    "seen": 1792750448.1513603,
+    "ast_hash": "c9daea6827d1933b370a03197af21b46",
+    "semantic_hash": ""
+  },
+  "shared/components/date-range/date-range.component.ts": {
+    "mtime": 1792746757.8481195,
+    "seen": 1792750448.1513603,
+    "ast_hash": "d329895a690c477544fd7202ee430edf",
+    "semantic_hash": ""
+  },
+  "shared/components/date-time-range/date-time-range.component.spec.ts": {
+    "mtime": 1792746757.85112,
+    "seen": 1792750448.1513603,
+    "ast_hash": "9b8ec307e73edc6e6f88404474f2ea6f",
+    "semantic_hash": ""
+  },
+  "shared/components/date-time-range/date-time-range.component.ts": {
+    "mtime": 1792746757.8521204,
+    "seen": 1792750448.1513603,
+    "ast_hash": "9d27fb1e673f6576a83a0a0bc5945124",
+    "semantic_hash": ""
+  },
+  "shared/components/form-modal/form-modal.component.spec.ts": {
+    "mtime": 1792746757.8561208,
+    "seen": 1792750448.1513603,
+    "ast_hash": "d08f1440ddc97196ee325330dd057023",
+    "semantic_hash": ""
+  },
+  "shared/components/form-modal/form-modal.component.ts": {
+    "mtime": 1792746757.8571227,
+    "seen": 1792750448.1513603,
+    "ast_hash": "6342bc22ffc2edb7619d68e50b16e507",
+    "semantic_hash": ""
+  },
+  "shared/components/form-validation/form-validators.directive.ts": {
+    "mtime": 1792746757.8581223,
+    "seen": 1792750448.1513603,
+    "ast_hash": "f559254406f924022f1bdcdf0c752a6b",
+    "semantic_hash": ""
+  },
+  "shared/components/metronic-primeng.config.ts": {
+    "mtime": 1792746757.8591177,
+    "seen": 1792750448.1513603,
+    "ast_hash": "73a96a20ac4064dfdd0b7151ddd95f02",
+    "semantic_hash": ""
+  },
+  "shared/components/request-state/request-feedback.component.ts": {
+    "mtime": 1792746757.86212,
+    "seen": 1792750448.1513603,
+    "ast_hash": "34f4cbbd09d0276533dccc0efbed779a",
+    "semantic_hash": ""
+  },
+  "shared/components/request-state/request-state.spec.ts": {
+    "mtime": 1792746757.863119,
+    "seen": 1792750448.1513603,
+    "ast_hash": "587cfbca5bdce5453812f4b36d37c4cd",
+    "semantic_hash": ""
+  },
+  "shared/components/request-state/request-state.ts": {
+    "mtime": 1792746757.8640497,
+    "seen": 1792750448.1513603,
+    "ast_hash": "e9575e0c03ce968254e504f458f529e4",
+    "semantic_hash": ""
+  },
+  "shared/components/time-range/time-range.component.spec.ts": {
+    "mtime": 1792746757.865116,
+    "seen": 1792750448.1513603,
+    "ast_hash": "8d85853b9eaab06ab54ff4d33978cfd5",
+    "semantic_hash": ""
+  },
+  "shared/components/time-range/time-range.component.ts": {
+    "mtime": 1792746757.8653257,
+    "seen": 1792750448.1513603,
+    "ast_hash": "034fa4dbeb0a6af6e542d3462676790b",
+    "semantic_hash": ""
+  },
+  "shared/components/vibration-frequency-domain-chart/vibration-frequency-domain-chart.component.spec.ts": {
+    "mtime": 1792746757.8671174,
+    "seen": 1792750448.1513603,
+    "ast_hash": "954299954471c98beab3b13fdb855226",
+    "semantic_hash": ""
+  },
+  "shared/components/vibration-frequency-domain-chart/vibration-frequency-domain-chart.component.ts": {
+    "mtime": 1792746757.867671,
+    "seen": 1792750448.1513603,
+    "ast_hash": "ebad8ca10b2040061e71b1c08dfdb4fb",
+    "semantic_hash": ""
+  },
+  "shared/components/vibration-time-domain-chart/vibration-time-domain-chart.component.spec.ts": {
+    "mtime": 1792746757.869115,
+    "seen": 1792750448.1513603,
+    "ast_hash": "4945daec97309181485bb3893922fbe5",
+    "semantic_hash": ""
+  },
+  "shared/components/vibration-time-domain-chart/vibration-time-domain-chart.component.ts": {
+    "mtime": 1792746757.8693297,
+    "seen": 1792750448.1513603,
+    "ast_hash": "e0921a4e16e13da3b7af7e6318f09c1d",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/README.md": {
+    "mtime": 1792746757.7494383,
+    "seen": 1792750448.1513603,
+    "ast_hash": "10ce73018b1398d4467020da7d1cd5f3",
+    "semantic_hash": ""
+  },
+  "core/services/vibration/frequency-domain/README.md": {
+    "mtime": 1792746757.750757,
+    "seen": 1792750448.1513603,
+    "ast_hash": "41bb6b3af85ff19f5a6cba0ffdbd8484",
+    "semantic_hash": ""
+  },
+  "shared/components/analysis-workspace-panel/README.md": {
+    "mtime": 1792746757.8143468,
+    "seen": 1792750448.1513603,
+    "ast_hash": "7cef61d563a2b31eaac3670b8cca1876",
+    "semantic_hash": ""
+  },
+  "shared/components/analysis-workspace-panel/analysis-panel/analysis-panel.component.html": {
+    "mtime": 1792746757.815638,
+    "seen": 1792750448.1513603,
+    "ast_hash": "ce04e7dae82d78c65b22d510d9c8a817",
+    "semantic_hash": ""
+  },
+  "shared/components/analysis-workspace-panel/analysis-workspace.component.html": {
+    "mtime": 1792746757.8177447,
+    "seen": 1792750448.1513603,
+    "ast_hash": "4f7ac649819ae71d733935cd51bc75dc",
+    "semantic_hash": ""
+  },
+  "shared/components/asset-taxonomy-drawer/README.md": {
+    "mtime": 1792746757.8211243,
+    "seen": 1792750448.1513603,
+    "ast_hash": "363c32454f3a96da9a4b826ae9c70814",
+    "semantic_hash": ""
+  },
+  "shared/components/asset-taxonomy-drawer/asset-taxonomy-drawer.component.html": {
+    "mtime": 1792746757.8221223,
+    "seen": 1792750448.1513603,
+    "ast_hash": "000a34b6e9b6c9b29ea49d7456ac0b4c",
+    "semantic_hash": ""
+  },
+  "shared/components/closable-tabs/closable-tabs.component.html": {
+    "mtime": 1792746757.8281255,
+    "seen": 1792750448.1513603,
+    "ast_hash": "fd1c300036f7ac5133abe8f98f31c5eb",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/README.md": {
+    "mtime": 1792746757.8303604,
+    "seen": 1792750448.1513603,
+    "ast_hash": "4a888833d5426a53351f3ac5b86716b7",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/data-table.component.html": {
+    "mtime": 1792746757.8315368,
+    "seen": 1792750448.1513603,
+    "ast_hash": "7c091ac060b304581fde1899f560a023",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/pagination/paginationbar/pagination-pages/pagination-pages.component.html": {
+    "mtime": 1792746757.8344517,
+    "seen": 1792750448.1513603,
+    "ast_hash": "34812d5713a5f5633e9a7598a6bc65de",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/pagination/paginationbar/pagination-records/pagination-records.component.html": {
+    "mtime": 1792746757.8361168,
+    "seen": 1792750448.1513603,
+    "ast_hash": "fbf6e3ab22edb797761100928cff0054",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/pagination/paginationbar/paginationbar.component.html": {
+    "mtime": 1792746757.837407,
+    "seen": 1792750448.1513603,
+    "ast_hash": "d215a00f1fa003951f4ac10eab8343cf",
+    "semantic_hash": ""
+  },
+  "shared/components/data-table/table-record/table-record.component.html": {
+    "mtime": 1792746757.8431203,
+    "seen": 1792750448.1513603,
+    "ast_hash": "649080b5e40dbdb0044763dfa0b45ada",
+    "semantic_hash": ""
+  },
+  "shared/components/date-range/date-range.component.html": {
+    "mtime": 1792746757.846118,
+    "seen": 1792750448.1513603,
+    "ast_hash": "ac137a4c6e67d8f485e1bdc4597179f8",
+    "semantic_hash": ""
+  },
+  "shared/components/date-time-range/README.md": {
+    "mtime": 1792746757.8491216,
+    "seen": 1792750448.1513603,
+    "ast_hash": "61159a8820d3aa0e4d5f5013a3a565b6",
+    "semantic_hash": ""
+  },
+  "shared/components/date-time-range/date-time-range.component.html": {
+    "mtime": 1792746757.850119,
+    "seen": 1792750448.1513603,
+    "ast_hash": "4d7ec299f43a3a1b98a0a80c68dc13e5",
+    "semantic_hash": ""
+  },
+  "shared/components/form-modal/README.md": {
+    "mtime": 1792746757.85312,
+    "seen": 1792750448.1513603,
+    "ast_hash": "7cc1c02c2630abe6bb04d7ae466153d6",
+    "semantic_hash": ""
+  },
+  "shared/components/form-modal/form-modal.component.html": {
+    "mtime": 1792746757.854119,
+    "seen": 1792750448.1513603,
+    "ast_hash": "e186062f086c4240fbde023818997034",
+    "semantic_hash": ""
+  },
+  "shared/components/request-state/request-feedback.component.html": {
+    "mtime": 1792746757.86212,
+    "seen": 1792750448.1513603,
+    "ast_hash": "3ca4f346083c862495bb40774aed8a07",
+    "semantic_hash": ""
+  },
+  "shared/components/time-range/time-range.component.html": {
+    "mtime": 1792746757.8645852,
+    "seen": 1792750448.1513603,
+    "ast_hash": "df8b80a7f651143d4a4cd05c12517bb1",
+    "semantic_hash": ""
+  },
+  "shared/components/vibration-frequency-domain-chart/vibration-frequency-domain-chart.component.html": {
+    "mtime": 1792746757.8661165,
+    "seen": 1792750448.1513603,
+    "ast_hash": "1591189662f38180a3778494eda61de5",
+    "semantic_hash": ""
+  },
+  "shared/components/vibration-time-domain-chart/vibration-time-domain-chart.component.html": {
+    "mtime": 1792746757.8681178,
+    "seen": 1792750448.1513603,
+    "ast_hash": "d56af122e8b3ca44fb0f326567b18dff",
     "semantic_hash": ""
   }
 }

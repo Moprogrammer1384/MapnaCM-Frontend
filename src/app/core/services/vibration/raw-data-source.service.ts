@@ -2,14 +2,16 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, InjectionToken } from '@angular/core';
 import { map, Observable, shareReplay } from 'rxjs';
 import { RawVibrationRecord, VibrationDataRequest } from '../../models/vibration-data.model';
+import { ApiVibrationDataSource } from './api-vibration-data-source.service';
 
 export interface RawVibrationDataSource {
   load(request: VibrationDataRequest): Observable<RawVibrationRecord>;
 }
 
-/** Replace this provider with an API adapter when its actual response contract is available. */
+/** Wired to the MapnaCM Vibration module (api/VibrationData). The sample
+ * source remains available as a fixture fallback. */
 export const RAW_VIBRATION_DATA_SOURCE = new InjectionToken<RawVibrationDataSource>('RAW_VIBRATION_DATA_SOURCE', {
-  providedIn: 'root', factory: () => inject(SampleVibrationDataSource),
+  providedIn: 'root', factory: () => inject(ApiVibrationDataSource),
 });
 
 interface WorkbookSamples {

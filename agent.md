@@ -1,7 +1,11 @@
 # DARP frontend: development context
 
 Last studied: **2026-10-11 (Asia/Tehran)**, focused on taxonomy hierarchy and mutation helpers.
+<<<<<<< HEAD
 Latest focused maintenance: **2026-10-25**.
+=======
+Latest focused maintenance: **2026-10-21**.
+>>>>>>> 2c25c5fde0853a36d152249664e9f6395fde48e9
 Latest source reviewed: `52233c9` (`Plant type fix`), plus the Tag changes and Measurement Type removal documented below.
 
 This is the project memory for development with Codex. Read it at the start of
@@ -2983,6 +2987,7 @@ superseded by the user's later `components/` rename on 2026-10-10.
   2.80 MB initial-bundle and four CSS optimizer warnings remain. No live backend
   validation or manual screenshot audit; backend acceptance of the reduced
   Measurement write body remains unverified.
+<<<<<<< HEAD
 
 ### 2026-10-24 - Native backend source with existing vibration charts and formulas
 
@@ -3129,3 +3134,5 @@ superseded by the user's later `components/` rename on 2026-10-10.
   no live authenticated integration was performed. Build retains existing bundle
   and CSS optimizer warnings; the range-routing suite also logs two transient
   ECharts zero-dimension initialization warnings, with all assertions passing.
+=======
+>>>>>>> 2c25c5fde0853a36d152249664e9f6395fde48e9

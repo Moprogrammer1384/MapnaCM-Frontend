@@ -1,88 +1,83 @@
-# DARP raw vibration processing
+# DARP vibration data and processing
 
-Time Domain and Frequency Domain read the same Book1 X-direction raw record through
-`RAW_VIBRATION_DATA_SOURCE`. Frequency Domain now computes an actual full-record FFT;
-see [Frequency Domain modules, equations, standards context and limitations](frequency-domain/README.md).
-Overview, Bode Analysis and Rotor Position retain synthetic previews.
+Updated 2026-10-25. Only Time Domain and Frequency Domain use the real
+VibrationApiService through VIBRATION_DATA_SOURCE in vibration-api.service.ts.
+The workbook reader, tenfold repetition, JSON asset and importer were removed.
+Overview, Bode Analysis and Rotor Position keep their existing previews.
+Synthetic workload data exists only under src/testing/ for regression tests.
+
+## Data access and selection
+
+The active backend contract is docs/Vibration-TimeDomain-API.fa.md (seconds version).
+Both backend documents, DTOs and query/service implementations were reviewed.
+All X/time values are seconds (timeUnit=s). The current development data is sampled
+at one point per second; the frontend derives FFT sample rate from actual times.
+
+1. Measurement Execute opens the same workspace/controls, awaiting date confirmation.
+2. The existing date/hour/minute picker Apply confirms the range, including when
+   unchanged defaults are explicitly accepted. No API call occurs before this.
+3. VibrationApiService requests GET /TimeDomain/Get for the actual measurement and
+   UTC From/To. The backend decides whether that interval returns raw or summary.
+4. Complete raw selections with no reported gaps map the SAME response points
+   directly into time/values arrays for the existing Time/Frequency Domain workers.
+   Each measurement/range uses one Get request; there is no second waveform request.
+5. Summary/discontinuous selections stay display-only. Time Domain renders their
+   server statistics/extrema. Frequency Domain displays a frontend FFT error and
+   never passes them to its worker. There is no raw retry, chunking or fixture fallback.
+
+Point limits, counts and resolution selection belong entirely to the backend.
+Get sends ONLY MeasurementId, From and To. MaxPoints,
+ChartWidthPixels and client-selected counts are omitted. There is no local point
+ceiling, count-based budget division, truncation or rejection by response size.
+Checks for complete arrays, supported metadata and at least three native samples
+remain numerical/contract validation, not display caps. Separate native-channel
+requests avoid GetMultiple's automatic cross-quantity calculus; selectors remain
+frontend operations. GetMultiple batching is not implemented.
+
+HttpParams carries measurement ID and explicit UTC ISO timestamps. Local picker
+values are converted once; existing offsets are respected. From is inclusive, To
+exclusive. Existing environment.apiUrl and JWT AuthInterceptor are reused.
+Business success=false, transport and malformed-contract failures show actual
+messages and Retry. Range changes and destruction cancel the pending request.
+There is no new storage, credential, dependency or backend/database implementation.
+
+## Preserve vibration meaning and the existing charts
+
+The raw mathematical modules, workers, caches and formulas are unchanged. Time
+Domain keeps its numeric Time (s) axis, instantaneous physical waveform, RMS/0p/pp
+reference levels and footer. Frequency Domain keeps FFT, resampling/windowing,
+Fourier quantity conversion, units/amplitudes and Hz/CPM/Order with explicit RPM.
+Settings and zoom work on the already loaded record and do not cause HTTP calls.
+There is no calendar-axis replacement or server fetch on zoom.
+
+For a Time Domain summary, time-domain-display.ts uses the server's full-record
+statistics/count and exact compatible unit scaling. It lifts the pen at breakBefore
+and labels the summary. It never computes new statistics from extrema or applies
+calculus to them. If another Quantity is selected, the chart explicitly retains
+and labels the available response Quantity, with an informational explanation.
+
+For a Frequency Domain summary response, the existing Metronic error alert says
+FFT cannot be calculated from summary data and raw waveform samples are required.
+Discontinuous or fewer-than-three-point raw responses also show an FFT input error.
+These are explicit frontend errors, as requested by the user on 2026-10-25.
+They do not trigger extra HTTP reads or numerical processing of extrema.
+
+The raw mapping requires representation=raw, all original points present, no
+reported gaps or internal breakBefore markers, and at least three samples. Quantity
+and unit come from the actual response and remain explicit for the existing SI
+conversion functions. The HTTP adapter preserves each returned X/Y value and the
+response timeOriginUtc without rounding, repetition, resampling or client capping.
+The raw numerical modules/formulas and chart axes remain unchanged.
 
 ## File organization
 
-```text
-vibration/
-  raw-data-source.service.ts          Raw source interface, injection token and sample adapter
-  frequency-domain/                   FFT, spectrum amplitude/quantity/unit/axis modules, worker and tests
-    fft-input-resampling.ts          Actual-timestamp interpolation for FFT input
-    fft-input-window.ts              Rectangular/periodic Hann FFT input window
-  time-domain/
-    time-domain-preparation.ts       Time-record validation and SI normalization
-    time-domain-quantity-conversion.ts  Quantity conversion using time derivatives/integrals
-    time-domain-calculus.ts          Derivatives, integrals, mean removal and detrending
-    time-domain-statistics.ts        Full-time-record statistics and amplitude selection
-    time-domain-unit-conversion.ts   Unit conversion of time-signal samples
-    time-domain-preprocessing.spec.ts
-    time-domain-amplitude.ts         Selected amplitude's numeric reference levels
-    time-domain-analysis.ts          Time-axis validation and Time Domain result assembly
-    time-domain-analysis.spec.ts     Time Domain numerical analysis tests
-    time-domain-analysis.service.ts  TimeDomainAnalysisService, sessions and result cache
-    time-domain-analysis.service.spec.ts
-    time-domain-analysis.worker.ts   Background Time Domain message handling
-```
+- vibration-api.service.ts: bounded cancellable HTTP reads and native/display discrimination.
+- core/models/vibration-api.model.ts: backend DTOs and display-only record type.
+- time-domain/: existing raw time mathematics/workers, plus the separate summary display adapter.
+- frequency-domain/: existing FFT mathematics, FFT-only resampling/windowing and workers.
+- shared/components/vibration-*-domain-chart/: existing charts and minimal data-lifecycle adaptation.
 
-Organization follows the **domain of the data being analyzed**, as specified by
-the user. Every operation on a time record belongs to `time-domain/`, including
-preparation, quantity calculus, sample-unit conversion and RMS/peak statistics.
-The parent folder holds only domain-independent infrastructure such as raw-data
-retrieval. Actual FFT/frequency-spectrum analysis lives in `frequency-domain/`.
-As clarified by the user on 2026-10-21, FFT-specific input resampling and windowing
-also belong there; they do not extend the Time Domain pipeline. Existing validation
-and exact SI factors are reused from Time Domain. The old frequency preview was
-removed. Frequency Domain has its own worker entry/session service.
-The worker entry URL points to the colocated `time-domain-analysis.worker.ts`.
-
-## Source and later API wiring
-
-- `assets/data/vibration/book1-x.json` preserves all 40,960 numeric Time/Value
-  observations from `Book1.xlsx`, sheet `X direction`, `A2:B40961`. It is loaded
-  lazily over HTTP, outside the JS bundle; one shared replayed load serves charts.
-- For the requested larger sample, the fixture adapter repeats this record
-  **10 times total**, yielding **409,600 points**. Expansion uses preallocated
-  arrays once before `shareReplay`; subsequent loads/settings reuse that raw
-  object. The HTTP asset stays at its original size. No API data is repeated.
-- Time is **milliseconds**, confirmed by the user on 2026-10-21. The last sample
-  in the original is 2499.94 ms. Copies start every 2500 ms, continuing the
-  timestamps through **24999.94 ms** without duplicates at joins. Small
-  0.06/0.07 ms spacing variations are preserved within each copy. Values repeat
-  exactly without smoothing at joins; resulting derivative transients are part
-  of this repeated performance fixture, not additional sensor observations.
-- Source quantity **Displacement**, amplitude unit **µm** are an explicitly
-  user-authorized sample assumption, not verified sensor metadata. This remains
-  in source metadata/documentation. Quantity/unit cannot be inferred from numeric magnitudes.
-- `SampleVibrationDataSource` adds this metadata to the imported observations.
-  It deliberately serves the same sample for any selected measurement/date
-  range. It does not pretend those dates filter a workbook without timestamps.
-- `RawVibrationRecord` is the frontend domain model: immutable time/value arrays,
-  quantity tag (`displacement` / `velocity` / `acceleration`), explicit amplitude
-  unit and time unit, plus identity/label. Time and values have equal lengths;
-  timestamps must be finite and strictly increasing. Missing/non-finite samples,
-  incompatible source units and unknown source tags are errors, not filled zeros.
-- For an API: implement `RawVibrationDataSource.load(request)` and override the
-  `RAW_VIBRATION_DATA_SOURCE` provider. Map the **agreed backend response** into this
-  domain model, including real quantity/unit/time metadata. The existing request
-  carries measurement ID and local from/to date-times. No endpoint, server
-  schema, timezone conversion, or database/storage implementation is introduced.
-  API adapters must return a new immutable record object when data changes.
-- Time Domain and Frequency Domain initialize each new tab's Quantity/Unit from the arriving record.
-  Subsequent user settings remain independent per tab and route. There is no
-  new persistent browser storage.
-
-Reimport read-only numeric observations from the original workbook:
-
-```powershell
-powershell -NoProfile -File tools/import-vibration-workbook.ps1 -WorkbookPath <Book1.xlsx>
-```
-
-The workbook is not modified. The script accepts only numeric time/value cells;
-document strings are never treated as instructions.
+The numerical pipeline below applies ONLY to native raw analysis records.
 
 ## Numerical pipeline
 
@@ -137,93 +132,19 @@ they do not claim ISO instrument compliance or replace acquisition calibration.
 Future parameters should add a named pure stage here and become part of the
 worker request/cache key, preserving source metadata and raw samples.
 
-## Runtime and performance
+## Runtime and verification
 
-- User display policy: measurements show **two decimal places**, through the
-  presentation-only `analysis-number-format.ts` helper. Tooltip values, axis/
-  pointer labels, amplitude annotations and slider details format text only.
-  Raw/Float64 data, statistics, cached results, chart coordinates and reference/
-  axis/zoom bounds retain full precision. Sample counts remain integers.
-- `TimeDomainAnalysisService.acquire(raw)` shares a worker/session across charts
-  using the same source object. Raw data is posted once; numerical work runs in a
-  module Web Worker, outside Angular. Numerical stages are O(N), Float64, with no
-  FFT dependency. Worker responses transfer time/value buffers rather than copy.
-- At most three quantity arrays and six display-result promises are cached per
-  active record. Identical concurrent analyses share the same promise. Releasing
-  the final consumer terminates its worker and drops caches; tab close/navigation
-  also dispose charts, subscriptions, timers and theme observers.
-- Without worker support, the same functions run in a scheduled main-thread
-  fallback. This preserves numerical behavior; background responsiveness then
-  depends on record size. Worker failures surface through retry feedback.
-- The chart coalesces settings changes for 16 ms and rejects stale responses by
-  request version. Full data/statistics are recalculated before ECharts rendering.
-  All 409,600 points are passed to ECharts; `sampling: 'minmax'` reduces pixel-level
-  drawing work while retaining extrema and supports zooming into full data.
-- Chart updates merge data/options into the existing ECharts instance so zoom is
-  retained. Theme updates reuse existing analysis/points without running math.
-  Amplitude-only changes recompute the full-record statistic and reuse unchanged
-  plotted points. The merged ECharts update contains only reference lines,
-  tooltip and Y-axis bounds; it does not resend the 409,600-point series array.
-  Reference styles use Metronic warning/body tokens and follow theme updates.
-  Metronic supplies every form, loading, error, button and chart color token.
+Existing reference-counted worker sessions, bounded numerical caches, fallback,
+OnPush notifications, 16 ms selector coalescing, stale-result guards and cleanup
+remain. Raw points/statistics retain numerical precision; only display labels use
+two decimal places. Sample counts remain integers. Summary statistics are server
+statistics over the full original interval, never recalculated from reduced points.
 
-## Validation (2026-10-21)
-
-The display-only two-decimal change passed all 42 focused ChromeHeadless tests,
-production build and lint. Existing integration cases assert formatted labels
-while checking full numerical precision across all raw/chart samples and units.
-
-After applying the user's domain-based classification, all **42 focused
-ChromeHeadless tests**, production build and lint passed. Raw retrieval remains
-at the parent level; every time-signal calculation and numerical test is inside
-`time-domain/`. Public prepared-record/statistics types and computational entry
-points now use TimeDomain names. All numerical assertions and worker/chart
-behavior remain covered, including 409,600 samples and visible amplitude markers.
-
-The visible amplitude fix passed 19 focused numerical/worker/chart/page tests,
-production build and lint. A new real-chart OnPush regression failed before the
-fix because no RMS reference existed. It now checks RMS/pp/0p/cached RMS after
-single selections, numeric reference levels/label/unit, Metronic color, waveform
-preservation, zoom/instance retention and absence of waveform data in the delta.
-
-After the naming/folder refactor, **41 focused ChromeHeadless tests**, production
-build and project lint passed. The shared and Time Domain numerical suites are
-separate; the earlier combined invalid-input test is now two layer-specific cases.
-Validation includes the relocated real worker, fallback/cleanup, 409,600-point
-chart, single-selection rendering, dates, Select2, tabs, zoom and theme geometry.
-
-The expanded **409,600-point** fixture passed 17 focused numerical, worker,
-chart and page tests, production build and project lint. Tests compare every
-repeated raw value with the untouched HTTP asset, check strictly increasing
-times and verify all chart conversions against the complete expanded record.
-One local measurement of preparation plus 12 numerical analyses took 137.6 ms,
-excluding HTTP, worker startup, Angular and chart rendering.
-
-The Time Domain integration tests use automatic Angular change detection beneath
-an OnPush ancestor, matching the application root. A single Select2 change must
-update the actual ECharts data/axis and visible sample count without forced
-fixture refreshes. This reproduced the delayed-render bug before the fix: entering
-NgZone on worker completion did not mark OnPush ancestors. The chart now calls
-markForCheck for completed analyses (including cached/amplitude-only results),
-loading/error updates and theme changes. All three integration cases failed before
-the fix and pass afterward; the complete 40-test suite, build and lint also pass.
-
-The original 40,960-point baseline passed production build, project lint and
-40 focused ChromeHeadless tests. Tests
-cover all nine quantity source/target pairs against analytical waveforms,
-nonuniform calculus/endpoints, DC integration policy, all units and true waveform
-statistics, real worker execution/fallback/sharing/cleanup, stale results, retry,
-the actual workbook asset, all-sample chart conversions, tab defaults/restoration,
-zoom, dates, Select2 and Metronic light/dark geometry at 320/768/1280px.
-An independent XML-to-JSON comparison verified exact numeric equality of every
-imported Time/Value pair with all 40,960 original worksheet observations.
-
-One local ChromeHeadless measurement of **preparation plus 12 full-record
-analyses** of the actual Book1 data took **30.8 ms**. This measures numerical
-work only, excluding HTTP, worker startup, Angular and chart rendering; it is not
-a cross-device latency guarantee. The benchmark is in the Time Domain integration
-spec for repeatable measurement. No authenticated API or manual application
-screenshot audit was performed. Existing build bundle/CSS warnings remain.
+Tests cover real Angular/Select2/ECharts interactions, both API stages, UTC/ranges,
+shared point budgets, native units and values, summary-only successful reads,
+no FFT/calculus on extrema, cancellation/retry, first-Apply gating, unchanged
+frontend formulas, theme/responsive behavior and large isolated worker workloads.
+See the latest dated agent.md maintenance entry for executed results and live-test limits.
 
 ## Method references
 
@@ -240,3 +161,13 @@ screenshot audit was performed. Existing build bundle/CSS warnings remain.
   relations; sinusoidal amplitude ratios are not arbitrary waveform conversions.
 - [NIST SI conversion factors](https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9)
   — unit factors and standard gravity.
+
+## Available calendar days (2026-10-25)
+
+TimeAvailabilityService calls GetAvailability for the selected IDs before date
+confirmation. The connected vibration-date-time-range wrapper enables only proven
+commonRanges through native Flatpickr rules, initially disabling all days. Calendar
+labels keep their day meaning and exclusive To; no UTC conversion applies to this
+metadata. Unknown months are queried on navigation and failed reads remain closed
+to selection with Retry. Metadata reads do not trigger waveform/analysis loads.
+Hours/minutes keep their existing behavior, as explicitly requested by the user.

@@ -1,11 +1,13 @@
 # DARP Frequency Domain calculations
 
-Implemented 2026-10-21. Uses the **same immutable 409,600-point Book1 fixture** as
-Time Domain through `RAW_VIBRATION_DATA_SOURCE`. The original 40,960 observations
-are repeated ten times by the existing source adapter; the FFT does not repeat,
-truncate or downsample them. Selected measurement/from/to values reach that
-adapter. The fixture still returns the same data for every measurement/date.
-Displacement/µm remains the user-authorized assumption, not sensor calibration.
+Updated 2026-10-25. VIBRATION_DATA_SOURCE uses VibrationApiService and ONE
+TimeDomain/Get request per selected measurement/range. Complete continuous raw
+points in that response directly supply the existing FFT pipeline, retaining the
+returned quantity/unit, seconds timestamps and full precision. No second waveform
+endpoint is called. Summary data displays a frontend FFT error, and discontinuous
+or insufficient raw records are also excluded from FFT. The formulas below are
+unchanged. Backend alone controls point limits; no frontend cap/count is sent.
+See ../README.md for selection, API flow and summary handling.
 
 ## Modules and purpose
 
@@ -58,10 +60,8 @@ page components contain no numerical processing.
    N-point DFT**, not a zero-padded-record spectrum. No power-of-two truncation.
 5. Frequency spacing is `df=Fs/N`; return bins `k=0..floor(N/2)`.
    Even N includes Nyquist `Fs/2`; odd N's last bin is below Nyquist.
-   This fixture produces 204,801 bins, approximately 0.04 Hz spacing and
-   approximately 8192 Hz Nyquist. Ten repeats do **not** add independent
-   measurement information or improve the original record's physical resolving
-   power; repeated seams influence the spectrum. `df` means DFT bin spacing.
+   Actual bin count, spacing and Nyquist follow the received native record.
+   No repeats are added to manufacture resolution. df means DFT bin spacing.
 6. Let displacement, velocity, acceleration have orders 0, 1, 2. Convert complex
    coefficients with `(j*2*pi*f)^(targetOrder-sourceOrder)`. This covers all nine
    quantity pairs and retains phase internally. For changed quantity, set DC to
@@ -131,6 +131,6 @@ against these accessible primary numerical references and analytical tests:
 - [NI vibration/order analysis](https://www.ni.com/en/shop/labview/vibration-analysis-and-signal-processing-in-labview.html):
   angular-domain sampling for true order analysis.
 
-Browser numerical, worker, control and actual-Book1 integration tests live beside
+Browser numerical, worker, control and isolated analytical and HTTP integration tests live beside
 their respective modules/components. Current verified commands/results are in
 the dated Frequency Domain maintenance entry in the root `agent.md`.

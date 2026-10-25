@@ -3,6 +3,7 @@ import type { AssetTaxonomyExecution, AssetTaxonomySelection } from '../models/a
 import { AnalysisDateRange, AnalysisTab, AnalysisTimeRange } from '../models/analysis-panel.model';
 import { VibrationPage, VIBRATION_PAGES } from '../models/vibration-page.model';
 import { AnalysisChartSettings, defaultChartSettings } from '../models/analysis-chart-settings.model';
+import { DateTimeRange } from '../models/date-time-range.model';
 
 interface PageTabs {
   readonly tabs: readonly AnalysisTab[];
@@ -61,6 +62,7 @@ export class VibrationSelectionService {
       ...structuredClone(execution), id: `vibration-${++this.tabSequence}`, title: `Analysis ${number}`,
       dateRange: { from: date(from), to: date(today) },
       timeRange: { from: '00:00', to: '23:59' },
+      awaitingDateRange: page === 'time-domain' || page === 'frequency-domain',
       // Time Domain initializes its display from the arriving raw record's metadata.
       chartSettings: page === 'time-domain' || page === 'frequency-domain' ? undefined
         : defaultChartSettings('time'),
@@ -100,6 +102,16 @@ export class VibrationSelectionService {
   updateChartSettings(id: string, chartSettings: AnalysisChartSettings): void {
     this.updateWorkspace({
       tabs: this.tabs().map(tab => tab.id === id ? { ...tab, chartSettings: { ...chartSettings } } : tab),
+      activeId: this.activeTabId(),
+    });
+  }
+
+  applyDateTimeRange(id: string, range: DateTimeRange): void {
+    if (!Number.isFinite(Date.parse(range.from)) || !Number.isFinite(Date.parse(range.to)) || range.from >= range.to) { return; }
+    this.updateWorkspace({
+      tabs: this.tabs().map(tab => tab.id === id ? { ...tab, awaitingDateRange: false,
+        dateRange: { from: range.from.slice(0, 10), to: range.to.slice(0, 10) },
+        timeRange: { from: range.from.slice(11), to: range.to.slice(11) } } : tab),
       activeId: this.activeTabId(),
     });
   }

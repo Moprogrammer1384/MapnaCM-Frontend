@@ -1,4 +1,4 @@
-<app-analysis-workspace [state]="state" [showSampleChart]="true" domain="frequency"
+<app-analysis-workspace [state]="state" [useAvailableDates]="true" domain="frequency"
   [measurementChartContent]="frequencyChart"></app-analysis-workspace>
 <ng-template #frequencyChart let-item let-tab="tab">
   <app-vibration-frequency-domain-chart [measurementId]="item.measurement.id" [settings]="tab.chartSettings"

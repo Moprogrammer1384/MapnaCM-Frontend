@@ -19,7 +19,7 @@
         <div class="flex-grow-1 min-w-0">
           <label [for]="inputId + '_' + endpoint + '_hour'" class="text-gray-600 fs-8">Hour</label>
           <input [id]="inputId + '_' + endpoint + '_hour'" type="number" min="0" max="23" step="1"
-            class="form-control form-control-sm form-control-solid px-2" [disabled]="disabled"
+            class="form-control form-control-sm form-control-solid px-2" [disabled]="disabled || selectionDisabled"
             [attr.aria-label]="(endpoint === 'from' ? 'Start' : 'End') + ' hour'"
             [attr.aria-describedby]="error ? inputId + '_error' : null" [attr.aria-invalid]="!!error"
             [(ngModel)]="times[endpoint].hour" [ngModelOptions]="{ standalone: true }" (ngModelChange)="error = ''">
@@ -28,7 +28,7 @@
         <div class="flex-grow-1 min-w-0">
           <label [for]="inputId + '_' + endpoint + '_minute'" class="text-gray-600 fs-8">Minute</label>
           <input [id]="inputId + '_' + endpoint + '_minute'" type="number" min="0" max="59" step="1"
-            class="form-control form-control-sm form-control-solid px-2" [disabled]="disabled"
+            class="form-control form-control-sm form-control-solid px-2" [disabled]="disabled || selectionDisabled"
             [attr.aria-label]="(endpoint === 'from' ? 'Start' : 'End') + ' minute'"
             [attr.aria-describedby]="error ? inputId + '_error' : null" [attr.aria-invalid]="!!error"
             [(ngModel)]="times[endpoint].minute" [ngModelOptions]="{ standalone: true }" (ngModelChange)="error = ''">
@@ -39,6 +39,6 @@
   <div *ngIf="error" [id]="inputId + '_error'" class="text-danger fs-7 mt-3" role="alert">{{ error }}</div>
   <div class="d-flex justify-content-end gap-2 mt-4">
     <button type="button" class="btn btn-sm btn-light" (click)="close()">Cancel</button>
-    <button type="button" class="btn btn-sm btn-primary" [disabled]="disabled" (click)="apply()">Apply</button>
+    <button type="button" class="btn btn-sm btn-primary" [disabled]="disabled || selectionDisabled" (click)="apply()">Apply</button>
   </div>
 </div>

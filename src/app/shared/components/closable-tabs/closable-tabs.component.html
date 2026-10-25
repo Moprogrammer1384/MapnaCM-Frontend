@@ -15,7 +15,7 @@
   <p-tabpanels>
     @for (tab of tabs; track tab.id) {
       <p-tabpanel [value]="tab.id" [hidden]="activeId !== tab.id">
-        <ng-container *ngIf="activeId === tab.id && content" [ngTemplateOutlet]="content!"
+        <ng-container *ngIf="hasContent(tab.id) && content" [ngTemplateOutlet]="content!"
           [ngTemplateOutletContext]="{ $implicit: tab.id }"></ng-container>
       </p-tabpanel>
     }

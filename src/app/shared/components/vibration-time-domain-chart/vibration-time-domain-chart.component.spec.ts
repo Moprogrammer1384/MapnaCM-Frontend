@@ -5,8 +5,9 @@ import { RawVibrationRecord, TimeDomainAnalysis } from 'src/app/core/models/vibr
 import { prepareTimeDomainRecord } from 'src/app/core/services/vibration/time-domain/time-domain-preparation';
 import { analyzeTimeDomain } from 'src/app/core/services/vibration/time-domain/time-domain-analysis';
 import { TimeDomainAnalysisService } from 'src/app/core/services/vibration/time-domain/time-domain-analysis.service';
-import { RAW_VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/raw-data-source.service';
+import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/vibration-api.service';
 import { VibrationTimeDomainChartComponent } from './vibration-time-domain-chart.component';
+import { VibrationDisplayRecord } from 'src/app/core/models/vibration-api.model';
 
 const raw: RawVibrationRecord = { id: 'component', label: 'Component raw record', quantity: 'velocity', unit: 'cm/s',
   timeUnit: 'ms', time: [0, 1, 2, 3], values: [1, -4, 2, 3] };
@@ -27,14 +28,14 @@ describe('Raw time-domain chart request lifecycle', () => {
   beforeEach(() => {
     load = jasmine.createSpy('load').and.returnValue(of(raw));
     TestBed.configureTestingModule({ imports: [VibrationTimeDomainChartComponent],
-      providers: [{ provide: RAW_VIBRATION_DATA_SOURCE, useValue: { load } }] });
+      providers: [{ provide: VIBRATION_DATA_SOURCE, useValue: { load } }] });
   });
   afterEach(() => fixture?.destroy());
 
   it('shows load errors and retries, passing measurement/date parameters to the data adapter', async () => {
     load.and.returnValues(throwError(() => new Error('offline')), of(raw));
     mount(); await settle();
-    expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain('Unable to load');
+    expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain('offline');
     expect(load).toHaveBeenCalledWith({ measurementId: 42, from: '2026-10-01T08:00', to: '2026-10-02T09:30' });
     fixture.nativeElement.querySelector('button').click(); await settle();
     expect(load).toHaveBeenCalledTimes(2);
@@ -75,5 +76,31 @@ describe('Raw time-domain chart request lifecycle', () => {
     fixture.nativeElement.querySelector('button').click(); await settle();
     expect(fixture.componentInstance.error).toBe('');
     expect(fixture.nativeElement.querySelector('app-apache-echarts')).not.toBeNull();
+  });
+
+  it('displays a large summary on Time (s) with server statistics, pen lifts and no new requests on selector changes', async () => {
+    const summary: VibrationDisplayRecord = { kind: 'display', quantity: 'velocity', unit: 'mm/s', series: {
+      measurementId: 42, sourceQuantity: 2, quantity: 2, unit: 5, representation: 'minmax-statistical-envelope',
+      originalSampleCount: 9000000, returnedPointCount: 4, conversionApplied: false, hasGaps: false, isFftInput: false,
+      points: [{ x: 0, y: -2, breakBefore: true }, { x: 1, y: 4, breakBefore: false },
+        { x: 100, y: -3, breakBefore: true }, { x: 101, y: 5, breakBefore: false }],
+      statistics: { min: -20, max: 30, mean: 1, rms: 10, peak: 30, peakToPeak: 50 },
+    } };
+    load.and.returnValue(of(summary));
+    const acquire = jasmine.createSpy('acquire');
+    TestBed.overrideProvider(TimeDomainAnalysisService, { useValue: { acquire } });
+    mount(); await settle();
+    const component = fixture.componentInstance;
+    expect(component.error).toBe('');
+    expect(component.analysis!.sampleCount).toBe(9000000);
+    expect(component.analysis!.statistics.min).toBe(-2); // mm/s to selected cm/s, from SERVER stats.
+    const options = component.chartOptions as { xAxis: { name: string }; series: { data: [number, number | null][] }[] };
+    expect(options.xAxis.name).toBe('Time (s)');
+    expect(options.series[0].data[2][1]).toBeNull();
+    fixture.componentRef.setInput('settings', { ...initial, quantity: 'displacement', unit: 'µm' }); await settle();
+    expect(component.error).toBe('');
+    expect(component.analysis!.quantity).toBe('velocity');
+    expect(component.analysisNotice).toContain('Quantity conversion is unavailable');
+    expect(load).toHaveBeenCalledTimes(1); expect(acquire).not.toHaveBeenCalled();
   });
 });

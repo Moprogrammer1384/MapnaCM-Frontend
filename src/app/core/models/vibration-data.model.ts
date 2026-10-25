@@ -12,6 +12,7 @@ export interface RawVibrationRecord {
   readonly time: readonly number[];
   readonly values: readonly number[];
   readonly sourceNote?: string;
+  readonly timeOriginUtc?: string;
 }
 
 export interface VibrationDataRequest {

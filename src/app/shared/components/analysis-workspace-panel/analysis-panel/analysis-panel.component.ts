@@ -6,11 +6,12 @@ import { DateTimeRangeComponent } from '../../date-time-range/date-time-range.co
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
 import { AnalysisChartSettings, AnalysisDomain, defaultChartSettings, VIBRATION_UNITS, vibrationUnit } from 'src/app/core/models/analysis-chart-settings.model';
+import { VibrationDateTimeRangeComponent } from '../../vibration-date-time-range/vibration-date-time-range.component';
 
 @Component({
   selector: 'app-analysis-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedModule, DateTimeRangeComponent],
+  imports: [CommonModule, FormsModule, SharedModule, DateTimeRangeComponent, VibrationDateTimeRangeComponent],
   templateUrl: './analysis-panel.component.html',
   host: { class: 'd-block mw-100' },
 })
@@ -18,11 +19,14 @@ export class AnalysisPanelComponent implements OnChanges {
   @Input({ required: true }) tab: AnalysisTab;
   @Input() domain: AnalysisDomain = 'time';
   @Input() chartContent?: TemplateRef<{ $implicit: AnalysisTab }>;
+  @Input() useAvailableDates = false;
   @Output() readonly dateRangeChange = new EventEmitter<AnalysisDateRange>();
   @Output() readonly timeRangeChange = new EventEmitter<AnalysisTimeRange>();
   @Output() readonly chartSettingsChange = new EventEmitter<AnalysisChartSettings>();
+  @Output() readonly dateTimeRangeApply = new EventEmitter<DateTimeRange>();
 
   chartSettings = defaultChartSettings();
+  measurementIds: readonly number[] = [];
 
   get unitOptions() { return VIBRATION_UNITS[this.chartSettings.quantity]; }
 
@@ -35,6 +39,8 @@ export class AnalysisPanelComponent implements OnChanges {
   dateTimeRange: DateTimeRange = { from: '', to: '' };
 
   ngOnChanges(): void {
+    const ids = this.tab.measurements.map(item => item.measurement.id);
+    if (ids.join(',') !== this.measurementIds.join(',')) { this.measurementIds = ids; }
     const settings = this.tab.chartSettings ?? defaultChartSettings(this.domain);
     this.chartSettings = {
       ...settings,
@@ -59,5 +65,6 @@ export class AnalysisPanelComponent implements OnChanges {
     if (timeRange.from !== this.tab.timeRange.from || timeRange.to !== this.tab.timeRange.to) {
       this.timeRangeChange.emit(timeRange);
     }
+    this.dateTimeRangeApply.emit(value);
   }
 }

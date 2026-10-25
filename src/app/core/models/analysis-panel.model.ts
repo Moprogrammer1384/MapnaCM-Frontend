@@ -1,5 +1,6 @@
 import type { AssetTaxonomyExecution } from './asset-taxonomy-selection.model';
 import type { AnalysisChartSettings } from './analysis-chart-settings.model';
+import type { DateTimeRange } from './date-time-range.model';
 
 /** Calendar dates in local YYYY-MM-DD form; no UTC conversion or backend contract. */
 export interface AnalysisDateRange {
@@ -19,6 +20,7 @@ export interface AnalysisTab extends AssetTaxonomyExecution {
   readonly dateRange: AnalysisDateRange;
   readonly timeRange: AnalysisTimeRange;
   readonly chartSettings?: AnalysisChartSettings;
+  readonly awaitingDateRange?: boolean;
 }
 
 export interface AnalysisDateRangeChange {
@@ -47,4 +49,5 @@ export interface AnalysisWorkspaceState {
   updateDateRange(id: string, dateRange: AnalysisDateRange): void;
   updateTimeRange(id: string, timeRange: AnalysisTimeRange): void;
   updateChartSettings?(id: string, settings: AnalysisChartSettings): void;
+  applyDateTimeRange?(id: string, range: DateTimeRange): void;
 }

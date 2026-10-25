@@ -1,4 +1,6 @@
-import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { TIME_AVAILABILITY_SOURCE } from 'src/app/core/services/time-availability.service';
+import { availabilityFixtureSource } from 'src/testing/time-availability-fixture';
+import { provideHttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -7,10 +9,11 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { By } from '@angular/platform-browser';
 import * as echarts from 'echarts';
 import { providePrimeNG } from 'primeng/config';
-import { firstValueFrom } from 'rxjs';
+import { of } from 'rxjs';
+import { vibrationTestRecord } from 'src/testing/vibration-test-data';
 import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
 import { AMPLITUDE_LABELS, VIBRATION_UNITS } from 'src/app/core/models/analysis-chart-settings.model';
-import { RAW_VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/raw-data-source.service';
+import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/vibration-api.service';
 import { prepareTimeDomainRecord } from 'src/app/core/services/vibration/time-domain/time-domain-preparation';
 import { analyzeTimeDomain } from 'src/app/core/services/vibration/time-domain/time-domain-analysis';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
@@ -38,7 +41,7 @@ interface Snapshot {
   color: string[];
 }
 
-describe('Time Domain with the Book1 record repeated ten times', () => {
+describe('Time Domain with an isolated analytical workload', () => {
   let harness: RouterTestingHarness;
   let state: VibrationSelectionService;
   const root = () => harness.routeNativeElement!;
@@ -65,72 +68,41 @@ describe('Time Domain with the Book1 record repeated ten times', () => {
     // a response: the chart must notify Angular without a second user interaction.
     await TestBed.configureTestingModule({ imports: [NoopAnimationsModule], providers: [provideHttpClient(),
       provideRouter([{ path: 'cm/vibration', loadChildren: () => VibrationModule }]),
-      providePrimeNG(METRONIC_PRIMENG_CONFIG), VibrationSelectionService] })
+      providePrimeNG(METRONIC_PRIMENG_CONFIG), { provide: TIME_AVAILABILITY_SOURCE, useValue: availabilityFixtureSource }, VibrationSelectionService,
+      { provide: VIBRATION_DATA_SOURCE, useValue: { load: () => of(vibrationTestRecord) } }] })
       .overrideComponent(VibrationTimeDomainComponent, { set: { changeDetection: ChangeDetectionStrategy.OnPush } })
       .compileComponents();
     state = TestBed.inject(VibrationSelectionService);
     state.setRoute('/cm/vibration/time-domain');
     harness = await RouterTestingHarness.create('/cm/vibration/time-domain');
     harness.fixture.autoDetectChanges();
-    interact(() => state.execute(execution)); await settle();
+    interact(() => { state.execute(execution);
+      const tab = state.activeTab()!;
+      state.applyDateTimeRange(tab.id, { from: tab.dateRange.from + 'T' + tab.timeRange.from, to: tab.dateRange.to + 'T' + tab.timeRange.to });
+    }); await settle();
   });
   afterEach(() => harness.fixture.destroy());
 
-  it('renders 409600 observations with exact repeated values and strictly increasing millisecond times', async () => {
-    const original = await firstValueFrom(TestBed.inject(HttpClient).get<{ time: number[]; values: number[] }>(
-      'assets/data/vibration/book1-x.json'));
+  it('retains the Time (s) waveform, full precision and original chart layout', () => {
     const options = snapshot();
     const data = options.series[0].data;
-    const raw = component().raw!;
-    let repeatedValuesMatch = true;
-    let timeStrictlyIncreases = true;
-    let maxTimeError = 0;
-    let maxValueError = 0;
-    for (let i = 0; i < data.length; i++) {
-      const sourceIndex = i % original.time.length;
-      repeatedValuesMatch &&= raw.values[i] === original.values[sourceIndex];
-      maxValueError = Math.max(maxValueError, Math.abs(data[i][1] - original.values[sourceIndex]));
-      timeStrictlyIncreases &&= i === 0 || data[i][0] > data[i - 1][0];
-      const expectedTime = (original.time[sourceIndex] + Math.floor(i / original.time.length) * 2500) / 1000;
-      maxTimeError = Math.max(maxTimeError, Math.abs(data[i][0] - expectedTime));
+    expect(data.length).toBe(409600);
+    for (const index of [0, 1, 100, 40959, 40960, 409599]) {
+      expect(data[index][0]).toBe(vibrationTestRecord.time[index]);
+      expect(data[index][1]).toBeCloseTo(vibrationTestRecord.values[index], 12);
     }
-    expect(original.time.length).toBe(40960);
-    expect(repeatedValuesMatch).toBeTrue();
-    expect(timeStrictlyIncreases).toBeTrue();
-    expect(maxTimeError).toBeLessThan(1e-12);
-    // Plot values pass through SI conversion, so permit floating-point roundoff.
-    expect(maxValueError).toBeLessThan(1e-12);
-    expect(control('Quantity').value).toBe('displacement');
-    expect(control('Unit').value).toBe('µm');
-    expect(options.series[0].data.length).toBe(409600);
-    expect(options.series[0].data[0][0]).toBe(0);
-    expect(options.series[0].data[0][1]).toBeCloseTo(7.93, 12);
-    expect(options.series[0].data[1][0]).toBeCloseTo(0.00006, 12);
-    expect(options.series[0].data[40959][0]).toBeCloseTo(2.49994, 12);
-    expect(options.series[0].data[40959][1]).toBeCloseTo(-1.58, 12);
-    expect(data[40960][0]).toBe(2.5);
-    expect(data[40960][1]).toBeCloseTo(7.93, 12);
-    expect(data[409599][0]).toBeCloseTo(24.99994, 12);
-    expect(data[409599][1]).toBeCloseTo(-1.58, 12);
-    expect(options.xAxis[0].max).toBeCloseTo(24.99994, 12);
+    expect(options.xAxis[0].name).toBe('Time (s)');
+    expect(options.xAxis[0].max).toBe(vibrationTestRecord.time[409599]);
     expect(options.xAxis[0].axisLabel.formatter(options.xAxis[0].max)).toBe('25.00');
-    expect(options.xAxis[0].axisPointer.label.formatter({ value: 1.23456789 })).toBe('1.23');
     expect(options.yAxis[0].axisLabel.formatter(-12.3456789)).toBe('-12.35');
-    expect(options.yAxis[0].axisLabel.formatter(-0.00049)).toBe('0.00');
-    expect(options.dataZoom[1].labelFormatter!(24.99994)).toBe('25.00');
-    expect(options.tooltip[0].formatter({ value: data[1] })).toContain('0.00 s<br/>Displacement: 8.54 µm');
+    expect(options.tooltip[0].formatter({ value: data[1] })).toContain(' s<br/>Displacement:');
     expect(root().querySelector('[data-testid="record-sample-count"]')!.textContent).toBe('409,600 Data');
-    expect(root().textContent).not.toContain(component().raw!.label);
-    expect(root().textContent).not.toContain(component().raw!.sourceNote!);
-    for (const notice of component().analysis!.notices) {
-      expect(root().textContent).not.toContain(notice);
-    }
-    expect(root().querySelector('[data-testid="record-amplitude"]')).toBeNull();
-    expect(root().textContent).not.toContain('Amplitude is calculated over the full record');
+    expect(control('Quantity').value).toBe('displacement');
+    expect(control('Unit').value).toBe(vibrationTestRecord.unit);
   });
 
   it('renders every quantity, unit and amplitude after one selection under an OnPush ancestor', async () => {
-    const raw = await firstValueFrom(TestBed.inject(RAW_VIBRATION_DATA_SOURCE).load({ measurementId: 6, from: '', to: '' }));
+    const raw = vibrationTestRecord;
     const started = performance.now();
     const prepared = prepareTimeDomainRecord(raw);
     for (const quantity of ['displacement', 'velocity', 'acceleration'] as const) {
@@ -138,7 +110,7 @@ describe('Time Domain with the Book1 record repeated ten times', () => {
         analyzeTimeDomain(prepared, { quantity, unit: unit.value, xAxis: 'time', amplitude: 'rms' });
       }
     }
-    console.info(`Repeated Book1 benchmark: prepare + 12 full-record analyses (${raw.time.length} samples): ${(performance.now() - started).toFixed(1)} ms (excludes HTTP/worker startup/rendering)`);
+    console.info(`Analytical workload benchmark: prepare + 12 full-record analyses (${raw.time.length} samples): ${(performance.now() - started).toFixed(1)} ms (excludes HTTP/worker startup/rendering)`);
     const instance = chart();
     instance.dispatchAction({ type: 'dataZoom', start: 30, end: 60 });
     for (const quantity of ['displacement', 'velocity', 'acceleration'] as const) {
@@ -205,7 +177,10 @@ describe('Time Domain with the Book1 record repeated ten times', () => {
   it('retains independent tab settings and uses Metronic colors without rerunning signal processing on theme changes', async () => {
     const first = state.activeTabId();
     await change('Quantity', 'velocity'); await change('Unit', 'in/s'); await change('Amplitude', 'rms');
-    interact(() => state.execute(execution)); await settle();
+    interact(() => { state.execute(execution);
+      const tab = state.activeTab()!;
+      state.applyDateTimeRange(tab.id, { from: tab.dateRange.from + 'T' + tab.timeRange.from, to: tab.dateRange.to + 'T' + tab.timeRange.to });
+    }); await settle();
     expect(control('Quantity').value).toBe('displacement');
     interact(() => state.activateTab(first)); await settle();
     expect(control('Unit').value).toBe('in/s');

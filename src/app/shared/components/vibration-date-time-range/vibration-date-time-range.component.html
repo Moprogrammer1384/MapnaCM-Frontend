@@ -1,0 +1,16 @@
+<app-date-time-range [inputId]="inputId" [value]="value" [disabled]="!ready"
+  [selectionDisabled]="loading || !!error || !enabledDates.length" [enabledDates]="enabledDates"
+  [minDate]="minDate" [maxDate]="maxDate" [calendarDate]="calendarDate"
+  (calendarWindowChange)="showWindow($event)" (applied)="applied.emit($event)"></app-date-time-range>
+@if (loading) {
+  <div class="d-flex align-items-center gap-2 text-gray-600 fs-7 mt-2" role="status">
+    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>Loading available dates…
+  </div>
+}
+@if (error) {
+  <div class="alert alert-danger d-flex flex-wrap align-items-center gap-3 mt-3" role="alert">
+    <span>{{ error }}</span><button type="button" class="btn btn-sm btn-light-danger" (click)="retry()">Retry</button>
+  </div>
+} @else if (ready && !loading && !enabledDates.length) {
+  <div class="text-gray-600 fs-7 mt-2" role="status">No common dates with data for the selected measurements in this window.</div>
+}

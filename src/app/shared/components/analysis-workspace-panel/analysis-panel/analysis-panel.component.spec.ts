@@ -1,5 +1,7 @@
+import { TIME_AVAILABILITY_SOURCE } from 'src/app/core/services/time-availability.service';
+import { availabilityFixtureSource } from 'src/testing/time-availability-fixture';
 import { of } from 'rxjs';
-import { RAW_VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/raw-data-source.service';
+import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/vibration-api.service';
 import { TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
@@ -59,14 +61,15 @@ describe('Analysis panel Select2 chart controls', () => {
     await harness.navigateByUrl(`/cm/vibration/${page}`);
     await settle();
   };
-  const createTab = async () => { state.execute(execution); await settle(); return state.activeTabId(); };
+  const createTab = async () => { state.execute(execution); const tab = state.activeTab()!;
+    state.applyDateTimeRange(tab.id, { from: tab.dateRange.from + 'T' + tab.timeRange.from, to: tab.dateRange.to + 'T' + tab.timeRange.to }); await settle(); return state.activeTabId(); };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [NoopAnimationsModule],
       providers: [provideRouter([{ path: 'cm/vibration', loadChildren: () => VibrationModule }]),
-        providePrimeNG(METRONIC_PRIMENG_CONFIG), VibrationSelectionService,
-        { provide: RAW_VIBRATION_DATA_SOURCE, useValue: { load: () => of({
+        providePrimeNG(METRONIC_PRIMENG_CONFIG), { provide: TIME_AVAILABILITY_SOURCE, useValue: availabilityFixtureSource }, VibrationSelectionService,
+        { provide: VIBRATION_DATA_SOURCE, useValue: { load: () => of({
           id: 'analytic', label: 'Analytical fixture', quantity: 'velocity', unit: 'mm/s', timeUnit: 's',
           time: Array.from({ length: 500 }, (_, i) => i / 250),
           values: Array.from({ length: 500 }, (_, i) => 2 * Math.sin(2 * Math.PI * 10 * i / 250) + Math.sin(2 * Math.PI * 25 * i / 250)),
@@ -206,6 +209,8 @@ describe('Analysis panel Select2 chart controls', () => {
     await navigate('frequency-domain');
     state.execute({ ...execution, measurements: [...execution.measurements,
       { ...execution.measurements[0], measurement: { id: 7, name: 'Y', tag: null } }] });
+    const tab = state.activeTab()!;
+    state.applyDateTimeRange(tab.id, { from: tab.dateRange.from + 'T' + tab.timeRange.from, to: tab.dateRange.to + 'T' + tab.timeRange.to });
     await settle();
     const instances = Array.from(root().querySelectorAll<HTMLElement>('[_echarts_instance_]'), el => echarts.getInstanceByDom(el)!);
     const ranges = { dateRange: state.activeTab()!.dateRange, timeRange: state.activeTab()!.timeRange };

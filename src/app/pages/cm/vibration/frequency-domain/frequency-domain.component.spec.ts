@@ -1,3 +1,5 @@
+import { TIME_AVAILABILITY_SOURCE } from 'src/app/core/services/time-availability.service';
+import { availabilityFixtureSource } from 'src/testing/time-availability-fixture';
 import { provideHttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
@@ -7,10 +9,11 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { By } from '@angular/platform-browser';
 import * as echarts from 'echarts';
 import { providePrimeNG } from 'primeng/config';
-import { firstValueFrom } from 'rxjs';
+import { of } from 'rxjs';
+import { vibrationTestRecord } from 'src/testing/vibration-test-data';
 import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
 import { VIBRATION_UNITS } from 'src/app/core/models/analysis-chart-settings.model';
-import { RAW_VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/raw-data-source.service';
+import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/vibration-api.service';
 import { prepareFrequencyDomainRecord, analyzeFrequencyDomain } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
 import { METRONIC_PRIMENG_CONFIG } from 'src/app/shared/components/metronic-primeng.config';
@@ -37,7 +40,7 @@ interface Snapshot {
   color: string[];
 }
 
-describe('Frequency Domain with the Book1 record repeated ten times', () => {
+describe('Frequency Domain with an isolated analytical workload', () => {
   let harness: RouterTestingHarness;
   let state: VibrationSelectionService;
   const root = () => harness.routeNativeElement!;
@@ -64,26 +67,30 @@ describe('Frequency Domain with the Book1 record repeated ten times', () => {
     // a response: the chart must notify Angular without a second user interaction.
     await TestBed.configureTestingModule({ imports: [NoopAnimationsModule], providers: [provideHttpClient(),
       provideRouter([{ path: 'cm/vibration', loadChildren: () => VibrationModule }]),
-      providePrimeNG(METRONIC_PRIMENG_CONFIG), VibrationSelectionService] })
+      providePrimeNG(METRONIC_PRIMENG_CONFIG), { provide: TIME_AVAILABILITY_SOURCE, useValue: availabilityFixtureSource }, VibrationSelectionService,
+      { provide: VIBRATION_DATA_SOURCE, useValue: { load: () => of(vibrationTestRecord) } }] })
       .overrideComponent(VibrationFrequencyDomainComponent, { set: { changeDetection: ChangeDetectionStrategy.OnPush } })
       .compileComponents();
     state = TestBed.inject(VibrationSelectionService);
     state.setRoute('/cm/vibration/frequency-domain');
     harness = await RouterTestingHarness.create('/cm/vibration/frequency-domain');
     harness.fixture.autoDetectChanges();
-    interact(() => state.execute(execution)); await settle();
+    interact(() => { state.execute(execution);
+      const tab = state.activeTab()!;
+      state.applyDateTimeRange(tab.id, { from: tab.dateRange.from + 'T' + tab.timeRange.from, to: tab.dateRange.to + 'T' + tab.timeRange.to });
+    }); await settle();
   });
   afterEach(() => harness.fixture.destroy());
 
   it('uses all 409600 raw observations and renders 204801 real FFT bins without changing the shared record', async () => {
-    const raw = await firstValueFrom(TestBed.inject(RAW_VIBRATION_DATA_SOURCE).load({ measurementId: 6, from: '', to: '' }));
+    const raw = vibrationTestRecord;
     expect(component().raw).toBe(raw);
     expect(raw.time.length).toBe(409600);
-    expect(raw.values[0]).toBe(7.93);
-    expect(raw.values[40960]).toBe(7.93);
+    expect(raw.values[0]).toBe(2);
+    expect(raw.values[40960]).toBeCloseTo(2, 8);
     const started = performance.now();
     const expected = analyzeFrequencyDomain(prepareFrequencyDomainRecord(raw), state.activeTab()!.chartSettings!);
-    console.info(`Book1 FFT preparation + analysis: ${(performance.now() - started).toFixed(1)} ms, ${raw.time.length} samples (excludes HTTP/worker/rendering)`);
+    console.info(`Analytical FFT preparation + analysis: ${(performance.now() - started).toFixed(1)} ms, ${raw.time.length} samples (excludes HTTP/worker/rendering)`);
     const data = snapshot().series[0].data;
     expect(data.length).toBe(204801);
     let maxError = 0;
@@ -147,7 +154,10 @@ describe('Frequency Domain with the Book1 record repeated ten times', () => {
     expect(component().error).toBe('');
     expect(snapshot().xAxis[0].name).toBe('Frequency (Order)');
     expect(snapshot().series[0].data[100][0]).toBeCloseTo(component().analysis!.resolutionHz * 100 / 20, 10);
-    interact(() => state.execute(execution)); await settle();
+    interact(() => { state.execute(execution);
+      const tab = state.activeTab()!;
+      state.applyDateTimeRange(tab.id, { from: tab.dateRange.from + 'T' + tab.timeRange.from, to: tab.dateRange.to + 'T' + tab.timeRange.to });
+    }); await settle();
     expect(control('X axis').value).toBe('hz');
     expect(state.activeTab()!.chartSettings!.referenceRpm).toBeUndefined();
     interact(() => state.activateTab(first)); await settle();

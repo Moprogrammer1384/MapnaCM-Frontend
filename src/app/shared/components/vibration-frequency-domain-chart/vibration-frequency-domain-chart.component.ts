@@ -7,7 +7,7 @@ import { AMPLITUDE_LABELS, AnalysisChartSettings, VIBRATION_QUANTITIES } from 's
 import { RawVibrationRecord } from 'src/app/core/models/vibration-data.model';
 import { FrequencyDomainAnalysis } from 'src/app/core/models/frequency-domain.model';
 import { FrequencyDomainAnalysisService, FrequencyDomainAnalysisSession } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis.service';
-import { RAW_VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/raw-data-source.service';
+import { VIBRATION_DATA_SOURCE, isVibrationDisplay, vibrationError } from 'src/app/core/services/vibration/vibration-api.service';
 import { formatAnalysisNumber } from '../analysis-workspace-panel/analysis-number-format';
 
 /** Raw-record FFT rendering. Source/API integration and all signal math remain in core/services/vibration. */
@@ -30,7 +30,7 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
   analysis?: FrequencyDomainAnalysis;
   chartOptions?: EChartsOption;
   readonly formatNumber = formatAnalysisNumber;
-  private readonly source = inject(RAW_VIBRATION_DATA_SOURCE);
+  private readonly source = inject(VIBRATION_DATA_SOURCE);
   private readonly processor = inject(FrequencyDomainAnalysisService);
   private readonly zone = inject(NgZone);
   private readonly changeDetector = inject(ChangeDetectorRef);
@@ -68,6 +68,16 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
     this.error = '';
     this.subscription = this.source.load({ measurementId: this.measurementId, from: this.from, to: this.to }).subscribe({
       next: raw => {
+        if (isVibrationDisplay(raw)) {
+          this.loading = false;
+          this.analysis = undefined;
+          this.chartOptions = undefined;
+          this.error = raw.series.representation === 'minmax-statistical-envelope'
+            ? 'FFT cannot be calculated from summary data. Raw waveform samples are required.'
+            : 'FFT requires at least three continuous raw samples. The returned data is incomplete or contains gaps.';
+          this.changeDetector.markForCheck();
+          return;
+        }
         this.session?.release();
         this.raw = raw;
         this.session = this.processor.acquire(raw);
@@ -76,9 +86,9 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
         }
         this.scheduleAnalysis();
       },
-      error: () => {
+      error: error => {
         this.loading = false;
-        this.error = 'Unable to load the raw vibration record.';
+        this.error = vibrationError(error);
         this.analysis = undefined;
         this.chartOptions = undefined;
         this.changeDetector.markForCheck();

@@ -1,7 +1,7 @@
 # DARP frontend: development context
 
 Last studied: **2026-10-11 (Asia/Tehran)**, focused on taxonomy hierarchy and mutation helpers.
-Latest focused maintenance: **2026-10-21**.
+Latest focused maintenance: **2026-10-25**.
 Latest source reviewed: `52233c9` (`Plant type fix`), plus the Tag changes and Measurement Type removal documented below.
 
 This is the project memory for development with Codex. Read it at the start of
@@ -264,7 +264,7 @@ maintenance entry for focused browser validation.
 | `src/app/shared/components/form-modal/` | Shared Metronic presentation for eight taxonomy form modals, each serving add/edit; page-owned forms projected into the shell, exported through `SharedModule` |
 | `src/app/shared/components/request-state/` | Cancellable keyed read-state helper and shared Metronic loading/error/retry feedback, exported through `SharedModule` |
 | `src/app/shared/components/asset-taxonomy-drawer/` | Standalone Metronic drawer with Select2 Plant selection and PrimeNG Tree measurement selection; currently replaces Activity Drawer on vibration routes |
-| `src/app/shared/components/closable-tabs/` | Reusable PrimeNG Tabs adapter with Metronic visuals, close buttons, keyboard support, scrolling and active-only panel lifecycle |
+| `src/app/shared/components/closable-tabs/` | Reusable PrimeNG Tabs adapter with Metronic visuals, close buttons, keyboard support, scrolling and optional retention of visited panels (enabled by AnalysisWorkspace) |
 | `src/app/shared/components/date-range/` | Single Flatpickr range input/calendar using Metronic's existing styles and local calendar dates; commits only complete ranges |
 | `src/app/shared/components/date-time-range/` | Combined picker used by all five Vibration analysis pages: single-input range calendar, independent start/end hour/minute fields in its Metronic footer, and Apply for ordered local values |
 | `src/app/shared/components/time-range/` | Two Metronic Flatpickr time-only selectors with 24-hour hour/minute entry and local HH:mm endpoints |
@@ -744,6 +744,88 @@ Bode Analysis and Rotor Position retain synthetic previews. No condition-monitor
 backend feed or analysis API is connected. The fixture remains independent of
 measurement/date filters; requests still reach the replaceable source adapter.
 
+### Vibration backend integration and chart-preservation agreement (2026-10-24)
+
+This section supersedes the earlier Book1/source-adapter descriptions and any
+calendar-axis redesign from previous attempts. User requires the existing two
+Time/Frequency Domain pages and mechanical formulas to remain intact. Only their
+data source and selection lifecycle change. Existing numerical TypeScript files
+under time-domain/ and frequency-domain/ have no formula changes in this work.
+
+VibrationApiService / VIBRATION_DATA_SOURCE in vibration/vibration-api.service.ts
+replaces raw-data-source.service.ts / SampleVibrationDataSource. The workbook JSON,
+tenfold repetition and importer were removed. Test-only analytical workloads live
+under src/testing with no application imports. Other vibration pages keep their
+existing previews and are outside this integration.
+
+The active backend contract now uses seconds (timeUnit=s), with one sample per
+second in the current development dataset. Measurement Execute opens the existing
+workspace awaiting explicit date/hour/minute Apply. The picker added an applied
+output (including unchanged confirmations); valueChange remains change-only. The
+in-memory awaitingDateRange flag gates chart creation/API calls. Existing selection,
+header, controls, hierarchy, tabs, theme, numeric Time (s) and FFT axes remain.
+
+Source flow (latest user correction, 2026-10-25): GET TimeDomain/Get is the ONLY
+waveform/display data request per measurement/range. Removed every executable
+GetAnalysis call and its HTTP DTO. Complete continuous representation=raw points
+map directly to RawVibrationRecord.time/values using the response's quantity/unit,
+seconds X and timeOriginUtc. Require originalSampleCount=returned point length,
+at least three points, hasGaps=false and no internal breakBefore marker. The generic
+isFftInput flag alone does not replace these raw/continuity checks; user explicitly
+requires FFT from the actual raw Get response. The existing numerical workers and
+formulas are unchanged. No second read, chunk download or fake data fallback occurs.
+
+The frontend sends ONLY MeasurementId, From and To. Backend alone controls point
+limits and summary resolution. No MaxPoints, ChartWidthPixels, measurementCount,
+local size ceiling, budget allocation or truncation remains. Date conversion/JWT,
+read cancellation and frontend-only selectors/zoom retain their previous behavior.
+
+Time Domain raw data still uses original quantity calculus, units, statistics,
+amplitude and caches/workers. Its separate time-domain-display.ts handles summary
+extrema/server statistics only: compatible unit scaling, full original count and
+breakBefore pen lifts. Quantity changes on a summary explicitly retain and label
+the available response Quantity with an informational status.
+
+Frequency Domain now shows a FRONTEND ERROR for summary data: FFT cannot be
+calculated from summary; raw waveform samples are required. Discontinuous or
+insufficient raw responses also show an FFT input error. No such record enters the
+FFT worker. This latest explicit user instruction supersedes the earlier summary
+information-state and second-endpoint design. The actual backend endpoint was not
+modified or deleted; changes are frontend-only. Existing chart layouts/axes and
+all mechanical math remain unchanged.
+
+**Available-day selection (2026-10-25):** backend now exposes
+GET /TimeDomain/GetAvailability with repeated MeasurementIds and optional calendar
+From/To. Read the new backend docs/DTO/service: granularity is day, timezone is
+Asia/Tehran, range ends are exclusive, and discovery is limited to 366 days ending
+at the latest actual data. User clarified to restrict ONLY days and leave hours/
+minutes alone; all days stay disabled unless API metadata proves availability.
+
+core/services/time-availability.service.ts handles this API with
+existing environment/JWT behavior, schema/selection/window validation and cancellation.
+User clarified that time-availability restrictions are cross-module infrastructure.
+The service, TimeAvailabilitySource and TIME_AVAILABILITY_SOURCE live directly under
+core/services/, with CalendarDateRange/TimeAvailability in core/models/time-availability.model.ts.
+Shared API error formatting lives in core/utils/api-error.ts; the service has no
+dependency on vibration services. Its current backend route remains the existing
+TimeDomain/GetAvailability contract. Feature pickers consume the shared source token.
+shared/components/vibration-date-time-range/ wraps the existing date-time picker
+on Time/Frequency Domain through opt-in useAvailableDates. It uses commonRanges
+(intersection of all selected channels), never union ranges or dataBounds to enable
+days. dataBounds only constrains navigation and the calendar's inclusive maxDate
+uses the day before exclusive To. Calendar labels never pass through UTC conversion.
+
+Initial/pending/failed discovery keeps selection unavailable. Flatpickr's native
+enable predicate is an allowlist; unknown days and holes remain disabled. Switching
+months/years requests that visible month if it is outside proven coverage, keeping
+draft selections and the visible calendar month. Confirmed metadata is cached only
+in the mounted component and reset on measurement changes; obsolete requests are
+cancelled. Successful empty metadata keeps all days disabled; API errors retain
+Retry and are not interpreted as empty data. Initial navigation goes to actual
+available history, not fabricated dates around today. Hours/minutes and the
+mechanical chart pipelines retain their existing behavior. Other vibration pages
+use the original unrestricted date-time picker.
+
 ### Vibration measurement selection (2026-10-11)
 
 The authenticated layout now mounts `AssetTaxonomyDrawerComponent` instead of the
@@ -842,9 +924,16 @@ IDs use a separate globally unique sequence within that layout service instance.
 The standalone reusable `ClosableTabsComponent` uses the installed PrimeNG 18 Tabs
 API and a scoped Metronic adapter with the existing empty preset. Native close
 buttons and Delete are supported alongside PrimeNG keyboard navigation and scroll
-controls. Inactive panel content is destroyed, while values remain in the service.
-Charts and the range calendar instance are disposed on close/switch. The sample chart
-mounts after tab projection so ECharts receives real dimensions.
+controls. As corrected on 2026-10-25, AnalysisWorkspace enables preserveContent:
+visited tab panels retain their own chart/data/worker/calendar instances while
+inactive. Unvisited tabs stay lazy. Projection resolves the owning tab by ID,
+never the current active tab; chart column layout also uses that owning tab.
+Switching tabs does not refetch waveforms or availability and preserves settings
+and zoom. Closing removes the panel and disposes its resources; destroying the
+workspace also clears this in-memory cache. Route changes/browser refreshes are
+not cached by this mechanism. Other ClosableTabs consumers keep active-only
+rendering by default. The sample chart mounts after tab projection so ECharts
+receives real dimensions.
 
 As revised on 2026-10-13, `DateTimeRangeComponent` replaces the separate date-only
 and time-only controls in the shared analysis panel on all five Vibration pages.
@@ -2894,3 +2983,149 @@ superseded by the user's later `components/` rename on 2026-10-10.
   2.80 MB initial-bundle and four CSS optimizer warnings remain. No live backend
   validation or manual screenshot audit; backend acceptance of the reduced
   Measurement write body remains unverified.
+
+### 2026-10-24 - Native backend source with existing vibration charts and formulas
+
+- Read both backend docs, current seconds DTOs/queries/services and official/native
+  Flatpickr behavior. Implemented the Get classification / bounded GetAnalysis flow
+  described in the current architecture agreement above. Updated service/domain
+  documentation, with no backend/database, dependency or persistent-storage changes.
+- Preserved existing numerical formulas and workers, numeric seconds Time axis,
+  Frequency axes, selectors, reference annotations, two-decimal presentation,
+  per-tab settings/zoom and Metronic visuals. Added first-Apply gating and minimal
+  informational states for successful summary-only loads. Removed runtime samples.
+- Verified production build, project lint, test TypeScript compilation and **75
+  ChromeHeadless tests** covering both HTTP stages, UTC filters/native profiles,
+  shared caps, summary-without-raw reads, cancellation/retry, no summary calculus/FFT,
+  first Apply and real two-channel API/Angular/Select2/ECharts flows at 1 Hz, existing
+  mathematical/worker regressions, isolated 409600-point workloads, independent
+  selectors/amplitude/zoom, date/time, Metronic light/dark and responsive geometry.
+  Original numerical module diff is empty. Existing 2.80 MB initial-bundle warning
+  and four CSS optimizer warnings remain. No manual screenshot audit was done.
+- Live development API/Swagger at https://localhost:7064 is available and lists the
+  documented routes. Unauthenticated GetUnits returns HTTP 401 as expected. Live
+  authenticated data retrieval remains untested; no token/credentials were copied
+  or fabricated. Automated HTTP mocks/rendering do not verify live dataset contents.
+- Latest requested availability disabling is pending backend availability metadata;
+  this limitation and the question sent to the user are recorded above. No dates or
+  hours were arbitrarily disabled and no availability endpoint was invented.
+
+### 2026-10-25 - Connect GetAvailability and disable unproven calendar days
+
+- Read both updated backend docs plus AvailabilityDtos/GetAvailabilityQuery and
+  TimeDomainAvailabilityService. Confirmed repeated IDs, day-only Tehran labels,
+  exclusive To, successful empty responses, common versus union ranges, navigation
+  bounds and the 366-day discovery/query limit. User narrowed scope to days only.
+- Added a central availability service/token/model and a reusable connected picker
+  under shared/components/vibration-date-time-range/. Enabled it only on the existing
+  Time/Frequency pages. Reused native Flatpickr enable rules, styles and disabled
+  day/keyboard/range behavior with no vendor/theme changes or new dependencies.
+- Days start disabled and become selectable only from successful commonRanges.
+  Discovery/navigation loading, read failures, empty metadata and selection changes
+  never enable unknown days. Bounds do not fill holes. Month navigation fetches
+  uncached metadata, retains confirmed local proof/drafts/view, cancels stale reads
+  and supports Retry. Hours/minutes retain their prior values and validation.
+- Verified production build, lint, test TypeScript compilation, whitespace checks
+  and **87 ChromeHeadless tests**: API parameters/calendar dates/validation/failures/
+  cancellation, native disabled cells/exclusive ends/common versus union/hole cases,
+  first-load denial/Retry/empty responses, month paging/cache/teardown, unchanged
+  hour/minute Apply, actual two-channel HTTP flow, existing numerical/worker/OnPush/
+  selector/zoom/theme/responsive regressions. Existing 2.80 MB initial-bundle and
+  four CSS optimizer warnings remain. No authenticated live availability response
+  or manual screenshot audit was performed; HTTP behavior is verified with mocks.
+
+### 2026-10-25 - Remove frontend point limits at the user's correction
+
+- User explicitly superseded the preceding proposal to add a frontend 500000-point
+  cap: backend alone controls display/read counts and resolution. Both Get and
+  GetAnalysis now send only MeasurementId, From and To. Removed MaxPoints, local
+  100000/count allocation, size-based response rejection and measurementCount
+  plumbing from model, both chart inputs and page templates. No new count/width
+  default, truncation, date estimation, chunking or backend change was introduced.
+- Preserved response consistency/metadata validation and the three-sample minimum
+  needed for existing numerical processing. Chart formulas, controls, summaries
+  and available-day selection remain as before this correction.
+- Reviewed current backend query types: Get exposes optional MaxPoints and
+  ChartWidthPixels; GetAnalysis still has its backend default when MaxPoints is
+  omitted. Server defaults are not selected or duplicated in frontend code.
+- Verified production build, project lint, test TypeScript compilation through
+  Karma, diff whitespace checks and **19 focused ChromeHeadless tests**: exact
+  request filters on both read stages/multiple measurements, a complete 100001-point
+  response accepted without the former local cap, summary handling, cancellation,
+  retry, real two-channel HTTP/chart flow and chart lifecycle/worker regressions.
+  Existing bundle/CSS optimizer warnings remain. No live authenticated API test
+  was performed; server-default behavior remains the backend's responsibility.
+
+### 2026-10-25 - Remove frontend GetAnalysis and compute FFT only from Get raw points
+
+- User explicitly requested removing GetAnalysis usage and showing a frontend FFT
+  error for summary data. VibrationApiService now makes one Get request per selected
+  measurement/range and maps complete continuous raw X/Y directly into the existing
+  raw record/worker interface. Removed the second request, its DTO and all executable
+  references to GetAnalysis. Backend endpoints/files were not modified.
+- Retained response quantity/unit, full numeric precision, seconds coordinates and
+  timeOriginUtc. Raw records require the complete original point count and no gaps
+  or internal pen-lift markers; other records remain display-only. No frontend cap,
+  width/count parameter, truncation or chunk download was introduced.
+- Frequency Domain now uses its existing Metronic error alert for summary input,
+  explaining that FFT requires raw waveform samples. Such records never acquire a
+  numerical worker. Numerical formulas, raw charts, Time Domain summary display and
+  available-day behavior remain unchanged.
+- Verified production build, project lint, test TypeScript compilation via Karma,
+  whitespace checks, no GetAnalysis/obsolete DTO references in executable source,
+  and **56 ChromeHeadless tests**: single-read HTTP/UTC/profile/no-limit mapping,
+  100001 raw points, gaps/completeness guards, summary FFT error/no worker, retries/
+  cancellation, actual two-channel Get-only Time/FFT routing and existing large
+  numerical/worker/unit/quantity/window/amplitude/zoom regressions. Existing 2.80 MB
+  bundle and four CSS optimizer warnings remain. No live authenticated API test was
+  performed; HTTP mapping and rendered behavior were tested with controlled data.
+
+### 2026-10-25 - Generalize time-availability naming and placement
+
+- User clarified that time availability is reusable cross-module infrastructure.
+  Moved the service/test out of services/vibration/ to core/services/
+  time-availability.service.ts and .spec.ts. Renamed class/interface/token to
+  TimeAvailabilityService, TimeAvailabilitySource and TIME_AVAILABILITY_SOURCE.
+- Renamed the calendar response model to core/models/time-availability.model.ts
+  (TimeAvailability) and its test fixture to time-availability-fixture.ts. Updated
+  every consumer/import/provider and current documentation; no old availability
+  names/paths remain in src. Feature-specific vibration picker components retain
+  their feature names and consume the shared time availability source.
+- Extracted the existing HTTP error formatter to core/utils/api-error.ts so the
+  generic service no longer imports a vibration service. Existing vibration error
+  presentation delegates to that helper with its previous wording. Availability
+  errors use generic available-date wording. The endpoint, DTO shape, calendar
+  rules, limits, authentication and request/cancellation behavior are unchanged.
+- Verified production build, project lint, test TypeScript compilation, whitespace
+  checks and **37 ChromeHeadless tests**: moved service HTTP contract, calendar
+  disable/enable/retry/cancellation, generic date/time behavior, actual routed API
+  flow and existing vibration error/data-adapter regressions. Existing bundle/CSS
+  optimizer warnings remain. No live authenticated API or visual behavior change
+  was claimed or required for this naming/dependency refactor.
+
+### 2026-10-25 - Retain Analysis tab data and chart instances on tab switches
+
+- User requested that switching between Analysis tabs not reload their data.
+  ClosableTabsComponent now has an opt-in preserveContent input: only visited
+  panels are instantiated, and their views survive selection changes until the
+  corresponding tab is removed. Its default remains active-only for other uses.
+  AnalysisWorkspace enables retention and resolves every panel by its own tab ID,
+  so inactive charts never receive the active tab's measurements, range or settings.
+  Per-tab chart column eligibility also uses the owning tab's measurement count.
+- Waveform responses, availability windows/calendars, worker sessions/results,
+  ECharts instances, settings and zoom remain in the mounted tab. Switching during
+  a pending HTTP request neither cancels nor repeats that request. New tabs still
+  require date Apply; changing a tab's applied range still fetches its new data.
+  Closing active/inactive tabs destroys their resources; workspace destruction
+  also clears retained views. Route changes/browser reloads are not cached here.
+  API contracts, backend caps and vibration/FFT formulas were not changed.
+- Verified production build, project lint, whitespace checks and **15
+  ChromeHeadless tests** across real routed HTTP flow, combined range selection,
+  Time Domain and Frequency Domain pages. New regressions cover no repeated HTTP
+  (including availability), pending-request retention, independent measurements,
+  dates/quantity, exact chart/calendar identity and zoom on return, date refetch,
+  and chart/calendar disposal when closing active or inactive tabs. Existing
+  numerical/theme/responsive tests also pass. Tests used controlled HTTP data;
+  no live authenticated integration was performed. Build retains existing bundle
+  and CSS optimizer warnings; the range-routing suite also logs two transient
+  ECharts zero-dimension initialization warnings, with all assertions passing.

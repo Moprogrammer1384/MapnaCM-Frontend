@@ -11,8 +11,13 @@
     </section>
     <section class="col-12 col-xl-9" [attr.aria-labelledby]="tab.id + '_dates'">
       <h3 [id]="tab.id + '_dates'" class="fs-6 fw-bold mb-5">Date and time range</h3>
-      <app-date-time-range [inputId]="tab.id" [value]="dateTimeRange"
-        (valueChange)="updateDateTimeRange($event)"></app-date-time-range>
+      @if (useAvailableDates) {
+        <app-vibration-date-time-range [inputId]="tab.id" [value]="dateTimeRange" [measurementIds]="measurementIds"
+          (applied)="updateDateTimeRange($event)"></app-vibration-date-time-range>
+      } @else {
+        <app-date-time-range [inputId]="tab.id" [value]="dateTimeRange"
+          (applied)="updateDateTimeRange($event)"></app-date-time-range>
+      }
     </section>
   </div>
   <div class="row g-5 mt-0">

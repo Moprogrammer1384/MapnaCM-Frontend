@@ -1,10 +1,12 @@
 <div class="card mw-100">
 
   @if (workspaceTabs.length) {
-    <app-closable-tabs [tabs]="workspaceTabs" [activeId]="workspaceActiveId"
+    <app-closable-tabs [tabs]="workspaceTabs" [activeId]="workspaceActiveId" [preserveContent]="true"
       (activeIdChange)="activateTab($event)" (tabClose)="closeTab($event)">
-      <ng-template>
-        <app-analysis-panel *ngIf="activeTab as tab" [tab]="tab" [domain]="domain" [chartContent]="chartContent || (showSampleChart ? sampleChart : undefined)"
+      <ng-template let-tabId>
+        <app-analysis-panel *ngIf="tabById(tabId) as tab" [tab]="tab" [domain]="domain" [chartContent]="chartContent || (measurementChartContent || showSampleChart ? sampleChart : undefined)"
+          [useAvailableDates]="useAvailableDates"
+          (dateTimeRangeApply)="applyDateTimeRange(tab.id, $event)"
           (chartSettingsChange)="updateChartSettings({ tabId: tab.id, chartSettings: $event })"
           (dateRangeChange)="updateDateRange({ tabId: tab.id, dateRange: $event })"
           (timeRangeChange)="updateTimeRange({ tabId: tab.id, timeRange: $event })"></app-analysis-panel>
@@ -19,12 +21,15 @@
   }
 </div>
 <ng-template #sampleChart let-tab>
+  @if (tab.awaitingDateRange) {
+    <div class="text-gray-500 text-center py-10" role="status">Select the date and time range above and press Apply to load measurement data.</div>
+  } @else {
   <div class="d-flex justify-content-end mb-5">
     <button type="button" class="btn btn-sm btn-icon btn-active-light"
-      aria-label="Two charts per row" [attr.aria-pressed]="twoChartsPerRow"
-      [title]="tab.measurements.length <= 1 ? 'At least two charts are required to change layout' : (twoChartsPerRow ? 'Show one chart per row' : 'Show two charts per row')"
-      [disabled]="tab.measurements.length <= 1" (click)="toggleChartLayout()">
-      @if (twoChartsPerRow) {
+      aria-label="Two charts per row" [attr.aria-pressed]="twoChartsPerRow(tab)"
+      [title]="tab.measurements.length <= 1 ? 'At least two charts are required to change layout' : (twoChartsPerRow(tab) ? 'Show one chart per row' : 'Show two charts per row')"
+      [disabled]="tab.measurements.length <= 1" (click)="toggleChartLayout(tab)">
+      @if (twoChartsPerRow(tab)) {
         <app-keenicon name="row-horizontal" class="fs-3"></app-keenicon>
       } @else {
         <app-keenicon name="element-11" class="fs-3"></app-keenicon>
@@ -33,9 +38,9 @@
   </div>
   <div class="row g-7">
     @for (item of tab.measurements; track item.measurement.id) {
-      <section class="col-12 mw-100" [class.col-md-6]="twoChartsPerRow"
+      <section class="col-12 mw-100" [class.col-md-6]="twoChartsPerRow(tab)"
         [attr.aria-labelledby]="tab.id + '_chart_' + item.measurement.id">
-        @if (!$first && !twoChartsPerRow) {
+        @if (!$first && !twoChartsPerRow(tab)) {
           <div class="separator mb-7"></div>
         }
         <h3 [id]="tab.id + '_chart_' + item.measurement.id" class="fs-5 fw-bold text-break mb-4">{{ item.component.name }} - {{ item.measurement.name }}@if (item.measurement.tag) {<span class="text-gray-500 fw-normal">{{ ' ' + item.measurement.tag }}</span>}</h3>
@@ -48,4 +53,5 @@
       </section>
     }
   </div>
+  }
 </ng-template>

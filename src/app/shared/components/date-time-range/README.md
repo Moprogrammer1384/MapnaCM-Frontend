@@ -36,3 +36,22 @@ its values to the existing tab date/time fields and change events. The original
 date-only and time-only components remain available for other consumers.
 
 Flatpickr behavior reference: [range/options](https://flatpickr.js.org/options/).
+
+## Available-day constraints (2026-10-25)
+
+Optional `enabledDates` contains calendar-label ranges with inclusive `from` and
+exclusive `to`. An empty array disables all days; omitted constraints preserve the
+existing unrestricted picker. Native Flatpickr `enable` rules own day selection and
+disabled styling. `minDate`/`maxDate` are optional inclusive navigation bounds;
+they do not prove that intermediate days have data. `calendarDate` guides the
+initial calendar view without committing a new range. `calendarWindowChange`
+emits the visible month for consumers that load metadata lazily.
+
+`selectionDisabled` blocks Apply during a pending metadata read while permitting
+calendar navigation. `applied` confirms every valid Apply, including unchanged
+values; `valueChange` remains change-only. Availability updates preserve drafts and
+the visible month. Time values and hour/minute validation retain their prior behavior.
+
+Time/Frequency Domain use the connected wrapper in
+`shared/components/vibration-date-time-range/`; the other three vibration pages
+keep the original picker without availability restrictions.

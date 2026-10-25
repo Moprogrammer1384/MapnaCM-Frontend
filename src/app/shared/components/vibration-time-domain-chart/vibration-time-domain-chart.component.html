@@ -12,6 +12,12 @@
   <app-apache-echarts [options]="chartOptions" [mergeOptions]="true" height="400px"></app-apache-echarts>
 }
 @if (analysis; as result) {
+  @if (display) {
+    <div class="text-gray-500 fs-7 mt-2" role="status">{{ display.series.representation === 'raw' ? 'Separate acquisitions' : 'Min/max summary' }} · Statistics cover the full selected range.</div>
+  }
+  @if (analysisNotice) {
+    <div class="text-gray-600 fs-7 mt-2" role="status">{{ analysisNotice }}</div>
+  }
   <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 text-gray-500 fs-7 mt-2"
     data-testid="record-summary" role="group" aria-label="Full record statistics" aria-live="polite">
     <div class="d-flex flex-wrap gap-3">

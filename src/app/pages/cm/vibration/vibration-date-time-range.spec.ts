@@ -1,3 +1,5 @@
+import { TIME_AVAILABILITY_SOURCE } from 'src/app/core/services/time-availability.service';
+import { availabilityFixtureSource } from 'src/testing/time-availability-fixture';
 import { TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
@@ -14,7 +16,7 @@ import { METRONIC_PRIMENG_CONFIG } from 'src/app/shared/components/metronic-prim
 import { AnalysisWorkspaceComponent } from 'src/app/shared/components/analysis-workspace-panel/analysis-workspace.component';
 import { VibrationModule } from './vibration.module';
 import { of } from 'rxjs';
-import { RAW_VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/raw-data-source.service';
+import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/vibration-api.service';
 
 const execution: AssetTaxonomyExecution = {
   selection: { plantId: 1, unitId: 2, measurementIds: [6] },
@@ -57,6 +59,7 @@ describe('Combined date/time range on Vibration pages', () => {
     state.execute(execution);
     const id = state.activeTabId();
     state.updateDateRange(id, { from: '2026-10-01', to: '2026-10-12' });
+    state.applyDateTimeRange(id, { from: '2026-10-01T00:00', to: '2026-10-12T23:59' });
     detect(); await harness.fixture.whenStable(); detect();
     for (let attempt = 0; harness.routeNativeElement!.querySelector('app-vibration-frequency-domain-chart[aria-busy="true"]') && attempt < 200; attempt++) {
       await new Promise(resolve => setTimeout(resolve, 10)); detect();
@@ -69,8 +72,8 @@ describe('Combined date/time range on Vibration pages', () => {
       imports: [NoopAnimationsModule],
       providers: [
         provideRouter([{ path: 'cm/vibration', loadChildren: () => VibrationModule }]),
-        providePrimeNG(METRONIC_PRIMENG_CONFIG), VibrationSelectionService,
-        { provide: RAW_VIBRATION_DATA_SOURCE, useValue: { load: () => of({ id: 'dates', label: 'Date test',
+        providePrimeNG(METRONIC_PRIMENG_CONFIG), { provide: TIME_AVAILABILITY_SOURCE, useValue: availabilityFixtureSource }, VibrationSelectionService,
+        { provide: VIBRATION_DATA_SOURCE, useValue: { load: () => of({ id: 'dates', label: 'Date test',
           quantity: 'displacement', unit: 'µm', timeUnit: 'ms', time: [0, 1, 2], values: [1, 2, 3] }) } },
       ],
     }).compileComponents();
@@ -117,13 +120,16 @@ describe('Combined date/time range on Vibration pages', () => {
     const previousCalendar = picker().calendarContainer;
     harness.routeNativeElement!.querySelector<HTMLElement>(`[data-tab-id="${firstId}"]`)!.click();
     detect(); await harness.fixture.whenStable(); detect();
-    expect(previousCalendar.isConnected).toBeFalse();
+    expect(previousCalendar.isConnected).toBeTrue();
+    expect(previousCalendar.classList.contains('open')).toBeFalse();
     expect(input().value).toBe('2026-10-01 00:00 to 2026-10-12 23:59');
     harness.routeNativeElement!.querySelector<HTMLElement>(`[data-tab-id="${secondId}"]`)!.click();
     detect(); await harness.fixture.whenStable(); detect();
+    expect(picker().calendarContainer).toBe(previousCalendar);
     expect(input().value).toBe('2026-10-05 23:59 to 2026-10-06 00:00');
     harness.routeNativeElement!.querySelector<HTMLButtonElement>('[aria-label="Close Analysis 2"]')!.click();
     detect(); await harness.fixture.whenStable(); detect();
+    expect(previousCalendar.isConnected).toBeFalse();
     expect(input().value).toBe('2026-10-01 00:00 to 2026-10-12 23:59');
   });
 

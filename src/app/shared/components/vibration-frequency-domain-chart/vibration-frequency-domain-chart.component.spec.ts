@@ -6,8 +6,9 @@ import { FrequencyDomainAnalysis } from 'src/app/core/models/frequency-domain.mo
 import { prepareFrequencyDomainRecord } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis';
 import { analyzeFrequencyDomain } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis';
 import { FrequencyDomainAnalysisService } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis.service';
-import { RAW_VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/raw-data-source.service';
+import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/vibration-api.service';
 import { VibrationFrequencyDomainChartComponent } from './vibration-frequency-domain-chart.component';
+import { VibrationDisplayRecord } from 'src/app/core/models/vibration-api.model';
 
 const raw: RawVibrationRecord = { id: 'component', label: 'Component raw record', quantity: 'velocity', unit: 'cm/s',
   timeUnit: 'ms', time: [0, 1, 2, 3], values: [1, -4, 2, 3] };
@@ -28,14 +29,14 @@ describe('Raw frequency-domain chart request lifecycle', () => {
   beforeEach(() => {
     load = jasmine.createSpy('load').and.returnValue(of(raw));
     TestBed.configureTestingModule({ imports: [VibrationFrequencyDomainChartComponent],
-      providers: [{ provide: RAW_VIBRATION_DATA_SOURCE, useValue: { load } }] });
+      providers: [{ provide: VIBRATION_DATA_SOURCE, useValue: { load } }] });
   });
   afterEach(() => fixture?.destroy());
 
   it('shows load errors and retries, passing measurement/date parameters to the data adapter', async () => {
     load.and.returnValues(throwError(() => new Error('offline')), of(raw));
     mount(); await settle();
-    expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain('Unable to load');
+    expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain('offline');
     expect(load).toHaveBeenCalledWith({ measurementId: 42, from: '2026-10-01T08:00', to: '2026-10-02T09:30' });
     fixture.componentRef.setInput('settings', { ...initial, amplitude: 'rms' }); await settle();
     expect(fixture.componentInstance.loading).toBeFalse();
@@ -79,5 +80,27 @@ describe('Raw frequency-domain chart request lifecycle', () => {
     fixture.nativeElement.querySelector('button').click(); await settle();
     expect(fixture.componentInstance.error).toBe('');
     expect(fixture.nativeElement.querySelector('app-apache-echarts')).not.toBeNull();
+  });
+
+  it('shows a frontend FFT error for summary data and never passes extrema to the worker', async () => {
+    const summary: VibrationDisplayRecord = { kind: 'display', quantity: 'velocity', unit: 'mm/s', series: {
+      measurementId: 42, sourceQuantity: 2, quantity: 2, unit: 5, representation: 'minmax-statistical-envelope',
+      originalSampleCount: 9000000, returnedPointCount: 2, conversionApplied: false, hasGaps: false, isFftInput: false,
+      points: [{ x: 0, y: -2, breakBefore: true }, { x: 100, y: 4, breakBefore: false }],
+      statistics: { min: -2, max: 4, mean: 1, rms: 2, peak: 4, peakToPeak: 6 },
+    } };
+    load.and.returnValue(of(summary));
+    const acquire = jasmine.createSpy('acquire');
+    TestBed.overrideProvider(FrequencyDomainAnalysisService, { useValue: { acquire } });
+    mount(); await settle();
+    expect(fixture.componentInstance.loading).toBeFalse();
+    expect(fixture.componentInstance.error).toContain('FFT cannot be calculated from summary');
+    expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain('Raw waveform samples are required');
+    expect(fixture.nativeElement.querySelector('app-apache-echarts')).toBeNull();
+    expect(acquire).not.toHaveBeenCalled();
+    fixture.componentRef.setInput('settings', { ...initial, quantity: 'displacement' }); await settle();
+    expect(load).toHaveBeenCalledTimes(1);
+    expect(fixture.componentInstance.loading).toBeFalse();
+    expect(fixture.componentInstance.error).toContain('FFT cannot be calculated from summary');
   });
 });

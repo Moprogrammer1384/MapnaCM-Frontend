@@ -7,6 +7,7 @@ import { ChartLayoutPreferenceService } from 'src/app/core/services/chart-layout
 import { ClosableTabsComponent } from '../closable-tabs/closable-tabs.component';
 import { AnalysisPanelComponent } from './analysis-panel/analysis-panel.component';
 import { VibrationSampleChartComponent } from './vibration-sample-chart.component';
+import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
 
 @Component({
   selector: 'app-analysis-workspace',
@@ -19,6 +20,7 @@ export class AnalysisWorkspaceComponent implements OnDestroy {
   @Input() state?: AnalysisWorkspaceState;
   @Input() showSampleChart = false;
   @Input() domain: AnalysisDomain = 'time';
+  @Input() useAvailableDates = false;
   @Input() measurementChartContent?: TemplateRef<{ $implicit: AnalysisTab['measurements'][number]; tab: AnalysisTab }>;
   @Input() title = 'Analysis';
   @Input() tabs: readonly AnalysisTab[] = [];
@@ -39,15 +41,19 @@ export class AnalysisWorkspaceComponent implements OnDestroy {
   get workspaceActiveId(): string { return this.state?.activeTabId() ?? this.activeId; }
 
   get activeTab(): AnalysisTab | undefined {
-    return this.workspaceTabs.find(tab => tab.id === this.workspaceActiveId);
+    return this.tabById(this.workspaceActiveId);
   }
 
-  get twoChartsPerRow(): boolean {
-    return this.layoutPreference.columns() === 2 && (this.activeTab?.measurements.length ?? 0) > 1;
+  tabById(id: string): AnalysisTab | undefined {
+    return this.workspaceTabs.find(tab => tab.id === id);
   }
 
-  toggleChartLayout(): void {
-    if ((this.activeTab?.measurements.length ?? 0) > 1) {
+  twoChartsPerRow(tab: AnalysisTab): boolean {
+    return this.layoutPreference.columns() === 2 && tab.measurements.length > 1;
+  }
+
+  toggleChartLayout(tab: AnalysisTab): void {
+    if (tab.measurements.length > 1) {
       this.layoutPreference.toggle();
     }
   }
@@ -75,6 +81,10 @@ export class AnalysisWorkspaceComponent implements OnDestroy {
   updateChartSettings(change: AnalysisChartSettingsChange): void {
     this.state?.updateChartSettings?.(change.tabId, change.chartSettings);
     this.chartSettingsChange.emit(change);
+  }
+
+  applyDateTimeRange(tabId: string, range: DateTimeRange): void {
+    this.state?.applyDateTimeRange?.(tabId, range);
   }
 
   closeTab(id: string): void {

@@ -52,7 +52,11 @@ its `Component - Measurement` names followed by the Measurement tag when present
 (for example `Bearing 1 - X vi508`). Tags use Metronic's gray-500 text color and
 normal font weight to distinguish them from the bold names. The hierarchy path, Sample data badge and
 waveform description are not repeated above charts.
-Each chart has its own heading ID and zoom state; all inactive charts are disposed.
+Each chart has its own heading ID and zoom state. Visited Analysis tabs retain
+their charts, loaded data, worker results and calendar instances while inactive.
+Switching tabs does not repeat data/availability requests or reset zoom. Closing
+a tab or destroying its workspace disposes its resources. This cache is in memory
+for the mounted workspace; route changes and browser refreshes can load data again.
 An icon button above the sample charts toggles between one chart per row (the
 default) and two equal columns at widths of 768px and above. Smaller screens
 remain single-column. With zero or one Measurement, the button is disabled and
@@ -158,9 +162,13 @@ amplitude extrema, while Time Domain Min/Max are instantaneous waveform extrema.
 `../closable-tabs/` is the reusable PrimeNG Tabs adapter. The consumer supplies
 `tabs`, `activeId`, `activeIdChange`, `tabClose` and a projected `ng-template` for
 panel content. PrimeNG owns tab roles, IDs, arrow/Home/End keys and scrolling.
-The adapter adds accessible close buttons, Delete handling and focus return. Only
-the active panel is instantiated, disposing charts and calendars when switching
-or closing. The caller retains panel values and selects a neighbor when closing.
+The adapter adds accessible close buttons, Delete handling and focus return.
+Its optional `preserveContent` input defaults to false (active-only content).
+AnalysisWorkspace enables it: a panel is instantiated on its first activation
+and retained until its tab is closed, without eagerly loading unopened tabs.
+Each projected panel is bound to its own tab ID, including when inactive.
+PrimeNG continues to own active-panel visibility and keyboard semantics.
+The caller retains panel values and selects a neighbor when closing.
 The shared empty PrimeNG preset and `_metronic-tabs.scss` supply Metronic visuals.
 
 The selection heading displays the tab's `plantLabel`, captured when Execute is
@@ -209,3 +217,13 @@ References used:
 - [Flatpickr options](https://flatpickr.js.org/options/)
 - [Flatpickr range calendar](https://flatpickr.js.org/examples/#range-calendar)
 - [Flatpickr 24-hour time picker](https://flatpickr.js.org/examples/#24-hour-time-picker)
+
+## API integration update (2026-10-24)
+
+Time/Frequency Domain provide their real measurement templates without enabling
+showSampleChart. New analyses wait for the existing picker Apply before fetching.
+DateTimeRangeComponent.applied confirms even an unchanged selection while its
+valueChange remains change-only. The state awaitingDateRange flag is in memory only.
+VibrationApiService uses Get alone and maps complete continuous raw points to the existing workers;
+all raw chart transforms remain frontend operations. The prior Book1/adapter notes
+above are historical; see core/services/vibration/README.md for the current flow.

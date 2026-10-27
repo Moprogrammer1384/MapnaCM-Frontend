@@ -8,7 +8,7 @@ export const environment = {
   USERDATA_KEY: 'authf649fc9a5f55',
   isMockEnabled: false,
   // DARP deployment target; backend availability is not yet verified.
-  apiUrl: 'http://185.81.99.32:758/api',
+  apiUrl: 'http://185.81.99.32:758/api/v1',
   appThemeName: 'DARP',
   appPurchaseUrl: 'https://1.envato.market/EA4JP',
   appHTMLIntegration: 'https://preview.keenthemes.com/metronic8/demo1/documentation/base/helpers/flex-layouts.html',

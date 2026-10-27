@@ -3236,3 +3236,22 @@ superseded by the user's later `components/` rename on 2026-10-10.
   were not overwritten. No live browser-to-backend/JWT/SQL or remote check ran.
 - Preserved the pre-existing agent.md/docs/drawer changes and existing memory
   merge markers; this compatibility change did not resolve unrelated changes.
+
+### Backend URL API versioning companion update - 2026-10-27
+
+- The backend user explicitly requested the Sukuk reference's Route/ApiVersion
+  controller pattern. All business APIs now use /api/v1/[controller]/[action].
+  Updated only environment.ts and environment.prod.ts apiUrl bases to /api/v1;
+  service action suffixes, payloads, response envelopes and JWT URL matching
+  remain compatible. No UI or other frontend implementation change.
+- Verified source services/models and callers for taxonomy, authentication,
+  users/roles, profile and Vibration. Existing services construct business URLs
+  from environment.apiUrl; auth interceptor matches that same prefix.
+- Production build and full lint passed. All 18 focused HttpClient tests passed
+  in ChromeHeadless (asset-taxonomy API, Vibration API, user management). Existing
+  initial bundle warning remains (2.80 MB / 2.10 MB budget). Build, tests and logs
+  are isolated in TEMP/MapnaCM-api-versioning-frontend-20261027.
+- Backend full build passed with 0 errors; all 85 non-SQL tests passed, including
+  isolated versioned HTTP/Swagger checks. No live browser-to-backend or JWT/SQL
+  integration was run, no host restarted, no publish output overwritten and no
+  database changed. Deploy/restart matching backend and frontend to use v1 URLs.

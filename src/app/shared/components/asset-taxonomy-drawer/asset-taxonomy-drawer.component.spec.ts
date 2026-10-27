@@ -117,6 +117,58 @@ describe('AssetTaxonomyDrawerComponent with real PrimeNG Tree / Select2 / Metron
     expect(DrawerComponent.getInstance('test_taxonomy_drawer')!.isShown()).toBeTrue();
   });
 
+  it('keeps Plant interaction, the tree and selection open across viewport resizes, while still allowing overlay dismissal', async () => {
+    const registration = spyOn(window, 'addEventListener').and.callThrough();
+    DrawerComponent.initGlobalHandlers();
+    const resizeListener = registration.calls.allArgs().find(args => args[0] === 'resize')![1];
+    const resize = async () => {
+      window.dispatchEvent(new Event('resize'));
+      await new Promise(resolve => setTimeout(resolve, 250));
+      await settle();
+    };
+    try {
+      await open();
+      window.jQuery(root.querySelector('select')!).select2('open');
+      await resize();
+      expect(host.open).toBeTrue();
+      expect(drawer.isOpen()).toBeTrue();
+      expect(root.inert).toBeFalse();
+      expect(root.querySelector('.select2-dropdown')).not.toBeNull();
+
+      const plantOption = Array.from(root.querySelectorAll<HTMLElement>('.select2-results__option'))
+        .find(option => option.textContent?.includes('First plant'))!;
+      plantOption.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      await settle();
+      expect(drawer.plantId).toBe(0);
+      expect(root.querySelector('.select2-dropdown')).toBeNull();
+      await expandAll();
+      await clickMeasurement('Velocity X');
+      const nodes = drawer.nodes;
+      const overlay = document.querySelector<HTMLElement>('.drawer-overlay')!;
+      await resize();
+      expect(DrawerComponent.getInstance('test_taxonomy_drawer')!.isShown()).toBeTrue();
+      expect(host.open).toBeTrue();
+      expect(drawer.nodes).toBe(nodes);
+      expect(root.querySelector('[role="tree"]')).not.toBeNull();
+      expect(drawer.selectedNodes.map(node => node.data.id)).toEqual([0]);
+      expect(host.saved).toEqual({ plantId: 0, unitId: 0, measurementIds: [0] });
+      expect(api.getAllPlants).toHaveBeenCalledTimes(1);
+      expect(document.querySelector('.drawer-overlay')).toBe(overlay);
+
+      overlay.click();
+      await settle();
+      await resize();
+      expect(host.open).toBeFalse();
+      expect(drawer.isOpen()).toBeFalse();
+      expect(root.inert).toBeTrue();
+      expect(root.classList.contains('drawer-on')).toBeFalse();
+      expect(document.querySelector('.drawer-overlay')).toBeNull();
+      expect(host.saved?.measurementIds).toEqual([0]);
+    } finally {
+      window.removeEventListener('resize', resizeListener);
+    }
+  });
+
   it('executes a complete measurement snapshot and closes only after a valid selection', async () => {
     const execute = spyOn(drawer.executed, 'emit');
     await open();

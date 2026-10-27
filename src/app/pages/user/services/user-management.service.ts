@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { ApiEnvelope } from '../../../core/models/response.model';
 import { criteriaToHttpParams } from '../../../core/utils/query-params';
@@ -74,7 +74,7 @@ export class UserManagementService {
   /**
    * POST api/User/Create — admin-created user with roles; password is set here.
    * When the email/username belongs to a soft-deleted user, the backend
-   * rejects with success=false + data.canRedefine=true (no throw) so the
+   * rejects with HTTP 400 + success=false + data.canRedefine=true so the
    * caller can ask the admin to confirm redefining it.
    */
   createUser(payload: CreateUserPayload): Observable<{ canRedefine?: boolean }> {
@@ -90,6 +90,15 @@ export class UserManagementService {
             throw new Error(response.message || 'The request failed.');
           }
           return {};
+        }),
+        catchError((error: unknown) => {
+          const response = error instanceof HttpErrorResponse
+            ? error.error as ApiEnvelope<{ canRedefine?: boolean }> | null : null;
+          if (error instanceof HttpErrorResponse && error.status === 400
+            && response?.success === false && response.data?.canRedefine === true) {
+            return of({ canRedefine: true });
+          }
+          return throwError(() => error);
         })
       );
   }

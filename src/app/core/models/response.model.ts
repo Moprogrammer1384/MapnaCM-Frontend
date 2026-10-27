@@ -1,8 +1,8 @@
 /**
  * Wire format of every MapnaCM backend endpoint (Shared.Core.Wrappers.Response<T>).
- * Business failures (wrong password, inactive account, ...) are returned with
- * HTTP 200 and success = false, so consumers must branch on `success`, not on
- * the HTTP status. 401/403 use the same envelope with a message.
+ * Successful business results use HTTP 200; failed results use HTTP 400 with
+ * success = false. Older hosts may still use 200 for failed results, so keep
+ * inspecting success. HttpClient exposes non-2xx envelopes in error.error.
  */
 export interface ApiEnvelope<T> {
   success: boolean;

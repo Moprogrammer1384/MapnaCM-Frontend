@@ -1,5 +1,26 @@
 # DARP deployment on IIS
 
+## Current release: 2026-10-27 (target confirmed on 2026-10-26)
+
+- Frontend: `http://185.81.99.32:759/`.
+- Backend API compiled into the production bundle: `http://185.81.99.32:758/api`.
+- Release archive: `dist/DARP-IIS-2026-10-27.zip`. Extract its contents directly
+  into the frontend website directory; `index.html` and `web.config` are at the
+  archive root. Preserve a backup of the previous deployment before replacing it.
+- In IIS, use an HTTP website binding on port **759**, with the site's physical
+  path pointing to the extracted directory. Ensure inbound traffic to the
+  frontend port 759 and backend port 758 is permitted on the server.
+- The backend CORS policy must allow origin `http://185.81.99.32:759`.
+  This frontend package does not change backend configuration.
+- IIS Static Content, Default Document and URL Rewrite are required. After
+  deployment, open `http://185.81.99.32:759/auth/login`, refresh the page, and
+  verify API requests use port 758 in the browser Network panel.
+- This release corrects the drawer state attribute read on viewport resize.
+  The measurement panel stays open while choosing Plant and exploring its tree;
+  explicit close, overlay dismissal and Execute retain their existing behavior.
+  After deployment, reload the page and repeat Plant selection on the affected
+  Samsung browser, including opening/closing the keyboard and rotating the phone.
+
 ## Build and installation
 
 1. Build from the repository root: `npm run build -- --configuration production`.
@@ -42,10 +63,10 @@ navigation and refresh validation. The deployed IIS root build should keep
 ## API configuration
 
 The production bundle uses `http://185.81.99.32:758/api`, as configured
-in `src/environments/environment.prod.ts`, using the IP/port supplied by the user
-on 2026-10-14 and the existing `/api` base path. The user confirmed that the
-backend is not built yet, so endpoint availability is **unverified**. This
-expects the future API to be available at that address; if its deployment uses
+in `src/environments/environment.prod.ts`, using the IP/port reconfirmed by the
+user on 2026-10-26 and the existing `/api` base path. Live backend availability
+and authenticated integration on the target server are **unverified** for this
+release. This expects the API to be available at that address; if its deployment uses
 another address, set `apiUrl` accordingly and rebuild. Editing the TypeScript
 environment file on IIS after copying
 the build does not change the compiled bundle. For an HTTPS frontend, use an
@@ -116,8 +137,54 @@ XML with `[xml](Get-Content 'C:\inetpub\wwwroot\darp-frontend\web.config' -Raw)`
 and compare its SHA256 to the built file above before replacing any configuration.
 
 The frontend port is 759. The production API target remains port 758, as supplied
-earlier, and must permit frontend origin `http://185.81.99.32:759` when the backend
-is implemented. Changing the frontend binding alone does not require a rebuild.
+earlier, and must permit frontend origin `http://185.81.99.32:759`.
+Changing the frontend binding alone does not require a rebuild.
+
+## Validation on 2026-10-27 (Asia/Tehran)
+
+- Production build passed (hash `9d13de5157df752e`), as did project lint and test
+  TypeScript compilation. All **26** focused ChromeHeadless drawer/Select2 tests
+  passed. The new resize regression failed before the correction and passed
+  afterward; final coverage includes clicking a real Select2 Plant result,
+  retaining the tree/selected measurements without reloading, overlay dismissal,
+  and keeping a dismissed panel closed on subsequent resize. Existing tests
+  include light/dark themes and mobile/desktop layout bounds.
+- Verified the production API URL `http://185.81.99.32:758/api`, exclusion of the
+  development API URL, and identical valid source/output IIS configuration.
+- Local IIS Express with URL Rewrite served six HTML routes with HTTP 200 and
+  `Cache-Control: no-cache`; all 83 checked resources loaded. Missing JS/JSON/API
+  paths and POST to the login route returned HTTP 404. Chrome Headless bootstrapped
+  and refreshed five routes with no uncaught exceptions or failed local responses.
+- Existing warnings remain: 2.80 MB initial bundle against the 2 MB warning
+  budget, and four skipped CSS selector rules. No styles or API contracts changed.
+- The release is a frontend deployment artifact. Target-server deployment,
+  authenticated live API/CORS and physical Samsung-device validation were not
+  performed. Repeat the affected interaction after installation.
+- Adjacent release files contain the deployment README, local smoke results,
+  complete archive/source SHA256 verification and archive checksum:
+  `DARP-IIS-2026-10-27-README.md`, `DARP-IIS-2026-10-27-validation.json`,
+  `DARP-IIS-2026-10-27-package-validation.json` and `DARP-IIS-2026-10-27.sha256`.
+
+## Validation on 2026-10-26 (Asia/Tehran)
+
+- A fresh production build passed. The emitted main bundle contains
+  `http://185.81.99.32:758/api` and excludes the development API URL.
+  Source and emitted IIS configuration match and parse as XML.
+- Local IIS Express with URL Rewrite served six root/internal HTML routes with
+  HTTP 200 and `Cache-Control: no-cache`. All 83 checked resources loaded.
+  Missing JS/JSON/API paths and POST to the login route returned HTTP 404.
+- Chrome Headless bootstrapped and refreshed five routes, including guarded
+  navigation redirecting to login. No uncaught runtime exceptions or failed
+  local responses occurred. A login screenshot was inspected.
+- Existing warnings remain: the initial bundle is 2.80 MB against the 2 MB
+  warning budget, and optimization skipped four CSS selector rules.
+- No application behavior changed, so unit tests and lint were not repeated.
+  Target-server installation, live API connectivity, authentication and CORS
+  remain unverified. Earlier server observations below are historical.
+- ZIP integrity and checksum results are supplied beside the release as
+  `DARP-IIS-2026-10-26-package-validation.json` and
+  `DARP-IIS-2026-10-26.sha256`; local smoke results are in
+  `DARP-IIS-2026-10-26-validation.json`.
 
 ## Validation on 2026-10-14 (Asia/Tehran)
 

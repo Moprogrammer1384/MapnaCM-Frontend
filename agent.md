@@ -309,9 +309,9 @@ by `PageInfoService`; keep menu labels and `data-link` values meaningful.
 
 Development API base: `https://localhost:7064/api`.
 Production API base is `http://185.81.99.32:758/api`, using the user's deployment
-IP/port supplied on 2026-10-14 and the existing `/api` path. The user said the
-backend is not built yet; availability at that path is an unverified deployment
-expectation. Production builds replace the development
+IP/port reconfirmed on 2026-10-26 and the existing `/api` path. The frontend
+deployment origin is `http://185.81.99.32:759`. Live target-server API availability,
+authentication and CORS remain unverified for the latest package. Production builds replace the development
 environment. Both configurations set `isMockEnabled: false`.
 
 Related local projects are outside this frontend repository:
@@ -3136,3 +3136,103 @@ superseded by the user's later `components/` rename on 2026-10-10.
   ECharts zero-dimension initialization warnings, with all assertions passing.
 =======
 >>>>>>> 2c25c5fde0853a36d152249664e9f6395fde48e9
+
+### 2026-10-26 - Refresh IIS publish package for ports 759 and 758
+
+- User reconfirmed frontend http://185.81.99.32:759/ and backend API
+  http://185.81.99.32:758/api. Existing production environment and IIS config
+  already match this target; application source and development settings were
+  unchanged. Updated docs/iis-deployment.md with explicit binding/CORS setup and
+  current release validation; earlier server errors remain historical evidence.
+- Fresh production build passed (hash 88143ac09b0e2fca). Verified compiled API URL,
+  absence of the development API URL, valid IIS XML and source/output identity.
+  Existing 2.80 MB initial-bundle and four CSS optimizer warnings remain.
+- Local isolated IIS Express/URL Rewrite and Chrome Headless checks passed:
+  six HTML routes and cache headers, 83 local resources, missing resource/API
+  exclusions, five browser routes and refreshes, protected-route login redirects,
+  zero runtime exceptions and failed local responses. Inspected login screenshot.
+- Created dist/DARP-IIS-2026-10-26.zip (122895109 bytes), with index.html and
+  web.config at archive root. All 2715 files match the production output by SHA256.
+  Adjacent README, smoke/package validation JSON and SHA256 file are included.
+  Archive SHA256: 7A1F77AD9264E81979960D4C77F6322406D77524C06D7C557493FEB682F3400B.
+- No behavior changes, so lint/unit tests were not repeated. No target-server
+  deployment, live authenticated API or CORS test was performed. Validation
+  scripts/results are in ignored tmp/publish-2026-10-26/. Pre-existing committed
+  merge-conflict markers in this memory were observed and left outside this task.
+
+### 2026-10-27 - Study Samsung measurement drawer dismissal
+
+- Reviewed the user's 30.10-second MP4 using locally extracted browser-decoded
+  frames. The measurement drawer disappears during Plant dropdown interaction
+  (including approximately 20-22s and 26-28s). No device event trace was supplied.
+- Verified a frontend defect in `_metronic/kt/components/_DrawerComponent.ts`:
+  `_show()` writes `data-kt-drawer-${this.name}`, but `_update()` reads
+  `data-kt-drawer-${this.name}-` with an extra trailing hyphen. A resize therefore
+  sets `shown` false for an open drawer. Its class updates notify the taxonomy
+  component's MutationObserver, which calls `close()` and removes the drawer.
+- Reproduced in isolated headless Chrome with the actual bundled DrawerComponent,
+  matching drawer attributes and the component's guarded observer logic: show ->
+  dispatch resize -> closed, with no API or Plant change required. The exact
+  Samsung trigger (keyboard/browser viewport resize versus another dismissal
+  event) remains unverified without a device event trace. Plant change itself
+  builds the tree and clears selection; it does not explicitly close the drawer.
+- Diagnosis only: no application source or vendor code changed. No build/lint
+  rerun for this source study. Ignored evidence and reproduction script are in
+  `tmp/samsung-measurement-diagnosis/` (`video-contact.png`, `results.json`).
+
+### 2026-10-27 - Fix measurement drawer resize dismissal and package IIS release
+
+- At the user's explicit request to fix the diagnosed Drawer defect, corrected
+  the local Metronic DrawerComponent `_update()` attribute lookup to match the
+  attribute written by `_show()`, removing its extra trailing hyphen. The shared
+  drawer retains its open state through viewport resize; existing Metronic
+  responsive widths, overlay, dismissal and Angular visibility remain in use.
+  No visual styling, API contract or backend code changed.
+- Added a regression in the real Angular/Metronic/PrimeNG Tree/Select2 drawer
+  suite. Verified failure before the fix (14 passed, new regression failed),
+  then **26 passing ChromeHeadless tests** across the drawer and Select2 suites.
+  The final test opens the Plant dropdown, dispatches resize, clicks an actual
+  Select2 result, expands/selects a measurement, resizes again and checks tree/
+  selection/overlay identity and no reload. Overlay dismissal still closes the
+  drawer, preserves saved selection and stays closed on subsequent resize.
+  Existing theme and mobile/desktop bounds assertions also pass.
+- Production build passed (hash `9d13de5157df752e`), as did final project lint,
+  test TypeScript compilation and `git diff --check`. Existing 2.80 MB initial
+  bundle and four CSS optimizer warnings remain. Source/output IIS XML and the
+  compiled production API URL were verified.
+- IIS Express/URL Rewrite smoke checks passed: six HTML routes with no-cache,
+  83 local resources, missing resource/API and POST exclusions, five browser
+  routes and refreshes, zero uncaught runtime exceptions/failed local responses.
+  Inspected the production login screenshot. Physical Samsung, authenticated
+  target-server API/CORS and remote deployment remain untested.
+- Prepared `dist/DARP-IIS-2026-10-27.zip` (122895104 bytes), with all **2715**
+  archived files verified against the production output by SHA256, and index.html/
+  web.config at archive root. Archive SHA256:
+  `5E81894DB22CFEC5AFEE787F03CB0636EB734EF296D7E24D3F9D2D3C46F08309`.
+  Updated deployment documentation; adjacent README, smoke/package verification
+  JSON and checksum files accompany the ZIP. Target remains frontend port 759
+  and API port 758. Scripts/logs are in ignored `tmp/publish-2026-10-27/`.
+  Prior documentation edits and pre-existing memory merge markers were preserved.
+
+### Business HTTP status compatibility — 2026-10-27
+
+- The user explicitly changed the backend Presentation contract: successful
+  Response<T> results use HTTP 200; success=false now uses HTTP 400 with the
+  complete existing message/errors/data envelope. 401/403 and exception 500
+  remain on their existing paths. This supersedes earlier notes assuming that
+  business failures always arrive as 200; older hosts may still do so.
+- Source review found UserManagementService.createUser only recognized the
+  canRedefine handshake in a successful HTTP emission. It now also recognizes
+  HTTP 400 with success=false and data.canRedefine=true from error.error, allowing
+  the same explicit admin confirmation. Other HTTP errors are rethrown unchanged;
+  no retry or user redefinition happens automatically. Legacy 200 handling stays.
+  Updated the ApiEnvelope comment; other frontend behavior and styles are unchanged.
+- Five focused HttpClient tests passed in ChromeHeadless: success, both 200/400
+  confirmation envelopes without retry, ordinary failure-envelope preservation
+  and rejecting a 401 confirmation marker. Full project lint and production
+  build passed (hash be6928a3d0f76a96); the existing 2.80 MB bundle warning remains.
+  Build output is TEMP/MapnaCM-http-status-frontend-20261027, with logs under
+  ignored tmp/http-status-2026-10-27. Existing dist/IIS publish files and archives
+  were not overwritten. No live browser-to-backend/JWT/SQL or remote check ran.
+- Preserved the pre-existing agent.md/docs/drawer changes and existing memory
+  merge markers; this compatibility change did not resolve unrelated changes.

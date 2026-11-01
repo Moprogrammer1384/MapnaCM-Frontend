@@ -3255,3 +3255,28 @@ superseded by the user's later `components/` rename on 2026-10-10.
   isolated versioned HTTP/Swagger checks. No live browser-to-backend or JWT/SQL
   integration was run, no host restarted, no publish output overwritten and no
   database changed. Deploy/restart matching backend and frontend to use v1 URLs.
+
+### 2026-11-01 — User creation: surface the actual HTTP 400 rejection
+
+- User reported only Angular's generic "Http failure response ... 400 OK" while
+  creating a user. The rejected request's actual response was not available;
+  do not claim that its specific business/validation cause was established.
+- Verified source defect: UserListingComponent.errorMessage preferred
+  HttpErrorResponse.message over error.error, hiding the server's duplicate,
+  password-policy and MVC validation details. Reused the existing central
+  apiErrorMessage helper; service error envelopes and the explicit canRedefine
+  confirmation handshake remain intact. No password policy was weakened.
+- Added focused component tests for HTTP 400 with statusText=OK, duplicate email,
+  password-policy rejection, MVC field errors and successful list reload.
+  All nine focused ChromeHeadless tests (component + user service) passed.
+- Backend actual-entry-point SQL/JWT/HTTP regression also passed: two valid
+  user creations using the Angular payload (username=email, optional phone blank,
+  address omitted), plus the expected rejection of a six-character password.
+  These operations used generated disposable test databases, not real accounts.
+- Logs in the backend artifacts folder: user-create-frontend-tests.log,
+  user-create-http-tests.log and user-create-api-build.log. Frontend diff check passed.
+- The preceding calendar report was withdrawn by the user after rechecking.
+  No calendar code changed. Read-only requests to the already-running API verified
+  availability discovery and October responses as HTTP 200 with frontend CORS;
+  actual common dates were [2026-07-24, 2026-10-24). That probe does not prove
+  the user's live browser rendering. Existing backend process was preserved.

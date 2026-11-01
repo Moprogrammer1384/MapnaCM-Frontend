@@ -6,6 +6,7 @@ import moment from 'moment';
 import Swal from 'sweetalert2';
 import { SweetAlertOptions } from 'sweetalert2';
 import { RoleModel } from 'src/app/core/models/user-management.model';
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { RolesApiService } from '../../role/services/roles-api.service';
 import { AdminUserDetail, CreateUserPayload, EditUserPayload } from '../../../core/models/user-management.model';
 import { DataTablesResponse, UserManagementService } from '../services/user-management.service';
@@ -313,8 +314,8 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
     return { firstName: '', lastName: '', email: '', phoneNumber: '', password: '', role: null };
   }
 
-  private errorMessage(error: any): string {
-    return error?.message || this.extractText(error?.error) || 'An unexpected error occurred.';
+  private errorMessage(error: unknown): string {
+    return apiErrorMessage(error, 'user request');
   }
 
   extractText(obj: any): string {

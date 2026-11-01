@@ -27,10 +27,9 @@ export class SiteComponent implements OnInit, OnDestroy {
       { key: 'address', title: 'Address', class: 'min-w-200px' },
       { key: 'latitude', title: 'Latitude', class: 'min-w-100px', compare: (left, right) => compareNumericText(left.latitude, right.latitude) },
       { key: 'longitude', title: 'Longitude', class: 'min-w-100px', compare: (left, right) => compareNumericText(left.longitude, right.longitude) },
-      { key: 'location', title: 'Location', class: 'min-w-150px' },
       { key: 'elevation', title: 'Elevation above sea level', class: 'min-w-125px' },
     ] satisfies readonly TablePaginationColumn<Site>[],
-    { searchKeys: ['city', 'address', 'latitude', 'longitude', 'location', 'elevation'] satisfies readonly Extract<keyof Site, string>[] }
+    { searchKeys: ['city', 'address', 'latitude', 'longitude', 'elevation'] satisfies readonly Extract<keyof Site, string>[] }
   );
 
   siteForm: Site = this.emptySiteForm();
@@ -77,7 +76,6 @@ export class SiteComponent implements OnInit, OnDestroy {
           address: site.address,
           latitude: site.latitude,
           longitude: site.longitude,
-          location: site.location,
           elevation: site.elevation,
         })), { resetPage: true });
         this.cdr.detectChanges();
@@ -104,7 +102,6 @@ export class SiteComponent implements OnInit, OnDestroy {
       address: site.address,
       latitude: site.latitude,
       longitude: site.longitude,
-      location: site.location,
       elevation: site.elevation,
     };
     this.activeModal = this.modalService.open(content, this.modalConfig);
@@ -132,7 +129,6 @@ export class SiteComponent implements OnInit, OnDestroy {
       address: this.siteForm.address,
       latitude: this.siteForm.latitude,
       longitude: this.siteForm.longitude,
-      location: this.siteForm.location,
       elevation,
     };
     const isEdit = !!this.siteForm.id;
@@ -161,6 +157,6 @@ export class SiteComponent implements OnInit, OnDestroy {
   }
 
   private emptySiteForm(): Site {
-    return { city: '', address: '', latitude: '', longitude: '', location: '', elevation: null };
+    return { city: '', address: '', latitude: '', longitude: '', elevation: null };
   }
 }

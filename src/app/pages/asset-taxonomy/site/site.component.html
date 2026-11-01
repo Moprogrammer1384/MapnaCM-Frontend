@@ -147,13 +147,7 @@
       <!--begin::Input group-->
       <div class="row g-5 g-md-9 mb-15">
         <!--begin::Col-->
-        <div class="col-md-6 fv-row">
-          <label class="fs-6 fw-semibold mb-2" [for]="formModal.formId + '_location'">Location</label>
-          <input [id]="formModal.formId + '_location'" type="text" class="form-control form-control-solid" placeholder="Enter Location" name="location" [(ngModel)]="siteForm.location" />
-        </div>
-        <!--end::Col-->
-        <!--begin::Col-->
-        <div class="col-md-6 fv-row">
+        <div class="col-12 fv-row">
           <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_elevation'">Elevation above sea level</label>
           <input
             [id]="formModal.formId + '_elevation'"

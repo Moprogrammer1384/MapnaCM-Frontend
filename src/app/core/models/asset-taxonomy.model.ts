@@ -10,7 +10,6 @@ export interface Site {
   address: string;
   latitude: string;
   longitude: string;
-  location: string;
   elevation: number | null;
   createdAtUtc?: string | null;
   lastModifiedAtUtc?: string | null;

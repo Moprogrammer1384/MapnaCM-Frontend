@@ -59,3 +59,32 @@ describe('Measurement API without Measurement Type', () => {
     expect(saveError).toBe('Save failed');
   });
 });
+
+describe('Site API without Location', () => {
+  let api: AssetApiService;
+  let http: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    api = TestBed.inject(AssetApiService);
+    http = TestBed.inject(HttpTestingController);
+  });
+  afterEach(() => http.verify());
+
+  it('creates and updates a site using only the retained fields, including zero elevation', () => {
+    const payload = { city: 'Tehran', address: 'A', latitude: '35.7', longitude: '51.4', elevation: 0,
+      location: 'retired value from a stale caller' };
+    const expected = { city: 'Tehran', address: 'A', latitude: '35.7', longitude: '51.4', elevation: 0 };
+    api.createSite(payload).subscribe();
+    const add = http.expectOne(`${environment.apiUrl}/Site/Add`);
+    expect(add.request.method).toBe('POST');
+    expect(add.request.body).toEqual(expected);
+    add.flush({ success: true });
+
+    api.updateSite({ ...payload, id: 2 }).subscribe();
+    const update = http.expectOne(`${environment.apiUrl}/Site/Update`);
+    expect(update.request.method).toBe('PUT');
+    expect(update.request.body).toEqual({ id: 2, ...expected });
+    update.flush({ success: true });
+  });
+});

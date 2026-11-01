@@ -3280,3 +3280,28 @@ superseded by the user's later `components/` rename on 2026-10-10.
   availability discovery and October responses as HTTP 200 with frontend CORS;
   actual common dates were [2026-07-24, 2026-10-24). That probe does not prove
   the user's live browser rendering. Existing backend process was preserved.
+
+### Remove Site Location end to end — 2026-11-01
+
+- User explicitly requested backend, frontend and database removal. Removed
+  `Site.location`, API create/update payload fields, list column/search key,
+  load/edit/default form state and the Location input. Elevation occupies the
+  remaining full row using existing Metronic classes. Other taxonomy behavior,
+  latitude/longitude and styles are unchanged.
+- Added focused Site service/editor regressions: stale callers cannot send the
+  retired field, table/search/edit state omits it, and zero elevation still submits.
+  All six focused ChromeHeadless tests passed (Site editor + taxonomy service).
+  Full lint and production build passed; existing 2.80 MB initial-bundle warning
+  remains. Production output is isolated in the backend's artifacts/remove-site-
+  location/frontend-build; existing dist/publish artifacts were not replaced.
+- Backend removed the Domain/command/validator/Dapper field and added a new
+  Location-only migration. All 37 Presentation and 79 non-SQL Vibration tests
+  passed, including actual-host SQL/JWT/HTTP coverage of 72 routes.
+- Verified the main database has the removal migration applied, no Location
+  column, no pending migrations and all six Site rows retained. Counts and hashes
+  of all other business columns across eight tables match the saved pre-migration
+  state. A normal API process started during the work and applied its startup
+  migration; that process was preserved. Live Start=200 and both Site input schemas
+  in Swagger omit location. This does not establish manual browser-to-API UI QA.
+- Logs and SQL/hash evidence are under the backend's artifacts/remove-site-location.
+  Existing memory merge markers were preserved. Both repository diff checks pass.

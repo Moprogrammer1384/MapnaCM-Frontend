@@ -3335,3 +3335,22 @@ superseded by the user's later `components/` rename on 2026-10-10.
   passed, including real SQL/HTTP cases on disposable databases. No authenticated
   manual Angular browser session was exercised. Existing memory conflict markers
   were preserved. Evidence/output is isolated under backend artifacts/geo-coordinate.
+
+### Site Elevation value object and integer range — 2026-11-02
+
+- Backend Site.Elevation now uses an immutable Elevation record struct with an
+  integer Meters member and inclusive bounds [-500,9000]. HTTP input/output remains
+  a scalar number; frontend model/service payloads are unchanged.
+- Site numeric input now uses step=1 and min/max bounds. Submission rejects
+  fractions, missing/non-finite and out-of-range values before calling the API.
+  Existing Metronic layout, coordinate formatting and raw signed coordinates remain.
+- Full frontend lint and production build passed (existing 2.80 MB bundle warning).
+  Eleven focused ChromeHeadless tests passed, including inclusive elevation bounds
+  and invalid-value rejection. Backend full build, all 76 Presentation tests and
+  79 non-SQL Vibration tests passed, with real SQL/HTTP on disposable databases.
+- Verified backup preceded the main Asset migration adding only a range CHECK to
+  the existing int column. All eight business-table value hashes/counts remained
+  identical and no pending migrations remain. The user's running API was preserved;
+  no authenticated manual Angular browser session was exercised.
+- Evidence/build output: backend artifacts/elevation-value. Existing conflict
+  markers in this memory were preserved; no commit or staging was performed.

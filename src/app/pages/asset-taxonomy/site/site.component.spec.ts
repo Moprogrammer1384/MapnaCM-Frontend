@@ -74,4 +74,23 @@ describe('Site editor without Location', () => {
     }
     expect(api.createSite).not.toHaveBeenCalled();
   });
+
+  it('accepts the inclusive elevation boundaries and zero as integer meters', () => {
+    for (const elevation of [-500, 0, 9000]) {
+      component.siteForm = { city: 'Tehran', address: 'A', latitude: 0, longitude: 0, elevation };
+      component.submit({ invalid: false } as NgForm, { dismiss: jasmine.createSpy('dismiss') });
+      expect(api.createSite.calls.mostRecent().args[0].elevation).toBe(elevation);
+    }
+    expect(api.createSite).toHaveBeenCalledTimes(3);
+  });
+
+  it('rejects fractional, missing and out-of-range elevation values before sending', () => {
+    for (const elevation of [-501, 9001, 1.5, NaN, Infinity, null]) {
+      component.siteForm = { city: 'Tehran', address: 'A', latitude: 0, longitude: 0, elevation };
+      const form = { invalid: false, control: { markAllAsTouched: jasmine.createSpy('touch') } } as unknown as NgForm;
+      component.submit(form, { dismiss: jasmine.createSpy('dismiss') });
+      expect(form.control.markAllAsTouched).toHaveBeenCalled();
+    }
+    expect(api.createSite).not.toHaveBeenCalled();
+  });
 });

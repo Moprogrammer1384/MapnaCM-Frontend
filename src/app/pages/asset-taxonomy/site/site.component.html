@@ -158,7 +158,9 @@
           <input
             [id]="formModal.formId + '_elevation'"
             type="number"
-            step="any"
+            step="1"
+            [min]="elevationMinMeters"
+            [max]="elevationMaxMeters"
             class="form-control form-control-solid"
             placeholder="e.g. 1190"
             name="elevation"
@@ -169,7 +171,7 @@
             [attr.aria-invalid]="(elevationControl.invalid && (elevationControl.touched || siteNgForm.submitted)) ? 'true' : null"
             [attr.aria-describedby]="(elevationControl.invalid && (elevationControl.touched || siteNgForm.submitted)) ? (formModal.formId + '_elevation_error') : null"
             appFiniteNumber />
-          <div *ngIf="elevationControl.invalid && (elevationControl.touched || siteNgForm.submitted)" [id]="formModal.formId + '_elevation_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter a valid number for elevation above sea level.</div>
+          <div *ngIf="elevationControl.invalid && (elevationControl.touched || siteNgForm.submitted)" [id]="formModal.formId + '_elevation_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter a whole number between {{ elevationMinMeters }} and {{ elevationMaxMeters }} meters.</div>
         </div>
         <!--end::Col-->
       </div>

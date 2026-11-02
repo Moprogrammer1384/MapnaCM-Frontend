@@ -15,6 +15,9 @@ import { TablePagination, TablePaginationColumn } from 'src/app/shared/component
   styleUrls: ['./site.component.scss'],
 })
 export class SiteComponent implements OnInit, OnDestroy {
+  readonly elevationMinMeters = -500;
+  readonly elevationMaxMeters = 9000;
+
   modalConfig: NgbModalOptions = {
     modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
     beforeDismiss: () => !this.saving,
@@ -123,9 +126,10 @@ export class SiteComponent implements OnInit, OnDestroy {
       this.alertService.show('error', 'Error!', 'Enter valid latitude (-90 to 90) and longitude (-180 to 180).');
       return;
     }
-    if (typeof elevation !== 'number' || !Number.isFinite(elevation)) {
+    if (typeof elevation !== 'number' || !Number.isInteger(elevation) ||
+      elevation < this.elevationMinMeters || elevation > this.elevationMaxMeters) {
       form.control.markAllAsTouched();
-      this.alertService.show('error', 'Error!', 'Please enter a valid elevation.');
+      this.alertService.show('error', 'Error!', `Elevation must be a whole number between ${this.elevationMinMeters} and ${this.elevationMaxMeters} meters.`);
       return;
     }
 

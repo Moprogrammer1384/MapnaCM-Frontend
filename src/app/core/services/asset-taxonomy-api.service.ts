@@ -43,7 +43,7 @@ export class AssetApiService {
       .pipe(map((response) => this.unwrapPage(response)));
   }
 
-  createSite(payload: Pick<Site, 'city' | 'address' | 'latitude' | 'longitude'> & { elevation: number }): Observable<void> {
+  createSite(payload: Pick<Site, 'city' | 'address'> & { latitude: number; longitude: number; elevation: number }): Observable<void> {
     return this.http
       .post<ApiEnvelope<object>>(`${this.apiUrl}/Site/Add`, {
         city: payload.city,
@@ -55,7 +55,7 @@ export class AssetApiService {
       .pipe(map((response) => this.unwrapVoid(response)));
   }
 
-  updateSite(payload: Pick<Site, 'city' | 'address' | 'latitude' | 'longitude'> & { id: number; elevation: number }): Observable<void> {
+  updateSite(payload: Pick<Site, 'city' | 'address'> & { id: number; latitude: number; longitude: number; elevation: number }): Observable<void> {
     return this.http
       .put<ApiEnvelope<object>>(`${this.apiUrl}/Site/Update`, {
         id: payload.id,

@@ -6,6 +6,7 @@ export interface TablePaginationColumn<T> {
   title: string;
   class: string;
   compare?: (left: T, right: T) => number;
+  format?: (row: Readonly<T>) => string;
 }
 
 export interface TablePaginationOptions<T> {

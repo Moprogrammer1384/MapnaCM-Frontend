@@ -109,7 +109,10 @@
           <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_latitude'">Latitude</label>
           <input
             [id]="formModal.formId + '_latitude'"
-            type="text"
+            type="number"
+            step="any"
+            min="-90"
+            max="90"
             class="form-control form-control-solid"
             placeholder="e.g. 35.6892"
             name="latitude"
@@ -119,8 +122,8 @@
             [class.is-invalid]="latitudeControl.invalid && (latitudeControl.touched || siteNgForm.submitted)"
             [attr.aria-invalid]="(latitudeControl.invalid && (latitudeControl.touched || siteNgForm.submitted)) ? 'true' : null"
             [attr.aria-describedby]="(latitudeControl.invalid && (latitudeControl.touched || siteNgForm.submitted)) ? (formModal.formId + '_latitude_error') : null"
-            appTrimmedRequired />
-          <div *ngIf="latitudeControl.invalid && (latitudeControl.touched || siteNgForm.submitted)" [id]="formModal.formId + '_latitude_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter latitude.</div>
+            appFiniteNumber />
+          <div *ngIf="latitudeControl.invalid && (latitudeControl.touched || siteNgForm.submitted)" [id]="formModal.formId + '_latitude_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter latitude between -90 and 90.</div>
         </div>
         <!--end::Col-->
         <!--begin::Col-->
@@ -128,7 +131,10 @@
           <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_longitude'">Longitude</label>
           <input
             [id]="formModal.formId + '_longitude'"
-            type="text"
+            type="number"
+            step="any"
+            min="-180"
+            max="180"
             class="form-control form-control-solid"
             placeholder="e.g. 51.3890"
             name="longitude"
@@ -138,8 +144,8 @@
             [class.is-invalid]="longitudeControl.invalid && (longitudeControl.touched || siteNgForm.submitted)"
             [attr.aria-invalid]="(longitudeControl.invalid && (longitudeControl.touched || siteNgForm.submitted)) ? 'true' : null"
             [attr.aria-describedby]="(longitudeControl.invalid && (longitudeControl.touched || siteNgForm.submitted)) ? (formModal.formId + '_longitude_error') : null"
-            appTrimmedRequired />
-          <div *ngIf="longitudeControl.invalid && (longitudeControl.touched || siteNgForm.submitted)" [id]="formModal.formId + '_longitude_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter longitude.</div>
+            appFiniteNumber />
+          <div *ngIf="longitudeControl.invalid && (longitudeControl.touched || siteNgForm.submitted)" [id]="formModal.formId + '_longitude_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter longitude between -180 and 180.</div>
         </div>
         <!--end::Col-->
       </div>

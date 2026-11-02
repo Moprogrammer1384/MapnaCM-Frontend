@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TablePagination } from '../pagination/table-pagination';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
+import { formatLongitude } from 'src/app/core/utils/geo-coordinate-display';
 
 interface RecordRow {
   id: number;
@@ -68,6 +69,24 @@ describe('TableRecordComponent through SharedModule', () => {
     fixture.detectChanges();
     expect(cells(0)).toEqual(['<b>Beta</b>', '-0.25', 'B', '']);
     expect(table.querySelector('tbody b')).toBeNull();
+  });
+
+  it('formats signed coordinates only in cells and keeps numeric sorting and edit values', () => {
+    host.table = new TablePagination<RecordRow>([
+      { id: 1, name: 'West', value: -51.4 },
+      { id: 2, name: 'East', value: 12.3 },
+    ], [{ key: 'value', title: 'Longitude', class: '', format: row => formatLongitude(row.value) }], { searchKeys: ['value'] });
+    fixture.detectChanges();
+    expect(cells(0)[0]).toBe('51.4° W');
+    table.querySelector<HTMLElement>('[aria-label="Edit record"]')!.click();
+    expect(host.edited!.value).toBe(-51.4);
+    table.querySelector<HTMLElement>('th')!.click();
+    fixture.detectChanges();
+    expect(cells(0)[0]).toBe('51.4° W');
+    table.querySelector<HTMLElement>('th')!.click();
+    fixture.detectChanges();
+    expect(cells(0)[0]).toBe('12.3° E');
+    expect(host.table.rows[0].value).toBe(-51.4);
   });
 
   it('delegates the three-state header sorting cycle and resets the page', () => {

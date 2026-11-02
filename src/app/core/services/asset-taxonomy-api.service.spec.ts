@@ -72,9 +72,9 @@ describe('Site API without Location', () => {
   afterEach(() => http.verify());
 
   it('creates and updates a site using only the retained fields, including zero elevation', () => {
-    const payload = { city: 'Tehran', address: 'A', latitude: '35.7', longitude: '51.4', elevation: 0,
+    const payload = { city: 'Tehran', address: 'A', latitude: 35.7, longitude: 51.4, elevation: 0,
       location: 'retired value from a stale caller' };
-    const expected = { city: 'Tehran', address: 'A', latitude: '35.7', longitude: '51.4', elevation: 0 };
+    const expected = { city: 'Tehran', address: 'A', latitude: 35.7, longitude: 51.4, elevation: 0 };
     api.createSite(payload).subscribe();
     const add = http.expectOne(`${environment.apiUrl}/Site/Add`);
     expect(add.request.method).toBe('POST');

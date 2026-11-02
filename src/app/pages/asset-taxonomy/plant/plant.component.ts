@@ -3,6 +3,7 @@ import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { MetronicAlertService } from 'src/app/core/services/metronic-alert.service';
 import { AssetTaxonomyMutations } from 'src/app/core/utils/asset-taxonomy-mutations';
+import { formatGeoCoordinate } from 'src/app/core/utils/geo-coordinate-display';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { Plant, PlantType, TaxonomyParentOption, EmployerOption } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
@@ -24,7 +25,8 @@ export class PlantComponent implements OnInit, OnDestroy {
     [
       { key: 'name', title: 'Name', class: 'min-w-150px' },
       { key: 'typeName', title: 'Type', class: 'min-w-150px' },
-      { key: 'siteLabel', title: 'Site', class: 'min-w-175px min-w-md-250px' },
+      { key: 'siteLabel', title: 'Site', class: 'min-w-175px min-w-md-250px',
+        format: plant => this.siteOptions.find(site => site.id === plant.siteId)?.label ?? plant.siteLabel ?? '' },
       { key: 'employerName', title: 'Employer', class: 'min-w-175px min-w-md-200px' },
     ] satisfies readonly TablePaginationColumn<Plant>[],
     { searchKeys: ['name', 'typeName', 'siteLabel', 'employerName'] satisfies readonly Extract<keyof Plant, string>[] }
@@ -107,7 +109,7 @@ export class PlantComponent implements OnInit, OnDestroy {
           if (site.id !== undefined) {
             this.siteOptions.push({
               id: site.id,
-              label: `${site.city} (${site.latitude}, ${site.longitude})`,
+              label: `${site.city} (${formatGeoCoordinate(site.latitude, site.longitude)})`,
             });
           }
         }

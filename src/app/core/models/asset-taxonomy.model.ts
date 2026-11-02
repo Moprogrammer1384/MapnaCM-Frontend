@@ -8,8 +8,8 @@ export interface Site {
   id?: number;
   city: string;
   address: string;
-  latitude: string;
-  longitude: string;
+  latitude: number | null;
+  longitude: number | null;
   elevation: number | null;
   createdAtUtc?: string | null;
   lastModifiedAtUtc?: string | null;

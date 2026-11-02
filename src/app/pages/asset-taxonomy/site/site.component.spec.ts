@@ -25,7 +25,7 @@ describe('Site editor without Location', () => {
   });
 
   it('has no Location column, search field or edit-form value', () => {
-    const oldRow = { id: 2, city: 'Tehran', address: 'A', latitude: '35.7', longitude: '51.4', elevation: 0,
+    const oldRow = { id: 2, city: 'Tehran', address: 'A', latitude: 35.7, longitude: 51.4, elevation: 0,
       location: 'retired value' };
     expect(component.table.columns.map(column => column.key)).toEqual(['city', 'address', 'latitude', 'longitude', 'elevation']);
     expect(component.table.searchKeys as readonly string[]).not.toContain('location');
@@ -34,10 +34,44 @@ describe('Site editor without Location', () => {
   });
 
   it('submits the retained site fields without Location', () => {
-    component.siteForm = { city: 'Tehran', address: 'A', latitude: '35.7', longitude: '51.4', elevation: 0 };
+    component.siteForm = { city: 'Tehran', address: 'A', latitude: 35.7, longitude: 51.4, elevation: 0 };
     const dismiss = jasmine.createSpy('dismiss');
     component.submit({ invalid: false } as NgForm, { dismiss });
-    expect(api.createSite).toHaveBeenCalledOnceWith({ city: 'Tehran', address: 'A', latitude: '35.7', longitude: '51.4', elevation: 0 });
+    expect(api.createSite).toHaveBeenCalledOnceWith({ city: 'Tehran', address: 'A', latitude: 35.7, longitude: 51.4, elevation: 0 });
     expect(dismiss).toHaveBeenCalledOnceWith('saved');
+  });
+
+  it('keeps zero, boundary and fractional coordinates as numbers without rounding', () => {
+    for (const [latitude, longitude] of [[0, 0], [-90, -180], [90, 180], [-35.68923456789123, -51.3890987654321]]) {
+      component.siteForm = { city: 'Tehran', address: 'A', latitude, longitude, elevation: 0 };
+      component.submit({ invalid: false } as NgForm, { dismiss: jasmine.createSpy('dismiss') });
+      const payload = api.createSite.calls.mostRecent().args[0];
+      expect(payload.latitude).toBe(latitude);
+      expect(payload.longitude).toBe(longitude);
+      expect(typeof payload.latitude).toBe('number');
+      expect(typeof payload.longitude).toBe('number');
+    }
+    expect(api.createSite).toHaveBeenCalledTimes(4);
+  });
+
+  it('formats directions for display while editing and sending the original signed numbers', () => {
+    const row = { id: 2, city: 'South west', address: 'A', latitude: -35.7, longitude: -51.4, elevation: 0 };
+    expect(component.table.columns.find(column => column.key === 'latitude')!.format!(row)).toBe('35.7° S');
+    expect(component.table.columns.find(column => column.key === 'longitude')!.format!(row)).toBe('51.4° W');
+    component.openEditModal({} as TemplateRef<unknown>, row);
+    expect(component.siteForm.latitude).toBe(-35.7);
+    expect(component.siteForm.longitude).toBe(-51.4);
+    component.submit({ invalid: false } as NgForm, { dismiss: jasmine.createSpy('dismiss') });
+    expect(api.updateSite).toHaveBeenCalledOnceWith(row);
+  });
+
+  it('rejects missing, non-finite and out-of-range coordinates before sending a request', () => {
+    for (const [latitude, longitude] of [[null, 0], [0, null], [NaN, 0], [0, Infinity], [-90.1, 0], [90.1, 0], [0, -180.1], [0, 180.1]]) {
+      component.siteForm = { city: 'Tehran', address: 'A', latitude, longitude, elevation: 0 };
+      const form = { invalid: false, control: { markAllAsTouched: jasmine.createSpy('touch') } } as unknown as NgForm;
+      component.submit(form, { dismiss: jasmine.createSpy('dismiss') });
+      expect(form.control.markAllAsTouched).toHaveBeenCalled();
+    }
+    expect(api.createSite).not.toHaveBeenCalled();
   });
 });

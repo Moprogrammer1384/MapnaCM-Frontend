@@ -3305,3 +3305,33 @@ superseded by the user's later `components/` rename on 2026-10-10.
   in Swagger omit location. This does not establish manual browser-to-API UI QA.
 - Logs and SQL/hash evidence are under the backend's artifacts/remove-site-location.
   Existing memory merge markers were preserved. Both repository diff checks pass.
+
+### Signed double Site coordinates and cardinal display — 2026-11-02
+
+- The user requested GeoCoordinate in backend Domain, double storage in SQL and
+  frontend, then explicitly requested signed raw values and display-only N/S/E/W.
+  Site latitude/longitude are now number (binary64), with null for blank form
+  inputs only. Create/update request types require numbers; inputs are numeric
+  with finite/range validation (latitude [-90,90], longitude [-180,180]). Zero and
+  negative values are valid. No rounding, string conversion or sign stripping is
+  performed on model state, edit forms or payloads.
+- geo-coordinate-display formats absolute magnitudes with N/S or E/W for display.
+  Site columns and Plant Site choices use it; optional table-column formatters
+  alter only rendered cells. Sorting and edit callbacks still receive raw signed
+  numbers. Zero displays N/E; invalid/missing values display an em dash. Existing
+  Metronic classes/layout are retained and no new CSS/theme dependency was added.
+- Backend Site.Location is readonly record struct GeoCoordinate. EF ComplexProperty
+  stores its two doubles in the existing Site.Latitude/Longitude float(53) columns;
+  [Owned] is class-only and cannot annotate the requested struct. No extra table,
+  key or Location column exists. HTTP coordinates remain flat JSON numbers.
+- User approved interpreting the six existing decorated values as positive decimal
+  degrees. Backup and RESTORE VERIFYONLY passed before atomic conversion/migration.
+  Other business-column hashes/counts and audit in all eight tables are unchanged.
+  SQL precision is 53 with 8-byte columns; no pending migrations. No host stopped.
+- Validation: 24 ChromeHeadless cases passed, including rendered cardinal cells,
+  numeric sort, signed edit/payload preservation, bounds/NaN/infinity and precision.
+  Full frontend lint and production build passed; existing 2.80 MB bundle warning
+  remains. Backend full build, 62 Presentation tests and 79 non-SQL Vibration tests
+  passed, including real SQL/HTTP cases on disposable databases. No authenticated
+  manual Angular browser session was exercised. Existing memory conflict markers
+  were preserved. Evidence/output is isolated under backend artifacts/geo-coordinate.

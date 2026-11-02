@@ -3,11 +3,11 @@ import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { MetronicAlertService } from 'src/app/core/services/metronic-alert.service';
 import { AssetTaxonomyMutations } from 'src/app/core/utils/asset-taxonomy-mutations';
+import { formatLatitude, formatLongitude } from 'src/app/core/utils/geo-coordinate-display';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { Site } from 'src/app/core/models/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
-import { compareNumericText } from 'src/app/shared/components/data-table/pagination/table-pagination-comparators';
 
 @Component({
   selector: 'app-site',
@@ -25,8 +25,8 @@ export class SiteComponent implements OnInit, OnDestroy {
     [
       { key: 'city', title: 'City', class: 'min-w-125px' },
       { key: 'address', title: 'Address', class: 'min-w-200px' },
-      { key: 'latitude', title: 'Latitude', class: 'min-w-100px', compare: (left, right) => compareNumericText(left.latitude, right.latitude) },
-      { key: 'longitude', title: 'Longitude', class: 'min-w-100px', compare: (left, right) => compareNumericText(left.longitude, right.longitude) },
+      { key: 'latitude', title: 'Latitude', class: 'min-w-100px', format: site => formatLatitude(site.latitude) },
+      { key: 'longitude', title: 'Longitude', class: 'min-w-100px', format: site => formatLongitude(site.longitude) },
       { key: 'elevation', title: 'Elevation above sea level', class: 'min-w-125px' },
     ] satisfies readonly TablePaginationColumn<Site>[],
     { searchKeys: ['city', 'address', 'latitude', 'longitude', 'elevation'] satisfies readonly Extract<keyof Site, string>[] }
@@ -111,13 +111,18 @@ export class SiteComponent implements OnInit, OnDestroy {
     if (this.saving) {
       return;
     }
-    if (form.invalid || !this.siteForm.city.trim() || !this.siteForm.address.trim() ||
-      !this.siteForm.latitude.trim() || !this.siteForm.longitude.trim()) {
+    if (form.invalid || !this.siteForm.city.trim() || !this.siteForm.address.trim()) {
       form.control.markAllAsTouched();
       this.alertService.show('error', 'Error!', 'Please fill in all required fields.');
       return;
     }
-    const elevation = this.siteForm.elevation;
+    const { latitude, longitude, elevation } = this.siteForm;
+    if (typeof latitude !== 'number' || !Number.isFinite(latitude) || latitude < -90 || latitude > 90 ||
+      typeof longitude !== 'number' || !Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+      form.control.markAllAsTouched();
+      this.alertService.show('error', 'Error!', 'Enter valid latitude (-90 to 90) and longitude (-180 to 180).');
+      return;
+    }
     if (typeof elevation !== 'number' || !Number.isFinite(elevation)) {
       form.control.markAllAsTouched();
       this.alertService.show('error', 'Error!', 'Please enter a valid elevation.');
@@ -127,8 +132,8 @@ export class SiteComponent implements OnInit, OnDestroy {
     const payload = {
       city: this.siteForm.city,
       address: this.siteForm.address,
-      latitude: this.siteForm.latitude,
-      longitude: this.siteForm.longitude,
+      latitude,
+      longitude,
       elevation,
     };
     const isEdit = !!this.siteForm.id;
@@ -157,6 +162,6 @@ export class SiteComponent implements OnInit, OnDestroy {
   }
 
   private emptySiteForm(): Site {
-    return { city: '', address: '', latitude: '', longitude: '', elevation: null };
+    return { city: '', address: '', latitude: null, longitude: null, elevation: null };
   }
 }

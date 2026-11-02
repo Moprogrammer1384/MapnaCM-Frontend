@@ -22,7 +22,7 @@
   </ng-template>
   <ng-template pTemplate="body" let-record>
     <tr class="fs-6">
-      <td *ngFor="let col of table.columns">{{ record[col.key] }}</td>
+      <td *ngFor="let col of table.columns">{{ col.format ? col.format(record) : record[col.key] }}</td>
       <td class="text-end text-nowrap">
         <button pButton type="button" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"
           aria-label="Edit record" [disabled]="actionsDisabled || table.isDeleting(record)" (click)="editRecord.emit(record)">

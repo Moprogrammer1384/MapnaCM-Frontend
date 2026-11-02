@@ -1,6 +1,7 @@
 import { Component, EventEmitter, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import { catchError, Observable, of, shareReplay } from 'rxjs';
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { IRoleModel, RoleService } from 'src/app/_fake/services/role.service';
 import moment from 'moment';
 import { Config } from 'datatables.net';
@@ -12,7 +13,8 @@ import { Config } from 'datatables.net';
 })
 export class RoleDetailsComponent implements OnInit {
 
-  role$: Observable<IRoleModel>;
+  role$: Observable<IRoleModel | null>;
+  errorMessage = '';
 
   datatableConfig: Config = {};
 
@@ -24,14 +26,24 @@ export class RoleDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       const id = params['id'];
-      this.role$ = this.apiService.getRole(id);
+      this.errorMessage = '';
+      this.role$ = this.apiService.getRole(id).pipe(
+        catchError(error => {
+          this.errorMessage = apiErrorMessage(error, 'role');
+          return of(null);
+        }),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
 
       this.datatableConfig = {
         serverSide: true,
         ajax: (dataTablesParameters: any, callback) => {
-          this.apiService.getUsers(id, dataTablesParameters).subscribe(resp => {
-            console.log(resp);
-            callback(resp);
+          this.apiService.getUsers(id, dataTablesParameters).subscribe({
+            next: resp => callback(resp),
+            error: (error) => {
+              callback({ draw: dataTablesParameters.draw, recordsTotal: 0, recordsFiltered: 0, data: [] });
+              this.errorMessage = apiErrorMessage(error, 'role users');
+            },
           });
         },
         columns: [
@@ -96,8 +108,9 @@ export class RoleDetailsComponent implements OnInit {
   deleteUser(user_id: number) {
     this.route.params.subscribe(params => {
       const role_id = params['id'];
-      this.apiService.deleteUser(role_id, user_id).subscribe(() => {
-        this.reloadEvent.emit(true);
+      this.apiService.deleteUser(role_id, user_id).subscribe({
+        next: () => this.reloadEvent.emit(true),
+        error: (error) => this.errorMessage = apiErrorMessage(error, 'data', 'API', 'Unable to remove the user from the role.'),
       });
     });
   }

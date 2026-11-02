@@ -41,7 +41,7 @@ export class TimeAvailabilityService implements TimeAvailabilitySource {
       return this.http.get<ApiEnvelope<TimeAvailability>>(`${environment.apiUrl}/TimeDomain/GetAvailability`, { params });
     }).pipe(map(response => {
       if (!response.success || !response.data) {
-        throw new Error([response.message, ...(response.errors ?? [])].filter(Boolean).join(' ') || 'Unable to load available dates.');
+        throw new Error(apiErrorMessage(response, 'data', 'API', 'Unable to load available dates.'));
       }
       const data = response.data;
       const validRange = (range: CalendarDateRange) => !!range && validDay(range.from) && validDay(range.to) && range.from < range.to;

@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { defer, finalize, Observable, Subject, takeUntil, tap } from 'rxjs';
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
 
 /** UI state for related reads; replacing a read cancels its obsolete subscription. */
 export class RequestState {
@@ -24,7 +25,7 @@ export class RequestState {
         takeUntil(cancel),
         tap({
           next: () => this.loaded.set(true),
-          error: (error: unknown) => this.error.set(error instanceof Error && error.message ? error.message : fallback),
+          error: (error: unknown) => this.error.set(apiErrorMessage(error, 'data', 'API', fallback)),
         }),
         finalize(() => {
           if (this.pending.get(key) === cancel) {

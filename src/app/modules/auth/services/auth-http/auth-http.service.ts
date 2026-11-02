@@ -1,3 +1,4 @@
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -47,9 +48,9 @@ export class AuthHTTPService {
       })
       .pipe(
         map((response) => {
-          // business failures arrive as HTTP 200 with success = false
+          // Also support legacy HTTP 200 business failures; current hosts use HTTP 400.
           if (!response.success || !response.data) {
-            throw new Error(response.message || 'The login details are incorrect');
+            throw new Error(apiErrorMessage(response, 'data', 'API', 'The login details are incorrect'));
           }
           const auth = new AuthModel();
           auth.setAuth({
@@ -72,7 +73,7 @@ export class AuthHTTPService {
       .pipe(
         map((response) => {
           if (!response.success || !response.data) {
-            throw new Error(response.message || 'Unable to load the user profile');
+            throw new Error(apiErrorMessage(response, 'data', 'API', 'Unable to load the user profile'));
           }
           return this.toUserModel(response.data);
         })

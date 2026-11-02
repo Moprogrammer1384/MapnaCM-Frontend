@@ -1,3 +1,4 @@
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -23,7 +24,7 @@ export class RolesApiService {
     return this.http.get<ApiEnvelope<RoleModel[]>>(`${this.apiUrl}/GetAll`).pipe(
       map((response) => {
         if (!response.success || !response.data) {
-          throw new Error(response.message || 'Unable to load roles.');
+          throw new Error(apiErrorMessage(response, 'data', 'API', 'Unable to load roles.'));
         }
         return response.data;
       })
@@ -37,7 +38,7 @@ export class RolesApiService {
       .pipe(
         map((response) => {
           if (!response.success) {
-            throw new Error(response.message || 'Unable to create the role.');
+            throw new Error(apiErrorMessage(response, 'data', 'API', 'Unable to create the role.'));
           }
         })
       );

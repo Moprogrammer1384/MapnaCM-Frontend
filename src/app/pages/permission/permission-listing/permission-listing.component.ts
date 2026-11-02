@@ -6,6 +6,7 @@ import { DataTablesResponse, IPermissionModel, PermissionService } from 'src/app
 import { SweetAlertOptions } from 'sweetalert2';
 import moment from 'moment';
 import { Config } from 'datatables.net';
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
 
 @Component({
   selector: 'app-permission-listing',
@@ -43,9 +44,12 @@ export class PermissionListingComponent implements OnInit, AfterViewInit, OnDest
     this.datatableConfig = {
       serverSide: true,
       ajax: (dataTablesParameters: any, callback) => {
-        this.apiService.getPermissions(dataTablesParameters).subscribe(resp => {
-          console.log(resp);
-          callback(resp);
+        this.apiService.getPermissions(dataTablesParameters).subscribe({
+          next: resp => callback(resp),
+          error: (error) => {
+            callback({ draw: dataTablesParameters.draw, recordsTotal: 0, recordsFiltered: 0, data: [] });
+            this.showAlert({ icon: 'error', title: 'Error!', text: apiErrorMessage(error, 'permissions') });
+          },
         });
       },
       columns: [
@@ -78,15 +82,17 @@ export class PermissionListingComponent implements OnInit, AfterViewInit, OnDest
   }
 
   delete(id: number) {
-    this.apiService.deletePermission(id).subscribe(() => {
-      this.reloadEvent.emit(true);
+    this.apiService.deletePermission(id).subscribe({
+      next: () => this.reloadEvent.emit(true),
+      error: (error) => this.showAlert({ icon: 'error', title: 'Error!', text: apiErrorMessage(error, 'data', 'API', 'Unable to delete the permission.') }),
     });
   }
 
   edit(id: number) {
     this.permission$ = this.apiService.getPermission(id);
-    this.permission$.subscribe((user: IPermissionModel) => {
-      this.permissionModel = user;
+    this.permission$.subscribe({
+      next: (permission) => this.permissionModel = permission,
+      error: (error) => this.showAlert({ icon: 'error', title: 'Error!', text: apiErrorMessage(error, 'permission') }),
     });
   }
 
@@ -123,7 +129,7 @@ export class PermissionListingComponent implements OnInit, AfterViewInit, OnDest
           this.reloadEvent.emit(true);
         },
         error: (error) => {
-          errorAlert.text = this.extractText(error.error);
+          errorAlert.text = apiErrorMessage(error, 'data', 'API', 'Unable to save the permission.');
           this.showAlert(errorAlert);
           this.isLoading = false;
         },
@@ -138,7 +144,7 @@ export class PermissionListingComponent implements OnInit, AfterViewInit, OnDest
           this.reloadEvent.emit(true);
         },
         error: (error) => {
-          errorAlert.text = this.extractText(error.error);
+          errorAlert.text = apiErrorMessage(error, 'data', 'API', 'Unable to save the permission.');
           this.showAlert(errorAlert);
           this.isLoading = false;
         },
@@ -151,28 +157,6 @@ export class PermissionListingComponent implements OnInit, AfterViewInit, OnDest
     } else {
       createFn();
     }
-  }
-
-  extractText(obj: any): string {
-    var textArray: string[] = [];
-
-    for (var key in obj) {
-      if (typeof obj[key] === 'string') {
-        // If the value is a string, add it to the 'textArray'
-        textArray.push(obj[key]);
-      } else if (typeof obj[key] === 'object') {
-        // If the value is an object, recursively call the function and concatenate the results
-        textArray = textArray.concat(this.extractText(obj[key]));
-      }
-    }
-
-    // Use a Set to remove duplicates and convert back to an array
-    var uniqueTextArray = Array.from(new Set(textArray));
-
-    // Convert the uniqueTextArray to a single string with line breaks
-    var text = uniqueTextArray.join('\n');
-
-    return text;
   }
 
   showAlert(swalOptions: SweetAlertOptions) {

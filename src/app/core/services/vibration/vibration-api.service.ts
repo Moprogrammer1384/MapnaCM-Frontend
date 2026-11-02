@@ -59,7 +59,7 @@ export class VibrationApiService implements VibrationDataSource {
       return this.http.get<ApiEnvelope<VibrationChartDto>>(`${environment.apiUrl}/TimeDomain/Get`, { params }).pipe(
         map(response => {
           if (!response.success || !response.data) {
-            throw new Error([response.message, ...(response.errors ?? [])].filter(Boolean).join(' ') || 'No vibration data is available in this range.');
+            throw new Error(apiErrorMessage(response, 'data', 'API', 'No vibration data is available in this range.'));
           }
           return this.record(response.data, request);
         }),

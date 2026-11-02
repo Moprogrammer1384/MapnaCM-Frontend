@@ -1,3 +1,4 @@
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -149,7 +150,7 @@ export class AssetApiService {
       .pipe(
         map((response) => {
           if (!response.success || !response.data) {
-            throw new Error(response.message || 'Unable to load the users.');
+            throw new Error(apiErrorMessage(response, 'data', 'API', 'Unable to load the users.'));
           }
           return response.data;
         })
@@ -363,13 +364,13 @@ export class AssetApiService {
 
   private unwrapVoid(response: ApiEnvelope<object>): void {
     if (!response.success) {
-      throw new Error(response.message || 'The request failed.');
+      throw new Error(apiErrorMessage(response, 'data', 'API', 'The request failed.'));
     }
   }
 
   private unwrapPage<T>(response: ApiEnvelope<PaginatedResult<T>>): T[] {
     if (!response.success || !response.data) {
-      throw new Error(response.message || 'The request failed.');
+      throw new Error(apiErrorMessage(response, 'data', 'API', 'The request failed.'));
     }
     return response.data.items;
   }

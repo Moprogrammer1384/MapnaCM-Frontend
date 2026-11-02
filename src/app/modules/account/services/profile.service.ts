@@ -1,3 +1,4 @@
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -19,7 +20,7 @@ export class ProfileService {
     return this.http.get<ApiEnvelope<UserProfile>>(`${this.apiUrl}/Profile`).pipe(
       map((response) => {
         if (!response.success || !response.data) {
-          throw new Error(response.message || 'Unable to load the profile');
+          throw new Error(apiErrorMessage(response, 'data', 'API', 'Unable to load the profile'));
         }
         return response.data;
       })
@@ -31,7 +32,7 @@ export class ProfileService {
     return this.http.put<ApiEnvelope<UserProfile>>(`${this.apiUrl}/UpdateProfile`, profile).pipe(
       map((response) => {
         if (!response.success || !response.data) {
-          throw new Error(response.message || 'Unable to update the profile');
+          throw new Error(apiErrorMessage(response, 'data', 'API', 'Unable to update the profile'));
         }
         return response.data;
       })
@@ -44,7 +45,7 @@ export class ProfileService {
     return this.http.post<ApiEnvelope<UserProfile>>(`${this.apiUrl}/RemoveAvatar`, {}).pipe(
       map((response) => {
         if (!response.success || !response.data) {
-          throw new Error(response.message || 'Unable to remove the avatar');
+          throw new Error(apiErrorMessage(response, 'data', 'API', 'Unable to remove the avatar'));
         }
         return response.data;
       })

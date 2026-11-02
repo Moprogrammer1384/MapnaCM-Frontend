@@ -1,7 +1,21 @@
 import { Subject } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { RequestState } from './request-state';
 
 describe('RequestState', () => {
+  it('shows the server rejection for failed HTTP reads and releases loading state', () => {
+    const state = new RequestState();
+    const response = new Subject<string[]>();
+    const failure = new HttpErrorResponse({ status: 400, statusText: 'OK',
+      error: { success: false, message: 'Plant is unavailable.', errors: ['Select another plant.'] } });
+    const receiveError = jasmine.createSpy('receiveError');
+    state.track(response, 'Unable to load plants.').subscribe({ error: receiveError });
+    response.error(failure);
+    expect(state.error()).toBe('Plant is unavailable. Select another plant.');
+    expect(state.loading()).toBeFalse();
+    expect(state.ready).toBeFalse();
+    expect(receiveError).toHaveBeenCalledOnceWith(failure);
+  });
   it('stays busy across chained hierarchy reads until the final list completes', () => {
     const state = new RequestState();
     const parent = new Subject<number>();

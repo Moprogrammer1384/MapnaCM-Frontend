@@ -1,3 +1,4 @@
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
@@ -45,7 +46,7 @@ export class UserManagementService {
       .pipe(
         map((response) => {
           if (!response.success || !response.data) {
-            throw new Error(response.message || 'Unable to load users.');
+            throw new Error(apiErrorMessage(response, 'data', 'API', 'Unable to load users.'));
           }
           const page = response.data;
           return {
@@ -64,7 +65,7 @@ export class UserManagementService {
       .pipe(
         map((response) => {
           if (!response.success || !response.data) {
-            throw new Error(response.message || 'Unable to load the user.');
+            throw new Error(apiErrorMessage(response, 'data', 'API', 'Unable to load the user.'));
           }
           return response.data;
         })
@@ -87,7 +88,7 @@ export class UserManagementService {
             if (data?.canRedefine) {
               return { canRedefine: true };
             }
-            throw new Error(response.message || 'The request failed.');
+            throw new Error(apiErrorMessage(response, 'data', 'API', 'The request failed.'));
           }
           return {};
         }),
@@ -133,7 +134,7 @@ export class UserManagementService {
 
   private unwrap(response: ApiEnvelope<object>): void {
     if (!response.success) {
-      throw new Error(response.message || 'The request failed.');
+      throw new Error(apiErrorMessage(response, 'data', 'API', 'The request failed.'));
     }
   }
 

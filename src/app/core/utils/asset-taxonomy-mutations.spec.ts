@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, DestroyRef } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { finalize, Subject } from 'rxjs';
 import type { PlantType } from '../models/asset-taxonomy.model';
 import { MetronicAlertService } from '../services/metronic-alert.service';
@@ -69,6 +70,23 @@ describe('AssetTaxonomyMutations', () => {
     mutations.delete(row, table, () => deletion, () => undefined, 'Unable to delete the type.');
     deletion.error({});
     expect(alerts.show).toHaveBeenCalledWith('error', 'Error!', 'Unable to delete the type.');
+  });
+
+  it('surfaces HTTP 400 envelopes on save and delete without running success actions', () => {
+    const save = new Subject<void>();
+    const deletion = new Subject<void>();
+    const success = jasmine.createSpy('success');
+    mutations.save(() => save, success);
+    save.error(new HttpErrorResponse({ status: 400, statusText: 'OK',
+      error: { success: false, message: 'Duplicate name.', errors: ['Choose a unique name.'] } }));
+    expect(alerts.show).toHaveBeenCalledWith('error', 'Error!', 'Duplicate name. Choose a unique name.');
+    expect(page.saving).toBeFalse();
+    mutations.delete(row, table, () => deletion, success, 'Unable to delete the type.');
+    deletion.error(new HttpErrorResponse({ status: 400, statusText: 'OK',
+      error: { success: false, message: 'The type is in use.' } }));
+    expect(alerts.show).toHaveBeenCalledWith('error', 'Error!', 'The type is in use.');
+    expect(table.isDeleting(row)).toBeFalse();
+    expect(success).not.toHaveBeenCalled();
   });
 
   it('keeps saving state independent between pages', () => {

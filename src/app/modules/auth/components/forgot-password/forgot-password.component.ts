@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { first } from 'rxjs/operators';
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
 
 enum ErrorStates {
   NotSubmitted,
@@ -19,6 +20,7 @@ export class ForgotPasswordComponent implements OnInit {
   forgotPasswordForm: FormGroup;
   errorState: ErrorStates = ErrorStates.NotSubmitted;
   errorStates = ErrorStates;
+  errorMessage = '';
   isLoading$: Observable<boolean>;
 
   // private fields
@@ -52,11 +54,18 @@ export class ForgotPasswordComponent implements OnInit {
 
   submit() {
     this.errorState = ErrorStates.NotSubmitted;
+    this.errorMessage = '';
     const forgotPasswordSubscr = this.authService
       .forgotPassword(this.f.email.value)
       .pipe(first())
-      .subscribe((result: boolean) => {
-        this.errorState = result ? ErrorStates.NoError : ErrorStates.HasError;
+      .subscribe({
+        next: (result: boolean) => {
+          this.errorState = result ? ErrorStates.NoError : ErrorStates.HasError;
+        },
+        error: (error) => {
+          this.errorMessage = apiErrorMessage(error, 'data', 'API', 'Unable to request a password reset.');
+          this.errorState = ErrorStates.HasError;
+        },
       });
     this.unsubscribe.push(forgotPasswordSubscr);
   }

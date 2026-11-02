@@ -1,3 +1,4 @@
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import {
   ChangeDetectorRef,
   Component,
@@ -125,10 +126,10 @@ export class ProfileDetailsComponent implements OnInit, OnDestroy {
           this.hasCustomAvatar = !!profile.avatarImagePath;
           this.successMessage = 'Profile picture removed.';
           // refresh the shared current user so the header avatar updates everywhere
-          this.authService.getUserByToken().subscribe();
+          this.refreshCurrentUser();
         },
         error: (err) => {
-          this.errorMessage = err?.message || 'Unable to remove the avatar.';
+          this.errorMessage = apiErrorMessage(err, 'data', 'API', 'Unable to remove the avatar.');
         },
       });
     this.unsubscribe.push(subscr);
@@ -171,13 +172,22 @@ export class ProfileDetailsComponent implements OnInit, OnDestroy {
           this.avatarFile = null;
           this.successMessage = 'Profile updated successfully.';
           // refresh the shared current user so the header/avatar update everywhere
-          this.authService.getUserByToken().subscribe();
+          this.refreshCurrentUser();
         },
         error: (err) => {
-          this.errorMessage = err?.message || 'Unable to update the profile.';
+          this.errorMessage = apiErrorMessage(err, 'data', 'API', 'Unable to update the profile.');
         },
       });
     this.unsubscribe.push(subscr);
+  }
+
+  private refreshCurrentUser(): void {
+    this.unsubscribe.push(this.authService.getUserByToken().subscribe({
+      error: (error) => {
+        this.errorMessage = apiErrorMessage(error, 'user profile');
+        this.cdr.detectChanges();
+      },
+    }));
   }
 
   private loadProfile() {
@@ -200,7 +210,7 @@ export class ProfileDetailsComponent implements OnInit, OnDestroy {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.errorMessage = err?.message || 'Unable to load the profile.';
+          this.errorMessage = apiErrorMessage(err, 'data', 'API', 'Unable to load the profile.');
           this.cdr.detectChanges();
         },
       });

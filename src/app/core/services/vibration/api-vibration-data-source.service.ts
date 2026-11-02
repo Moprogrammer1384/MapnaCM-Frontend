@@ -1,3 +1,4 @@
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -41,7 +42,7 @@ export class ApiVibrationDataSource implements RawVibrationDataSource {
         map((response) => {
           if (!response.success || !response.data) {
             // The chart surfaces the message through its error/notices path.
-            throw new Error(response.message || 'No vibration data found for this measurement in the selected time range.');
+            throw new Error(apiErrorMessage(response, 'data', 'API', 'No vibration data found for this measurement in the selected time range.'));
           }
           return response.data as RawVibrationRecord;
         })

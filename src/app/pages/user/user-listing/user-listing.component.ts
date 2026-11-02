@@ -57,16 +57,23 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.rolesApiService.getAll().subscribe((roles) => {
-      this.roles = roles;
-      this.cdr.detectChanges();
+    this.rolesApiService.getAll().subscribe({
+      next: (roles) => {
+        this.roles = roles;
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert({ icon: 'error', title: 'Error!', text: this.errorMessage(error) }),
     });
 
     this.datatableConfig = {
       serverSide: true,
       ajax: (dataTablesParameters: any, callback) => {
-        this.apiService.getUsers(dataTablesParameters).subscribe(resp => {
-          callback(resp);
+        this.apiService.getUsers(dataTablesParameters).subscribe({
+          next: resp => callback(resp),
+          error: (error) => {
+            callback({ draw: dataTablesParameters.draw, recordsTotal: 0, recordsFiltered: 0, data: [] });
+            this.showAlert({ icon: 'error', title: 'Error!', text: this.errorMessage(error) });
+          },
         });
       },
       columns: [
@@ -195,17 +202,20 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   edit(id: string) {
-    this.apiService.getUserById(id).subscribe((user: AdminUserDetail) => {
-      this.userModel = {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        phoneNumber: user.phoneNumber || '',
-        password: '',
-        role: (user.roles || [])[0]?.name ?? null,
-      };
-      this.cdr.detectChanges();
+    this.apiService.getUserById(id).subscribe({
+      next: (user: AdminUserDetail) => {
+        this.userModel = {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phoneNumber: user.phoneNumber || '',
+          password: '',
+          role: (user.roles || [])[0]?.name ?? null,
+        };
+        this.cdr.detectChanges();
+      },
+      error: (error) => this.showAlert({ icon: 'error', title: 'Error!', text: this.errorMessage(error) }),
     });
   }
 

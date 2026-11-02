@@ -2,6 +2,7 @@ import { ChangeDetectorRef, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize, Observable } from 'rxjs';
 import { MetronicAlertService } from '../services/metronic-alert.service';
+import { apiErrorMessage } from './api-error';
 import { TablePagination } from 'src/app/shared/components/data-table/pagination/table-pagination';
 
 /** Each page composes its own helper and retains its saving flag and success ordering. */
@@ -26,7 +27,7 @@ export class AssetTaxonomyMutations {
       error: (error) => {
         this.page.saving = false;
         this.cdr.detectChanges();
-        this.alerts.show('error', 'Error!', error?.message || 'The request failed.');
+        this.alerts.show('error', 'Error!', apiErrorMessage(error, 'data', 'API', 'The request failed.'));
       },
     });
   }
@@ -46,7 +47,7 @@ export class AssetTaxonomyMutations {
       finalize(() => table.endDelete(row))
     ).subscribe({
       next: onSuccess,
-      error: (error) => this.alerts.show('error', 'Error!', error?.message || errorMessage),
+      error: (error) => this.alerts.show('error', 'Error!', apiErrorMessage(error, 'data', 'API', errorMessage)),
     });
   }
 }

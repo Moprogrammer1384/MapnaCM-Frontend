@@ -3354,3 +3354,41 @@ superseded by the user's later `components/` rename on 2026-10-10.
   no authenticated manual Angular browser session was exercised.
 - Evidence/build output: backend artifacts/elevation-value. Existing conflict
   markers in this memory were preserved; no commit or staging was performed.
+
+### API rejection messages across DARP pages - 2026-11-02
+
+- User reported Angular's generic `Http failure response ... PlantType/Add: 400 OK`
+  and requested an application-wide review of error presentation. Verified that
+  `AssetTaxonomyMutations` preferred the transport message over `error.error`.
+  Its save/delete paths and shared `RequestState` now use `apiErrorMessage`,
+  covering Site, Plant/Plant Type, Unit, System, Asset, Component, Measurement
+  and the measurement drawer's hierarchy reads.
+- The central formatter reads business message/errors, MVC field validation,
+  ProblemDetails detail/title and text/JSON-string bodies, removes exact duplicate
+  messages, and supplies connectivity/action fallbacks. It does not recursively
+  display response data, trace IDs or other metadata. HTTP error objects/statuses
+  remain unchanged; the User canRedefine 200/400 confirmation flow is preserved.
+  Legacy HTTP 200 business failures also retain validation details in taxonomy,
+  user/role/profile/auth and vibration/availability adapters.
+- Audited API consumers throughout pages/modules/shared components. Replaced raw
+  transport-message presentation in role listing, user details, profile forms and
+  login; added missing read/edit/delete error handling in user/permission lists
+  and role details, plus profile overview and password-reset feedback. DataTables
+  callbacks settle on read failures. Registration uses the shared auth message.
+  Existing demo endpoints remain demo endpoints; no API, backend, database,
+  browser persistence or styling dependency was introduced. New inline feedback
+  uses existing Metronic alert classes and Angular text interpolation.
+- Verified **71 ChromeHeadless tests** across 17 focused suites (68 plus 3 final
+  role-details/password-reset cases), full lint, test TypeScript compilation and
+  production build (hash `c937b66cade5e6e1`). Tests include actual Plant/PlantType
+  HttpClient failures with statusText=OK, retained form/saving state, explicit
+  successful retry, rejected deletion locks, legacy envelopes, MVC details,
+  DataTables completion, auth confirmation compatibility and rendered overview/
+  role alerts. One new test fixture's route type was corrected before passing.
+- Build output is isolated in ignored `tmp/api-error-review-2026-11-02/build`;
+  existing dist/publish output was preserved. Existing 2.80 MB initial-bundle
+  warning and four CSS optimizer selector warnings remain. Sandbox process spawn
+  initially failed with EPERM; approved execution outside it passed. No live
+  authenticated browser/API session or manual visual audit was performed. The
+  actual rejected request body was unavailable, so its specific business cause
+  remains unverified. Pre-existing memory conflict markers were preserved.

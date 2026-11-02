@@ -13,6 +13,7 @@
   </div>
 
   <div class="card-body p-9">
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">{{ errorMessage }}</div>
     <ng-container *ngIf="profile$ | async as profile">
       <div class="row mb-7">
         <label class="col-lg-4 fw-bold text-muted">Full Name</label>

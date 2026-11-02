@@ -1,3 +1,4 @@
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, BehaviorSubject, of, Subscription } from 'rxjs';
 import { map, catchError, switchMap, finalize } from 'rxjs/operators';
@@ -80,7 +81,7 @@ export class AuthService implements OnDestroy {
       catchError((err) => {
         console.error('login failed', err);
         this.authErrorMessageSubject.next(
-          err?.message || 'The login details are incorrect'
+          apiErrorMessage(err, 'data', 'API', 'The login details are incorrect')
         );
         return of(undefined);
       }),
@@ -172,6 +173,7 @@ export class AuthService implements OnDestroy {
   // need create new user then login
   registration(user: UserModel): Observable<any> {
     this.isLoadingSubject.next(true);
+    this.authErrorMessageSubject.next(undefined);
     return this.authHttpService.createUser(user).pipe(
       map(() => {
         this.isLoadingSubject.next(false);
@@ -179,6 +181,7 @@ export class AuthService implements OnDestroy {
       switchMap(() => this.login(user.email, user.password)),
       catchError((err) => {
         console.error('err', err);
+        this.authErrorMessageSubject.next(apiErrorMessage(err, 'data', 'API', 'The registration details are incorrect'));
         return of(undefined);
       }),
       finalize(() => this.isLoadingSubject.next(false))

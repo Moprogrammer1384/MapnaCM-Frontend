@@ -1,3 +1,4 @@
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import moment from 'moment';
@@ -35,7 +36,7 @@ export class UserDetailsComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
-        this.errorMessage = error?.message || 'Unable to load the user.';
+        this.errorMessage = apiErrorMessage(error, 'data', 'API', 'Unable to load the user.');
         this.isLoading = false;
       },
     });

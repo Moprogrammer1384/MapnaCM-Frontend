@@ -1,3 +1,4 @@
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
@@ -46,7 +47,7 @@ export class RoleListingComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.isLoading = false;
-        this.showAlert({ icon: 'error', title: 'Error!', text: error?.message || 'Unable to load roles.' });
+        this.showAlert({ icon: 'error', title: 'Error!', text: apiErrorMessage(error, 'data', 'API', 'Unable to load roles.') });
       },
     });
   }
@@ -73,7 +74,7 @@ export class RoleListingComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.isLoading = false;
         this.cdr.detectChanges();
-        this.showAlert({ icon: 'error', title: 'Error!', text: error?.message || 'Unable to create the role. It may already exist.' });
+        this.showAlert({ icon: 'error', title: 'Error!', text: apiErrorMessage(error, 'data', 'API', 'Unable to create the role. It may already exist.') });
       },
     });
   }

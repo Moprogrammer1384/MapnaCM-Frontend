@@ -2,10 +2,14 @@
 
 `VibrationDateTimeRangeComponent` wraps the existing `DateTimeRangeComponent` for
 Time Domain and Frequency Domain only. It loads calendar metadata through the
-shared `TimeAvailabilityService` / `TIME_AVAILABILITY_SOURCE` in
+shared `TimeAvailabilitySource` / `TIME_AVAILABILITY_SOURCE` contract/token in
 `core/services/time-availability.service.ts`, with its model in
 `core/models/time-availability.model.ts`. Other modules can consume this source
 without importing vibration services.
+
+The default HTTP implementation is `VibrationTimeDomainAvailabilityApiService`
+in `core/services/vibration/api/`. Bode supplies its own
+`VibrationBodeAnalysisAvailabilityApiService` from the same folder for event metadata.
 
 On measurement selection it requests `GET /TimeDomain/GetAvailability` with repeated
 `MeasurementIds`, omitting dates for discovery of actual data history. It uses

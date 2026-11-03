@@ -6,7 +6,7 @@ import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widge
 import { AMPLITUDE_LABELS, AnalysisChartSettings, VIBRATION_QUANTITIES } from 'src/app/core/models/analysis-chart-settings.model';
 import { RawVibrationRecord, TimeDomainAnalysis } from 'src/app/core/models/vibration-data.model';
 import { TimeDomainAnalysisService, TimeDomainAnalysisSession } from 'src/app/core/services/vibration/time-domain/time-domain-analysis.service';
-import { VIBRATION_DATA_SOURCE, isVibrationDisplay, vibrationError } from 'src/app/core/services/vibration/vibration-api.service';
+import { VIBRATION_DATA_SOURCE, isVibrationDisplay, vibrationError } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { VibrationDisplayRecord } from 'src/app/core/models/vibration-api.model';
 import { displayTimeDomain } from 'src/app/core/services/vibration/time-domain/time-domain-display';
 import { formatAnalysisNumber } from '../analysis-workspace-panel/analysis-number-format';

@@ -5,7 +5,7 @@ import { RawVibrationRecord, TimeDomainAnalysis } from 'src/app/core/models/vibr
 import { prepareTimeDomainRecord } from 'src/app/core/services/vibration/time-domain/time-domain-preparation';
 import { analyzeTimeDomain } from 'src/app/core/services/vibration/time-domain/time-domain-analysis';
 import { TimeDomainAnalysisService } from 'src/app/core/services/vibration/time-domain/time-domain-analysis.service';
-import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/vibration-api.service';
+import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { VibrationTimeDomainChartComponent } from './vibration-time-domain-chart.component';
 import { VibrationDisplayRecord } from 'src/app/core/models/vibration-api.model';
 

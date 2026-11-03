@@ -1,10 +1,14 @@
 # DARP vibration data and processing
 
-Updated 2026-10-25. Only Time Domain and Frequency Domain use the real
-VibrationApiService through VIBRATION_DATA_SOURCE in vibration-api.service.ts.
-The workbook reader, tenfold repetition, JSON asset and importer were removed.
-Overview, Bode Analysis and Rotor Position keep their existing previews.
-Synthetic workload data exists only under src/testing/ for regression tests.
+Updated 2026-11-03. Time Domain and Frequency Domain use the real
+VibrationTimeDomainApiService through VIBRATION_DATA_SOURCE in
+api/vibration-time-domain-api.service.ts. All HTTP adapters are grouped in
+[api/](api/README.md), with explicit Vibration/feature/purpose names.
+The old Time/Frequency workbook fixture and tenfold repetition were removed.
+Overview and Rotor Position keep their existing previews. Bode Analysis uses its
+separate BodeAnalysis API and database entities, with discrete event selection;
+see [Bode methods and source](bode-analysis/README.md).
+Synthetic Time/Frequency workload data exists under src/testing/ for regression tests.
 
 ## Data access and selection
 
@@ -16,7 +20,7 @@ at one point per second; the frontend derives FFT sample rate from actual times.
 1. Measurement Execute opens the same workspace/controls, awaiting date confirmation.
 2. The existing date/hour/minute picker Apply confirms the range, including when
    unchanged defaults are explicitly accepted. No API call occurs before this.
-3. VibrationApiService requests GET /TimeDomain/Get for the actual measurement and
+3. VibrationTimeDomainApiService requests GET /TimeDomain/Get for the actual measurement and
    UTC From/To. The backend decides whether that interval returns raw or summary.
 4. Complete raw selections with no reported gaps map the SAME response points
    directly into time/values arrays for the existing Time/Frequency Domain workers.
@@ -71,7 +75,7 @@ The raw numerical modules/formulas and chart axes remain unchanged.
 
 ## File organization
 
-- vibration-api.service.ts: bounded cancellable HTTP reads and native/display discrimination.
+- api/: named HTTP adapters for Time/Frequency data, Bode data and each feature's availability.
 - core/models/vibration-api.model.ts: backend DTOs and display-only record type.
 - time-domain/: existing raw time mathematics/workers, plus the separate summary display adapter.
 - frequency-domain/: existing FFT mathematics, FFT-only resampling/windowing and workers.
@@ -164,7 +168,7 @@ See the latest dated agent.md maintenance entry for executed results and live-te
 
 ## Available calendar days (2026-10-25)
 
-TimeAvailabilityService calls GetAvailability for the selected IDs before date
+VibrationTimeDomainAvailabilityApiService calls GetAvailability for the selected IDs before date
 confirmation. The connected vibration-date-time-range wrapper enables only proven
 commonRanges through native Flatpickr rules, initially disabling all days. Calendar
 labels keep their day meaning and exclusive To; no UTC conversion applies to this

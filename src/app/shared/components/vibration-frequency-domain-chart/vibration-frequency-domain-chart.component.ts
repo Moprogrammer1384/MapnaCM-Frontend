@@ -7,7 +7,7 @@ import { AMPLITUDE_LABELS, AnalysisChartSettings, VIBRATION_QUANTITIES } from 's
 import { RawVibrationRecord } from 'src/app/core/models/vibration-data.model';
 import { FrequencyDomainAnalysis } from 'src/app/core/models/frequency-domain.model';
 import { FrequencyDomainAnalysisService, FrequencyDomainAnalysisSession } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis.service';
-import { VIBRATION_DATA_SOURCE, isVibrationDisplay, vibrationError } from 'src/app/core/services/vibration/vibration-api.service';
+import { VIBRATION_DATA_SOURCE, isVibrationDisplay, vibrationError } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { formatAnalysisNumber } from '../analysis-workspace-panel/analysis-number-format';
 
 /** Raw-record FFT rendering. Source/API integration and all signal math remain in core/services/vibration. */

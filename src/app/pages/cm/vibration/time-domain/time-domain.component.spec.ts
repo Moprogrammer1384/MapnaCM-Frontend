@@ -13,7 +13,7 @@ import { of } from 'rxjs';
 import { vibrationTestRecord } from 'src/testing/vibration-test-data';
 import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
 import { AMPLITUDE_LABELS, VIBRATION_UNITS } from 'src/app/core/models/analysis-chart-settings.model';
-import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/vibration-api.service';
+import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { prepareTimeDomainRecord } from 'src/app/core/services/vibration/time-domain/time-domain-preparation';
 import { analyzeTimeDomain } from 'src/app/core/services/vibration/time-domain/time-domain-analysis';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';

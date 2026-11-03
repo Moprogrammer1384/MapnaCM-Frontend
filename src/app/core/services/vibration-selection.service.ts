@@ -62,9 +62,9 @@ export class VibrationSelectionService {
       ...structuredClone(execution), id: `vibration-${++this.tabSequence}`, title: `Analysis ${number}`,
       dateRange: { from: date(from), to: date(today) },
       timeRange: { from: '00:00', to: '23:59' },
-      awaitingDateRange: page === 'time-domain' || page === 'frequency-domain',
+      awaitingDateRange: page === 'time-domain' || page === 'frequency-domain' || page === 'bode-analysis',
       // Time Domain initializes its display from the arriving raw record's metadata.
-      chartSettings: page === 'time-domain' || page === 'frequency-domain' ? undefined
+      chartSettings: page === 'time-domain' || page === 'frequency-domain' || page === 'bode-analysis' ? undefined
         : defaultChartSettings('time'),
     };
     this.updateWorkspace({ tabs: [...this.tabs(), tab], activeId: tab.id });

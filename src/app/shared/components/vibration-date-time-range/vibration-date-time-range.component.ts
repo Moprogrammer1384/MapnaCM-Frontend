@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, Output } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { EMPTY, expand, Subscription, takeLast, tap } from 'rxjs';
 import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
+import { AnalysisEventTime } from 'src/app/core/models/analysis-event-time.model';
 import { CalendarDateRange, TimeAvailability } from 'src/app/core/models/time-availability.model';
 import { TIME_AVAILABILITY_SOURCE } from 'src/app/core/services/time-availability.service';
-import { vibrationError } from 'src/app/core/services/vibration/vibration-api.service';
+import { vibrationError } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { DateTimeRangeComponent } from '../date-time-range/date-time-range.component';
+import { VibrationEventPickerComponent } from '../vibration-event-picker/vibration-event-picker.component';
 
 function previousDay(day: string): string {
   const date = new Date(`${day}T12:00:00`);
@@ -13,10 +15,16 @@ function previousDay(day: string): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
-/** Loads calendar metadata only. Waveform requests still start with the user's Apply. */
+function addCalendarDays(day: string, count: number): string {
+  const date = new Date(`${day}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + count);
+  return date.toISOString().slice(0, 10);
+}
+
+/** Loads availability metadata only. Chart reads start with Apply or a discrete event selection. */
 @Component({
   selector: 'app-vibration-date-time-range', standalone: true,
-  imports: [CommonModule, DateTimeRangeComponent],
+  imports: [CommonModule, DateTimeRangeComponent, VibrationEventPickerComponent],
   templateUrl: './vibration-date-time-range.component.html',
   host: { class: 'd-block', '[attr.aria-busy]': 'loading' },
 })
@@ -24,6 +32,7 @@ export class VibrationDateTimeRangeComponent implements OnChanges, OnDestroy {
   @Input({ required: true }) inputId: string;
   @Input({ required: true }) measurementIds: readonly number[] = [];
   @Input({ required: true }) value: DateTimeRange;
+  @Input() eventSelection = false;
   @Output() readonly applied = new EventEmitter<DateTimeRange>();
   loading = true;
   error = '';
@@ -32,6 +41,8 @@ export class VibrationDateTimeRangeComponent implements OnChanges, OnDestroy {
   minDate?: string;
   maxDate?: string;
   calendarDate?: string;
+  availableTimes?: readonly AnalysisEventTime[];
+  private readonly timeRanges = new Map<string, AnalysisEventTime>();
   private readonly source = inject(TIME_AVAILABILITY_SOURCE);
   private readonly changeDetector = inject(ChangeDetectorRef);
   private request?: Subscription;
@@ -48,12 +59,16 @@ export class VibrationDateTimeRangeComponent implements OnChanges, OnDestroy {
     this.ready = false;
     this.windows.length = this.ranges.length = 0;
     this.enabledDates = [];
+    this.timeRanges.clear();
+    this.availableTimes = undefined;
     this.minDate = this.maxDate = this.calendarDate = undefined;
     this.load();
   }
 
   showWindow(window: CalendarDateRange): void {
     if (!this.ready || !this.minDate || !this.maxDate) { return; }
+    // Bode's optional Date filters already-loaded event history locally.
+    if (this.eventSelection && !this.nextEventWindow()) { return; }
     const toBound = new Date(`${this.maxDate}T12:00:00`);
     toBound.setDate(toBound.getDate() + 1);
     const last = `${toBound.getFullYear()}-${String(toBound.getMonth() + 1).padStart(2, '0')}-${String(toBound.getDate()).padStart(2, '0')}`;
@@ -76,9 +91,23 @@ export class VibrationDateTimeRangeComponent implements OnChanges, OnDestroy {
     this.pendingWindow = window;
     this.loading = true;
     this.error = '';
-    this.request = this.source.getAvailability(this.measurementIds, window).subscribe({
-      next: data => {
+    let metadata = this.source.getAvailability(this.measurementIds, window);
+    if (this.eventSelection) {
+      metadata = metadata.pipe(expand(data => {
         this.accept(data);
+        const next = this.nextEventWindow();
+        if (!next) { return EMPTY; }
+        this.pendingWindow = next;
+        return this.source.getAvailability(this.measurementIds, next).pipe(tap(result => {
+          if (!result.window || result.window.from > next.from || result.window.to < next.to) {
+            throw new Error('The availability API did not cover the requested event dates.');
+          }
+        }));
+      }, 1), takeLast(1));
+    }
+    this.request = metadata.subscribe({
+      next: data => {
+        if (!this.eventSelection) { this.accept(data); }
         this.loading = false;
         this.ready = true;
         this.changeDetector.markForCheck();
@@ -91,10 +120,28 @@ export class VibrationDateTimeRangeComponent implements OnChanges, OnDestroy {
     });
   }
 
+  private nextEventWindow(): CalendarDateRange | undefined {
+    if (!this.minDate || !this.maxDate) { return undefined; }
+    const until = addCalendarDays(this.maxDate, 1);
+    let from = this.minDate;
+    const gap = (to: string) => ({ from, to: [to, until, addCalendarDays(from, 366)].sort()[0] });
+    for (const known of [...this.windows].sort((a, b) => a.from.localeCompare(b.from))) {
+      if (known.to <= from) { continue; }
+      if (known.from > from) { return gap(known.from); }
+      from = known.to;
+      if (from >= until) { return undefined; }
+    }
+    return from < until ? gap(until) : undefined;
+  }
+
   private accept(data: TimeAvailability): void {
     if (data.window) { this.windows.push(data.window); }
     this.ranges.push(...data.commonRanges);
     this.enabledDates = [...this.ranges];
+    if (data.availableTimes) {
+      data.availableTimes.forEach(event => this.timeRanges.set(event.id, event));
+      this.availableTimes = [...this.timeRanges.values()].sort((a, b) => a.from.localeCompare(b.from));
+    }
     const bounds = data.measurements.map(item => item.dataBounds);
     if (bounds.length && bounds.every((item): item is CalendarDateRange => !!item)) {
       // Bounds guide navigation only. Only commonRanges enables actual days and preserves holes.

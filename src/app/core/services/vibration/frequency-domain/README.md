@@ -1,6 +1,7 @@
 # DARP Frequency Domain calculations
 
-Updated 2026-10-25. VIBRATION_DATA_SOURCE uses VibrationApiService and ONE
+Updated 2026-11-03. VIBRATION_DATA_SOURCE uses VibrationTimeDomainApiService
+from the sibling `api/` folder and ONE
 TimeDomain/Get request per selected measurement/range. Complete continuous raw
 points in that response directly supply the existing FFT pipeline, retaining the
 returned quantity/unit, seconds timestamps and full precision. No second waveform

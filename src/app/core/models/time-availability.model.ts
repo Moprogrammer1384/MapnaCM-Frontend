@@ -5,6 +5,8 @@ export interface CalendarDateRange {
 }
 
 export interface TimeAvailability {
+  /** Optional discrete acquisitions, supplied only by transient analyses. */
+  readonly availableTimes?: readonly import('./analysis-event-time.model').AnalysisEventTime[];
   readonly timeZone: 'Asia/Tehran';
   readonly granularity: 'day';
   readonly window: CalendarDateRange | null;

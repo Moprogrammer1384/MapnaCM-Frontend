@@ -6,7 +6,7 @@ import { FrequencyDomainAnalysis } from 'src/app/core/models/frequency-domain.mo
 import { prepareFrequencyDomainRecord } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis';
 import { analyzeFrequencyDomain } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis';
 import { FrequencyDomainAnalysisService } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis.service';
-import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/vibration-api.service';
+import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { VibrationFrequencyDomainChartComponent } from './vibration-frequency-domain-chart.component';
 import { VibrationDisplayRecord } from 'src/app/core/models/vibration-api.model';
 

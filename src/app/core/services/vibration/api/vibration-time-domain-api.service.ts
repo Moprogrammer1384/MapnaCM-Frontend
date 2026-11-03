@@ -2,18 +2,18 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, InjectionToken } from '@angular/core';
 import { catchError, defer, map, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { VibrationQuantity, VibrationUnit, VIBRATION_UNITS } from '../../models/analysis-chart-settings.model';
-import { ApiEnvelope } from '../../models/response.model';
-import { RawVibrationRecord, VibrationDataRequest } from '../../models/vibration-data.model';
-import { VibrationChartDto, VibrationDisplayRecord } from '../../models/vibration-api.model';
-import { apiErrorMessage } from '../../utils/api-error';
+import { VibrationQuantity, VibrationUnit, VIBRATION_UNITS } from '../../../models/analysis-chart-settings.model';
+import { ApiEnvelope } from '../../../models/response.model';
+import { RawVibrationRecord, VibrationDataRequest } from '../../../models/vibration-data.model';
+import { VibrationChartDto, VibrationDisplayRecord } from '../../../models/vibration-api.model';
+import { apiErrorMessage } from '../../../utils/api-error';
 
 export type VibrationDataRecord = RawVibrationRecord | VibrationDisplayRecord;
 export interface VibrationDataSource {
   load(request: VibrationDataRequest): Observable<VibrationDataRecord>;
 }
 export const VIBRATION_DATA_SOURCE = new InjectionToken<VibrationDataSource>('VIBRATION_DATA_SOURCE', {
-  providedIn: 'root', factory: () => inject(VibrationApiService),
+  providedIn: 'root', factory: () => inject(VibrationTimeDomainApiService),
 });
 
 const QUANTITIES: Readonly<Record<number, VibrationQuantity>> = { 1: 'displacement', 2: 'velocity', 3: 'acceleration' };
@@ -24,7 +24,7 @@ export function isVibrationDisplay(record: VibrationDataRecord): record is Vibra
   return 'kind' in record && record.kind === 'display';
 }
 
-function profile(quantityId: number, unitId: number) {
+export function vibrationProfile(quantityId: number, unitId: number) {
   const quantity = QUANTITIES[quantityId]; const unit = UNITS[unitId];
   if (!quantity || !unit || !VIBRATION_UNITS[quantity].some(option => option.value === unit)) {
     throw new Error('The vibration API returned an unsupported quantity/unit.');
@@ -42,9 +42,9 @@ export function vibrationError(error: unknown): string {
   return apiErrorMessage(error, 'vibration data', 'vibration API');
 }
 
-/** Only fetches on measurement/range changes. Analysis selectors never enter HTTP parameters. */
+/** Time Domain API shared by Time/Frequency pages. Only measurement/range changes fetch data. */
 @Injectable({ providedIn: 'root' })
-export class VibrationApiService implements VibrationDataSource {
+export class VibrationTimeDomainApiService implements VibrationDataSource {
   private readonly http = inject(HttpClient);
 
   load(request: VibrationDataRequest): Observable<VibrationDataRecord> {
@@ -74,7 +74,7 @@ export class VibrationApiService implements VibrationDataSource {
       || series.sourceQuantity !== series.quantity) {
       throw new Error('The vibration API returned no native points or an incompatible time unit.');
     }
-    const metadata = profile(series.quantity, series.unit);
+    const metadata = vibrationProfile(series.quantity, series.unit);
     if (series.representation !== 'raw' || series.hasGaps || series.points.length < 3
       || series.points.some((point, index) => index > 0 && point.breakBefore)) {
       return Object.freeze({ kind: 'display', ...metadata, series });

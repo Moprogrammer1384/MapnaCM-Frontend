@@ -9,6 +9,7 @@ import { VibrationFrequencyDomainComponent } from './frequency-domain/frequency-
 import { VibrationFrequencyDomainChartComponent } from 'src/app/shared/components/vibration-frequency-domain-chart/vibration-frequency-domain-chart.component';
 import { VibrationTimeDomainChartComponent } from 'src/app/shared/components/vibration-time-domain-chart/vibration-time-domain-chart.component';
 import { VibrationBodeAnalysisComponent } from './bode-analysis/bode-analysis.component';
+import { VibrationBodeChartComponent } from 'src/app/shared/components/vibration-bode-chart/vibration-bode-chart.component';
 import { VibrationRotorPositionComponent } from './rotor-position/rotor-position.component';
 
 @NgModule({
@@ -25,6 +26,7 @@ import { VibrationRotorPositionComponent } from './rotor-position/rotor-position
     AnalysisWorkspaceComponent,
     VibrationFrequencyDomainChartComponent,
     VibrationTimeDomainChartComponent,
+    VibrationBodeChartComponent,
     RouterModule.forChild([
       {
         path: 'overview',

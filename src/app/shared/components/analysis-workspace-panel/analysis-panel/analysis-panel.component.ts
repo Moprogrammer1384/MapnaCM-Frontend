@@ -45,7 +45,8 @@ export class AnalysisPanelComponent implements OnChanges {
     this.chartSettings = {
       ...settings,
       unit: vibrationUnit(settings).value,
-      xAxis: this.domain === 'time' ? 'time' : settings.xAxis === 'time' ? 'hz' : settings.xAxis,
+      xAxis: this.domain === 'time' ? 'time' : this.domain === 'bode'
+        ? (settings.xAxis === 'hz' ? 'hz' : 'rpm') : settings.xAxis === 'time' ? 'hz' : settings.xAxis,
     };
     const from = `${this.tab.dateRange.from}T${this.tab.timeRange.from}`;
     const to = `${this.tab.dateRange.to}T${this.tab.timeRange.to}`;

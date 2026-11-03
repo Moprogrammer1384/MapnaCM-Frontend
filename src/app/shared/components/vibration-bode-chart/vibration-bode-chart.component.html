@@ -1,0 +1,35 @@
+@if (title || record?.eventType) {
+  <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+    @if (title) {
+      <h3 [id]="titleId" class="fs-5 fw-bold text-break flex-grow-1 min-w-0 mb-0">{{ title }}@if (tag) {<span class="text-gray-500 fw-normal">{{ ' ' + tag }}</span>}</h3>
+    }
+    @if (record?.eventType; as eventType) {
+      <span class="badge flex-shrink-0" [ngClass]="eventClasses[eventType]" data-testid="bode-event-type">{{ eventType }}</span>
+    }
+  </div>
+}
+@if (loading) {
+  <div class="d-flex align-items-center justify-content-center gap-3 py-15" role="status">
+    <span class="spinner-border spinner-border-sm text-primary" aria-hidden="true"></span>
+    <span class="text-gray-500">Loading tracking data…</span>
+  </div>
+} @else if (error) {
+  <div class="alert alert-danger d-flex flex-wrap align-items-center gap-3" role="alert">
+    <span class="flex-grow-1">{{ error }}</span>
+    <button type="button" class="btn btn-sm btn-light-danger" (click)="reload()">Retry</button>
+  </div>
+} @else if (analysis && chartOptions) {
+  <div role="img" aria-label="Bode diagrams: 1X amplitude above phase versus shaft speed, with linked zoom and cursor">
+    <app-apache-echarts [options]="chartOptions" [mergeOptions]="true" height="600px"></app-apache-echarts>
+  </div>
+  <div class="d-flex flex-wrap justify-content-end gap-3 gap-md-5 text-gray-500 fs-8 mt-2" role="status" aria-live="polite">
+    <span data-testid="bode-count">{{ analysis.speed.length | number }} Data</span>
+    <span>{{ formatNumber(analysis.minimumSpeedRpm) }}–{{ formatNumber(analysis.maximumSpeedRpm) }} RPM</span>
+    <span data-testid="bode-peak">Peak: {{ formatNumber(analysis.amplitude[analysis.peakIndex]) }} {{ analysis.unit }} {{ analysis.amplitudeMode === 'rms' ? 'RMS' : analysis.amplitudeMode }}
+      at {{ formatNumber(record!.observations[analysis.peakIndex].speedRpm) }} RPM</span>
+  </div>
+} @else {
+  <div class="text-center py-15" role="status">
+    <h4 class="fs-6 fw-semibold mb-3">No observations in this range</h4>
+  </div>
+}

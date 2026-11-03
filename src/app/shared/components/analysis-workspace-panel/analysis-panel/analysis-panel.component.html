@@ -10,9 +10,10 @@
       }
     </section>
     <section class="col-12 col-xl-9" [attr.aria-labelledby]="tab.id + '_dates'">
-      <h3 [id]="tab.id + '_dates'" class="fs-6 fw-bold mb-5">Date and time range</h3>
+      <h3 [id]="tab.id + '_dates'" class="fs-6 fw-bold mb-5">{{ domain === 'bode' ? 'Event date and time' : 'Date and time range' }}</h3>
       @if (useAvailableDates) {
         <app-vibration-date-time-range [inputId]="tab.id" [value]="dateTimeRange" [measurementIds]="measurementIds"
+          [eventSelection]="domain === 'bode'"
           (applied)="updateDateTimeRange($event)"></app-vibration-date-time-range>
       } @else {
         <app-date-time-range [inputId]="tab.id" [value]="dateTimeRange"
@@ -24,12 +25,16 @@
     <div class="col-12 col-sm-6 col-lg-3">
       <label class="form-label" [for]="tab.id + '_quantity'">Quantity</label>
       <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
-        [id]="tab.id + '_quantity'" aria-label="Quantity" [ngModel]="chartSettings.quantity"
+        [id]="tab.id + '_quantity'" aria-label="Quantity" [ngModel]="chartSettings.quantity" [disabled]="domain === 'bode'"
+        [attr.aria-describedby]="domain === 'bode' ? tab.id + '_quantity_note' : null"
         (ngModelChange)="updateChartSetting('quantity', $event)">
         <option value="displacement">Displacement</option>
         <option value="velocity">Velocity</option>
         <option value="acceleration">Acceleration</option>
       </select>
+      @if (domain === 'bode') {
+        <div class="form-text" [id]="tab.id + '_quantity_note'">Native quantity is fixed per measurement; phase is preserved.</div>
+      }
     </div>
     <div class="col-12 col-sm-6 col-lg-3">
       <label class="form-label" [for]="tab.id + '_unit'">Unit</label>
@@ -47,7 +52,10 @@
         [id]="tab.id + '_x_axis'" aria-label="X axis" [ngModel]="chartSettings.xAxis"
         [attr.aria-describedby]="chartSettings.xAxis === 'order' ? tab.id + '_reference_speed' : null"
         (ngModelChange)="updateChartSetting('xAxis', $event)">
-        @if (domain === 'frequency') {
+        @if (domain === 'bode') {
+          <option value="rpm">RPM</option>
+          <option value="hz">Hz</option>
+        } @else if (domain === 'frequency') {
           <option value="hz">Hz</option>
           <option value="cpm">CPM</option>
           <option value="order">Order</option>
@@ -67,6 +75,17 @@
       </select>
       <div class="form-text">RMS · 0p (zero-to-peak) · pp (peak-to-peak)</div>
     </div>
+    @if (domain === 'bode') {
+      <div class="col-12 col-sm-6 col-lg-3">
+        <label class="form-label" [for]="tab.id + '_phase'">Phase</label>
+        <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+          [id]="tab.id + '_phase'" aria-label="Phase" [ngModel]="chartSettings.phaseMode || 'wrapped'"
+          (ngModelChange)="updateChartSetting('phaseMode', $event)">
+          <option value="wrapped">Wrapped (0–360°)</option>
+          <option value="unwrapped">Continuous</option>
+        </select>
+      </div>
+    }
     @if (domain === 'frequency') {
       <div class="col-12 col-sm-6 col-lg-3">
         <label class="form-label" [for]="tab.id + '_window'">Window</label>

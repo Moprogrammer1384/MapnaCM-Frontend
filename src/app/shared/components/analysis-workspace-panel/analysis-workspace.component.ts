@@ -19,6 +19,7 @@ import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
 export class AnalysisWorkspaceComponent implements OnDestroy {
   @Input() state?: AnalysisWorkspaceState;
   @Input() showSampleChart = false;
+  @Input() showMeasurementTitle = true;
   @Input() domain: AnalysisDomain = 'time';
   @Input() useAvailableDates = false;
   @Input() measurementChartContent?: TemplateRef<{ $implicit: AnalysisTab['measurements'][number]; tab: AnalysisTab }>;

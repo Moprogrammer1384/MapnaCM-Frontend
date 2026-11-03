@@ -2,14 +2,16 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { availabilityFixture } from 'src/testing/time-availability-fixture';
-import { TimeAvailabilityService } from './time-availability.service';
+import { TIME_AVAILABILITY_SOURCE } from '../../time-availability.service';
+import { VibrationTimeDomainAvailabilityApiService } from './vibration-time-domain-availability-api.service';
 
 describe('Time availability HTTP contract', () => {
-  let service: TimeAvailabilityService;
+  let service: VibrationTimeDomainAvailabilityApiService;
   let http: HttpTestingController;
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
-    service = TestBed.inject(TimeAvailabilityService); http = TestBed.inject(HttpTestingController);
+    service = TestBed.inject(VibrationTimeDomainAvailabilityApiService); http = TestBed.inject(HttpTestingController);
+    expect(TestBed.inject(TIME_AVAILABILITY_SOURCE)).toBe(service);
   });
   afterEach(() => http.verify());
 

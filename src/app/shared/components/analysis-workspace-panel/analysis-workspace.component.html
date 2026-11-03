@@ -4,7 +4,7 @@
     <app-closable-tabs [tabs]="workspaceTabs" [activeId]="workspaceActiveId" [preserveContent]="true"
       (activeIdChange)="activateTab($event)" (tabClose)="closeTab($event)">
       <ng-template let-tabId>
-        <app-analysis-panel *ngIf="tabById(tabId) as tab" [tab]="tab" [domain]="domain" [chartContent]="chartContent || (measurementChartContent || showSampleChart ? sampleChart : undefined)"
+        <app-analysis-panel *ngIf="tabById(tabId) as tab" [tab]="tab" [domain]="domain" [chartContent]="chartContent || (measurementChartContent || showSampleChart ? measurementCharts : undefined)"
           [useAvailableDates]="useAvailableDates"
           (dateTimeRangeApply)="applyDateTimeRange(tab.id, $event)"
           (chartSettingsChange)="updateChartSettings({ tabId: tab.id, chartSettings: $event })"
@@ -20,9 +20,11 @@
     </div>
   }
 </div>
-<ng-template #sampleChart let-tab>
+<ng-template #measurementCharts let-tab>
   @if (tab.awaitingDateRange) {
-    <div class="text-gray-500 text-center py-10" role="status">Select the date and time range above and press Apply to load measurement data.</div>
+    <div class="text-gray-500 text-center py-10" role="status">
+      {{ domain === 'bode' ? 'Select an event date and time above to load its measurement data.' : 'Select the date and time range above and press Apply to load measurement data.' }}
+    </div>
   } @else {
   <div class="d-flex justify-content-end mb-5">
     <button type="button" class="btn btn-sm btn-icon btn-active-light"
@@ -43,7 +45,9 @@
         @if (!$first && !twoChartsPerRow(tab)) {
           <div class="separator mb-7"></div>
         }
-        <h3 [id]="tab.id + '_chart_' + item.measurement.id" class="fs-5 fw-bold text-break mb-4">{{ item.component.name }} - {{ item.measurement.name }}@if (item.measurement.tag) {<span class="text-gray-500 fw-normal">{{ ' ' + item.measurement.tag }}</span>}</h3>
+        @if (showMeasurementTitle) {
+          <h3 [id]="tab.id + '_chart_' + item.measurement.id" class="fs-5 fw-bold text-break mb-4">{{ item.component.name }} - {{ item.measurement.name }}@if (item.measurement.tag) {<span class="text-gray-500 fw-normal">{{ ' ' + item.measurement.tag }}</span>}</h3>
+        }
         @if (measurementChartContent) {
           <ng-container [ngTemplateOutlet]="measurementChartContent"
             [ngTemplateOutletContext]="{ $implicit: item, tab: tab }"></ng-container>

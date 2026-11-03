@@ -1,0 +1,29 @@
+<div class="row g-3 mx-0">
+  <div class="col-12 col-md-4">
+    <label class="form-label" [for]="inputId + '_event_date'">Date</label>
+    <div class="input-group input-group-solid flex-nowrap">
+      <input #dateInput [id]="inputId + '_event_date'" type="text" class="form-control form-control-solid min-w-0"
+        placeholder="All dates" autocomplete="off" aria-haspopup="dialog" dir="ltr" [disabled]="disabled"
+        (click)="open()" (keydown.enter)="open(); $event.preventDefault()">
+      <button type="button" class="btn btn-icon btn-light" aria-label="All dates; clear date filter" title="Clear date filter"
+        [disabled]="disabled || !day" (click)="clearDate()">
+        <app-keenicon name="cross" class="fs-2"></app-keenicon>
+      </button>
+      <button type="button" class="btn btn-icon btn-light" aria-label="Choose event date" [disabled]="disabled" (click)="open()">
+        <app-keenicon name="calendar-8" class="fs-2"></app-keenicon>
+      </button>
+    </div>
+  </div>
+  <div class="col-12 col-md-8">
+    <label class="form-label" [for]="inputId + '_event_time'">Event time</label>
+    <select [id]="inputId + '_event_time'" class="form-select form-select-solid" data-control="select2" data-width="100%"
+      data-placeholder="Search and select an event time" aria-label="Event time" [disabled]="disabled || !visibleEvents.length"
+      [ngModel]="selectedEventId" [ngModelOptions]="{standalone: true}" (ngModelChange)="chooseEvent($event)">
+      <option [ngValue]="null" disabled></option>
+      @for (event of visibleEvents; track event.id) { <option [ngValue]="event.id">{{ event.label }}</option> }
+    </select>
+  </div>
+</div>
+@if (!disabled && day && !visibleEvents.length) {
+  <div class="text-gray-600 fs-7 mt-2" role="status">No events on this date.</div>
+}

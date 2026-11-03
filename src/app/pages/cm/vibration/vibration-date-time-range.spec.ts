@@ -1,4 +1,6 @@
 import { TIME_AVAILABILITY_SOURCE } from 'src/app/core/services/time-availability.service';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { availabilityFixtureSource } from 'src/testing/time-availability-fixture';
 import { TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -16,7 +18,7 @@ import { METRONIC_PRIMENG_CONFIG } from 'src/app/shared/components/metronic-prim
 import { AnalysisWorkspaceComponent } from 'src/app/shared/components/analysis-workspace-panel/analysis-workspace.component';
 import { VibrationModule } from './vibration.module';
 import { of } from 'rxjs';
-import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/vibration-api.service';
+import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 
 const execution: AssetTaxonomyExecution = {
   selection: { plantId: 1, unitId: 2, measurementIds: [6] },
@@ -34,6 +36,7 @@ const execution: AssetTaxonomyExecution = {
 describe('Combined date/time range on Vibration pages', () => {
   let harness: RouterTestingHarness;
   let state: VibrationSelectionService;
+  const rangePages = Object.keys(VIBRATION_PAGES).filter(page => page !== 'bode-analysis');
   const input = () => harness.routeNativeElement!.querySelector<HTMLInputElement>('app-date-time-range input')!;
   const picker = () => (input() as HTMLInputElement & { _flatpickr: Instance })._flatpickr;
   const detect = () => harness.fixture.detectChanges();
@@ -71,6 +74,7 @@ describe('Combined date/time range on Vibration pages', () => {
     await TestBed.configureTestingModule({
       imports: [NoopAnimationsModule],
       providers: [
+        provideHttpClient(), provideHttpClientTesting(),
         provideRouter([{ path: 'cm/vibration', loadChildren: () => VibrationModule }]),
         providePrimeNG(METRONIC_PRIMENG_CONFIG), { provide: TIME_AVAILABILITY_SOURCE, useValue: availabilityFixtureSource }, VibrationSelectionService,
         { provide: VIBRATION_DATA_SOURCE, useValue: { load: () => of({ id: 'dates', label: 'Date test',
@@ -81,10 +85,10 @@ describe('Combined date/time range on Vibration pages', () => {
     harness = await RouterTestingHarness.create();
   });
 
-  afterEach(() => harness.fixture.destroy());
+  afterEach(() => { TestBed.inject(HttpTestingController).verify(); harness.fixture.destroy(); });
 
-  it('uses one combined picker on all five real routes and retains independent times after navigation', async () => {
-    for (const [index, page] of Object.keys(VIBRATION_PAGES).entries()) {
+  it('uses one combined picker on range-based routes and retains independent times after navigation', async () => {
+    for (const [index, page] of rangePages.entries()) {
       await navigate(page); await createTab();
       const root = harness.routeNativeElement!;
       expect(state.activeTab()!.title).toBe('Analysis 1');
@@ -97,11 +101,53 @@ describe('Combined date/time range on Vibration pages', () => {
       await apply(String(index + 1), '07', '18', String(index + 10));
       expect(state.activeTab()!.timeRange).toEqual({ from: `0${index + 1}:07`, to: `18:${index + 10}` });
     }
-    for (const [index, page] of Object.keys(VIBRATION_PAGES).entries()) {
+    for (const [index, page] of rangePages.entries()) {
       await navigate(page);
       expect(input().value).toBe(`2026-10-01 0${index + 1}:07 to 2026-10-12 18:${index + 10}`);
       expect(document.querySelectorAll('.darp-date-time-calendar').length).toBe(1);
     }
+  });
+
+  it('uses the Bode availability and data APIs for single-click event selection', async () => {
+    await navigate('bode-analysis');
+    state.execute(execution); detect();
+    const http = TestBed.inject(HttpTestingController);
+    const fromUtc = '2026-10-01T04:30:00Z', toUtc = '2026-10-01T04:47:00Z';
+    const calendarWindow = { from: '2026-10-01', to: '2026-10-02' };
+    const availability = http.expectOne(request => request.url.endsWith('/BodeAnalysis/GetAvailability'));
+    expect(availability.request.params.getAll('MeasurementIds')).toEqual(['6']);
+    harness.fixture.ngZone!.run(() => availability.flush({ success: true, data: {
+      timeZone: 'Asia/Tehran', granularity: 'day', window: calendarWindow, hasDataOutsideWindow: false,
+      ranges: [calendarWindow], commonRanges: [calendarWindow], noDataMeasurementIds: [],
+      commonTimeRanges: [{ fromUtc, toUtc }],
+      measurements: [{ measurementId: 6, dataBounds: calendarWindow, ranges: [calendarWindow],
+        events: [{ eventType: 'Startup', fromUtc, toUtc }] }],
+    } }));
+    detect(); await harness.fixture.whenStable(); detect();
+    const root = harness.routeNativeElement!;
+    expect(root.querySelector('app-date-time-range')).toBeNull();
+    expect(root.querySelectorAll('app-vibration-event-picker').length).toBe(1);
+    const times = root.querySelector<HTMLSelectElement>('select[aria-label="Event time"]')!;
+    expect(times.disabled).toBeFalse();
+    expect(times.options[1].textContent).toContain('Startup');
+    window.jQuery(times).val(times.options[1].value).trigger('change');
+    detect(); await harness.fixture.whenStable(); detect();
+    const data = http.expectOne(request => request.url.endsWith('/BodeAnalysis/Get'));
+    expect(data.request.params.get('MeasurementId')).toBe('6');
+    expect(data.request.params.get('From')).toBe(new Date(fromUtc).toISOString());
+    expect(data.request.params.get('To')).toBe(new Date(toUtc).toISOString());
+    harness.fixture.ngZone!.run(() => data.flush({ success: true, data: { measurementId: 6, runs: [{
+      id: 1, eventType: 'Startup', startedAtUtc: fromUtc, endedAtUtc: toUtc,
+      quantity: 1, unit: 1, order: 1, originalSampleCount: 3,
+      points: [0, 1, 2].map(index => ({ sampledAtUtc: new Date(Date.parse(fromUtc) + index * 1000).toISOString(),
+        speedRpm: 1500 + index * 100, amplitudeRms: 20 + index, phaseDegrees: 150 + index * 10 })),
+    }] } }));
+    detect(); await harness.fixture.whenStable(); detect();
+    await harness.fixture.whenStable(); detect();
+    expect(state.activeTab()!.chartSettings!.quantity).toBe('displacement');
+    expect(root.querySelector('app-vibration-bode-chart h3')!.textContent).toContain('Bearing 1 - X');
+    expect(root.querySelector('[data-testid="bode-event-type"]')!.textContent).toContain('Startup');
+    expect(root.querySelector<HTMLSelectElement>('select[aria-label="Quantity"]')!.value).toBe('displacement');
   });
 
   it('saves dates and times together through existing workspace events and restores them on tab switches', async () => {

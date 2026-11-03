@@ -1,6 +1,6 @@
-export type AnalysisDomain = 'time' | 'frequency';
+export type AnalysisDomain = 'time' | 'frequency' | 'bode';
 export type VibrationQuantity = 'displacement' | 'velocity' | 'acceleration';
-export type AnalysisXAxis = 'time' | 'hz' | 'cpm' | 'order';
+export type AnalysisXAxis = 'time' | 'hz' | 'cpm' | 'order' | 'rpm';
 export type AmplitudeMode = 'rms' | '0p' | 'pp';
 export type VibrationUnit = 'µm' | 'mm' | 'mil' | 'in' | 'mm/s' | 'cm/s' | 'm/s' | 'in/s'
   | 'm/s²' | 'mm/s²' | 'g' | 'in/s²';
@@ -20,9 +20,14 @@ export interface AnalysisChartSettings {
   /** Constant reference speed for frequency-axis Order; never inferred from a spectrum peak. */
   readonly referenceRpm?: number;
   readonly window?: 'rectangular' | 'hann';
+  /** Bode phase display; original tracked phase remains unchanged. */
+  readonly phaseMode?: 'wrapped' | 'unwrapped';
 }
 
 export function defaultChartSettings(domain: AnalysisDomain = 'time'): AnalysisChartSettings {
+  if (domain === 'bode') {
+    return { quantity: 'velocity', unit: 'mm/s', xAxis: 'rpm', amplitude: 'rms', phaseMode: 'wrapped' };
+  }
   return { quantity: 'velocity', unit: 'mm/s', xAxis: domain === 'frequency' ? 'hz' : 'time', amplitude: '0p' };
 }
 

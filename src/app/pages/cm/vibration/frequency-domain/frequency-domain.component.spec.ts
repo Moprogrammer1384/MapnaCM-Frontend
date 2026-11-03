@@ -13,7 +13,7 @@ import { of } from 'rxjs';
 import { vibrationTestRecord } from 'src/testing/vibration-test-data';
 import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
 import { VIBRATION_UNITS } from 'src/app/core/models/analysis-chart-settings.model';
-import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/vibration-api.service';
+import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { prepareFrequencyDomainRecord, analyzeFrequencyDomain } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
 import { METRONIC_PRIMENG_CONFIG } from 'src/app/shared/components/metronic-primeng.config';

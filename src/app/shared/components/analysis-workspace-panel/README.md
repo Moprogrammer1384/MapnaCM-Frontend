@@ -39,7 +39,8 @@ notifications; consumers using `state` should not bind them back to the same
 methods. No feature-service provider is required by the workspace itself.
 
 All five Vibration pages inject the existing layout-owned
-`VibrationSelectionService` and pass it directly to the workspace:
+`VibrationSelectionService` and pass it directly to the workspace. For the
+Overview/Rotor Position preview, the basic integration is:
 
 ```html
 <app-analysis-workspace [state]="state" [showSampleChart]="true"></app-analysis-workspace>
@@ -77,6 +78,11 @@ headings and layout controls, pass a `measurementChartContent` template input
 with `showSampleChart` enabled. Its implicit value is the Measurement's executed
 display snapshot, with the active `AnalysisTab` available as `tab`:
 
+`showMeasurementTitle` defaults to true. A consumer that renders its own heading
+can disable it and keep the same `<tab.id>_chart_<measurement.id>` heading ID for
+the section's accessible name. Bode uses this to render its sensor heading/tag
+and opposite event-type badge together inside `app-vibration-bode-chart`.
+
 ```html
 <app-analysis-workspace [state]="state" [showSampleChart]="true"
   [measurementChartContent]="measurementChart"></app-analysis-workspace>
@@ -90,7 +96,8 @@ Frequency Domain uses the shared raw-data FFT chart in
 record as Time Domain, initializes quantity/unit from source metadata, and plots
 all one-sided FFT bins with unit/amplitude/axis conversions. The old ideal spectrum
 preview was removed. See [Frequency Domain methods and limitations](../../../core/services/vibration/frequency-domain/README.md).
-Overview, Bode Analysis and Rotor Position retain synthetic time previews.
+Overview and Rotor Position retain synthetic time previews. Bode Analysis supplies
+its own paired tracking charts through `measurementChartContent` and `domain="bode"`.
 
 ## Chart controls (2026-10-19)
 
@@ -101,8 +108,8 @@ and Unit from raw metadata, performs numerical conversions in a shared Web Worke
 and displays true full-record RMS/0p/pp as a separate scalar without rescaling the
 instantaneous waveform. See [processing and API-adapter documentation](../../../core/services/vibration/README.md).
 Frequency Domain also uses the raw record, with Fourier quantity conversion and
-RMS/0p/pp line amplitudes. The synthetic conventions below only apply to Overview,
-Bode Analysis and Rotor Position.
+RMS/0p/pp line amplitudes. The synthetic conventions below only apply to Overview
+and Rotor Position. Bode uses the separate tracking methods described below.
 
 The nested analysis panel includes four base Metronic Select2 controls, using the
 existing `SharedModule` directive (no extra plugin initialization):
@@ -224,6 +231,31 @@ Time/Frequency Domain provide their real measurement templates without enabling
 showSampleChart. New analyses wait for the existing picker Apply before fetching.
 DateTimeRangeComponent.applied confirms even an unchanged selection while its
 valueChange remains change-only. The state awaitingDateRange flag is in memory only.
-VibrationApiService uses Get alone and maps complete continuous raw points to the existing workers;
+VibrationTimeDomainApiService in core/services/vibration/api/ uses Get alone
+and maps complete continuous raw points to the existing workers;
 all raw chart transforms remain frontend operations. The prior Book1/adapter notes
 above are historical; see core/services/vibration/README.md for the current flow.
+
+## Bode tracking mode (2026-11-02)
+
+Bode uses the same workspace/state/tabs, per-measurement templates, retained
+panels, date/time Apply and chart-column preference. `domain="bode"` selects
+RPM/Hz and wrapped/continuous phase controls with RMS as default. Quantity is
+fixed to each incoming record's native quantity (including Displacement) because
+the source phase lead/lag convention is unknown; Time/Frequency quantity controls
+are unchanged. The first channel supplies shared controls; each chart labels and
+preserves its own source quantity. Unit and harmonic
+RMS/0p/pp transformations operate on loaded data without reloading it.
+
+New Bode tabs wait for a discrete acquisition. The user requested a single-date
+calendar and searchable Select2 event times, with immediate loading after one
+selection. No Bode range, hour/minute controls, Apply or inline event list is shown.
+Date is an optional filter: the initial list includes all dates and a cross icon
+clears a chosen day. Selecting an event does not activate a date filter. The
+availability wrapper loads and caches complete common history using existing
+bounded API windows, so older years are included in Event time as well.
+The existing availability wrapper caches actual common Bode events and colors
+available dates blue. Returning tabs retain their values. Time/Frequency retain
+their existing range picker and Apply workflow.
+The standalone Bode chart displays amplitude above phase with linked cursor/zoom.
+See [Bode source and methods](../../../core/services/vibration/bode-analysis/README.md).

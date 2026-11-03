@@ -1,7 +1,7 @@
 import { TIME_AVAILABILITY_SOURCE } from 'src/app/core/services/time-availability.service';
 import { availabilityFixtureSource } from 'src/testing/time-availability-fixture';
 import { of } from 'rxjs';
-import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/vibration-api.service';
+import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';

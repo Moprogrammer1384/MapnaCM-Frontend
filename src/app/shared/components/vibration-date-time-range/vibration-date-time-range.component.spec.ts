@@ -114,4 +114,52 @@ describe('Vibration calendar: disabled until the API proves a day has data', () 
     expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeNull();
     expect(fixture.nativeElement.textContent).toContain('No common dates');
   });
+
+  it('loads older event metadata in bounded windows so All dates includes history beyond the initial year', async () => {
+    const events = [
+      { id: 'old', label: 'Startup · 2024-10-04 08:00:00', from: '2024-10-04T08:00:00', to: '2024-10-04T08:17:00' },
+      { id: 'recent', label: 'Trip · 2026-10-18 18:00:00', from: '2026-10-18T18:00:00', to: '2026-10-18T18:10:00' },
+    ];
+    getAvailability.and.callFake((_ids: readonly number[], window?: {from: string; to: string}) => {
+      const discovered = window ?? { from: '2025-11-01', to: '2026-11-01' };
+      const availableTimes = events.filter(event => event.from.slice(0, 10) >= discovered.from && event.from.slice(0, 10) < discovered.to);
+      return of({ ...result(), window: discovered, availableTimes,
+        measurements: [1, 4].map(measurementId => ({ measurementId, dataBounds: { from: '2024-10-01', to: '2026-11-01' }, ranges: [] })) });
+    });
+    fixture = TestBed.createComponent(VibrationDateTimeRangeComponent);
+    fixture.componentRef.setInput('inputId', 'all-event-dates');
+    fixture.componentRef.setInput('measurementIds', [1, 4]); fixture.componentRef.setInput('value', value);
+    fixture.componentRef.setInput('eventSelection', true); await settle();
+    expect(getAvailability).toHaveBeenCalledTimes(3);
+    expect(fixture.componentInstance.availableTimes!.map(event => event.id)).toEqual(['old', 'recent']);
+    expect(fixture.nativeElement.querySelectorAll('select option').length).toBe(3);
+    for (const call of getAvailability.calls.all().slice(1)) {
+      const requested = call.args[1];
+      expect((Date.parse(requested.to) - Date.parse(requested.from)) / 86400000).toBeLessThanOrEqual(366);
+    }
+    fixture.componentInstance.showWindow({ from: '2024-10-01', to: '2024-11-01' });
+    expect(getAvailability).toHaveBeenCalledTimes(3);
+    const selected = spyOn(fixture.componentInstance.applied, 'emit');
+    const select = fixture.nativeElement.querySelector('select') as HTMLSelectElement;
+    select.selectedIndex = 1; select.dispatchEvent(new Event('change', { bubbles: true })); await settle();
+    expect(selected).toHaveBeenCalledOnceWith({ from: events[0].from, to: events[0].to });
+  });
+
+  it('blocks partial event history on failure, retries the failed window and cancels pending history on destroy', async () => {
+    const initial = { ...result(), availableTimes: [], window: { from: '2025-11-01', to: '2026-11-01' },
+      measurements: [1, 4].map(measurementId => ({ measurementId, dataBounds: { from: '2025-10-01', to: '2026-11-01' }, ranges: [] })) };
+    const pending = new Subject<TimeAvailability>();
+    getAvailability.and.returnValues(of(initial), pending);
+    fixture = TestBed.createComponent(VibrationDateTimeRangeComponent);
+    fixture.componentRef.setInput('inputId', 'event-history-error'); fixture.componentRef.setInput('measurementIds', [1, 4]);
+    fixture.componentRef.setInput('value', value); fixture.componentRef.setInput('eventSelection', true); await settle();
+    expect(fixture.componentInstance.loading).toBeTrue();
+    expect(fixture.nativeElement.querySelector('select').disabled).toBeTrue();
+    fixture.ngZone!.run(() => pending.error(new Error('History unavailable'))); await settle();
+    expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain('History unavailable');
+    const retry = new Subject<TimeAvailability>(); getAvailability.and.returnValue(retry);
+    fixture.nativeElement.querySelector('.alert button').click(); await settle();
+    expect(getAvailability.calls.mostRecent().args[1]).toEqual({ from: '2025-10-01', to: '2025-11-01' });
+    expect(retry.observed).toBeTrue(); fixture.destroy(); expect(retry.observed).toBeFalse();
+  });
 });

@@ -15,6 +15,7 @@ import { DataTableComponent } from '../../shared/components/data-table/data-tabl
 import { FormModalComponent } from '../../shared/components/form-modal/form-modal.component';
 import { FiniteNumberDirective, TrimmedRequiredDirective } from '../../shared/components/form-validation/form-validators.directive';
 import { RequestFeedbackComponent } from '../../shared/components/request-state/request-feedback.component';
+import { NumberFormatPipe } from '../../shared/pipes/number-format.pipe';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { RequestFeedbackComponent } from '../../shared/components/request-state/
     PaginatorModule,
     SelectModule,
     TableModule,
+    NumberFormatPipe,
   ],
   exports: [
     KeeniconComponent,
@@ -49,7 +51,8 @@ import { RequestFeedbackComponent } from '../../shared/components/request-state/
     FormModalComponent,
     FiniteNumberDirective,
     TrimmedRequiredDirective,
-    RequestFeedbackComponent
+    RequestFeedbackComponent,
+    NumberFormatPipe
   ]
 })
 export class SharedModule {

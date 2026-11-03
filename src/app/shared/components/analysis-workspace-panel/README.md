@@ -1,6 +1,6 @@
 # DARP shared analysis workspace panel
 
-The workspace component, its tests and the sample chart live in
+The workspace component and its panel tests live in
 `shared/components/analysis-workspace-panel/`. The nested `analysis-panel/`
 folder contains `AnalysisPanelComponent` and its template.
 
@@ -8,8 +8,8 @@ folder contains `AnalysisPanelComponent` and its template.
 components for analysis screens in any module. They use shared `AnalysisTab`,
 `AnalysisDateRange`, `AnalysisTimeRange` and their change-event types from
 `core/models/analysis-panel.model.ts` and do not inject feature services, read
-routes or own storage. A consumer can supply a chart or explicitly enable the
-existing Vibration sample preview.
+routes or own storage. Consumers supply their own chart templates; the workspace
+does not generate data or provide a default chart.
 
 The workspace accepts `title`, `tabs` and `activeId`. It emits
 `selectMeasurements`, `activeIdChange`, `tabClose`, `dateRangeChange` (containing
@@ -40,25 +40,27 @@ methods. No feature-service provider is required by the workspace itself.
 
 All five Vibration pages inject the existing layout-owned
 `VibrationSelectionService` and pass it directly to the workspace. For the
-Overview/Rotor Position preview, the basic integration is:
+Overview/Rotor Position pages, the basic integration is:
 
 ```html
-<app-analysis-workspace [state]="state" [showSampleChart]="true"></app-analysis-workspace>
+<app-analysis-workspace [state]="state"></app-analysis-workspace>
 ```
 
-`showSampleChart` defaults to false. When enabled, the workspace supplies the
-Time Domain sample template and `VibrationSampleChartComponent` from this folder.
-It renders one independent sample chart per selected Measurement, titled with
+Overview and Rotor Position have no chart content. Their synthetic chart and data
+generator were removed on 2026-11-03; dedicated charts are deferred to future tasks.
+Their existing selection, tabs, date/time and settings UI remains available.
+
+When a consumer supplies `measurementChartContent`, the workspace renders one
+independent chart per selected Measurement, titled with
 its `Component - Measurement` names followed by the Measurement tag when present
 (for example `Bearing 1 - X vi508`). Tags use Metronic's gray-500 text color and
-normal font weight to distinguish them from the bold names. The hierarchy path, Sample data badge and
-waveform description are not repeated above charts.
+normal font weight to distinguish them from the bold names.
 Each chart has its own heading ID and zoom state. Visited Analysis tabs retain
 their charts, loaded data, worker results and calendar instances while inactive.
 Switching tabs does not repeat data/availability requests or reset zoom. Closing
 a tab or destroying its workspace disposes its resources. This cache is in memory
 for the mounted workspace; route changes and browser refreshes can load data again.
-An icon button above the sample charts toggles between one chart per row (the
+An icon button above the supplied measurement charts toggles between one chart per row (the
 default) and two equal columns at widths of 768px and above. Smaller screens
 remain single-column. With zero or one Measurement, the button is disabled and
 the chart uses full width without changing the saved choice. The root-provided
@@ -70,12 +72,12 @@ defaults to one column; blocked storage falls back to shared in-memory state.
 Changing layout preserves chart instances and zoom. This browser preference is
 separate from the route-owned tabs/measurement/date/time state, which stays in memory.
 Theme changes apply in place and also retain the active tab, ranges, chart
-instances and zoom; both sample previews opt into merged ECharts option updates.
-A consumer-projected chart template always takes precedence over the sample.
+instances and zoom through the chart components' merged ECharts option updates.
+A consumer-projected full chart template takes precedence over the per-measurement layout.
 
 To supply a page-specific chart for each Measurement while keeping these shared
-headings and layout controls, pass a `measurementChartContent` template input
-with `showSampleChart` enabled. Its implicit value is the Measurement's executed
+headings and layout controls, pass a `measurementChartContent` template input.
+Its implicit value is the Measurement's executed
 display snapshot, with the active `AnalysisTab` available as `tab`:
 
 `showMeasurementTitle` defaults to true. A consumer that renders its own heading
@@ -84,7 +86,7 @@ the section's accessible name. Bode uses this to render its sensor heading/tag
 and opposite event-type badge together inside `app-vibration-bode-chart`.
 
 ```html
-<app-analysis-workspace [state]="state" [showSampleChart]="true"
+<app-analysis-workspace [state]="state"
   [measurementChartContent]="measurementChart"></app-analysis-workspace>
 <ng-template #measurementChart let-measurement let-tab="tab">
   <!-- Render one chart using measurement and tab.dateRange. -->
@@ -92,24 +94,22 @@ and opposite event-type badge together inside `app-vibration-bode-chart`.
 ```
 
 Frequency Domain uses the shared raw-data FFT chart in
-`shared/components/vibration-frequency-domain-chart/`. It loads the same Book1
-record as Time Domain, initializes quantity/unit from source metadata, and plots
+`shared/components/vibration-frequency-domain-chart/`. It loads measurement records
+through the same API as Time Domain, initializes quantity/unit from source metadata, and plots
 all one-sided FFT bins with unit/amplitude/axis conversions. The old ideal spectrum
 preview was removed. See [Frequency Domain methods and limitations](../../../core/services/vibration/frequency-domain/README.md).
-Overview and Rotor Position retain synthetic time previews. Bode Analysis supplies
-its own paired tracking charts through `measurementChartContent` and `domain="bode"`.
+Bode Analysis supplies its own paired tracking charts through
+`measurementChartContent` and `domain="bode"`.
 
 ## Chart controls (2026-10-19)
 
-**Time Domain update (2026-10-21):** that page now provides the reusable
-`vibration-time-domain-chart` template, loading all Book1 X-direction raw samples
-through the replaceable `RAW_VIBRATION_DATA_SOURCE` adapter. It initializes Quantity
-and Unit from raw metadata, performs numerical conversions in a shared Web Worker,
+Time Domain provides the reusable `vibration-time-domain-chart` template, loading
+measurement records through `VIBRATION_DATA_SOURCE` / `VibrationTimeDomainApiService`.
+It initializes Quantity and Unit from source metadata, performs raw-record numerical conversions in a shared Web Worker,
 and displays true full-record RMS/0p/pp as a separate scalar without rescaling the
 instantaneous waveform. See [processing and API-adapter documentation](../../../core/services/vibration/README.md).
 Frequency Domain also uses the raw record, with Fourier quantity conversion and
-RMS/0p/pp line amplitudes. The synthetic conventions below only apply to Overview
-and Rotor Position. Bode uses the separate tracking methods described below.
+RMS/0p/pp line amplitudes. Bode uses the separate tracking methods described below.
 
 The nested analysis panel includes four base Metronic Select2 controls, using the
 existing `SharedModule` directive (no extra plugin initialization):
@@ -118,12 +118,12 @@ existing `SharedModule` directive (no extra plugin initialization):
 - Unit (2026-10-21): directly after Quantity, with compatible choices only:
   Displacement: µm (default), mm, mil, in; Velocity: mm/s (default), cm/s,
   m/s, in/s; Acceleration: m/s² (default), mm/s², g, in/s². Changing Quantity
-  selects its default unit. Unit changes convert both previews' actual values,
+  selects its default unit. Unit changes convert compatible chart values,
   Y-axis labels and tooltips, retaining chart instances and zoom.
 - X axis: Time (seconds) for `domain="time"` (the default); Hz, CPM, Order for
   `domain="frequency"`. Frequency Domain explicitly sets this input.
 - Amplitude: RMS, 0p (zero-to-peak), pp (peak-to-peak). Raw Time/Frequency tabs
-  initialize Quantity/Unit from source metadata. Synthetic previews default to Velocity.
+  initialize Quantity/Unit from source metadata.
 - Frequency-only Window: Rectangular (default) or Hann, with coherent-gain correction.
 - Frequency Order adds an accessible reference RPM input, independently retained
   per tab; a positive finite value is required. No synthetic speed is prefilled.
@@ -145,16 +145,12 @@ tab/route along with the other settings. Conversion factors use 1 in = 25.4 mm,
 
 All charts update point values, axes and tooltips in place for every
 choice. Each measurement retains its independent chart instance and zoom.
-The synthetic base velocity is `2 sin(2π10t) + sin(2π25t)` mm/s, sampled at 250 Hz
-over two seconds. Displacement integrates each harmonic (including its phase)
-and converts mm to µm; acceleration differentiates and converts mm/s² to m/s².
-Selected units scale those default-unit values without rounding the data;
-`analysis-number-format.ts` formats displayed measurements to two decimal places
+`shared/pipes/number-format.pipe.ts` provides the general `numberFormat` pipe
+and its `formatNumber` callback helper to format displayed numbers to two decimal places
 in tooltips, numeric axes, pointer labels and zoom details. The raw Time Domain
 chart also uses it for amplitude annotations. Source/calculated values, chart
 coordinates, reference positions and bounds retain full numerical precision;
 formatted strings never feed back into calculations. Sample counts stay integers.
-The legacy synthetic time preview scales its harmonics by `1/√2`, `1` or `2`.
 The raw FFT chart uses one-sided line amplitude conventions with explicit
 DC/Nyquist exceptions, as documented in its processing README. Raw Time Domain
 continues to show the full-record statistic while preserving waveform samples.
@@ -162,8 +158,7 @@ continues to show the full-record statistic while preserving waveform samples.
 CPM is Hz * 60; Order is Hz * 60 / the user-entered reference RPM. Missing
 or invalid RPM produces validation; it is never inferred from a spectral peak.
 The axis is constant-reference normalization, not variable-speed order tracking.
-Both raw charts pass measurement/date/time to the source adapter; Book1 remains
-a shared fixture that does not filter by those dates. Spectral Min/Max are line
+Both raw charts pass measurement/date/time to the source adapter. Spectral Min/Max are line
 amplitude extrema, while Time Domain Min/Max are instantaneous waveform extrema.
 
 `../closable-tabs/` is the reusable PrimeNG Tabs adapter. The consumer supplies
@@ -189,7 +184,7 @@ charts below. Presentation uses Metronic utilities and semantic headings.
 Full snapshot metadata remains available to consumers.
 The drawer and execution builder enforce selection within a single Asset.
 
-`../date-time-range/` supplies the combined picker for all five Vibration pages.
+`../date-time-range/` supplies the combined picker for the four range-based Vibration pages.
 A single input opens the installed Flatpickr 4.6.13 range calendar with independent
 Start/End hour/minute fields and Apply/Cancel in its Metronic footer. Select both
 dates (the same day twice for a same-day range), then adjust 24-hour times. Apply
@@ -214,8 +209,7 @@ creates a new snapshot and activates it. Reload/logout clears that feature state
 page, starting at 1. Returning to a page continues its own counter, including
 after tabs are closed. Internal tab IDs use a separate sequence and remain unique
 across pages. Both counters share the layout service's existing in-memory lifetime.
-New tabs default to `00:00` through `23:59`. The synthetic previews remain independent
-of the selected dates/times/measurements; no API or browser storage is added.
+New range-based tabs default to `00:00` through `23:59`.
 Other modules can supply their own state and charts without a Vibration provider.
 
 References used:
@@ -227,19 +221,19 @@ References used:
 
 ## API integration update (2026-10-24)
 
-Time/Frequency Domain provide their real measurement templates without enabling
-showSampleChart. New analyses wait for the existing picker Apply before fetching.
+Time/Frequency Domain provide their real measurement templates.
+New analyses wait for the existing picker Apply before fetching.
 DateTimeRangeComponent.applied confirms even an unchanged selection while its
 valueChange remains change-only. The state awaitingDateRange flag is in memory only.
 VibrationTimeDomainApiService in core/services/vibration/api/ uses Get alone
 and maps complete continuous raw points to the existing workers;
-all raw chart transforms remain frontend operations. The prior Book1/adapter notes
-above are historical; see core/services/vibration/README.md for the current flow.
+all raw chart transforms remain frontend operations.
+See core/services/vibration/README.md for the current flow.
 
 ## Bode tracking mode (2026-11-02)
 
 Bode uses the same workspace/state/tabs, per-measurement templates, retained
-panels, date/time Apply and chart-column preference. `domain="bode"` selects
+panels, event selection and chart-column preference. `domain="bode"` selects
 RPM/Hz and wrapped/continuous phase controls with RMS as default. Quantity is
 fixed to each incoming record's native quantity (including Displacement) because
 the source phase lead/lag convention is unknown; Time/Frequency quantity controls

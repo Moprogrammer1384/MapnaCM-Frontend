@@ -103,7 +103,6 @@ describe('Vibration measurement/date selection → native HTTP data → existing
       charts[0].dispatchAction({ type: 'dataZoom', start: 20, end: 70 });
       await settle(); http.expectNone(() => true);
       expect(echarts.getInstanceByDom(elements[0])).toBe(charts[0]);
-      expect(root().querySelector('app-vibration-sample-chart')).toBeNull();
     });
 
     it(`retains ${domain} tab data, calendars, transforms and zoom without repeating HTTP; closes release charts`, async () => {

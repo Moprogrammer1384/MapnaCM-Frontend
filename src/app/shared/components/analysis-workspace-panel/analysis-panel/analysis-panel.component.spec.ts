@@ -80,32 +80,16 @@ describe('Analysis panel Select2 chart controls', () => {
   });
   afterEach(() => harness.fixture.destroy());
 
-  it('limits the legacy time preview to Time and updates real waveform values for all quantities and amplitude modes', async () => {
-    await navigate('overview'); await createTab();
-    expect(root().querySelectorAll('select').length).toBe(4);
-    expect(Array.from(select('X axis').options, option => option.value)).toEqual(['time']);
-    const instance = chart();
-    for (const quantity of ['displacement', 'velocity', 'acceleration'] as VibrationQuantity[]) {
-      await change('Quantity', quantity);
-      for (const mode of ['rms', '0p', 'pp'] as AmplitudeMode[]) {
-        await change('Amplitude', mode);
-        const options = snapshot();
-        const time = 1 / 250;
-        const phase1 = 2 * Math.PI * 10 * time;
-        const phase2 = 2 * Math.PI * 25 * time;
-        const peak = quantity === 'displacement'
-          ? -2000 / (2 * Math.PI * 10) * Math.cos(phase1) - 1000 / (2 * Math.PI * 25) * Math.cos(phase2)
-          : quantity === 'acceleration'
-            ? 2 * (2 * Math.PI * 10) / 1000 * Math.cos(phase1) + (2 * Math.PI * 25) / 1000 * Math.cos(phase2)
-            : 2 * Math.sin(phase1) + Math.sin(phase2);
-        expect(options.series.length).toBe(1);
-        expect(options.series[0].data.length).toBe(501);
-        expect(options.series[0].data[1][1]).toBeCloseTo(peak * (mode === 'rms' ? 1 / Math.sqrt(2) : mode === 'pp' ? 2 : 1), 5);
-        expect(options.yAxis[0].name).toContain(quantity === 'displacement' ? 'µm' : quantity === 'acceleration' ? 'm/s²' : 'mm/s');
-        expect(options.yAxis[0].name).toContain(mode === 'rms' ? 'RMS' : mode);
-        expect(options.xAxis[0].name).toBe('Time (s)');
-        expect(chart()).toBe(instance);
-      }
+  it('retains the Overview and Rotor Position workspaces without rendering charts or chart layout controls', async () => {
+    for (const page of ['overview', 'rotor-position']) {
+      await navigate(page); await createTab();
+      expect(root().querySelector('app-analysis-panel')).not.toBeNull();
+      expect(root().textContent).toContain('1 item(s)');
+      expect(root().querySelectorAll('select').length).toBe(4);
+      expect(Array.from(select('X axis').options, option => option.value)).toEqual(['time']);
+      expect(root().querySelector('app-apache-echarts')).toBeNull();
+      expect(root().querySelector('[_echarts_instance_]')).toBeNull();
+      expect(root().querySelector('button[aria-label="Two charts per row"]')).toBeNull();
     }
   });
 
@@ -160,42 +144,36 @@ describe('Analysis panel Select2 chart controls', () => {
     expect(select('Unit').value).toBe('g');
   });
 
-  it('offers only compatible units and converts time/spectrum values, axes and tooltips for every unit', async () => {
-    const cases: { quantity: VibrationQuantity; units: [VibrationUnit, number][]; spectrum: number; time: number }[] = [
+  it('offers only compatible units and converts spectrum values, axes and tooltips for every unit', async () => {
+    const cases: { quantity: VibrationQuantity; units: [VibrationUnit, number][]; spectrum: number }[] = [
       { quantity: 'displacement', units: [['µm', 1], ['mm', 0.001], ['mil', 1 / 25.4], ['in', 1 / 25400]],
-        spectrum: 2000 / (2 * Math.PI * 10),
-        time: -2000 / (2 * Math.PI * 10) * Math.cos(2 * Math.PI * 10 / 250)
-          - 1000 / (2 * Math.PI * 25) * Math.cos(2 * Math.PI * 25 / 250) },
+        spectrum: 2000 / (2 * Math.PI * 10) },
       { quantity: 'velocity', units: [['mm/s', 1], ['cm/s', 0.1], ['m/s', 0.001], ['in/s', 1 / 25.4]],
-        spectrum: 2, time: 2 * Math.sin(2 * Math.PI * 10 / 250) + Math.sin(2 * Math.PI * 25 / 250) },
+        spectrum: 2 },
       { quantity: 'acceleration', units: [['m/s²', 1], ['mm/s²', 1000], ['g', 1 / 9.80665], ['in/s²', 1 / 0.0254]],
-        spectrum: 2 * (2 * Math.PI * 10) / 1000,
-        time: 2 * (2 * Math.PI * 10) / 1000 * Math.cos(2 * Math.PI * 10 / 250)
-          + (2 * Math.PI * 25) / 1000 * Math.cos(2 * Math.PI * 25 / 250) },
+        spectrum: 2 * (2 * Math.PI * 10) / 1000 },
     ];
-    for (const page of ['overview', 'frequency-domain']) {
-      await navigate(page); await createTab();
-      const instance = chart();
-      for (const item of cases) {
-        await change('Quantity', item.quantity);
-        expect(Array.from(select('Unit').options, option => option.value)).toEqual(item.units.map(([unit]) => unit));
-        expect(select('Unit').value).toBe(item.units[0][0]);
-        for (const [unit, scale] of item.units) {
-          await change('Unit', unit);
-          const options = snapshot();
-          const point = options.series[0].data[page === 'overview' ? 1 : 20];
-          expect(point[1]).toBeCloseTo((page === 'overview' ? item.time : item.spectrum) * scale, 10);
-          expect(options.yAxis[0].name).toContain(`(${unit} 0p)`);
-          expect(options.tooltip[0].formatter({ value: point })).toContain(` ${unit} 0p`);
-          const displayedValues = options.tooltip[0].formatter({ value: point }).split('<br/>');
-          expect(displayedValues[0].split(' ')[0]).toMatch(/^-?\d+\.\d{2}$/);
-          expect(displayedValues[1]).toMatch(/: -?\d+\.\d{2} /);
-          expect(options.xAxis[0].axisLabel.formatter(1.23456789)).toBe('1.23');
-          expect(options.yAxis[0].axisLabel.formatter(-0.00049)).toBe('0.00');
-          expect(options.dataZoom[1].labelFormatter!(12.3456789)).toBe('12.35');
-          expect(state.activeTab()!.chartSettings!.unit).toBe(unit);
-          expect(chart()).toBe(instance);
-        }
+    await navigate('frequency-domain'); await createTab();
+    const instance = chart();
+    for (const item of cases) {
+      await change('Quantity', item.quantity);
+      expect(Array.from(select('Unit').options, option => option.value)).toEqual(item.units.map(([unit]) => unit));
+      expect(select('Unit').value).toBe(item.units[0][0]);
+      for (const [unit, scale] of item.units) {
+        await change('Unit', unit);
+        const options = snapshot();
+        const point = options.series[0].data[20];
+        expect(point[1]).toBeCloseTo(item.spectrum * scale, 10);
+        expect(options.yAxis[0].name).toContain(`(${unit} 0p)`);
+        expect(options.tooltip[0].formatter({ value: point })).toContain(` ${unit} 0p`);
+        const displayedValues = options.tooltip[0].formatter({ value: point }).split('<br/>');
+        expect(displayedValues[0].split(' ')[0]).toMatch(/^-?\d+\.\d{2}$/);
+        expect(displayedValues[1]).toMatch(/: -?\d+\.\d{2} /);
+        expect(options.xAxis[0].axisLabel.formatter(1.23456789)).toBe('1.23');
+        expect(options.yAxis[0].axisLabel.formatter(-0.00049)).toBe('0.00');
+        expect(options.dataZoom[1].labelFormatter!(12.3456789)).toBe('12.35');
+        expect(state.activeTab()!.chartSettings!.unit).toBe(unit);
+        expect(chart()).toBe(instance);
       }
     }
   });
@@ -229,7 +207,7 @@ describe('Analysis panel Select2 chart controls', () => {
   });
 
   it('supports visible Select2 selection, accessible labels and cleanup of open dropdowns and charts', async () => {
-    await navigate('overview'); await createTab();
+    await navigate('frequency-domain'); await createTab();
     const combobox = root().querySelector<HTMLElement>('[role="combobox"][aria-label="Quantity"]')!;
     expect(combobox.tabIndex).toBe(0);
     window.jQuery(combobox).trigger(window.jQuery.Event('mousedown', { which: 1 })); await settle();

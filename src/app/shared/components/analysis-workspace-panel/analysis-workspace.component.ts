@@ -6,19 +6,17 @@ import { AnalysisDomain } from 'src/app/core/models/analysis-chart-settings.mode
 import { ChartLayoutPreferenceService } from 'src/app/core/services/chart-layout-preference.service';
 import { ClosableTabsComponent } from '../closable-tabs/closable-tabs.component';
 import { AnalysisPanelComponent } from './analysis-panel/analysis-panel.component';
-import { VibrationSampleChartComponent } from './vibration-sample-chart.component';
 import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
 
 @Component({
   selector: 'app-analysis-workspace',
   standalone: true,
-  imports: [CommonModule, SharedModule, ClosableTabsComponent, AnalysisPanelComponent, VibrationSampleChartComponent],
+  imports: [CommonModule, SharedModule, ClosableTabsComponent, AnalysisPanelComponent],
   templateUrl: './analysis-workspace.component.html',
   host: { class: 'd-block mw-100' },
 })
 export class AnalysisWorkspaceComponent implements OnDestroy {
   @Input() state?: AnalysisWorkspaceState;
-  @Input() showSampleChart = false;
   @Input() showMeasurementTitle = true;
   @Input() domain: AnalysisDomain = 'time';
   @Input() useAvailableDates = false;

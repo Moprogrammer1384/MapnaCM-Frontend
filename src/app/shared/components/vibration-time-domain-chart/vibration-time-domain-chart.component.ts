@@ -9,13 +9,13 @@ import { TimeDomainAnalysisService, TimeDomainAnalysisSession } from 'src/app/co
 import { VIBRATION_DATA_SOURCE, isVibrationDisplay, vibrationError } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { VibrationDisplayRecord } from 'src/app/core/models/vibration-api.model';
 import { displayTimeDomain } from 'src/app/core/services/vibration/time-domain/time-domain-display';
-import { formatAnalysisNumber } from '../analysis-workspace-panel/analysis-number-format';
+import { formatNumber, NumberFormatPipe } from '../../pipes/number-format.pipe';
 
 /** Raw time-record rendering. Source/API integration and all signal math remain in core/services/vibration. */
 @Component({
   selector: 'app-vibration-time-domain-chart',
   standalone: true,
-  imports: [CommonModule, ApacheEchartsComponent],
+  imports: [CommonModule, ApacheEchartsComponent, NumberFormatPipe],
   templateUrl: './vibration-time-domain-chart.component.html',
   host: { class: 'd-block mw-100', '[attr.aria-busy]': 'loading' },
 })
@@ -32,7 +32,6 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
   analysisNotice = '';
   analysis?: TimeDomainAnalysis;
   chartOptions?: EChartsOption;
-  readonly formatNumber = formatAnalysisNumber;
   private readonly source = inject(VIBRATION_DATA_SOURCE);
   private readonly processor = inject(TimeDomainAnalysisService);
   private readonly zone = inject(NgZone);
@@ -158,7 +157,7 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
       silent: true, animation: false, symbol: ['none', 'none'],
       lineStyle: { color: token('warning'), type: 'dashed', width: 1 },
       label: { show: true, position: 'insideEndBottom', color: token('body-color'), backgroundColor: token('body-bg'),
-        padding: [2, 4], formatter: `${AMPLITUDE_LABELS[result.amplitudeMode]}: ${formatAnalysisNumber(result.amplitude)} ${result.unit}` },
+        padding: [2, 4], formatter: `${AMPLITUDE_LABELS[result.amplitudeMode]}: ${formatNumber(result.amplitude)} ${result.unit}` },
       data: [
         { yAxis: result.amplitudeReference.lower, label: { show: false } },
         { yAxis: result.amplitudeReference.upper },
@@ -171,8 +170,8 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
       const point = Array.isArray(params) ? params[0] : params;
       if (!Array.isArray(point.value)) { return ''; }
       const quantity = VIBRATION_QUANTITIES[result.quantity].label;
-      return `${formatAnalysisNumber(Number(point.value[0]))} s<br/>${quantity}: ${formatAnalysisNumber(Number(point.value[1]))} ${result.unit}`
-        + `<br/>${AMPLITUDE_LABELS[result.amplitudeMode]}: ${formatAnalysisNumber(result.amplitude)} ${result.unit}`;
+      return `${formatNumber(Number(point.value[0]))} s<br/>${quantity}: ${formatNumber(Number(point.value[1]))} ${result.unit}`
+        + `<br/>${AMPLITUDE_LABELS[result.amplitudeMode]}: ${formatNumber(result.amplitude)} ${result.unit}`;
     };
   }
 
@@ -195,17 +194,17 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
       grid: { left: 20, right: 24, top: 45, bottom: 75, containLabel: true },
       xAxis: { type: 'value', name: 'Time (s)', nameLocation: 'middle', nameGap: 30,
         min: result.time[0], max: result.time[result.time.length - 1], splitLine: { show: false },
-        axisLabel: { formatter: formatAnalysisNumber },
-        axisPointer: { label: { formatter: params => formatAnalysisNumber(Number(params.value)) } },
+        axisLabel: { formatter: formatNumber },
+        axisPointer: { label: { formatter: params => formatNumber(Number(params.value)) } },
         axisLine: { lineStyle: { color: token('gray-500') } } },
       yAxis: { type: 'value', name: label, scale: true, ...this.amplitudeAxisRange(result), nameTextStyle: { align: 'left' },
-        axisLabel: { formatter: formatAnalysisNumber },
-        axisPointer: { label: { formatter: params => formatAnalysisNumber(Number(params.value)) } },
+        axisLabel: { formatter: formatNumber },
+        axisPointer: { label: { formatter: params => formatNumber(Number(params.value)) } },
         splitLine: { lineStyle: { color: token('border-color') } } },
       dataZoom: [
         { type: 'inside', xAxisIndex: 0 },
         { type: 'slider', xAxisIndex: 0, height: 20, bottom: 10,
-          labelFormatter: formatAnalysisNumber,
+          labelFormatter: formatNumber,
           borderColor: token('border-color'), backgroundColor: token('gray-100'), fillerColor: token('primary-light'),
           textStyle: { color: token('gray-600') }, handleStyle: { color: token('primary'), borderColor: token('primary') },
           moveHandleStyle: { color: token('primary') },

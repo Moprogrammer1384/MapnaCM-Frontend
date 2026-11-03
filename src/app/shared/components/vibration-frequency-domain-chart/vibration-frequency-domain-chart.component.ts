@@ -8,13 +8,13 @@ import { RawVibrationRecord } from 'src/app/core/models/vibration-data.model';
 import { FrequencyDomainAnalysis } from 'src/app/core/models/frequency-domain.model';
 import { FrequencyDomainAnalysisService, FrequencyDomainAnalysisSession } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis.service';
 import { VIBRATION_DATA_SOURCE, isVibrationDisplay, vibrationError } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
-import { formatAnalysisNumber } from '../analysis-workspace-panel/analysis-number-format';
+import { formatNumber, NumberFormatPipe } from '../../pipes/number-format.pipe';
 
 /** Raw-record FFT rendering. Source/API integration and all signal math remain in core/services/vibration. */
 @Component({
   selector: 'app-vibration-frequency-domain-chart',
   standalone: true,
-  imports: [CommonModule, ApacheEchartsComponent],
+  imports: [CommonModule, ApacheEchartsComponent, NumberFormatPipe],
   templateUrl: './vibration-frequency-domain-chart.component.html',
   host: { class: 'd-block mw-100', '[attr.aria-busy]': 'loading' },
 })
@@ -29,7 +29,6 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
   raw?: RawVibrationRecord;
   analysis?: FrequencyDomainAnalysis;
   chartOptions?: EChartsOption;
-  readonly formatNumber = formatAnalysisNumber;
   private readonly source = inject(VIBRATION_DATA_SOURCE);
   private readonly processor = inject(FrequencyDomainAnalysisService);
   private readonly zone = inject(NgZone);
@@ -141,7 +140,7 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
       const point = Array.isArray(params) ? params[0] : params;
       if (!Array.isArray(point.value)) { return ''; }
       const quantity = VIBRATION_QUANTITIES[result.quantity].label;
-      return `${formatAnalysisNumber(Number(point.value[0]))} ${result.axisUnit}<br/>${quantity}: ${formatAnalysisNumber(Number(point.value[1]))} ${result.unit} ${AMPLITUDE_LABELS[result.amplitudeMode]}`;
+      return `${formatNumber(Number(point.value[0]))} ${result.axisUnit}<br/>${quantity}: ${formatNumber(Number(point.value[1]))} ${result.unit} ${AMPLITUDE_LABELS[result.amplitudeMode]}`;
     };
   }
 
@@ -164,17 +163,17 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
       grid: { left: 20, right: 24, top: 45, bottom: 75, containLabel: true },
       xAxis: { type: 'value', name: `Frequency (${result.axisUnit})`, nameLocation: 'middle', nameGap: 30,
         min: 0, max: result.frequency[result.frequency.length - 1], splitLine: { show: false },
-        axisLabel: { formatter: formatAnalysisNumber },
-        axisPointer: { label: { formatter: params => formatAnalysisNumber(Number(params.value)) } },
+        axisLabel: { formatter: formatNumber },
+        axisPointer: { label: { formatter: params => formatNumber(Number(params.value)) } },
         axisLine: { lineStyle: { color: token('gray-500') } } },
       yAxis: { type: 'value', name: label, min: 0, nameTextStyle: { align: 'left' },
-        axisLabel: { formatter: formatAnalysisNumber },
-        axisPointer: { label: { formatter: params => formatAnalysisNumber(Number(params.value)) } },
+        axisLabel: { formatter: formatNumber },
+        axisPointer: { label: { formatter: params => formatNumber(Number(params.value)) } },
         splitLine: { lineStyle: { color: token('border-color') } } },
       dataZoom: [
         { type: 'inside', xAxisIndex: 0 },
         { type: 'slider', xAxisIndex: 0, height: 20, bottom: 10,
-          labelFormatter: formatAnalysisNumber,
+          labelFormatter: formatNumber,
           borderColor: token('border-color'), backgroundColor: token('gray-100'), fillerColor: token('primary-light'),
           textStyle: { color: token('gray-600') }, handleStyle: { color: token('primary'), borderColor: token('primary') },
           moveHandleStyle: { color: token('primary') },

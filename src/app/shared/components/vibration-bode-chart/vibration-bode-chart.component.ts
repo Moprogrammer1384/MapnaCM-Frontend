@@ -8,13 +8,13 @@ import { BodeAnalysis, BodeRecord } from 'src/app/core/models/bode-analysis.mode
 import { analyzeBode, bodeSettingsForRecord } from 'src/app/core/services/vibration/bode-analysis/bode-analysis';
 import { BODE_DATA_SOURCE } from 'src/app/core/services/vibration/bode-analysis/bode-data-source.service';
 import { apiErrorMessage } from 'src/app/core/utils/api-error';
-import { formatAnalysisNumber } from '../analysis-workspace-panel/analysis-number-format';
+import { formatNumber, NumberFormatPipe } from '../../pipes/number-format.pipe';
 
 /** Paired phase/amplitude plots of one tracking run, sharing speed cursor and zoom. */
 @Component({
   selector: 'app-vibration-bode-chart',
   standalone: true,
-  imports: [CommonModule, ApacheEchartsComponent],
+  imports: [CommonModule, ApacheEchartsComponent, NumberFormatPipe],
   templateUrl: './vibration-bode-chart.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'd-block mw-100', '[attr.aria-busy]': 'loading' },
@@ -34,7 +34,6 @@ export class VibrationBodeChartComponent implements OnChanges, OnDestroy {
   record?: BodeRecord;
   analysis?: BodeAnalysis;
   chartOptions?: EChartsOption;
-  readonly formatNumber = formatAnalysisNumber;
   private readonly source = inject(BODE_DATA_SOURCE);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly zone = inject(NgZone);
@@ -103,9 +102,9 @@ export class VibrationBodeChartComponent implements OnChanges, OnDestroy {
       const point = this.record?.observations[index], result = this.analysis;
       if (!point || !result) { return ''; }
       const quantity = VIBRATION_QUANTITIES[result.quantity].label;
-      return `${this.formatNumber(point.speedRpm)} RPM · ${this.formatNumber(point.speedRpm / 60)} Hz<br/>` +
-        `${quantity}: ${this.formatNumber(result.amplitude[index])} ${result.unit} ${AMPLITUDE_LABELS[result.amplitudeMode]}<br/>` +
-        `Phase: ${this.formatNumber(result.phase[index])}°<br/>${point.timestamp.replace('T', ' ')}`;
+      return `${formatNumber(point.speedRpm)} RPM · ${formatNumber(point.speedRpm / 60)} Hz<br/>` +
+        `${quantity}: ${formatNumber(result.amplitude[index])} ${result.unit} ${AMPLITUDE_LABELS[result.amplitudeMode]}<br/>` +
+        `Phase: ${formatNumber(result.phase[index])}°<br/>${point.timestamp.replace('T', ' ')}`;
     };
   }
 
@@ -131,8 +130,8 @@ export class VibrationBodeChartComponent implements OnChanges, OnDestroy {
       max: (result.maximumSpeedRpm + (result.speed.length === 1 ? 30 : 0)) / (result.axisUnit === 'Hz' ? 60 : 1),
       name: gridIndex === 1 ? `Speed (${result.axisUnit})` : '', nameLocation: 'middle' as const, nameGap: 32,
       nameTextStyle: { color: token('gray-700') },
-      axisLabel: { formatter: formatAnalysisNumber, color: token('gray-600'), hideOverlap: true }, splitLine: { show: false },
-      axisPointer: { label: { formatter: (params: { value: unknown }) => this.formatNumber(Number(params.value)) } },
+      axisLabel: { formatter: formatNumber, color: token('gray-600'), hideOverlap: true }, splitLine: { show: false },
+      axisPointer: { label: { formatter: (params: { value: unknown }) => formatNumber(Number(params.value)) } },
       axisLine: { lineStyle: { color: token('gray-500') } },
     });
     this.chartOptions = {
@@ -149,18 +148,18 @@ export class VibrationBodeChartComponent implements OnChanges, OnDestroy {
       xAxis: [xAxis(0), xAxis(1)],
       yAxis: [
         { type: 'value', gridIndex: 0, name: amplitudeName, min: 0, nameTextStyle: { align: 'left', color: token('gray-700') },
-          axisLabel: { formatter: formatAnalysisNumber, color: token('gray-600') }, splitLine: { lineStyle: { color: token('border-color') } } },
+          axisLabel: { formatter: formatNumber, color: token('gray-600') }, splitLine: { lineStyle: { color: token('border-color') } } },
         { type: 'value', gridIndex: 1, name: result.phaseMode === 'wrapped' ? 'Phase (°)' : 'Continuous phase (°)',
           min: result.phaseMode === 'wrapped' ? 0 : Math.floor(result.phase.reduce((min, value) => Math.min(min, value), Infinity) / 90) * 90,
           max: result.phaseMode === 'wrapped' ? 360 : Math.ceil(result.phase.reduce((max, value) => Math.max(max, value), -Infinity) / 90) * 90 + 90,
           interval: 90,
-          nameTextStyle: { align: 'left', color: token('gray-700') }, axisLabel: { formatter: formatAnalysisNumber, color: token('gray-600') },
+          nameTextStyle: { align: 'left', color: token('gray-700') }, axisLabel: { formatter: formatNumber, color: token('gray-600') },
           splitLine: { lineStyle: { color: token('border-color') } } },
       ],
       dataZoom: [
         { id: 'bode-zoom-inside', type: 'inside', xAxisIndex: [0, 1], filterMode: 'none' },
         { id: 'bode-zoom-slider', type: 'slider', xAxisIndex: [0, 1], filterMode: 'none', height: 20, bottom: 10,
-          labelFormatter: formatAnalysisNumber, borderColor: token('border-color'), backgroundColor: token('gray-100'),
+          labelFormatter: formatNumber, borderColor: token('border-color'), backgroundColor: token('gray-100'),
           fillerColor: token('primary-light'), textStyle: { color: token('gray-600') },
           handleStyle: { color: token('primary'), borderColor: token('primary') }, moveHandleStyle: { color: token('primary') },
           dataBackground: { lineStyle: { color: token('gray-500') }, areaStyle: { color: token('gray-200') } },

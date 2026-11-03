@@ -5,7 +5,8 @@ VibrationTimeDomainApiService through VIBRATION_DATA_SOURCE in
 api/vibration-time-domain-api.service.ts. All HTTP adapters are grouped in
 [api/](api/README.md), with explicit Vibration/feature/purpose names.
 The old Time/Frequency workbook fixture and tenfold repetition were removed.
-Overview and Rotor Position keep their existing previews. Bode Analysis uses its
+Overview and Rotor Position have no charts; their dedicated charts are deferred
+to future tasks. Bode Analysis uses its
 separate BodeAnalysis API and database entities, with discrete event selection;
 see [Bode methods and source](bode-analysis/README.md).
 Synthetic Time/Frequency workload data exists under src/testing/ for regression tests.

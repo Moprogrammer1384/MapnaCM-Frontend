@@ -176,3 +176,7 @@ labels keep their day meaning and exclusive To; no UTC conversion applies to thi
 metadata. Unknown months are queried on navigation and failed reads remain closed
 to selection with Retry. Metadata reads do not trigger waveform/analysis loads.
 Hours/minutes keep their existing behavior, as explicitly requested by the user.
+
+## Orbit Analysis
+
+The independent [Orbit pipeline](orbit-analysis/README.md) owns paired-probe validation, received acquisition validation, Keyphasor reference and fractional/integer order extraction. HTTP adapters in `api/` read `/OrbitAnalysis/Get` and `/OrbitAnalysis/GetAvailability`. The page retains the shared workspace/ECharts and selects an exact stored Daily/Weekly/Monthly/Quarterly one-second acquisition through the independent Orbit date component. Orbit never sends a From/To waveform range. No Orbit reference data or runtime generators remain in the frontend.

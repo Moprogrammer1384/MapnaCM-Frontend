@@ -20,6 +20,9 @@ export class AnalysisWorkspaceComponent implements OnDestroy {
   @Input() showMeasurementTitle = true;
   @Input() domain: AnalysisDomain = 'time';
   @Input() useAvailableDates = false;
+  @Input() dateSelectionContent?: TemplateRef<{ $implicit: AnalysisTab }>;
+  @Input() dateSelectionTitle?: string;
+  @Input() controlsContent?: TemplateRef<{ $implicit: AnalysisTab }>;
   @Input() measurementChartContent?: TemplateRef<{ $implicit: AnalysisTab['measurements'][number]; tab: AnalysisTab }>;
   @Input() title = 'Analysis';
   @Input() tabs: readonly AnalysisTab[] = [];

@@ -1,6 +1,6 @@
 # DARP asset taxonomy drawer
 
-Standalone reusable component, replacing the demo Activity Drawer on the five
+Standalone reusable component, replacing the demo Activity Drawer on the
 `/cm/vibration` pages. Import `AssetTaxonomyDrawerComponent` in the consuming
 NgModule or standalone component.
 
@@ -76,3 +76,7 @@ single-Component constraint was replaced with a single-Unit rule, then narrowed
 to the requested single-Asset rule on 2026-10-12. Multiple Components within
 one Asset remain selectable. Execute rejects cross-Asset selections as well.
 The header and empty-state `data` Keenicon depicts a parent with connected children.
+
+## Optional execution extensions
+
+Consumers may supply `executionValidator?: (execution: AssetTaxonomyExecution | null) => string`. The drawer disables Execute for a nonempty validation message and validates the fresh hierarchy-based candidate again before emitting. Orbit uses this callback to require simultaneous X/Y selection at each bearing, without additional selectors; the generic drawer imports no Orbit code.

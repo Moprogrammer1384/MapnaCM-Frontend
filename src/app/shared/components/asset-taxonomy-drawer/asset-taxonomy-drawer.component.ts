@@ -26,6 +26,8 @@ export class AssetTaxonomyDrawerComponent implements AfterViewInit, OnChanges, O
   @Input() drawerId = 'kt_asset_taxonomy';
   @Input() visible = false;
   @Input() selection: AssetTaxonomySelection | null = null;
+  @Input() executionValidator?: (execution: AssetTaxonomyExecution | null) => string;
+  currentExecution: AssetTaxonomyExecution | null = null;
   @Output() readonly selectionSave = new EventEmitter<AssetTaxonomySelection | null>();
   @Output() readonly closed = new EventEmitter<void>();
   @Output() readonly executed = new EventEmitter<AssetTaxonomyExecution>();
@@ -83,6 +85,7 @@ export class AssetTaxonomyDrawerComponent implements AfterViewInit, OnChanges, O
   load(): void {
     this.status = '';
     this.snapshot = undefined;
+    this.currentExecution = null;
     this.nodes = [];
     this.selectedNodes = [];
     this.requestState.track(forkJoin({
@@ -175,6 +178,9 @@ export class AssetTaxonomyDrawerComponent implements AfterViewInit, OnChanges, O
     };
     update(this.nodes);
     update(this.tree?.filteredNodes ?? []);
+    this.currentExecution = this.snapshot && this.plantId !== null && this.activeUnitId !== null
+      ? buildAssetTaxonomyExecution(this.snapshot, { plantId: this.plantId, unitId: this.activeUnitId,
+        measurementIds: this.selectedNodes.map(node => node.data.id) }) : null;
   }
 
   reset(): void {
@@ -183,8 +189,10 @@ export class AssetTaxonomyDrawerComponent implements AfterViewInit, OnChanges, O
   }
 
   get canExecute(): boolean {
-    return this.isOpen() && this.requestState.ready && this.selectedNodes.length > 0;
+    return this.isOpen() && this.requestState.ready && !!this.currentExecution && !this.selectionError;
   }
+
+  get selectionError(): string { return this.executionValidator?.(this.currentExecution) ?? ''; }
 
   executeSelection(): void {
     if (!this.canExecute || !this.snapshot || this.plantId === null || this.activeUnitId === null) { return; }
@@ -196,6 +204,8 @@ export class AssetTaxonomyDrawerComponent implements AfterViewInit, OnChanges, O
       this.status = 'The selected measurements are no longer available. Reload the hierarchy and select them again.';
       return;
     }
+    const error = this.executionValidator?.(execution);
+    if (error) { this.status = error; return; }
     this.selectionSave.emit(execution.selection);
     this.executed.emit(execution);
     this.close();

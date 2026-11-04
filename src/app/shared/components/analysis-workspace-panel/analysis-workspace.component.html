@@ -6,6 +6,8 @@
       <ng-template let-tabId>
         <app-analysis-panel *ngIf="tabById(tabId) as tab" [tab]="tab" [domain]="domain" [chartContent]="chartContent || (measurementChartContent ? measurementCharts : undefined)"
           [useAvailableDates]="useAvailableDates"
+          [dateSelectionContent]="dateSelectionContent" [dateSelectionTitle]="dateSelectionTitle"
+          [controlsContent]="controlsContent"
           (dateTimeRangeApply)="applyDateTimeRange(tab.id, $event)"
           (chartSettingsChange)="updateChartSettings({ tabId: tab.id, chartSettings: $event })"
           (dateRangeChange)="updateDateRange({ tabId: tab.id, dateRange: $event })"

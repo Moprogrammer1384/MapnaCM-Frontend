@@ -53,6 +53,7 @@
 <!-- begin:: Drawers -->
 <app-asset-taxonomy-drawer *ngIf="vibrationSelection.active()"
   [visible]="vibrationSelection.drawerOpen()" [selection]="vibrationSelection.selection()"
+  [executionValidator]="vibrationSelection.requiresOrbitPairs() ? vibrationSelection.validateOrbitExecution : undefined"
   (selectionSave)="vibrationSelection.save($event)" (executed)="vibrationSelection.execute($event)"
   (closed)="vibrationSelection.drawerOpen.set(false)">
 </app-asset-taxonomy-drawer>

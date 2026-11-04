@@ -10,8 +10,10 @@
       }
     </section>
     <section class="col-12 col-xl-9" [attr.aria-labelledby]="tab.id + '_dates'">
-      <h3 [id]="tab.id + '_dates'" class="fs-6 fw-bold mb-5">{{ domain === 'bode' ? 'Event date and time' : 'Date and time range' }}</h3>
-      @if (useAvailableDates) {
+      <h3 [id]="tab.id + '_dates'" class="fs-6 fw-bold mb-5">{{ dateSelectionTitle || (domain === 'bode' ? 'Event date and time' : 'Date and time range') }}</h3>
+      @if (dateSelectionContent) {
+        <ng-container [ngTemplateOutlet]="dateSelectionContent" [ngTemplateOutletContext]="{ $implicit: tab }"></ng-container>
+      } @else if (useAvailableDates) {
         <app-vibration-date-time-range [inputId]="tab.id" [value]="dateTimeRange" [measurementIds]="measurementIds"
           [eventSelection]="domain === 'bode'"
           (applied)="updateDateTimeRange($event)"></app-vibration-date-time-range>
@@ -21,6 +23,9 @@
       }
     </section>
   </div>
+  @if (controlsContent) {
+    <ng-container [ngTemplateOutlet]="controlsContent" [ngTemplateOutletContext]="{ $implicit: tab }"></ng-container>
+  } @else {
   <div class="row g-5 mt-0">
     <div class="col-12 col-sm-6 col-lg-3">
       <label class="form-label" [for]="tab.id + '_quantity'">Quantity</label>
@@ -108,6 +113,7 @@
       }
     }
   </div>
+  }
 </div>
 @if (chartContent) {
   <div class="separator"></div>

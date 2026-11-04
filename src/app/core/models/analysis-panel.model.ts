@@ -1,6 +1,7 @@
 import type { AssetTaxonomyExecution } from './asset-taxonomy-selection.model';
 import type { AnalysisChartSettings } from './analysis-chart-settings.model';
 import type { DateTimeRange } from './date-time-range.model';
+import type { OrbitCaptureSelection, OrbitPeriod, OrbitProbePair, OrbitSettings } from './orbit-analysis.model';
 
 /** Calendar dates in local YYYY-MM-DD form; no UTC conversion or backend contract. */
 export interface AnalysisDateRange {
@@ -21,6 +22,10 @@ export interface AnalysisTab extends AssetTaxonomyExecution {
   readonly timeRange: AnalysisTimeRange;
   readonly chartSettings?: AnalysisChartSettings;
   readonly awaitingDateRange?: boolean;
+  readonly orbitPairs?: readonly OrbitProbePair[];
+  readonly orbitSettings?: OrbitSettings;
+  readonly orbitPeriod?: OrbitPeriod;
+  readonly orbitCapture?: OrbitCaptureSelection;
 }
 
 export interface AnalysisDateRangeChange {

@@ -3,6 +3,7 @@ export const VIBRATION_PAGES = {
   'time-domain': 'Time domain',
   'frequency-domain': 'Frequency domain',
   'bode-analysis': 'Bode analysis',
+  'orbit-analysis': 'Orbit Analysis',
   'rotor-position': 'Rotor position',
 } as const;
 

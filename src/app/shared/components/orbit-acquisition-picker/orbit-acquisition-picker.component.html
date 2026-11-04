@@ -1,0 +1,21 @@
+<app-vibration-event-picker [inputId]="inputId + '_orbit'" [value]="pickerValue" [events]="events" [resetDateKey]="period"
+  [dateAdjacentContent]="periodControl" [disabled]="loading || !!error || !events.length" (selected)="choose($event)"></app-vibration-event-picker>
+<ng-template #periodControl>
+  <div class="col-12 col-md-4">
+    <label class="form-label" [for]="inputId + '_orbit_period'">Acquisition period</label>
+    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-width="100%"
+      [id]="inputId + '_orbit_period'" aria-label="Acquisition period" [ngModel]="period" (ngModelChange)="changePeriod($event)">
+      @for (option of periods; track option.value) { <option [value]="option.value">{{ option.label }}</option> }
+    </select>
+  </div>
+</ng-template>
+@if (loading) {
+  <p class="text-gray-600 fs-7 mt-3 mb-0" role="status"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Loading stored acquisitions…</p>
+}
+@if (error) {
+  <div class="alert alert-danger d-flex flex-wrap align-items-center gap-3 mt-3" role="alert">
+    <span>{{ error }}</span><button type="button" class="btn btn-sm btn-light-danger" (click)="load()">Retry</button>
+  </div>
+} @else if (!loading && !choices.length) {
+  <p class="text-gray-600 fs-7 mt-3" role="status">No common acquisitions for the selected probes and period.</p>
+}

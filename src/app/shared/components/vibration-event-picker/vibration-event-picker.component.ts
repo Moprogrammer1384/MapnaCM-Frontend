@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges, TemplateRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import flatpickr from 'flatpickr';
 import type { Instance } from 'flatpickr/dist/types/instance';
@@ -24,6 +24,8 @@ export class VibrationEventPickerComponent implements AfterViewInit, OnChanges, 
   @Input() minDate?: string;
   @Input() maxDate?: string;
   @Input() calendarDate?: string;
+  @Input() dateAdjacentContent?: TemplateRef<unknown>;
+  @Input() resetDateKey?: string;
   @Output() readonly selected = new EventEmitter<DateTimeRange>();
   @Output() readonly calendarWindowChange = new EventEmitter<CalendarDateRange>();
   @ViewChild('dateInput', { static: true }) private dateInput: ElementRef<HTMLInputElement>;
@@ -68,6 +70,7 @@ export class VibrationEventPickerComponent implements AfterViewInit, OnChanges, 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['resetDateKey'] && !changes['resetDateKey'].firstChange) { this.day = ''; this.selectedEventId = null; }
     if (changes['value'] || changes['events']) {
       const saved = this.savedEvent();
       if (changes['value'] || saved) { this.selectedEventId = saved?.id ?? null; }

@@ -1,0 +1,58 @@
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+  <h3 [id]="titleId" class="fs-5 fw-bold text-break mb-0">{{ pair.x.component.name }} · Orbit</h3>
+  @if (record) { <span class="badge badge-light-info">Recorded acquisition</span> }
+</div>
+<p class="text-gray-600 fs-7 mb-5">X: {{ pair.x.measurement.name }} {{ pair.x.measurement.tag }} · Y: {{ pair.y.measurement.name }} {{ pair.y.measurement.tag }}</p>
+@if (loading) {
+  <div class="text-center py-15" role="status"><span class="spinner-border spinner-border-sm text-primary me-3" aria-hidden="true"></span>Loading orbit data…</div>
+} @else if (error) {
+  <div class="alert alert-danger" role="alert">{{ error }}
+    @if (!record) { <button type="button" class="btn btn-sm btn-light-danger ms-4" (click)="reload()">Retry</button> }
+  </div>
+} @else if (analysis && options) {
+  <div class="d-flex flex-wrap gap-6 text-gray-700 fs-7 mb-5">
+    <span>X pp: <strong>{{ analysis.xPeakToPeak | numberFormat }} {{ settings.unit }}</strong></span>
+    <span>Y pp: <strong>{{ analysis.yPeakToPeak | numberFormat }} {{ settings.unit }}</strong></span>
+    <span>Maximum radius: <strong>{{ analysis.maximumRadius | numberFormat }} {{ settings.unit }}</strong></span>
+    @if (analysis.speedRpm !== null) { <span>{{ analysis.speedRpm | numberFormat }} RPM</span> }
+  </div>
+  @for (notice of analysis.notices; track notice) { <p class="text-gray-600 fs-7" role="status">{{ notice }}</p> }
+  <div class="row g-5" data-testid="orbit-chart-pair">
+    <div class="col-12 col-md-6 min-w-0">
+      <h4 class="fs-6 text-gray-700">Orbit ({{ settings.unit }})</h4>
+      <div #orbitInteraction tabindex="0" role="group" class="rounded focus-ring"
+        aria-label="Interactive X/Y orbit sample tracking" [attr.aria-describedby]="titleId + '_tracking_help'"
+        (focus)="focusOrbit()" (keydown)="onOrbitKeydown($event)">
+        <app-apache-echarts [options]="options.orbit" [mergeOptions]="true" height="400px"
+          (chartInit)="bindOrbitChart($event)"></app-apache-echarts>
+      </div>
+      <div class="d-flex justify-content-end gap-2">
+        <button class="btn btn-sm btn-light" type="button" aria-label="Zoom out orbit" [disabled]="zoom <= 0.5" (click)="setZoom(zoom / 1.25)">−</button>
+        <button class="btn btn-sm btn-light" type="button" (click)="setZoom(1)">Reset scale</button>
+        <button class="btn btn-sm btn-light" type="button" aria-label="Zoom in orbit" [disabled]="zoom >= 4" (click)="setZoom(zoom * 1.25)">+</button>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 min-w-0">
+      <h4 class="fs-6 text-gray-700">X/Y waveforms</h4>
+      <div role="img" aria-label="Synchronized X and Y displacement versus time">
+        <app-apache-echarts [options]="options.waveform" [mergeOptions]="true" height="400px"
+          (chartInit)="bindWaveformChart($event)"></app-apache-echarts>
+      </div>
+    </div>
+  </div>
+  <p [id]="titleId + '_tracking_help'" class="text-gray-600 fs-7 mt-5 mb-3">Hover the blue orbit line to follow a sample. Use ← / → or ↑ / ↓ for previous / next; Home / End for first / last.</p>
+  @if (selectedPoint; as point) {
+    <div class="d-flex flex-wrap gap-5 border rounded p-4 text-gray-700 fs-7" role="status" aria-live="polite" aria-atomic="true" data-testid="orbit-tracking">
+      <span class="fw-semibold">Sample {{ selectedIndex! + 1 }} / {{ analysis.points.length }}</span>
+      <span>Time: <strong>{{ point.time * 1000 | numberFormat }} ms</strong></span>
+      <span>X: <strong>{{ point.x | numberFormat }} {{ settings.unit }}</strong></span>
+      <span>Y: <strong>{{ point.y | numberFormat }} {{ settings.unit }}</strong></span>
+    </div>
+  }
+  <p class="text-gray-500 fs-8 mt-5 mb-0">{{ analysis.points.length }} samples · {{ record!.sampleRateHz | numberFormat }} Hz sampling ·
+    {{ analysis.filter === 'order' || settings.center ? 'AC displacement' : 'Original X/Y offsets' }}.
+    Capture: {{ record!.capturedAtUtc | date:'medium' }} · {{ record!.period }} · 1 second.
+    X/Y are shown as orthogonal display coordinates; probe mounting angles and machine viewing direction are unspecified.</p>
+} @else {
+  <div class="text-center text-gray-600 py-15" role="status">No Orbit acquisition available for this period. Select an existing acquisition above.</div>
+}

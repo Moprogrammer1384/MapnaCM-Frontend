@@ -253,3 +253,11 @@ available dates blue. Returning tabs retain their values. Time/Frequency retain
 their existing range picker and Apply workflow.
 The standalone Bode chart displays amplitude above phase with linked cursor/zoom.
 See [Bode source and methods](../../../core/services/vibration/bode-analysis/README.md).
+
+## Feature-specific header controls
+
+`controlsContent?: TemplateRef<{ $implicit: AnalysisTab }>` can replace the standard chart-setting row. The workspace forwards it to `app-analysis-panel`, which renders it immediately below date/time selection and before charts, including while a tab awaits Apply. The template receives its owning tab. Orbit uses this slot for order/unit/Keyphasor/origin controls; the workspace and panel do not inject its service.
+
+### Consumer-owned date selection
+
+`dateSelectionContent?: TemplateRef<{ $implicit: AnalysisTab }>` replaces only the standard date selector; `dateSelectionTitle` labels that header. Both are forwarded by the workspace to its panel. Orbit supplies its independent acquisition picker and exact period selection through this slot. Default Time/Frequency ranges and the Bode event selector are unchanged.

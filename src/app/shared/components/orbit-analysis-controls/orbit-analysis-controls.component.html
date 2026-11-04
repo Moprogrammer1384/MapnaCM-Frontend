@@ -1,0 +1,51 @@
+<div class="row g-5 mt-0">
+  <div class="col-12 col-sm-6 col-lg-3">
+    <label class="form-label" [for]="inputId + '_orbit_filter'">Orbit filter</label>
+    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+      [id]="inputId + '_orbit_filter'" aria-label="Orbit filter" [ngModel]="selectedFilter" (ngModelChange)="selectFilter($event)">
+      <option value="direct">Direct / unfiltered</option>
+      @for (order of orders; track order.value) { <option [value]="order.value">{{ order.label }}</option> }
+      <option value="custom">Custom nX</option>
+    </select>
+    <div class="form-text">nX = n × shaft rotation frequency.</div>
+  </div>
+  <div class="col-12 col-sm-6 col-lg-3">
+    <label class="form-label" [for]="inputId + '_orbit_unit'">Displacement unit</label>
+    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+      [id]="inputId + '_orbit_unit'" aria-label="Displacement unit" [ngModel]="settings.unit" (ngModelChange)="update('unit', $event)">
+      @for (unit of units; track unit) { <option [value]="unit">{{ unit }}</option> }
+    </select>
+  </div>
+  <div class="col-12 col-sm-6 col-lg-3">
+    <label class="form-label" [for]="inputId + '_keyphasor'">Keyphasor</label>
+    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+      [id]="inputId + '_keyphasor'" aria-label="Keyphasor" [ngModel]="settings.showKeyphasor" (ngModelChange)="update('showKeyphasor', $event)">
+      <option [ngValue]="true">With Keyphasor</option><option [ngValue]="false">Without Keyphasor</option>
+    </select>
+  </div>
+  <div class="col-12 col-sm-6 col-lg-3">
+    <label class="form-label" [for]="inputId + '_orbit_center'">Orbit origin</label>
+    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+      [id]="inputId + '_orbit_center'" aria-label="Orbit origin" [ngModel]="settings.center" [disabled]="settings.filter === 'order'"
+      (ngModelChange)="update('center', $event)">
+      <option [ngValue]="true">AC / mean removed</option><option [ngValue]="false">Original X/Y offsets</option>
+    </select>
+    @if (settings.filter === 'order') { <div class="form-text">Order extraction excludes DC.</div> }
+  </div>
+  @if (selectedFilter === 'custom') {
+    <div class="col-12 col-sm-6 col-lg-3">
+      <label class="form-label" [for]="inputId + '_orbit_order'">Custom order (nX)</label>
+      <input class="form-control form-control-solid" type="number" step="any" min="0" [id]="inputId + '_orbit_order'"
+        aria-label="Custom order (nX)" [ngModel]="settings.order" (ngModelChange)="update('order', $event)" />
+      <div class="form-text">Positive fractional or integer order within acquisition limits.</div>
+    </div>
+  }
+  @if (settings.filter === 'order') {
+    <div class="col-12">
+      <label class="form-check form-check-custom form-check-solid">
+        <input class="form-check-input" type="checkbox" [ngModel]="settings.overlayDirect" (ngModelChange)="update('overlayDirect', $event)" />
+        <span class="form-check-label">Overlay direct orbit</span>
+      </label>
+    </div>
+  }
+</div>

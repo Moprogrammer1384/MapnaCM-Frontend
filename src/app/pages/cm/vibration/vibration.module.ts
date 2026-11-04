@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { OrbitAcquisitionPickerComponent } from 'src/app/shared/components/orbit-acquisition-picker/orbit-acquisition-picker.component';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
 import { AnalysisWorkspaceComponent } from 'src/app/shared/components/analysis-workspace-panel/analysis-workspace.component';
@@ -11,6 +12,9 @@ import { VibrationTimeDomainChartComponent } from 'src/app/shared/components/vib
 import { VibrationBodeAnalysisComponent } from './bode-analysis/bode-analysis.component';
 import { VibrationBodeChartComponent } from 'src/app/shared/components/vibration-bode-chart/vibration-bode-chart.component';
 import { VibrationRotorPositionComponent } from './rotor-position/rotor-position.component';
+import { VibrationOrbitAnalysisComponent } from './orbit-analysis/orbit-analysis.component';
+import { VibrationOrbitChartComponent } from 'src/app/shared/components/vibration-orbit-chart/vibration-orbit-chart.component';
+import { OrbitAnalysisControlsComponent } from 'src/app/shared/components/orbit-analysis-controls/orbit-analysis-controls.component';
 
 @NgModule({
   declarations: [
@@ -18,15 +22,19 @@ import { VibrationRotorPositionComponent } from './rotor-position/rotor-position
     VibrationTimeDomainComponent,
     VibrationFrequencyDomainComponent,
     VibrationBodeAnalysisComponent,
+    VibrationOrbitAnalysisComponent,
     VibrationRotorPositionComponent,
   ],
   imports: [
     CommonModule,
     SharedModule,
     AnalysisWorkspaceComponent,
+    OrbitAcquisitionPickerComponent,
     VibrationFrequencyDomainChartComponent,
     VibrationTimeDomainChartComponent,
     VibrationBodeChartComponent,
+    VibrationOrbitChartComponent,
+    OrbitAnalysisControlsComponent,
     RouterModule.forChild([
       {
         path: 'overview',
@@ -44,6 +52,7 @@ import { VibrationRotorPositionComponent } from './rotor-position/rotor-position
         path: 'bode-analysis',
         component: VibrationBodeAnalysisComponent,
       },
+      { path: 'orbit-analysis', component: VibrationOrbitAnalysisComponent },
       {
         path: 'rotor-position',
         component: VibrationRotorPositionComponent,

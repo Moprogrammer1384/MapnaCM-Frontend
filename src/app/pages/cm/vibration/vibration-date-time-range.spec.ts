@@ -17,8 +17,11 @@ import { VibrationSelectionService } from 'src/app/core/services/vibration-selec
 import { METRONIC_PRIMENG_CONFIG } from 'src/app/shared/components/metronic-primeng.config';
 import { AnalysisWorkspaceComponent } from 'src/app/shared/components/analysis-workspace-panel/analysis-workspace.component';
 import { VibrationModule } from './vibration.module';
+import { orbitExecution } from 'src/testing/orbit-fixture';
 import { of } from 'rxjs';
 import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
+import { VibrationOrbitAnalysisAvailabilityApiService } from 'src/app/core/services/vibration/api/vibration-orbit-analysis-availability-api.service';
+import { ORBIT_DATA_SOURCE } from 'src/app/core/services/vibration/orbit-analysis/orbit-data-source.service';
 
 const execution: AssetTaxonomyExecution = {
   selection: { plantId: 1, unitId: 2, measurementIds: [6] },
@@ -36,7 +39,7 @@ const execution: AssetTaxonomyExecution = {
 describe('Combined date/time range on Vibration pages', () => {
   let harness: RouterTestingHarness;
   let state: VibrationSelectionService;
-  const rangePages = Object.keys(VIBRATION_PAGES).filter(page => page !== 'bode-analysis');
+  const rangePages = Object.keys(VIBRATION_PAGES).filter(page => page !== 'bode-analysis' && page !== 'orbit-analysis');
   const input = () => harness.routeNativeElement!.querySelector<HTMLInputElement>('app-date-time-range input')!;
   const picker = () => (input() as HTMLInputElement & { _flatpickr: Instance })._flatpickr;
   const detect = () => harness.fixture.detectChanges();
@@ -59,7 +62,7 @@ describe('Combined date/time range on Vibration pages', () => {
     detect(); await harness.fixture.whenStable(); detect();
   };
   const createTab = async () => {
-    state.execute(execution);
+    state.execute(state.requiresOrbitPairs() ? orbitExecution() : execution);
     const id = state.activeTabId();
     state.updateDateRange(id, { from: '2026-10-01', to: '2026-10-12' });
     state.applyDateTimeRange(id, { from: '2026-10-01T00:00', to: '2026-10-12T23:59' });
@@ -77,6 +80,8 @@ describe('Combined date/time range on Vibration pages', () => {
         provideHttpClient(), provideHttpClientTesting(),
         provideRouter([{ path: 'cm/vibration', loadChildren: () => VibrationModule }]),
         providePrimeNG(METRONIC_PRIMENG_CONFIG), { provide: TIME_AVAILABILITY_SOURCE, useValue: availabilityFixtureSource }, VibrationSelectionService,
+        { provide: VibrationOrbitAnalysisAvailabilityApiService, useValue: availabilityFixtureSource },
+        { provide: ORBIT_DATA_SOURCE, useValue: { load: () => of(null) } },
         { provide: VIBRATION_DATA_SOURCE, useValue: { load: () => of({ id: 'dates', label: 'Date test',
           quantity: 'displacement', unit: 'µm', timeUnit: 'ms', time: [0, 1, 2], values: [1, 2, 3] }) } },
       ],

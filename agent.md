@@ -1,6 +1,6 @@
 # DARP frontend: project memory
 
-Updated: **2026-11-04 (Asia/Tehran)**. Read this file before each task, then inspect the relevant live source. Repository rules are in [AGENTS.md](AGENTS.md); `CLAUDE.md` is historical.
+Updated: **2026-11-08 (Asia/Tehran)**. Read this file before each task, then inspect the relevant live source. Repository rules are in [AGENTS.md](AGENTS.md); `CLAUDE.md` is historical.
 
 ## Working rules and memory maintenance
 
@@ -117,6 +117,8 @@ Taxonomy uses `<app-data-table>` and `TablePagination<T>` under `shared/componen
 
 ### Orbit Analysis (2026-11-04)
 
+- **2026-11-08:** removed the orbit chart's zoom-out, Reset scale and zoom-in button row at the user's request. App/template compilation passed (`ngc -p tsconfig.app.json --noEmit`); browser visual verification was not run.
+- **2026-11-08:** X/Y waveforms now support native ECharts wheel/pinch zoom, drag panning and a Metronic-token time-range slider. Both traces/markers share the time axis; `filterMode: 'none'` keeps all source samples and tracking indexes intact. Stable zoom IDs without explicit start/end preserve each tab's range through settings/theme changes. App/template compilation and all 12 Orbit workspace browser tests passed, including local zoom/reset, tracking and independent tab ranges. Existing two hidden-panel size warnings remain; manual live visual acceptance was not rerun.
 - User-authorized backend/database feature: C:/Users/hafez/Documents/Mapna/BackEnd. Orbit-Analysis folders sit beside TimeDomain/Bode in Domain Entities, Application Command/Query, EF Configurations/Repositories/Migrations, Dapper and presentation. [Backend contract/history/storage](../../BackEnd/docs/Vibration-Orbit-API.md). Shared backend edits are Orbit registration/model/migrations and affected tests only.
 - **Current selection model: NO waveform range or Apply.** The independent standalone OrbitAcquisitionPickerComponent owns Daily/Weekly/Monthly/Quarterly cadence, stored history discovery, optional single-date filtering, immediate event selection, caching/cancellation/retry. It reuses Bode's event picker through the neutral dateSelectionContent/dateSelectionTitle slots in workspace/panel. Final responsive row order: **Acquisition period, Date, Event time**, each col-md-4; mobile stacks them. The acquisition-count/one-second explanatory row was removed at user request. Cadence changes clear the selected capture/date filter but retain analytical controls/settings. Bode default layout/behavior stays intact.
 - Route/menu remain immediately after Bode, with the standard empty workspace and immutable per-page tabs. Drawer requires one distinct standalone-name X/Y pair per Component in one Asset; multiple complete pairs are supported. Incomplete/duplicate/ambiguous axes disable Execute. The separate probe selector stays removed. All analysis selects remain in app-analysis-panel above charts.

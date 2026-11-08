@@ -135,6 +135,42 @@ describe('Orbit workspace, real drawer, controls and ECharts', () => {
     expect(state.activeTab()!.orbitSettings!.order).toBe(0.75);
     expect(root().querySelector('app-vibration-orbit-analysis')).not.toBeNull();
   });
+  it('zooms both waveforms locally and retains the range through tracking, settings, themes and tab changes', async () => {
+    await createTab(); await apply();
+    const tabId = state.activeTabId(), component = chartComponent();
+    const dom = root().querySelectorAll<HTMLElement>('[_echarts_instance_]')[1];
+    const chart = echarts.getInstanceByDom(dom)!;
+    const snapshot = () => chart.getOption() as unknown as {
+      dataZoom: { start: number; end: number }[];
+      series: { id: string; data: number[][] }[];
+    };
+    const traces = snapshot().series.slice(0, 2).map(series => series.data);
+    chart.dispatchAction({ type: 'dataZoom', dataZoomId: 'orbit-waveform-zoom-inside', start: 20, end: 60 });
+    expect(snapshot().dataZoom.map(zoom => [zoom.start, zoom.end])).toEqual([[20, 60], [20, 60]]);
+    component.focusOrbit();
+    component.onOrbitKeydown(new KeyboardEvent('keydown', { key: 'End' })); await settle();
+    expect(component.selectedIndex).toBe(component.analysis!.points.length - 1);
+    expect(snapshot().series.slice(0, 2).map(series => series.data)).toEqual(traces);
+    await change('Displacement unit', 'mm');
+    const theme = document.documentElement.getAttribute('data-bs-theme');
+    try {
+      document.documentElement.setAttribute('data-bs-theme', theme === 'dark' ? 'light' : 'dark'); await settle();
+      expect(snapshot().dataZoom.map(zoom => [zoom.start, zoom.end])).toEqual([[20, 60], [20, 60]]);
+      await createTab(); await apply();
+      const other = echarts.getInstanceByDom(root().querySelectorAll<HTMLElement>('[_echarts_instance_]')[1])!;
+      expect(other).not.toBe(chart);
+      expect((other.getOption() as unknown as { dataZoom: { start: number; end: number }[] }).dataZoom[0].start).toBe(0);
+      state.activateTab(tabId); await settle();
+      expect(echarts.getInstanceByDom(dom)).toBe(chart);
+      expect(snapshot().dataZoom[0].start).toBe(20);
+      chart.dispatchAction({ type: 'dataZoom', dataZoomId: 'orbit-waveform-zoom-slider', start: 0, end: 100 });
+      expect(snapshot().dataZoom.map(zoom => [zoom.start, zoom.end])).toEqual([[0, 100], [0, 100]]);
+      expect(source).toHaveBeenCalledTimes(2);
+    } finally {
+      if (theme === null) { document.documentElement.removeAttribute('data-bs-theme'); }
+      else { document.documentElement.setAttribute('data-bs-theme', theme); }
+    }
+  });
   it('shows an empty API result and reloads only when the applied range changes', async () => {
     await createTab(); await apply();
     const first = chartComponent().record!;

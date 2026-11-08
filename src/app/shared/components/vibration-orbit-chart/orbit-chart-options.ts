@@ -39,13 +39,22 @@ export function orbitChartOptions(analysis: OrbitAnalysis, settings: OrbitSettin
   };
   const waveform: EChartsOption = {
     animation: false, color: [primary, secondary], textStyle: { color: text }, aria: { enabled: true },
-    legend: { top: 0, textStyle: { color: text } }, grid: { left: 65, right: 20, top: 55, bottom: 65 },
+    legend: { top: 0, textStyle: { color: text } }, grid: { left: 65, right: 20, top: 55, bottom: 95 },
     tooltip: { trigger: 'axis', confine: true, valueFormatter: value => formatNumber(Number(value)) + ' ' + settings.unit,
       backgroundColor: background, borderColor: border, textStyle: { color: text } },
     xAxis: { type: 'value', name: 'Time (ms)', nameLocation: 'middle', nameGap: 32, nameTextStyle: { color: text },
       axisLabel: { color: text, formatter: value => formatNumber(value) }, axisLine: { lineStyle: { color: border } }, splitLine: { show: false } },
     yAxis: { type: 'value', name: `Displacement (${settings.unit})`, nameTextStyle: { color: text },
       axisLabel: { color: text, formatter: value => formatNumber(value) }, splitLine: { lineStyle: { color: border } } },
+    dataZoom: [
+      { id: 'orbit-waveform-zoom-inside', type: 'inside', xAxisIndex: 0, filterMode: 'none' },
+      { id: 'orbit-waveform-zoom-slider', type: 'slider', xAxisIndex: 0, filterMode: 'none', height: 20, bottom: 10,
+        labelFormatter: formatNumber, borderColor: token('border-color'), backgroundColor: token('gray-100'),
+        fillerColor: token('primary-light'), textStyle: { color: text },
+        handleStyle: { color: primary, borderColor: primary }, moveHandleStyle: { color: primary },
+        dataBackground: { lineStyle: { color: muted }, areaStyle: { color: token('gray-200') } },
+        selectedDataBackground: { lineStyle: { color: primary }, areaStyle: { color: token('primary-light') } } },
+    ],
     series: (['x', 'y'] as const).map((axis, i): LineSeriesOption => ({ id: axis, name: axis.toUpperCase(), type: 'line',
       showSymbol: false, smooth: false, data: analysis.points.map(p => [p.time * 1000, p[axis]]),
       markLine: { silent: true, symbol: 'none', label: { show: false }, lineStyle: { color: token('warning'), type: 'dashed' },

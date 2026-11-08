@@ -26,11 +26,6 @@
         <app-apache-echarts [options]="options.orbit" [mergeOptions]="true" height="400px"
           (chartInit)="bindOrbitChart($event)"></app-apache-echarts>
       </div>
-      <div class="d-flex justify-content-end gap-2">
-        <button class="btn btn-sm btn-light" type="button" aria-label="Zoom out orbit" [disabled]="zoom <= 0.5" (click)="setZoom(zoom / 1.25)">−</button>
-        <button class="btn btn-sm btn-light" type="button" (click)="setZoom(1)">Reset scale</button>
-        <button class="btn btn-sm btn-light" type="button" aria-label="Zoom in orbit" [disabled]="zoom >= 4" (click)="setZoom(zoom * 1.25)">+</button>
-      </div>
     </div>
     <div class="col-12 col-md-6 min-w-0">
       <h4 class="fs-6 text-gray-700">X/Y waveforms</h4>

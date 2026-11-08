@@ -34,10 +34,32 @@ describe('Independent Orbit acquisition date model', () => {
     const fixture = create(), component = fixture.componentInstance;
     const emit = spyOn(component.selected, 'emit');
     const picker = fixture.debugElement.query(By.directive(VibrationEventPickerComponent)).componentInstance as VibrationEventPickerComponent;
-    picker.chooseEvent('2026-11-04'); expect(emit).toHaveBeenCalledWith({ period: 'Daily', periodStart: '2026-11-04' });
+    picker.chooseEvent(component.events[0].id);
+    expect(emit).toHaveBeenCalledWith({ period: 'Daily', periodStart: '2026-11-04', capturedAtUtc: choice.capturedAtUtc });
     picker.day = '2026-11-04'; api.load.and.returnValue(of([{ ...choice, period: 'Weekly' }]));
     fixture.componentRef.setInput('period', 'Weekly'); fixture.detectChanges(); expect(picker.day).toBe('');
     expect(api.load).toHaveBeenCalledTimes(2); fixture.destroy();
+  });
+  it('shows separate event times on the selected day and restores the exact short capture', () => {
+    const captures = [10, 13, 16, 22].map(hour => {
+      const start = new Date(2026, 10, 4, hour).getTime();
+      return { ...choice, capturedAtUtc: new Date(start).toISOString(), finishedAtUtc: new Date(start + 200).toISOString(), sampleCount: 1280 };
+    });
+    api.load.and.returnValue(of(captures));
+    const fixture = create(), component = fixture.componentInstance;
+    const picker = fixture.debugElement.query(By.directive(VibrationEventPickerComponent)).componentInstance as VibrationEventPickerComponent;
+    const emit = spyOn(component.selected, 'emit');
+    const calendar = fixture.nativeElement.querySelector('input') as HTMLInputElement & { _flatpickr: { setDate(value: string, trigger: boolean): void } };
+    calendar._flatpickr.setDate(component.events[0].from.slice(0, 10), true); fixture.detectChanges();
+    expect(picker.visibleEvents.length).toBe(4);
+    expect(new Set(picker.visibleEvents.map(event => event.id)).size).toBe(4);
+    expect(picker.visibleEvents.every(event => event.label.endsWith('0.20 s'))).toBeTrue();
+    picker.chooseEvent(component.events[2].id);
+    expect(emit).toHaveBeenCalledWith({ period: 'Daily', periodStart: '2026-11-04', capturedAtUtc: captures[2].capturedAtUtc });
+    fixture.componentRef.setInput('value', emit.calls.mostRecent().args[0]); fixture.detectChanges();
+    expect(picker.selectedEventId).toBe(component.events[2].id);
+    expect(fixture.nativeElement.querySelectorAll('app-vibration-event-picker > .row > .col-12').length).toBe(3);
+    fixture.destroy();
   });
   it('blocks failed and empty histories, supports retry and ignores canceled responses', () => {
     api.load.and.returnValue(throwError(() => new Error('History unavailable')));

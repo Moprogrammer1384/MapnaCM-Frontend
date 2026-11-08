@@ -110,7 +110,7 @@ describe('Orbit workspace, real drawer, controls and ECharts', () => {
     await apply(); expect(source).toHaveBeenCalledTimes(1);
     await change('Acquisition period', 'Weekly');
     expect(state.activeTab()!.orbitCapture).toBeUndefined(); expect(root().querySelector('app-vibration-orbit-chart')).toBeNull();
-    await apply(); expect(state.activeTab()!.orbitCapture).toEqual({ period: 'Weekly', periodStart: '2026-11-04' });
+    await apply(); expect(state.activeTab()!.orbitCapture).toEqual({ period: 'Weekly', periodStart: '2026-11-04', capturedAtUtc: '2026-11-04T00:00:00Z' });
     expect(source).toHaveBeenCalledTimes(2);
   });
   it('keeps every order choice, units and Keyphasor local and preserves tab settings/zoom', async () => {

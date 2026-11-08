@@ -21,7 +21,7 @@
     <div class="col-12 col-md-6 min-w-0">
       <h4 class="fs-6 text-gray-700">Orbit ({{ settings.unit }})</h4>
       <div #orbitInteraction tabindex="0" role="group" class="rounded focus-ring"
-        aria-label="Interactive X/Y orbit sample tracking" [attr.aria-describedby]="titleId + '_tracking_help'"
+        aria-label="Interactive X/Y orbit sample tracking"
         (focus)="focusOrbit()" (keydown)="onOrbitKeydown($event)">
         <app-apache-echarts [options]="options.orbit" [mergeOptions]="true" height="400px"
           (chartInit)="bindOrbitChart($event)"></app-apache-echarts>
@@ -35,9 +35,8 @@
       </div>
     </div>
   </div>
-  <p [id]="titleId + '_tracking_help'" class="text-gray-600 fs-7 mt-5 mb-3">Hover the blue orbit line to follow a sample. Use ← / → or ↑ / ↓ for previous / next; Home / End for first / last.</p>
   @if (selectedPoint; as point) {
-    <div class="d-flex flex-wrap gap-5 border rounded p-4 text-gray-700 fs-7" role="status" aria-live="polite" aria-atomic="true" data-testid="orbit-tracking">
+    <div class="d-flex flex-wrap gap-5 border rounded p-4 mt-5 text-gray-700 fs-7" role="status" aria-live="polite" aria-atomic="true" data-testid="orbit-tracking">
       <span class="fw-semibold">Sample {{ selectedIndex! + 1 }} / {{ analysis.points.length }}</span>
       <span>Time: <strong>{{ point.time * 1000 | numberFormat }} ms</strong></span>
       <span>X: <strong>{{ point.x | numberFormat }} {{ settings.unit }}</strong></span>
@@ -46,7 +45,7 @@
   }
   <p class="text-gray-500 fs-8 mt-5 mb-0">{{ analysis.points.length }} samples · {{ record!.sampleRateHz | numberFormat }} Hz sampling ·
     {{ analysis.filter === 'order' || settings.center ? 'AC displacement' : 'Original X/Y offsets' }}.
-    Capture: {{ record!.capturedAtUtc | date:'medium' }} · {{ record!.period }} · 1 second.
+    Capture: {{ record!.capturedAtUtc | date:'medium' }} · {{ record!.period }} · {{ record!.sampleCount / record!.sampleRateHz | numberFormat }} s.
     X/Y are shown as orthogonal display coordinates; probe mounting angles and machine viewing direction are unspecified.</p>
 } @else {
   <div class="text-center text-gray-600 py-15" role="status">No Orbit acquisition available for this period. Select an existing acquisition above.</div>

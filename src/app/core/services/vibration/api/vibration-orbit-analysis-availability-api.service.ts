@@ -5,7 +5,7 @@ import { environment } from 'src/environments/environment';
 import { OrbitCaptureChoice, OrbitPeriod, OrbitProbePair } from '../../../models/orbit-analysis.model';
 import { ApiEnvelope } from '../../../models/response.model';
 import { apiErrorMessage } from '../../../utils/api-error';
-import { validOrbitPeriod, validOrbitPeriodDate } from '../orbit-analysis/orbit-capture-selection';
+import { validOrbitCaptureTiming, validOrbitPeriod, validOrbitPeriodDate } from '../orbit-analysis/orbit-capture-selection';
 
 interface OrbitSummary extends Omit<OrbitCaptureChoice, 'period'> {
   readonly id: string;
@@ -35,20 +35,20 @@ export class VibrationOrbitAnalysisAvailabilityApiService {
       }
       const seen = new Set<string>(), groups = new Map<string, OrbitSummary[]>();
       for (const row of data.acquisitions) {
-        if (!validOrbitPeriodDate(row.periodStart) || !row.capturedAtUtc?.endsWith('Z') || !row.finishedAtUtc?.endsWith('Z') ||
-          !Number.isFinite(Date.parse(row.capturedAtUtc)) || Date.parse(row.finishedAtUtc) - Date.parse(row.capturedAtUtc) !== 1000 ||
-          !Number.isInteger(row.sampleCount) || row.sampleCount < 4 || row.sampleRateHz !== row.sampleCount) {
-          throw new Error('The Orbit API returned an incomplete one-second acquisition.');
+        if (!validOrbitPeriodDate(row.periodStart) ||
+          !validOrbitCaptureTiming(row.capturedAtUtc, row.finishedAtUtc, row.sampleCount, row.sampleRateHz)) {
+          throw new Error('The Orbit API returned incomplete acquisition timing.');
         }
         const pair = pairs.find(item => item.x.measurement.id === row.xMeasurementId && item.y.measurement.id === row.yMeasurementId);
         if (!pair) { continue; }
-        const key = pair.key + '/' + row.periodStart;
+        const eventKey = row.periodStart + '/' + row.capturedAtUtc;
+        const key = pair.key + '/' + eventKey;
         if (seen.has(key)) { throw new Error('Duplicate acquisition in the selected Orbit period.'); }
         seen.add(key);
-        const group = groups.get(row.periodStart) ?? []; group.push(row); groups.set(row.periodStart, group);
+        const group = groups.get(eventKey) ?? []; group.push(row); groups.set(eventKey, group);
       }
       return [...groups].filter(([, rows]) => rows.length === pairs.length).sort(([a], [b]) => a.localeCompare(b))
-        .map(([periodStart, rows]) => ({ period, periodStart, capturedAtUtc: rows[0].capturedAtUtc,
+        .map(([, rows]) => ({ period, periodStart: rows[0].periodStart, capturedAtUtc: rows[0].capturedAtUtc,
           finishedAtUtc: rows[0].finishedAtUtc, sampleCount: rows[0].sampleCount, sampleRateHz: rows[0].sampleRateHz }));
     }));
   }

@@ -5,7 +5,7 @@ import { VibrationPage, VIBRATION_PAGES } from '../models/vibration-page.model';
 import { AnalysisChartSettings, defaultChartSettings } from '../models/analysis-chart-settings.model';
 import { DateTimeRange } from '../models/date-time-range.model';
 import { DEFAULT_ORBIT_SETTINGS, OrbitCaptureSelection, OrbitPeriod, OrbitSettings } from '../models/orbit-analysis.model';
-import { validOrbitPeriod, validOrbitPeriodDate } from './vibration/orbit-analysis/orbit-capture-selection';
+import { validOrbitCaptureInstant, validOrbitPeriod, validOrbitPeriodDate } from './vibration/orbit-analysis/orbit-capture-selection';
 import { resolveOrbitProbePairs } from './vibration/orbit-analysis/orbit-probe-pairing';
 
 interface PageTabs {
@@ -140,7 +140,8 @@ export class VibrationSelectionService {
       ? { ...tab, orbitPeriod: period, orbitCapture: undefined, awaitingDateRange: true } : tab), activeId: this.activeTabId() });
   }
   selectOrbitCapture(id: string, selection: OrbitCaptureSelection): void {
-    if (!validOrbitPeriod(selection.period) || !validOrbitPeriodDate(selection.periodStart)) { return; }
+    if (!validOrbitPeriod(selection.period) || !validOrbitPeriodDate(selection.periodStart) ||
+      (selection.capturedAtUtc !== undefined && !validOrbitCaptureInstant(selection.capturedAtUtc))) { return; }
     this.updateWorkspace({ tabs: this.tabs().map(tab => tab.id === id && tab.orbitPairs && tab.orbitPeriod === selection.period
       ? { ...tab, orbitCapture: { ...selection }, awaitingDateRange: false } : tab), activeId: this.activeTabId() });
   }

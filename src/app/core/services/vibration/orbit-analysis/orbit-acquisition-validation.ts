@@ -1,6 +1,6 @@
 import { OrbitRecord } from 'src/app/core/models/orbit-analysis.model';
 import { validateKeyphasor } from './orbit-keyphasor';
-import { validOrbitPeriod, validOrbitPeriodDate } from './orbit-capture-selection';
+import { orbitCaptureDuration, validOrbitCaptureTiming, validOrbitPeriod, validOrbitPeriodDate } from './orbit-capture-selection';
 
 /** Validate received inputs; never synthesize time, sensor values, pulse edges or speed. */
 export function validateOrbitAcquisition(record: OrbitRecord): void {
@@ -23,11 +23,13 @@ export function validateOrbitAcquisition(record: OrbitRecord): void {
     throw new Error('X/Y channels must be distinct, valid and calibrated displacement channels on the same clock.');
   }
   const start = Date.parse(record.capturedAtUtc), end = Date.parse(record.finishedAtUtc);
-  if (!validOrbitPeriod(record.period) || !validOrbitPeriodDate(record.periodStart) || end - start !== 1000 || record.sampleRateHz !== count) {
-    throw new Error('Orbit requires a complete one-second acquisition for a stored period.');
+  if (!validOrbitPeriod(record.period) || !validOrbitPeriodDate(record.periodStart) ||
+    !validOrbitCaptureTiming(record.capturedAtUtc, record.finishedAtUtc, count, record.sampleRateHz) ||
+    record.time.some((time, i) => Math.abs(time - i / record.sampleRateHz) > Math.max(1e-9, 1e-6 / record.sampleRateHz))) {
+    throw new Error('Orbit requires a complete uniform acquisition matching its stored duration and sample rate.');
   }
   if (!record.capturedAtUtc?.endsWith('Z') || !record.finishedAtUtc?.endsWith('Z') || !Number.isFinite(start) ||
-    !Number.isFinite(end) || start >= end || record.time[count - 1] * 1000 >= end - start) {
+    !Number.isFinite(end) || record.time[count - 1] >= orbitCaptureDuration(record.capturedAtUtc, record.finishedAtUtc)) {
     throw new Error('Acquisition UTC timestamps must contain every sample.');
   }
   if (record.shaftSpeedRpm !== null && (!Number.isFinite(record.shaftSpeedRpm) || record.shaftSpeedRpm < 0)) {

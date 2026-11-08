@@ -40,6 +40,16 @@ describe('Orbit discrete acquisition HTTP contract', () => {
     source.load(input()).subscribe(data => expect(data!.keyphasor).toBeNull());
     pending().flush(response({ ...record, keyphasor: null } as unknown as ReturnType<typeof analyticalOrbit>));
   });
+  it('requests the selected instant and accepts its full subsecond waveform without extending it', () => {
+    const original = analyticalOrbit();
+    const record = { ...original, capturedAtUtc: '2026-11-04T13:00:00Z', finishedAtUtc: '2026-11-04T13:00:00.200Z',
+      sampleCount: 1280, time: original.time.slice(0, 1280), x: original.x.slice(0, 1280), y: original.y.slice(0, 1280), keyphasor: undefined };
+    const request = { ...input(), selection: { ...input().selection, capturedAtUtc: record.capturedAtUtc } };
+    source.load(request).subscribe(data => { expect(data!.time).toEqual(record.time); expect(data!.x).toEqual(record.x); expect(data!.sampleCount).toBe(1280); });
+    const read = pending(); expect(read.request.params.get('CapturedAtUtc')).toBe(record.capturedAtUtc); read.flush(response(record));
+    source.load(request).subscribe({ next: () => fail('Wrong event accepted'), error: error => expect(error.message).toContain('different acquisition') });
+    pending().flush(response(original));
+  });
   it('accepts an absent acquisition and rejects mismatched periods or truncated captures', () => {
     source.load(input()).subscribe(data => expect(data).toBeNull()); pending().flush(response(null));
     const invalid = [
@@ -76,6 +86,19 @@ describe('Orbit discrete acquisition HTTP contract', () => {
     TestBed.inject(VibrationOrbitAnalysisAvailabilityApiService).load([first, second], 'Daily').subscribe(data => expect(data.map(row => row.periodStart)).toEqual(['2026-11-01']));
     const rows = [[1, 4, '2026-11-01'], [8, 9, '2026-11-01'], [1, 4, '2026-11-02']].map(([xMeasurementId, yMeasurementId, periodStart], i) => ({
       id: String(i), xMeasurementId, yMeasurementId, periodStart, capturedAtUtc: periodStart + 'T00:00:00Z', finishedAtUtc: periodStart + 'T00:00:01Z', sampleCount: 6400, sampleRateHz: 6400,
+    }));
+    http.expectOne(request => request.url.endsWith('/OrbitAnalysis/GetAvailability')).flush({ success: true, data: { timeZone: 'Asia/Tehran', period: 'Daily', acquisitions: rows } });
+  });
+  it('retains multiple same-day events and intersects by exact time across pairs', () => {
+    const first = pair(), second = { ...first, key: 'second', x: { ...first.x, measurement: { ...first.x.measurement, id: 8 } },
+      y: { ...first.y, measurement: { ...first.y.measurement, id: 9 } } };
+    TestBed.inject(VibrationOrbitAnalysisAvailabilityApiService).load([first, second], 'Daily').subscribe(data => {
+      expect(data.map(row => row.capturedAtUtc)).toEqual(['2026-11-04T10:00:00Z', '2026-11-04T16:00:00Z']);
+      expect(data.every(row => row.sampleCount === 1280)).toBeTrue();
+    });
+    const rows = [[1, 4, 10], [8, 9, 10], [1, 4, 13], [1, 4, 16], [8, 9, 16], [8, 9, 22]].map(([xMeasurementId, yMeasurementId, hour], i) => ({
+      id: String(i), xMeasurementId, yMeasurementId, periodStart: '2026-11-04', capturedAtUtc: `2026-11-04T${hour}:00:00Z`,
+      finishedAtUtc: `2026-11-04T${hour}:00:00.200Z`, sampleCount: 1280, sampleRateHz: 6400,
     }));
     http.expectOne(request => request.url.endsWith('/OrbitAnalysis/GetAvailability')).flush({ success: true, data: { timeZone: 'Asia/Tehran', period: 'Daily', acquisitions: rows } });
   });

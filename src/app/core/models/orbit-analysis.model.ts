@@ -11,7 +11,12 @@ export const ORBIT_PERIODS: readonly { value: OrbitPeriod; label: string }[] = [
   { value: 'Daily', label: 'Daily' }, { value: 'Weekly', label: 'Weekly' },
   { value: 'Monthly', label: 'Monthly' }, { value: 'Quarterly', label: 'Three-monthly' },
 ];
-export interface OrbitCaptureSelection { readonly period: OrbitPeriod; readonly periodStart: string; }
+export interface OrbitCaptureSelection {
+  readonly period: OrbitPeriod;
+  readonly periodStart: string;
+  /** Exact stored event within the calendar period; omitted only by older single-event callers. */
+  readonly capturedAtUtc?: string;
+}
 export interface OrbitCaptureChoice extends OrbitCaptureSelection {
   readonly capturedAtUtc: string;
   readonly finishedAtUtc: string;

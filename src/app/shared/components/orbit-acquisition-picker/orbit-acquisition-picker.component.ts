@@ -8,9 +8,10 @@ import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
 import { ORBIT_PERIODS, OrbitCaptureChoice, OrbitCaptureSelection, OrbitPeriod, OrbitProbePair } from 'src/app/core/models/orbit-analysis.model';
 import { VibrationOrbitAnalysisAvailabilityApiService } from 'src/app/core/services/vibration/api/vibration-orbit-analysis-availability-api.service';
 import { apiErrorMessage } from 'src/app/core/utils/api-error';
+import { formatNumber } from '../../pipes/number-format.pipe';
 import { VibrationEventPickerComponent } from '../vibration-event-picker/vibration-event-picker.component';
 
-/** Independent date model: choose one existing one-second capture from a stored cadence. */
+/** Independent date model: choose one exact stored event, including multiple captures per day. */
 @Component({
   selector: 'app-orbit-acquisition-picker', standalone: true,
   imports: [CommonModule, FormsModule, SharedModule, VibrationEventPickerComponent],
@@ -63,20 +64,25 @@ export class OrbitAcquisitionPickerComponent implements OnChanges, OnDestroy {
     if (this.loading || this.error) { return; }
     const event = this.events.find(item => item.from === value.from && item.to === value.to);
     if (!event) { return; }
-    this.selected.emit({ period: this.period, periodStart: event.id });
+    const choice = this.choices.find(item => this.captureKey(item) === event.id);
+    if (choice) { this.selected.emit({ period: this.period, periodStart: choice.periodStart, capturedAtUtc: choice.capturedAtUtc }); }
   }
   private accept(choices: readonly OrbitCaptureChoice[]): void {
     this.choices = choices;
-    this.events = choices.map(choice => ({ id: choice.periodStart, from: this.localInstant(choice.capturedAtUtc),
-      to: this.localInstant(choice.finishedAtUtc), label: `${new Date(choice.capturedAtUtc).toLocaleString()} · 1 s` }));
+    this.events = choices.map(choice => ({ id: this.captureKey(choice), from: this.localInstant(choice.capturedAtUtc),
+      to: this.localInstant(choice.finishedAtUtc),
+      label: `${new Date(choice.capturedAtUtc).toLocaleString()} · ${formatNumber(choice.sampleCount / choice.sampleRateHz)} s` }));
     this.syncSelection(); this.cdr.markForCheck();
   }
   private syncSelection(): void {
-    const event = this.value?.period === this.period ? this.events.find(item => item.id === this.value?.periodStart) : undefined;
+    const matches = this.value?.period === this.period ? this.choices.filter(item => item.periodStart === this.value?.periodStart &&
+      (!this.value.capturedAtUtc || item.capturedAtUtc === this.value.capturedAtUtc)) : [];
+    const event = matches.length === 1 ? this.events.find(item => item.id === this.captureKey(matches[0])) : undefined;
     if ((event?.from ?? '') !== this.pickerValue.from || (event?.to ?? '') !== this.pickerValue.to) {
       this.pickerValue = { from: event?.from ?? '', to: event?.to ?? '' };
     }
   }
+  private captureKey(choice: OrbitCaptureChoice): string { return choice.periodStart + '/' + choice.capturedAtUtc; }
   private localInstant(utc: string): string {
     const date = new Date(utc), pad = (value: number) => String(value).padStart(2, '0');
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}.${String(date.getMilliseconds()).padStart(3, '0')}`;

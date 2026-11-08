@@ -2,7 +2,7 @@
   dateSelectionTitle="Acquisition date and time">
   <ng-template let-tab>
     @if (!tab.orbitCapture) {
-      <div class="text-gray-500 text-center py-10" role="status">Select an acquisition period and event time above to load one second of measurement data.</div>
+      <div class="text-gray-500 text-center py-10" role="status">Select an acquisition period and event time above to load the recorded measurement data.</div>
     } @else {
       @for (pair of tab.orbitPairs; track pair.key) {
         <section [attr.aria-labelledby]="tab.id + pair.key">

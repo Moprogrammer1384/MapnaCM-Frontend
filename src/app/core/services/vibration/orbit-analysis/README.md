@@ -1,6 +1,6 @@
 # DARP Orbit Analysis
 
-Updated 2026-11-04. Orbit reads authenticated backend acquisitions and calendar metadata. No frontend acquisition files, fallback data or browser persistence.
+Updated 2026-11-08. Orbit reads authenticated backend acquisitions and calendar metadata. No frontend acquisition files, fallback data or browser persistence.
 
 ## Workflow and ownership
 
@@ -11,19 +11,21 @@ Updated 2026-11-04. Orbit reads authenticated backend acquisitions and calendar 
 - `VibrationSelectionService` keeps immutable pairs/settings per tab. Settings are shared by the bearing charts in that tab. Visited tabs retain chart instances and scale; route navigation retains tab data/settings but remounts the charts, following the existing workspace lifecycle.
 - `shared/components/vibration-orbit-chart/` renders two ECharts hosts side by side at Bootstrap `md` and above, stacked on smaller screens. It cancels superseded reads, ignores stale results, preserves instances on settings/theme changes and disposes subscriptions/observers on destruction.
 
-## Stored one-second acquisition selection
+## Stored acquisition selection
+
+**2026-11-08:** Date filters the existing Event time dropdown to separate captures on the chosen day. Event identity includes periodStart and capturedAtUtc; selecting one sends CapturedAtUtc to Get. Availability intersects exact pair/period/capture instants across selected pairs. Complete uniform captures may have variable durations, including less than one second, with duration matching count/rate. Event labels and the existing capture footer show actual duration. User-authorized Orbit-only backend/schema/data changes are applied and verified; there are no new UI controls.
 
 The standalone [OrbitAcquisitionPickerComponent](../../../../shared/components/orbit-acquisition-picker/orbit-acquisition-picker.component.ts) owns cadence, discovery, optional single-date filtering, exact event selection, cancellation, cache and retry. It reuses the Bode event picker and supplies a feature-neutral dateSelectionContent template to app-analysis-panel. The responsive row order is **Acquisition period, Date, Event time**. Each is col-md-4; mobile stacks them. The requested count/duration-description row is removed. The optional date-adjacent template and reset key do not change Bode's default date/event layout.
 
 Four stored histories exist: Daily, Weekly, Monthly and Quarterly (Three-monthly). Choosing a different cadence clears its date filter and selected acquisition while retaining display settings. Selecting an event immediately loads the selected frame. There is no range, editable hour/minute, Apply or latest-in-range fallback. Tabs retain their own period and capture key.
 
-ORBIT_DATA_SOURCE resolves to api/VibrationOrbitAnalysisApiService. GET /OrbitAnalysis/Get takes XMeasurementId, YMeasurementId, Period and PeriodStart (yyyy-MM-dd). It returns the exact requested identity and record, or null. It never requests From/To or combines captures. UTC capture start/finish describe one immutable second, not a query window; input arrays, clock/channel metadata, µm displacement, rate/count, nullable received speed, voltage samples and counter-edge timestamps come only from the API.
+ORBIT_DATA_SOURCE resolves to api/VibrationOrbitAnalysisApiService. GET /OrbitAnalysis/Get takes XMeasurementId, YMeasurementId, Period and PeriodStart (yyyy-MM-dd); the frontend also sends CapturedAtUtc for an explicitly selected event. The backend resolves that exact instant and rejects an ambiguous period-only read. The frontend checks the returned record's selected instant. It never requests From/To or combines captures. UTC capture start/finish describe the immutable recorded duration, not a query window; input arrays, clock/channel metadata, µm displacement, rate/count, nullable received speed, voltage samples and counter-edge timestamps come only from the API.
 
 VibrationOrbitAnalysisAvailabilityApiService independently reads GET /OrbitAnalysis/GetAvailability with repeated MeasurementIds and Period, without calendar-window bounds or the Time Domain availability contract. Metadata includes stored pair IDs, periodStart, capture bounds, sample count/rate and identity. The adapter intersects exact requested X/Y pairs and period keys. Only proven common acquisitions enable calendar dates and event choices; bounds never create missing dates. Empty/failed/loading metadata blocks event selection, with Retry on failure.
 
-Every frame is exactly **one second**, with sampleCount=sampleRateHz and full arrays. Current backend history covers all 92 days from 2026-08-04 to exclusive 2026-11-04. Per pair: 92 Daily, 13 complete Weekly, 3 Monthly, 1 Quarterly. Three pairs total 327 frames/2092800 points at 6400 Hz. All seeded frames have stored Keyphasor data; a received frame may omit it or send null. A counter edge at time=1 can bracket the final waveform points; no sensor input is inferred by the frontend.
+Current backend history (verified 2026-11-08) covers all 92 days from 2026-08-04 to exclusive 2026-11-04. Per pair: **152 Daily, 18 Weekly, 6 Monthly, 2 Quarterly**. Three pairs total **534 frames / 1417728 points**, at 3200/6400 Hz. Durations are 0.06, 0.12, 0.20, 0.35, 0.60, 0.85 and 1.20 seconds. Some daily dates contain 10:00, 13:00, 16:00 and 22:00 Tehran observations; periods remain retention metadata, not editable durations. All authored frames have stored reference voltages/pulses; live frames may omit them.
 
-Source authoring/reference files live only in the backend tool. Previous 474 short frames were backed up and replaced atomically. There are no frontend JSON inputs, generators, fixed reference-date defaults or mock branches. Test-only analytical vectors are outside the application graph.
+Explicit offline development authoring varies shape, scale, orientation, rate and duration. Direct traces have 2–5 expanding turns rather than 50 repeated identical revolutions. This is authored development input, not a runtime display transform. A fitted single-order trace is inherently periodic and remains unchanged. Source authoring lives only in the backend tool. The previous 327 generated one-second frames were checked against their original values, fully backed up and replaced atomically; unrelated Time Domain/Bode data stayed unchanged. Test vectors remain outside the application graph.
 
 ## Mechanical interpretation and calculations
 
@@ -68,4 +70,4 @@ Tracking updates only dedicated cursor series through the public ECharts API; it
 
 ## Validation
 
-App/template and test TypeScript compilation passed. HTTP and real-browser workflow coverage includes exact period identity, full-second input, wrong-pair/incomplete/mismatched-period rejection, null/absent Keyphasor, direct fallback, proven capture dates, drawer gating, immediate selection, route resolution, settings retention, mouse/arrow tracking and chart cleanup. Live authenticated API reads and full backend seed verification passed. Final build/lint results are recorded in `agent.md`.
+App/template and test TypeScript compilation passed. HTTP and real-browser workflow coverage includes exact period identity, complete variable-duration input, wrong-pair/incomplete/mismatched-period rejection, null/absent Keyphasor, direct fallback, proven capture dates, drawer gating, immediate selection, route resolution, settings retention, mouse/arrow tracking and chart cleanup. Live authenticated API reads and full backend seed verification passed. Final build/lint results are recorded in `agent.md`.

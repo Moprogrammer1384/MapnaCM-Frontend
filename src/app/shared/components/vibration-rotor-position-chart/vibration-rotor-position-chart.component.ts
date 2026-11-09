@@ -88,7 +88,7 @@ export class VibrationRotorPositionChartComponent implements OnChanges, OnDestro
           this.error = 'The returned data does not belong to the selected probe pair and event.';
         } else {
           this.record = record ?? undefined;
-          this.sourceUnit.emit(record?.provenance === 'measured' ? record.unit : undefined);
+          this.sourceUnit.emit(record?.unit);
           this.updateAnalysis();
         }
         this.cdr.markForCheck();

@@ -1,9 +1,18 @@
 import { DEFAULT_ROTOR_POSITION_SETTINGS as defaults } from 'src/app/core/models/rotor-position.model';
 import { rotorPair, rotorRecord } from 'src/testing/rotor-position-fixture';
 import { analyzeRotorPosition } from './rotor-position-analysis';
-import { RotorPositionMockDataSource } from './rotor-position-mock-data-source.service';
+import { TestRotorPositionDataSource } from 'src/testing/rotor-position-source.fixture';
 
 describe('Rotor Position: calibrated DC means', () => {
+  it('analyzes local datetime2(7) intervals shorter than a millisecond without rounding to zero', () => {
+    const record = rotorRecord();
+    for (const zone of ['', 'Z', '+03:30']) {
+      const result = analyzeRotorPosition({ ...record, event: { ...record.event,
+        from: `2026-11-08T10:00:00.0000001${zone}`, to: `2026-11-08T10:00:00.0000003${zone}` },
+        meanWindowSeconds: .0000001, observations: record.observations.slice(0, 2).map((point, i) => ({ ...point, timeSeconds: i * .0000001 })) }, defaults);
+      expect(result.points.length).toBe(2); expect(result.points[1].time).toBe(.0000001);
+    }
+  });
   it('preserves a non-zero static position at standstill without any complete-cycle requirement', () => {
     const record = rotorRecord();
     const result = analyzeRotorPosition({ ...record, observations: record.observations.map(p => ({ ...p, meanProbeX: 12, meanProbeY: -44, speedRpm: 0 })) }, defaults);
@@ -58,13 +67,13 @@ describe('Rotor Position: calibrated DC means', () => {
 
 describe('Separated Rotor Position demonstration source', () => {
   it('offers several exact events per day, only Startup/CoastDown/Trip, with independent valid position records', () => {
-    const source = new RotorPositionMockDataSource(), pair = rotorPair();
+    const source = new TestRotorPositionDataSource(), pair = rotorPair();
     source.listEvents([pair]).subscribe(events => {
       expect(events.length).toBe(9); expect(events.filter(e => e.from.startsWith('2026-11-08')).length).toBe(3);
       for (const event of events) {
         expect(['Startup', 'CoastDown', 'Trip']).toContain(event.eventType);
         source.load(pair, event.id).subscribe(record => {
-          expect(record!.provenance).toBe('simulated'); expect(record!.pairKey).toBe(pair.key);
+          expect(record!.pairKey).toBe(pair.key);
           const result = analyzeRotorPosition(record!, defaults), points = result.points;
           expect(points.length).toBeGreaterThan(100);
           expect(points[points.length - 1].time).toBe((Date.parse(event.to) - Date.parse(event.from)) / 1000);

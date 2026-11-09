@@ -1,11 +1,9 @@
-import { Injectable } from '@angular/core';
 import { defer, Observable, of } from 'rxjs';
 import { RotorPositionEvent, RotorPositionPair, RotorPositionRecord } from 'src/app/core/models/rotor-position.model';
-import type { RotorPositionDataSource } from './rotor-position-data-source.service';
+import type { RotorPositionDataSource } from 'src/app/core/services/vibration/rotor-position/rotor-position-data-source.service';
 
 /** Explicit frontend demonstration data. Never a fallback for measured/API data. */
-@Injectable({ providedIn: 'root' })
-export class RotorPositionMockDataSource implements RotorPositionDataSource {
+export class TestRotorPositionDataSource implements RotorPositionDataSource {
   private readonly events: readonly RotorPositionEvent[] = ['2026-11-03', '2026-11-06', '2026-11-08'].reduce<RotorPositionEvent[]>((events, day, index) => events.concat(
     (['Startup', 'CoastDown', 'Trip'] as const).map((eventType, kind) => {
       const hour = [10, 16, 22][kind], duration = [180, 150, 54][kind] + index * [12, 9, 3][kind];
@@ -41,7 +39,7 @@ export class RotorPositionMockDataSource implements RotorPositionDataSource {
           meanProbeX: x * Math.cos(angleX) + y * Math.sin(angleX),
           meanProbeY: x * Math.cos(angleY) + y * Math.sin(angleY), speedRpm, quality: 'valid' as const };
       });
-      return of({ id: `${event.id}-${pair.key}`, event, pairKey: pair.key, provenance: 'simulated' as const,
+      return of({ id: `${event.id}-${pair.key}`, event, pairKey: pair.key,
         quantity: 'displacement' as const, unit: 'µm' as const, dcPreserved: true, synchronized: true,
         meanWindowSeconds: duration / (count - 1), probeAnglesDegrees: [45, 135] as const,
         reference: { probeMean: [0, 0] as const, position: [0, 0] as const, bearingCentreKnown: true },

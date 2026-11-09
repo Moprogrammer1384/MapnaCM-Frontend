@@ -47,9 +47,9 @@ export class RotorPositionEventPickerComponent implements OnChanges, OnDestroy {
       error: error => { this.loading = false; this.error = apiErrorMessage(error, 'Rotor position events'); this.cdr.markForCheck(); },
     });
   }
-  choose(range: DateTimeRange): void {
+  choose(range: DateTimeRange & { readonly id?: string }): void {
     if (this.loading || this.error) { return; }
-    const event = this.events.find(item => item.from === range.from && item.to === range.to);
+    const event = this.events.find(item => (!range.id || item.id === range.id) && item.from === range.from && item.to === range.to);
     if (event) { this.selected.emit(event); }
   }
   ngOnDestroy(): void { this.subscription?.unsubscribe(); }

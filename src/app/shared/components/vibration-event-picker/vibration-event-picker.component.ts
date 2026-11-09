@@ -19,6 +19,7 @@ import { CalendarDateRange } from 'src/app/core/models/time-availability.model';
 export class VibrationEventPickerComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input({ required: true }) inputId: string;
   @Input({ required: true }) value: DateTimeRange;
+  @Input() eventId?: string;
   @Input() events: readonly AnalysisEventTime[] = [];
   @Input() disabled = false;
   @Input() minDate?: string;
@@ -27,6 +28,7 @@ export class VibrationEventPickerComponent implements AfterViewInit, OnChanges, 
   @Input() dateAdjacentContent?: TemplateRef<unknown>;
   @Input() resetDateKey?: string;
   @Output() readonly selected = new EventEmitter<DateTimeRange>();
+  @Output() readonly eventSelected = new EventEmitter<AnalysisEventTime>();
   @Output() readonly calendarWindowChange = new EventEmitter<CalendarDateRange>();
   @ViewChild('dateInput', { static: true }) private dateInput: ElementRef<HTMLInputElement>;
   day = '';
@@ -71,9 +73,9 @@ export class VibrationEventPickerComponent implements AfterViewInit, OnChanges, 
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['resetDateKey'] && !changes['resetDateKey'].firstChange) { this.day = ''; this.selectedEventId = null; }
-    if (changes['value'] || changes['events']) {
+    if (changes['value'] || changes['events'] || changes['eventId']) {
       const saved = this.savedEvent();
-      if (changes['value'] || saved) { this.selectedEventId = saved?.id ?? null; }
+      if (changes['value'] || changes['eventId'] || saved) { this.selectedEventId = saved?.id ?? null; }
       this.filterEvents();
     }
     this.syncPicker();
@@ -96,6 +98,7 @@ export class VibrationEventPickerComponent implements AfterViewInit, OnChanges, 
     this.selectedEventId = event.id;
     this.value = { from: event.from, to: event.to };
     this.selected.emit(this.value);
+    this.eventSelected.emit(event);
   }
 
   private filterEvents(): void {
@@ -105,7 +108,8 @@ export class VibrationEventPickerComponent implements AfterViewInit, OnChanges, 
 
   private savedEvent(): AnalysisEventTime | undefined {
     const normalize = (text: string) => text.length === 16 ? `${text}:00` : text;
-    return this.events.find(event => event.from === normalize(this.value.from) && event.to === normalize(this.value.to));
+    return this.events.find(event => (!this.eventId || event.id === this.eventId) &&
+      event.from === normalize(this.value.from) && event.to === normalize(this.value.to));
   }
 
   private dayEnabled(day: string): boolean {

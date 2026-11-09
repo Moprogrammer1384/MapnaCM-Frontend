@@ -11,7 +11,7 @@ import type { Instance } from 'flatpickr/dist/types/instance';
 import { providePrimeNG } from 'primeng/config';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
 import { ROTOR_POSITION_DATA_SOURCE } from 'src/app/core/services/vibration/rotor-position/rotor-position-data-source.service';
-import { RotorPositionMockDataSource } from 'src/app/core/services/vibration/rotor-position/rotor-position-mock-data-source.service';
+import { TestRotorPositionDataSource } from 'src/testing/rotor-position-source.fixture';
 import { RotorPositionTabStateService } from 'src/app/core/services/vibration/rotor-position/rotor-position-tab-state.service';
 import { METRONIC_PRIMENG_CONFIG } from 'src/app/shared/components/metronic-primeng.config';
 import { VibrationRotorPositionChartComponent } from 'src/app/shared/components/vibration-rotor-position-chart/vibration-rotor-position-chart.component';
@@ -40,7 +40,7 @@ describe('Rotor Position frontend workspace', () => {
     window.jQuery(select).val(value).trigger('change'); await settle();
   };
   beforeEach(async () => {
-    const mock = new RotorPositionMockDataSource(); load = spyOn(mock, 'load').and.callThrough();
+    const mock = new TestRotorPositionDataSource(); load = spyOn(mock, 'load').and.callThrough();
     await TestBed.configureTestingModule({ imports: [NoopAnimationsModule], providers: [
       provideRouter([{ path: 'cm/vibration', loadChildren: () => VibrationModule }]),
       provideHttpClient(), provideHttpClientTesting(), providePrimeNG(METRONIC_PRIMENG_CONFIG), VibrationSelectionService,
@@ -70,14 +70,14 @@ describe('Rotor Position frontend workspace', () => {
     expect(load).not.toHaveBeenCalled(); await choose('Trip');
     expect(load).toHaveBeenCalledTimes(1); expect(chartComponent().event.eventType).toBe('Trip');
     expect(root().querySelector('[data-testid="rotor-event-type"]')!.textContent).toBe('Trip');
-    expect(root().textContent).toContain('Simulated data');
+    expect(root().textContent).not.toContain('Simulated data');
     root().querySelector<HTMLButtonElement>('[aria-label="All dates; clear date filter"]')!.click(); await settle();
     expect(select.options.length).toBe(10); expect(load).toHaveBeenCalledTimes(1);
   });
   it('offers a nonstandard unit only while a measured record declares it', async () => {
     await createTab(); await choose();
     const component = chartComponent(), record = component.record!;
-    load.and.returnValue(of({ ...record, provenance: 'measured', unit: 'mil' }));
+    load.and.returnValue(of({ ...record, unit: 'mil' }));
     component.reload(); await settle();
     const units = () => Array.from(root().querySelector<HTMLSelectElement>('select[id$="_rotor_unit"]')!.options, option => option.value);
     expect(units()).toEqual(['µm', 'mm', 'mil']);

@@ -1,13 +1,13 @@
 import { inject, InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 import { RotorPositionEvent, RotorPositionPair, RotorPositionRecord } from 'src/app/core/models/rotor-position.model';
-import { RotorPositionMockDataSource } from './rotor-position-mock-data-source.service';
+import { VibrationRotorPositionApiService } from '../api/vibration-rotor-position-api.service';
 
-/** Frontend seam for a future agreed adapter. No assumed endpoint or Bode amplitude reuse. */
+/** Recorded DC acquisition source. Bode tracking amplitudes are never reused as probe means. */
 export interface RotorPositionDataSource {
   listEvents(pairs: readonly RotorPositionPair[]): Observable<readonly RotorPositionEvent[]>;
   load(pair: RotorPositionPair, eventId: string): Observable<RotorPositionRecord | null>;
 }
 export const ROTOR_POSITION_DATA_SOURCE = new InjectionToken<RotorPositionDataSource>('ROTOR_POSITION_DATA_SOURCE', {
-  providedIn: 'root', factory: () => inject(RotorPositionMockDataSource),
+  providedIn: 'root', factory: () => inject(VibrationRotorPositionApiService),
 });

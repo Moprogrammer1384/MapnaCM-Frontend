@@ -2,12 +2,13 @@
 
 Implemented 2026-11-09. This is the radial Shaft Average Centerline page, using
 the existing Vibration workspace, measurement drawer, preserved tabs, Metronic
-controls and ECharts host. Backend/database files and other analyses' numerical
-processing are unchanged.
+controls and ECharts host. On 2026-11-09 the user explicitly authorized the
+Vibration backend/database implementation and the recorded API connection.
 
 ## Acquisition and frontend data source
 
-One event is one independent Startup, CoastDown or Trip acquisition. The same
+One event is a shared Startup, CoastDown or Trip operating run. Its Bode and
+Rotor Position acquisitions remain independent. The same
 `VibrationEventPickerComponent` used by Bode supplies optional Date filtering,
 searchable Event time, all dates by default and the date-clear icon. There is no
 range, Apply, acquisition cadence or merging of separate events. Choosing an
@@ -15,20 +16,28 @@ event loads each selected bearing pair once; changing a display setting or zoom
 does not read again.
 
 `ROTOR_POSITION_DATA_SOURCE` is a local interface with `listEvents(pairs)` and
-`load(pair, eventId)`. Its default is the explicitly separated
-`RotorPositionMockDataSource`. It generates **simulated**, pre-averaged,
-DC-preserving displacement observations, not measurements from a real turbine.
-Each loaded demonstration is visibly marked Simulated data. The catalogue has
-three dates (2026-11-03, 06 and 08), each with Startup at 10:00, Coast down at
-16:00 and Trip at 22:00. Each record has its own bounds, speed profile and
-position trajectory. Trip deceleration is faster than a normal coast down.
+`load(pair, eventId)`. Its default is `VibrationRotorPositionApiService` in
+`../api/`: GET `/RotorPosition/GetAvailability` sends aligned XMeasurementIds
+and YMeasurementIds; GET `/RotorPosition/Get` sends OperatingRunId and the
+selected pair. Both use the existing authenticated API envelope. Availability
+intersects exact operating-run identities across the selected bearings, rather
+than merging equal dates. Event IDs are OperatingRun IDs; record IDs identify
+the independent pair acquisition. Empty/missing/failed responses produce the
+existing empty/error states, with no generated replacement or browser storage.
+The adapter converts UTC to Asia/Tehran only at the picker boundary and retains
+datetime2(7) fractional intervals, native DC values, null RPM and quality gaps.
 
-This is not a Bode API adapter, an assumed server contract or a fallback after
-API failure. Bode amplitudes/phase cannot supply DC position. A future adapter
-can replace the token after agreement on the actual data contract; no endpoint,
-database change, browser data persistence or dependency is introduced here.
-Event `from`/`to` values are local calendar strings for the existing picker;
-an eventual adapter must convert server UTC values once at that boundary.
+The backend owns `OperatingRun`/`OperatingPoint` as shared event time, duration
+and RPM. Independent `BodeRun`/`BodePoint` store order amplitude/phase;
+`RotorPositionCapture`/`RotorPositionPoint` store DC means and owned calibration.
+Both reference shared point indexes; common time/RPM are not copied into their
+point tables. A Bode acquisition alone cannot manufacture Rotor DC. The backend
+engineering reference import provides three dates (Nov 3/6/8), each at 10:00,
+16:00 and 22:00 Tehran, without any operational simulation flag. Its external
+manifest records the generated origin; these are not field measurements.
+Test-only sources now live under `src/testing/` and are excluded from the app
+dependency graph. See backend `docs/Vibration-Operating-Runs.md` for ingestion,
+DDD boundaries, migration preservation and database verification.
 
 ## Selection and ownership
 
@@ -91,11 +100,10 @@ Bearing-centre reference retains the calibrated DC position. First valid point
 is an explicit relative offset and suppresses bearing clearance and the
 bearing-relative eccentricity readout. An unknown bearing centre requires this
 relative mode. Clearance dimensions are explicitly **radial** X/Y semiaxes in
-the record unit; no diameter conversion is guessed. Unit conversion between
-The UI offers µm/mm; mil appears only when a measured record declares mil.
+the record unit; no diameter conversion is guessed.
+The UI offers µm/mm; mil/in appear only when an API record declares that native unit.
 Native unit exceptions are scoped per pair/event in the weak tab state and are
-removed on capture replacement/failure. Simulated data does not unlock extra
-units. The retained µm/mm/mil conversions preserve full calculation precision;
+removed on capture replacement/failure. The retained µm/mm/mil/in conversions preserve full calculation precision;
 display uses the shared
 two-decimal formatter. There are no automatic severity classifications.
 

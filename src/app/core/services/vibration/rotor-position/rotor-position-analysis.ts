@@ -1,14 +1,15 @@
 import { RotorPositionAnalysis, RotorPositionPoint, RotorPositionRecord, RotorPositionSettings, RotorPositionUnit } from 'src/app/core/models/rotor-position.model';
+import { elapsedSeconds } from 'src/app/core/utils/elapsed-seconds';
 
 /** Micrometres per native unit. Conversion never changes physical quantity or removes DC. */
-export const ROTOR_POSITION_UNIT_SCALE: Record<RotorPositionUnit, number> = { 'µm': 1, mm: 1000, mil: 25.4 };
+export const ROTOR_POSITION_UNIT_SCALE: Record<RotorPositionUnit, number> = { 'µm': 1, mm: 1000, mil: 25.4, in: 25400 };
 
 export function analyzeRotorPosition(record: RotorPositionRecord, settings: RotorPositionSettings): RotorPositionAnalysis {
   if (record.quantity !== 'displacement' || !record.dcPreserved || !record.synchronized) {
     throw new Error('Synchronized displacement measurements with retained DC are required.');
   }
   const scale = ROTOR_POSITION_UNIT_SCALE[record.unit] / ROTOR_POSITION_UNIT_SCALE[settings.unit];
-  const duration = (Date.parse(record.event.to) - Date.parse(record.event.from)) / 1000;
+  const duration = elapsedSeconds(record.event.from, record.event.to);
   if (!Number.isFinite(scale) || scale <= 0 || !Number.isFinite(record.meanWindowSeconds) || record.meanWindowSeconds <= 0) {
     throw new Error('The displacement unit and averaging interval must be valid.');
   }

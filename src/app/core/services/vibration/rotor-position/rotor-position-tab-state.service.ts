@@ -14,7 +14,7 @@ function createTabState(tab: AnalysisTab) {
       const units = { ...sourceUnits() };
       if (unit) { units[key] = unit; } else { delete units[key]; }
       sourceUnits.set(units);
-      if (settings().unit === 'mil' && !Object.values(units).includes('mil')) {
+      if (['mil', 'in'].includes(settings().unit) && !Object.values(units).includes(settings().unit)) {
         settings.update(value => ({ ...value, unit: 'µm' }));
       }
     } };

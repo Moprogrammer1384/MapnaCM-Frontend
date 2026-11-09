@@ -9,7 +9,7 @@ export class RotorPositionControlsComponent {
   @Input({ required: true }) inputId: string;
   @Input({ required: true }) settings: RotorPositionSettings;
   @Input() nativeUnits: readonly RotorPositionUnit[] = [];
-  get units(): readonly RotorPositionUnit[] { return ['µm', 'mm', ...(this.nativeUnits.includes('mil') ? ['mil' as const] : [])]; }
+  get units(): readonly RotorPositionUnit[] { return ['µm', 'mm', ...(['mil', 'in'] as const).filter(unit => this.nativeUnits.includes(unit))]; }
   @Output() readonly settingsChange = new EventEmitter<RotorPositionSettings>();
   update<K extends keyof RotorPositionSettings>(key: K, value: RotorPositionSettings[K]): void {
     this.settingsChange.emit({ ...this.settings, [key]: value });

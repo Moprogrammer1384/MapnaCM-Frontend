@@ -2,7 +2,7 @@ import { SelectedMeasurementDetails } from './asset-taxonomy-selection.model';
 import { AnalysisEventTime } from './analysis-event-time.model';
 
 export type RotorPositionEventType = 'Startup' | 'CoastDown' | 'Trip';
-export type RotorPositionUnit = 'µm' | 'mm' | 'mil';
+export type RotorPositionUnit = 'µm' | 'mm' | 'mil' | 'in';
 export interface RotorPositionPair {
   readonly key: string;
   readonly x: SelectedMeasurementDetails;
@@ -11,7 +11,7 @@ export interface RotorPositionPair {
 export interface RotorPositionEvent extends AnalysisEventTime {
   readonly eventType: RotorPositionEventType;
 }
-/** Local frontend model, not an HTTP/database contract. Means retain the calibrated DC. */
+/** Recorded displacement observations from the backend. Means retain calibrated DC. */
 export interface RotorPositionObservation {
   readonly timeSeconds: number;
   readonly meanProbeX: number | null;
@@ -24,7 +24,6 @@ export interface RotorPositionRecord {
   readonly id: string;
   readonly event: RotorPositionEvent;
   readonly pairKey: string;
-  readonly provenance: 'simulated' | 'measured';
   readonly quantity: 'displacement';
   readonly unit: RotorPositionUnit;
   readonly dcPreserved: boolean;

@@ -2,6 +2,7 @@ export interface BodeChartDto {
   readonly measurementId: number;
   readonly runs: readonly {
     readonly id: number;
+    readonly operatingRunId?: number;
     readonly eventType: 'Startup' | 'CoastDown' | 'Trip' | 'LoadChange';
     readonly startedAtUtc: string;
     readonly endedAtUtc: string;

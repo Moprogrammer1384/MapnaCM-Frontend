@@ -2,7 +2,6 @@
   <h3 [id]="titleId" class="fs-5 fw-bold mb-0 text-break">{{ pair.x.component.name | measurementHeading: [pair.x.measurement, pair.y.measurement]: ['X', 'Y'] }}</h3>
   <div class="d-flex flex-wrap gap-2">
     <span class="badge" [ngClass]="eventClasses[event.eventType]" data-testid="rotor-event-type">{{ event.eventType === 'CoastDown' ? 'Coast down' : event.eventType }}</span>
-    @if (record?.provenance === 'simulated') { <span class="badge badge-light-warning">Simulated data</span> }
   </div>
 </div>
 @if (loading) {

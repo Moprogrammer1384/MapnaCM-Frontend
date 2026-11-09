@@ -27,6 +27,10 @@ describe('Rotor Position frontend workspace', () => {
   const settle = async () => {
     harness.fixture.detectChanges(); await harness.fixture.whenStable(); harness.fixture.detectChanges();
   };
+  const frame = async () => { await new Promise<void>(resolve => requestAnimationFrame(() => resolve())); await settle(); };
+  const hover = async (chart: echarts.ECharts, pixel: number[]) => {
+    chart.getZr().trigger('mousemove', { offsetX: pixel[0], offsetY: pixel[1] }); await frame();
+  };
   const createTab = async () => { state.execute(orbitExecution()); await settle(); return state.activeTabId(); };
   const chartComponent = () => harness.routeDebugElement!.queryAll(By.directive(VibrationRotorPositionChartComponent))
     .find(item => item.nativeElement.getBoundingClientRect().height > 0)!.componentInstance as VibrationRotorPositionChartComponent;
@@ -134,7 +138,8 @@ describe('Rotor Position frontend workspace', () => {
     await choose('Trip');
     expect(chartComponent()).toBe(component); expect(echarts.getInstanceByDom(dom)).toBe(chart);
     expect(component.event.eventType).toBe('Trip');
-    chart.trigger('mouseover', { type: 'mouseover', data: [0, 0, 10], dataIndex: 10, seriesId: 'centerline' } as echarts.ECElementEvent); await settle();
+    const selected = component.analysis!.points[10];
+    await hover(chart, chart.convertToPixel({ seriesId: 'centerline' }, [selected.x, selected.y]) as number[]);
     expect(component.selectedIndex).toBe(10);
     const trend = echarts.getInstanceByDom(root().querySelectorAll<HTMLElement>('[_echarts_instance_]')[1])!;
     const trendSeries = (trend.getOption() as { series: { id: string; itemStyle: { color: string } }[] }).series;
@@ -195,7 +200,8 @@ describe('Rotor Position frontend workspace', () => {
     const span = zoomed[0].end - zoomed[0].start;
     expect(span).toBeGreaterThan(94); expect(span).toBeLessThan(100);
     expect(zoomed[1].end - zoomed[1].start).toBeCloseTo(span, 10);
-    chart.trigger('mouseover', { data: [0, 0, 5], dataIndex: 5, seriesId: 'centerline' } as echarts.ECElementEvent); await settle();
+    const selected = component.analysis!.points[5];
+    await hover(chart, chart.convertToPixel({ seriesId: 'centerline' }, [selected.x, selected.y]) as number[]);
     expect(component.selectedIndex).toBe(5); expect(ranges()).toEqual(zoomed);
     trend.dispatchAction({ type: 'dataZoom', dataZoomId: 'rotor-trend-inside', start: 20, end: 65 });
     chart.getZr().trigger('dblclick', { offsetX: pixel[0], offsetY: pixel[1] }); await settle();
@@ -239,5 +245,84 @@ describe('Rotor Position frontend workspace', () => {
     const other = component.analysis!.points[30], target = chart.convertToPixel({ seriesId: 'centerline' }, [other.x, other.y]) as number[];
     chart.getZr().trigger('click', { offsetX: target[0], offsetY: target[1] }); await settle();
     expect(component.selectedIndex).toBe(30); expect(load).toHaveBeenCalledTimes(1);
+  });
+  it('moves all corresponding circles from either plot, including the speed subplot, without resetting zoom', async () => {
+    await createTab(); await choose();
+    const component = chartComponent(), doms = root().querySelectorAll<HTMLElement>('[_echarts_instance_]');
+    const position = echarts.getInstanceByDom(doms[0])!, trend = echarts.getInstanceByDom(doms[1])!;
+    const data = (chart: echarts.ECharts, id: string) => (chart.getOption() as unknown as { series: { id: string; data: number[][] }[] }).series.find(s => s.id === id)!.data;
+    const assertTracking = (index: number) => {
+      const point = component.analysis!.points[index];
+      expect(component.selectedIndex).toBe(index);
+      expect(data(position, 'selected-position')).toEqual([[point.x, point.y, index]]);
+      expect(data(trend, 'tracking-x')).toEqual([[point.time, point.x, index]]);
+      expect(data(trend, 'tracking-y')).toEqual([[point.time, point.y, index]]);
+      expect(data(trend, 'tracking-speedRpm')).toEqual([[point.time, point.speedRpm!, index]]);
+      expect(root().querySelector('[data-testid="rotor-tracking"]')!.textContent).toContain(formatNumber(point.x));
+    };
+    assertTracking(0);
+    position.dispatchAction({ type: 'dataZoom', batch: ['rotor-position-zoom', 'rotor-position-y-zoom'].map(dataZoomId => ({ dataZoomId, start: 10, end: 90 })) });
+    trend.dispatchAction({ type: 'dataZoom', dataZoomId: 'rotor-trend-inside', start: 15, end: 65 });
+    const p = component.analysis!.points[80];
+    await hover(position, position.convertToPixel({ seriesId: 'centerline' }, [p.x, p.y]) as number[]); assertTracking(80);
+    const q = component.analysis!.points[100];
+    const pixel = trend.convertToPixel({ seriesId: 'trend-y' }, [q.time, q.y]) as number[];
+    // Continuous tracking works beside the symbols, as it does in Orbit.
+    await hover(trend, [pixel[0] + .01, pixel[1] + 8]); assertTracking(100);
+    const speed = component.analysis!.points[120];
+    await hover(trend, trend.convertToPixel({ seriesId: 'trend-speedRpm' }, [speed.time, speed.speedRpm!]) as number[]); assertTracking(120);
+    expect((position.getOption() as unknown as { dataZoom: { start: number; end: number }[] }).dataZoom[0].start).toBe(10);
+    expect((trend.getOption() as unknown as { dataZoom: { start: number; end: number }[] }).dataZoom[0].start).toBe(15);
+    await hover(trend, [2, 2]); assertTracking(120);
+    expect(load).toHaveBeenCalledTimes(1);
+  });
+  it('keeps the exact sample on repeated RPM branches and never invents missing speed or invalid DC samples', async () => {
+    await createTab(); await choose();
+    const component = chartComponent(), record = component.record!;
+    load.and.returnValue(of({ ...record, meanWindowSeconds: 1, observations: [
+      { timeSeconds: 0, meanProbeX: -40, meanProbeY: -38, speedRpm: 1500, quality: 'valid' },
+      { timeSeconds: 1, meanProbeX: -30, meanProbeY: -10, speedRpm: 2300, quality: 'valid' },
+      { timeSeconds: 2, meanProbeX: 20, meanProbeY: 10, speedRpm: 1500, quality: 'valid' },
+      { timeSeconds: 3, meanProbeX: null, meanProbeY: null, speedRpm: null, quality: 'invalid' },
+      { timeSeconds: 4, meanProbeX: 10, meanProbeY: 30, speedRpm: null, quality: 'valid' },
+    ] }));
+    component.reload(); await settle(); await change('_rotor_axis', 'rpm');
+    const doms = root().querySelectorAll<HTMLElement>('[_echarts_instance_]');
+    const position = echarts.getInstanceByDom(doms[0])!, trend = echarts.getInstanceByDom(doms[1])!;
+    const data = (id: string) => (trend.getOption() as unknown as { series: { id: string; data: number[][] }[] }).series.find(s => s.id === id)!.data;
+    const point = component.analysis!.points[2];
+    await hover(trend, trend.convertToPixel({ seriesId: 'trend-y' }, [1500, point.y]) as number[]);
+    expect(component.selectedIndex).toBe(2); expect(data('tracking-y')).toEqual([[1500, point.y, 2]]);
+    const unknown = component.analysis!.points[3];
+    await hover(position, position.convertToPixel({ seriesId: 'centerline' }, [unknown.x, unknown.y]) as number[]);
+    expect(component.selectedIndex).toBe(3); expect(component.selectedPoint!.time).toBe(4);
+    expect(data('tracking-x')).toEqual([]); expect(data('tracking-y')).toEqual([]); expect(data('tracking-speedRpm')).toEqual([]);
+    await change('_rotor_axis', 'time');
+    expect(data('tracking-x')).toEqual([[4, unknown.x, 3]]); expect(data('tracking-y')).toEqual([[4, unknown.y, 3]]);
+    expect(data('tracking-speedRpm')).toEqual([]); expect(component.analysis!.omittedCount).toBe(1);
+    expect(load).toHaveBeenCalledTimes(2);
+  });
+  it('coalesces rapid pointer moves, skips unchanged samples and pauses tracking during chart gestures', async () => {
+    await createTab(); await choose();
+    const component = chartComponent(), doms = root().querySelectorAll<HTMLElement>('[_echarts_instance_]');
+    const position = echarts.getInstanceByDom(doms[0])!, trend = echarts.getInstanceByDom(doms[1])!;
+    const pixels = [40, 80, 120].map(index => {
+      const point = component.analysis!.points[index];
+      return position.convertToPixel({ seriesId: 'centerline' }, [point.x, point.y]) as number[];
+    });
+    const positionPatch = spyOn(position, 'setOption').and.callThrough(), trendPatch = spyOn(trend, 'setOption').and.callThrough();
+    const move = (pixel: number[]) => position.getZr().trigger('mousemove', { offsetX: pixel[0], offsetY: pixel[1], event: new MouseEvent('mousemove', { cancelable: true }) });
+    for (let i = 0; i < 90; i++) { move(pixels[i % 3]); }
+    expect(component.selectedIndex).toBe(0); expect(positionPatch).not.toHaveBeenCalled();
+    await frame(); expect(component.selectedIndex).toBe(120);
+    expect(positionPatch).toHaveBeenCalledTimes(1); expect(trendPatch).toHaveBeenCalledTimes(1);
+    for (let i = 0; i < 40; i++) { move(pixels[2]); }
+    await frame(); expect(positionPatch).toHaveBeenCalledTimes(1); expect(trendPatch).toHaveBeenCalledTimes(1);
+    position.getZr().trigger('mousedown', { offsetX: pixels[0][0], offsetY: pixels[0][1], event: new MouseEvent('mousedown', { button: 0 }) }); move(pixels[0]);
+    await frame(); expect(component.selectedIndex).toBe(120);
+    position.getZr().trigger('mouseup', { offsetX: pixels[0][0], offsetY: pixels[0][1], event: new MouseEvent('mouseup', { button: 0 }) });
+    await hover(position, pixels[1]); expect(component.selectedIndex).toBe(80);
+    expect(positionPatch).toHaveBeenCalledTimes(2); expect(trendPatch).toHaveBeenCalledTimes(2);
+    expect(load).toHaveBeenCalledTimes(1);
   });
 });

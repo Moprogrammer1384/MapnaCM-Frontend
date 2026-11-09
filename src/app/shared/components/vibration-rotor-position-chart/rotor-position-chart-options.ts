@@ -48,10 +48,11 @@ export function rotorPositionChartOptions(analysis: RotorPositionAnalysis, setti
         data: clearance ? Array.from({ length: 181 }, (_, i) => [clearance.radialX * Math.cos(i * Math.PI / 90), clearance.radialY * Math.sin(i * Math.PI / 90)]) : [],
         lineStyle: { color: muted, type: 'dashed', width: 1 } },
       { id: 'centerline', name: 'Centerline', type: 'scatter', symbol: 'circle', symbolSize: 4,
-        data: trace, itemStyle: { color: primary },
+        data: trace, encode: { x: 0, y: 1 }, itemStyle: { color: primary },
         markPoint: { symbol: 'circle', symbolSize: 9, tooltip: { show: false },
           data: points.length ? [marker(points[0], 'Start', success), marker(points[points.length - 1], 'End', token('danger'))] : [] } },
       { id: 'selected-position', type: 'scatter', silent: true, symbol: 'circle', symbolSize: 13, z: 10, tooltip: { show: false },
+        encode: { x: 0, y: 1 },
         itemStyle: { color: token('body-bg'), borderColor: token('warning'), borderWidth: 3 },
         data: points[selected] ? [[points[selected].x, points[selected].y, selected]] : [] },
     ],
@@ -66,7 +67,7 @@ export function rotorPositionChartOptions(analysis: RotorPositionAnalysis, setti
     const color = [primary, secondary, muted][seriesIndex];
     return { id: `trend-${key}`, name: ['X mean', 'Y mean', 'Speed'][seriesIndex], type: 'scatter',
       xAxisIndex: seriesIndex === 2 ? 1 : 0, yAxisIndex: seriesIndex === 2 ? 1 : 0,
-      symbol: 'circle', symbolSize: 4, data, itemStyle: { color },
+      symbol: 'circle', symbolSize: 4, data, encode: { x: 0, y: 1 }, itemStyle: { color },
       markLine: { silent: true, symbol: 'none', label: { show: false },
         lineStyle: { color: token('warning'), type: 'dashed' },
         data: points[selected] && trendValue(points[selected]) !== null ? [{ xAxis: trendValue(points[selected])! }] : [] } };
@@ -78,7 +79,8 @@ export function rotorPositionChartOptions(analysis: RotorPositionAnalysis, setti
     grid: [{ left: 64, right: 24, top: 55, height: '40%' }, { left: 64, right: 24, top: '61%', height: '18%' }],
     xAxis: [0, 1].map(gridIndex => ({ ...axis(gridIndex === 1 ? settings.trendAxis === 'time' ? 'Time (s)' : 'Speed (RPM)' : ''), gridIndex })),
     yAxis: [{ ...axis(`Mean (${unit})`, true), gridIndex: 0 }, { ...axis('RPM', true), gridIndex: 1, min: 0 }],
-    dataZoom: vibrationLinearZoom(['rotor-trend-inside', 'rotor-trend-slider'], [0, 1]), series,
+    dataZoom: vibrationLinearZoom(['rotor-trend-inside', 'rotor-trend-slider'], [0, 1]),
+    series: [...series, ...rotorPositionTrackingSeries(points[selected], settings, selected)],
   };
   return { position, trend };
 }
@@ -87,8 +89,22 @@ export function rotorPositionChartOptions(analysis: RotorPositionAnalysis, setti
 export function rotorPositionTrackingOptions(point: RotorPositionPoint, settings: RotorPositionSettings, index: number) {
   const position: EChartsOption = { series: [{ id: 'selected-position', data: [[point.x, point.y, index]] }] };
   const value = settings.trendAxis === 'time' ? point.time : point.speedRpm;
-  const trend: EChartsOption = { series: ['x', 'y', 'speedRpm'].map(key => ({
+  const trend: EChartsOption = { series: [...['x', 'y', 'speedRpm'].map(key => ({
     id: `trend-${key}`, markLine: { data: value === null ? [] : [{ xAxis: value }] },
-  })) };
+  })), ...rotorPositionTrackingSeries(point, settings, index)] };
   return { position, trend };
+}
+
+/** The same hollow selected-sample circles as Orbit, on each corresponding trend. */
+function rotorPositionTrackingSeries(point: RotorPositionPoint | undefined, settings: RotorPositionSettings, index: number): ScatterSeriesOption[] {
+  const style = getComputedStyle(document.documentElement);
+  const token = (name: string) => style.getPropertyValue(`--bs-${name}`).trim();
+  const value = settings.trendAxis === 'time' ? point?.time : point?.speedRpm;
+  return (['x', 'y', 'speedRpm'] as const).map((key, seriesIndex) => ({
+    id: `tracking-${key}`, name: ['X mean', 'Y mean', 'Speed'][seriesIndex],
+    type: 'scatter', silent: true, symbol: 'circle', symbolSize: 13, z: 10, tooltip: { show: false },
+    encode: { x: 0, y: 1 }, xAxisIndex: seriesIndex === 2 ? 1 : 0, yAxisIndex: seriesIndex === 2 ? 1 : 0,
+    itemStyle: { color: token('body-bg'), borderColor: [token('warning'), vibrationChartColor(1), token('gray-500')][seriesIndex], borderWidth: 3 },
+    data: point && value !== null && value !== undefined && point[key] !== null ? [[value, point[key], index]] : [],
+  }));
 }

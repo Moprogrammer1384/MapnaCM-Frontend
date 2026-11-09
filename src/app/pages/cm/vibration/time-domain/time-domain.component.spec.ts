@@ -12,7 +12,7 @@ import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { vibrationTestRecord } from 'src/testing/vibration-test-data';
 import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
-import { AMPLITUDE_LABELS, VIBRATION_UNITS } from 'src/app/core/models/analysis-chart-settings.model';
+import { AMPLITUDE_LABELS, VIBRATION_UNITS, vibrationUnitOptions } from 'src/app/core/models/analysis-chart-settings.model';
 import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { prepareTimeDomainRecord } from 'src/app/core/services/vibration/time-domain/time-domain-preparation';
 import { analyzeTimeDomain } from 'src/app/core/services/vibration/time-domain/time-domain-analysis';
@@ -84,6 +84,8 @@ describe('Time Domain with an isolated analytical workload', () => {
   afterEach(() => harness.fixture.destroy());
 
   it('retains the Time (s) waveform, full precision and original chart layout', () => {
+    expect(root().querySelector('select[aria-label="X axis"]')).toBeNull();
+    expect(root().querySelector('[id$="_x_axis"]')).toBeNull();
     const options = snapshot();
     const data = options.series[0].data;
     expect(data.length).toBe(409600);
@@ -115,7 +117,7 @@ describe('Time Domain with an isolated analytical workload', () => {
     instance.dispatchAction({ type: 'dataZoom', start: 30, end: 60 });
     for (const quantity of ['displacement', 'velocity', 'acceleration'] as const) {
       await change('Quantity', quantity);
-      for (const unit of VIBRATION_UNITS[quantity]) {
+      for (const unit of vibrationUnitOptions(quantity)) {
         await change('Unit', unit.value);
         const expected = analyzeTimeDomain(prepared, state.activeTab()!.chartSettings!);
         const data = snapshot().series[0].data;
@@ -176,14 +178,14 @@ describe('Time Domain with an isolated analytical workload', () => {
 
   it('retains independent tab settings and uses Metronic colors without rerunning signal processing on theme changes', async () => {
     const first = state.activeTabId();
-    await change('Quantity', 'velocity'); await change('Unit', 'in/s'); await change('Amplitude', 'rms');
+    await change('Quantity', 'velocity'); await change('Unit', 'mm/s'); await change('Amplitude', 'rms');
     interact(() => { state.execute(execution);
       const tab = state.activeTab()!;
       state.applyDateTimeRange(tab.id, { from: tab.dateRange.from + 'T' + tab.timeRange.from, to: tab.dateRange.to + 'T' + tab.timeRange.to });
     }); await settle();
     expect(control('Quantity').value).toBe('displacement');
     interact(() => state.activateTab(first)); await settle();
-    expect(control('Unit').value).toBe('in/s');
+    expect(control('Unit').value).toBe('mm/s');
     expect(control('Amplitude').value).toBe('rms');
     const oldTheme = document.documentElement.getAttribute('data-bs-theme');
     const result = component().analysis;
@@ -192,7 +194,7 @@ describe('Time Domain with an isolated analytical workload', () => {
         document.documentElement.setAttribute('data-bs-theme', theme);
         await new Promise(resolve => setTimeout(resolve, 0)); await settle();
         expect(component().analysis).toBe(result);
-        expect(snapshot().color[0]).toBe(getComputedStyle(document.documentElement).getPropertyValue('--bs-primary').trim());
+        expect(snapshot().color[0]).toBe('#2563EB');
         for (const width of [320, 768, 1280]) {
           harness.fixture.nativeElement.style.width = `${width}px`;
           await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));

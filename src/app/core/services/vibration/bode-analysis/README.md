@@ -120,3 +120,13 @@ timeline boundaries, API/native metadata, shared workspace/calendar/Select2/ECha
 single-click event selection, 1000 options, loading failures/retry, tab retention,
 event badges and theme/responsive bounds. Test fixtures do not establish a manual
 browser login; real-host authenticated HTTP/SQL integration is tested separately.
+
+### Acquisition footer (2026-11-09)
+
+Peak amplitude, raw RPM and displayed phase all use `analysis.peakIndex`; phase
+is never independently maximized. The adapter retains the existing run
+`startedAtUtc` and `originalSampleCount` for the separate right-aligned Start/Data
+row. Older frontend records without these optional fields use their first
+observation timestamp/count. UTC start renders in Asia/Tehran. The amplitude
+signal is blue `#2563EB` and phase orange `#EA580C` inside every analysis, including
+when several Assets/measurements are selected. No API contract was added.

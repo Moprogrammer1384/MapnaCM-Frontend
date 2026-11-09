@@ -77,7 +77,7 @@ export class VibrationTimeDomainApiService implements VibrationDataSource {
     const metadata = vibrationProfile(series.quantity, series.unit);
     if (series.representation !== 'raw' || series.hasGaps || series.points.length < 3
       || series.points.some((point, index) => index > 0 && point.breakBefore)) {
-      return Object.freeze({ kind: 'display', ...metadata, series });
+      return Object.freeze({ kind: 'display', ...metadata, timeOriginUtc: data.timeOriginUtc, series });
     }
     if (series.originalSampleCount !== series.points.length) { throw new Error('The vibration API returned an incomplete raw record.'); }
     return Object.freeze({ id: `${request.measurementId}:${request.from}:${request.to}`, label: `Measurement ${request.measurementId}`,

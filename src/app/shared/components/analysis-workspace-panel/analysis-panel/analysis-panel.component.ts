@@ -5,7 +5,7 @@ import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
 import { DateTimeRangeComponent } from '../../date-time-range/date-time-range.component';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
-import { AnalysisChartSettings, AnalysisDomain, defaultChartSettings, VIBRATION_UNITS, vibrationUnit } from 'src/app/core/models/analysis-chart-settings.model';
+import { AnalysisChartSettings, AnalysisDomain, defaultChartSettings, vibrationUnitOptions } from 'src/app/core/models/analysis-chart-settings.model';
 import { VibrationDateTimeRangeComponent } from '../../vibration-date-time-range/vibration-date-time-range.component';
 
 @Component({
@@ -18,6 +18,7 @@ import { VibrationDateTimeRangeComponent } from '../../vibration-date-time-range
 export class AnalysisPanelComponent implements OnChanges {
   @Input({ required: true }) tab: AnalysisTab;
   @Input() domain: AnalysisDomain = 'time';
+  @Input() showXAxis = true;
   @Input() chartContent?: TemplateRef<{ $implicit: AnalysisTab }>;
   @Input() useAvailableDates = false;
   @Input() dateSelectionContent?: TemplateRef<{ $implicit: AnalysisTab }>;
@@ -32,11 +33,12 @@ export class AnalysisPanelComponent implements OnChanges {
   chartSettings = defaultChartSettings();
   measurementIds: readonly number[] = [];
 
-  get unitOptions() { return VIBRATION_UNITS[this.chartSettings.quantity]; }
+  get unitOptions() { return vibrationUnitOptions(this.chartSettings.quantity, Object.values(this.tab.sourceProfiles ?? {})); }
 
   updateChartSetting<K extends keyof AnalysisChartSettings>(key: K, value: AnalysisChartSettings[K]): void {
     const settings = { ...this.chartSettings, [key]: value };
-    this.chartSettings = { ...settings, unit: vibrationUnit(settings).value };
+    const options = vibrationUnitOptions(settings.quantity, Object.values(this.tab.sourceProfiles ?? {}));
+    this.chartSettings = { ...settings, unit: (options.find(option => option.value === settings.unit) ?? options[0]).value };
     this.chartSettingsChange.emit(this.chartSettings);
   }
 
@@ -48,7 +50,8 @@ export class AnalysisPanelComponent implements OnChanges {
     const settings = this.tab.chartSettings ?? defaultChartSettings(this.domain);
     this.chartSettings = {
       ...settings,
-      unit: vibrationUnit(settings).value,
+      unit: (vibrationUnitOptions(settings.quantity, Object.values(this.tab.sourceProfiles ?? {}))
+        .find(option => option.value === settings.unit) ?? vibrationUnitOptions(settings.quantity)[0]).value,
       xAxis: this.domain === 'time' ? 'time' : this.domain === 'bode'
         ? (settings.xAxis === 'hz' ? 'hz' : 'rpm') : settings.xAxis === 'time' ? 'hz' : settings.xAxis,
     };

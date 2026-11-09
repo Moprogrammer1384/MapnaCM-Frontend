@@ -11,6 +11,12 @@ export interface VibrationUnitOption {
   readonly scale: number;
 }
 
+/** Native metadata from a loaded record, separate from user display settings. */
+export interface VibrationSourceProfile {
+  readonly quantity: VibrationQuantity;
+  readonly unit: VibrationUnit;
+}
+
 /** Frontend display choices, kept independently for each analysis tab. */
 export interface AnalysisChartSettings {
   readonly quantity: VibrationQuantity;
@@ -37,7 +43,9 @@ export const VIBRATION_QUANTITIES: Record<VibrationQuantity, { label: string; un
   acceleration: { label: 'Acceleration', unit: 'm/s²' },
 };
 
-/** Defaults first. Exact conversions: 1 in = 25.4 mm; 1 mil = 0.001 in; 1 g = 9.80665 m/s². */
+/** Supported source/conversion units; UI menus use vibrationUnitOptions below.
+ * Exact conversions: 1 in = 25.4 mm; 1 mil = 0.001 in; 1 g = 9.80665 m/s².
+ */
 export const VIBRATION_UNITS: Record<VibrationQuantity, readonly VibrationUnitOption[]> = {
   displacement: [
     { value: 'µm', scale: 1 }, { value: 'mm', scale: 1 / 1000 },
@@ -52,6 +60,19 @@ export const VIBRATION_UNITS: Record<VibrationQuantity, readonly VibrationUnitOp
     { value: 'g', scale: 1 / 9.80665 }, { value: 'in/s²', scale: 1 / 0.0254 },
   ],
 };
+
+/** Normal UI choices. Other supported units require matching native source metadata. */
+export const VIBRATION_DISPLAY_UNITS: Readonly<Record<VibrationQuantity, readonly VibrationUnit[]>> = {
+  displacement: ['µm', 'mm'], velocity: ['mm/s'], acceleration: ['mm/s²'],
+};
+
+export function vibrationUnitOptions(quantity: VibrationQuantity,
+  sources: readonly VibrationSourceProfile[] = []): readonly VibrationUnitOption[] {
+  const supported = VIBRATION_UNITS[quantity], standard = VIBRATION_DISPLAY_UNITS[quantity];
+  const native = new Set(sources.filter(source => source.quantity === quantity).map(source => source.unit));
+  return [...standard.map(value => supported.find(option => option.value === value)!),
+    ...supported.filter(option => !standard.includes(option.value) && native.has(option.value))];
+}
 
 /** Older settings without units, or units from another quantity, use the quantity default. */
 export function vibrationUnit(settings: AnalysisChartSettings): VibrationUnitOption {

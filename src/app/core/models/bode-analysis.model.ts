@@ -12,6 +12,8 @@ export interface BodeObservation {
 
 export interface BodeRecord {
   readonly id?: string;
+  readonly startedAtUtc?: string;
+  readonly originalSampleCount?: number;
   readonly eventType?: 'Startup' | 'CoastDown' | 'Trip' | 'LoadChange';
   readonly label: string;
   readonly channel: string;

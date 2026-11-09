@@ -46,15 +46,23 @@ Overview/Rotor Position pages, the basic integration is:
 <app-analysis-workspace [state]="state"></app-analysis-workspace>
 ```
 
-Overview and Rotor Position have no chart content. Their synthetic chart and data
-generator were removed on 2026-11-03; dedicated charts are deferred to future tasks.
-Their existing selection, tabs, date/time and settings UI remains available.
+Overview has no chart content. Rotor Position supplies dedicated paired chart,
+control and discrete-event templates backed by a separated frontend simulation.
 
 When a consumer supplies `measurementChartContent`, the workspace renders one
 independent chart per selected Measurement, titled with
-its `Component - Measurement` names followed by the Measurement tag when present
-(for example `Bearing 1 - X vi508`). Tags use Metronic's gray-500 text color and
-normal font weight to distinguish them from the bold names.
+its `Component · X: Measurement tag` metadata (for an X-named channel), with the
+same bold heading and spacing as Orbit/Rotor/Bode. The shared standalone
+`MeasurementHeadingPipe` formats single channels and explicit paired headings;
+X/Y/Z labels are used only when unambiguous in the channel name or supplied by
+an explicit pair. Unlabelled channels retain their name and optional tag.
+For example, `Bearing 1 · X: X vi508`; the complete heading, including the tag,
+uses the same bold Metronic text style.
+Loaded charts appear directly below that heading. Capture metadata, statistics
+and analysis notices belong below the charts; Orbit/Rotor subchart headings are
+screen-reader-only. Loading, error/Retry and empty states remain visible when a
+chart is unavailable. Time/Frequency also keep an existing chart above progress
+feedback while a display-setting change is being processed.
 Each chart has its own heading ID and zoom state. Visited Analysis tabs retain
 their charts, loaded data, worker results and calendar instances while inactive.
 Switching tabs does not repeat data/availability requests or reset zoom. Closing
@@ -115,13 +123,19 @@ The nested analysis panel includes four base Metronic Select2 controls, using th
 existing `SharedModule` directive (no extra plugin initialization):
 
 - Quantity: Displacement, Velocity, Acceleration.
-- Unit (2026-10-21): directly after Quantity, with compatible choices only:
-  Displacement: µm (default), mm, mil, in; Velocity: mm/s (default), cm/s,
-  m/s, in/s; Acceleration: m/s² (default), mm/s², g, in/s². Changing Quantity
-  selects its default unit. Unit changes convert compatible chart values,
+- Unit (2026-11-09): directly after Quantity. Standard choices are Displacement:
+  µm/mm; Velocity: mm/s; Acceleration: mm/s². Extra compatible units appear only
+  when declared by a loaded record in the same analysis tab. Charts report
+  native `sourceProfile` independently of converted display settings; the page
+  updates `tab.sourceProfiles` per Measurement through the existing state service.
+  Metadata is cleared on replacement/failure, not a route remount of the same
+  capture. Unavailable stale choices fall back to the standard unit. Changing
+  Quantity selects a compatible available unit. Unit changes convert chart values,
   Y-axis labels and tooltips, retaining chart instances and zoom.
-- X axis: Time (seconds) for `domain="time"` (the default); Hz, CPM, Order for
-  `domain="frequency"`. Frequency Domain explicitly sets this input.
+- X axis: Hz, CPM, Order for `domain="frequency"`; RPM/Hz for Bode.
+  Time Domain disables the selector through `showXAxis=false` (2026-11-09)
+  and uses sample times in seconds directly. The shared workspace/panel flag
+  defaults to true so the other pages, including Overview, keep their controls.
 - Amplitude: RMS, 0p (zero-to-peak), pp (peak-to-peak). Raw Time/Frequency tabs
   initialize Quantity/Unit from source metadata.
 - Frequency-only Window: Rectangular (default) or Hann, with coherent-gain correction.
@@ -261,3 +275,21 @@ See [Bode source and methods](../../../core/services/vibration/bode-analysis/REA
 ### Consumer-owned date selection
 
 `dateSelectionContent?: TemplateRef<{ $implicit: AnalysisTab }>` replaces only the standard date selector; `dateSelectionTitle` labels that header. Both are forwarded by the workspace to its panel. Orbit supplies its independent acquisition picker and exact period selection through this slot. Default Time/Frequency ranges and the Bode event selector are unchanged.
+
+### Chart footers and sample readouts (2026-11-09)
+
+Each chart keeps statistics in a physical-left flex row below the plots. A
+separate lower physical-right row contains Start then the original acquisition
+Data count. Both rows use explicit LTR direction, wrapping and the same Metronic
+label/value typography, so page RTL does not swap their alignment. Time uses
+Max/Min; Frequency ranks up to five distinct local maxima; Bode pairs peak
+amplitude/RPM with phase at that exact index; Orbit shows X/Y pp, maximum radius
+and RPM. Rotor has only Start/Data in its acquisition footer.
+
+Orbit/Rotor selected-point values occupy a matching visible definition list
+above the footer. Labels are gray-500 normal fs-7; values are gray-700
+fw-semibold. Both start on the first sample, follow hover/click/arrows and retain
+chart zoom. This live readout is separate from static acquisition statistics.
+Signal colours reset inside every analysis: blue `#2563EB`, then orange
+`#EA580C` for a second signal. Time/Frequency always stay blue; measurement or
+Asset ordering never assigns a different colour to another analysis.

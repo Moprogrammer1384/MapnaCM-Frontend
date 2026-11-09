@@ -1,20 +1,23 @@
+import { vibrationChartColor } from '../vibration-chart-presentation/vibration-chart-colors';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, inject, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import type { EChartsOption, TooltipComponentOption } from 'echarts';
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
-import { AMPLITUDE_LABELS, AnalysisChartSettings, VIBRATION_QUANTITIES } from 'src/app/core/models/analysis-chart-settings.model';
+import { AMPLITUDE_LABELS, AnalysisChartSettings, VibrationSourceProfile, VIBRATION_QUANTITIES } from 'src/app/core/models/analysis-chart-settings.model';
 import { BodeAnalysis, BodeRecord } from 'src/app/core/models/bode-analysis.model';
 import { analyzeBode, bodeSettingsForRecord } from 'src/app/core/services/vibration/bode-analysis/bode-analysis';
 import { BODE_DATA_SOURCE } from 'src/app/core/services/vibration/bode-analysis/bode-data-source.service';
 import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { formatNumber, NumberFormatPipe } from '../../pipes/number-format.pipe';
+import { AcquisitionDatePipe } from '../../pipes/acquisition-date.pipe';
+import { vibrationChartAppearance, vibrationLinearZoom } from '../vibration-chart-presentation/vibration-chart-presentation';
 
 /** Paired phase/amplitude plots of one tracking run, sharing speed cursor and zoom. */
 @Component({
   selector: 'app-vibration-bode-chart',
   standalone: true,
-  imports: [CommonModule, ApacheEchartsComponent, NumberFormatPipe],
+  imports: [CommonModule, ApacheEchartsComponent, NumberFormatPipe, AcquisitionDatePipe],
   templateUrl: './vibration-bode-chart.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'd-block mw-100', '[attr.aria-busy]': 'loading' },
@@ -28,6 +31,7 @@ export class VibrationBodeChartComponent implements OnChanges, OnDestroy {
   @Input() title = '';
   @Input() tag?: string | null;
   @Input() titleId?: string;
+  @Output() readonly sourceProfile = new EventEmitter<VibrationSourceProfile | undefined>(true);
   @Output() readonly sourceSettings = new EventEmitter<AnalysisChartSettings>(true);
   loading = false;
   error = '';
@@ -54,6 +58,7 @@ export class VibrationBodeChartComponent implements OnChanges, OnDestroy {
   }
 
   reload(): void {
+    if (this.subscription) { this.sourceProfile.emit(undefined); }
     this.subscription?.unsubscribe();
     this.loading = true;
     this.error = '';
@@ -64,10 +69,12 @@ export class VibrationBodeChartComponent implements OnChanges, OnDestroy {
       next: result => {
         const records = 'observations' in result ? [result] : result;
         this.record = records[records.length - 1];
+        this.sourceProfile.emit(this.record ? { quantity: this.record.quantity, unit: this.record.unit } : undefined);
         this.loading = false;
         this.updateAnalysis();
       },
       error: error => {
+        this.sourceProfile.emit(undefined);
         this.loading = false;
         this.error = apiErrorMessage(error, 'Bode data');
         this.cdr.markForCheck();
@@ -111,8 +118,7 @@ export class VibrationBodeChartComponent implements OnChanges, OnDestroy {
   private updateChartOptions(): void {
     const result = this.analysis;
     if (!result) { return; }
-    const styles = getComputedStyle(document.documentElement);
-    const token = (name: string) => styles.getPropertyValue(`--bs-${name}`).trim();
+    const { token, base, legend, tooltip, axis } = vibrationChartAppearance();
     const phasePoints: [number, number | null, number][] = [];
     result.speed.forEach((speed, index) => {
       // A 359° -> 0° wrap is not a physical phase excursion. Break the wrapped
@@ -125,20 +131,13 @@ export class VibrationBodeChartComponent implements OnChanges, OnDestroy {
     const quantity = VIBRATION_QUANTITIES[result.quantity].label;
     const amplitudeName = `${quantity} (${result.unit} ${AMPLITUDE_LABELS[result.amplitudeMode]})`;
     const xAxis = (gridIndex: number) => ({
-      type: 'value' as const, gridIndex,
+      ...axis(gridIndex === 1 ? `Speed (${result.axisUnit})` : ''), gridIndex,
       min: (result.minimumSpeedRpm - (result.speed.length === 1 ? 30 : 0)) / (result.axisUnit === 'Hz' ? 60 : 1),
       max: (result.maximumSpeedRpm + (result.speed.length === 1 ? 30 : 0)) / (result.axisUnit === 'Hz' ? 60 : 1),
-      name: gridIndex === 1 ? `Speed (${result.axisUnit})` : '', nameLocation: 'middle' as const, nameGap: 32,
-      nameTextStyle: { color: token('gray-700') },
-      axisLabel: { formatter: formatNumber, color: token('gray-600'), hideOverlap: true }, splitLine: { show: false },
-      axisPointer: { label: { formatter: (params: { value: unknown }) => formatNumber(Number(params.value)) } },
-      axisLine: { lineStyle: { color: token('gray-500') } },
     });
     this.chartOptions = {
-      animation: false,
-      textStyle: { color: token('gray-600'), fontFamily: styles.fontFamily },
-      tooltip: { trigger: 'axis', formatter: this.tooltipFormatter(), confine: true,
-        backgroundColor: token('body-bg'), borderColor: token('border-color'), textStyle: { color: token('body-color') } },
+      ...base, legend,
+      tooltip: { ...tooltip, trigger: 'axis', formatter: this.tooltipFormatter() },
       axisPointer: { link: [{ xAxisIndex: 'all' }], snap: true,
         label: { backgroundColor: token('gray-700') }, lineStyle: { color: token('gray-500') } },
       grid: [
@@ -147,35 +146,25 @@ export class VibrationBodeChartComponent implements OnChanges, OnDestroy {
       ],
       xAxis: [xAxis(0), xAxis(1)],
       yAxis: [
-        { type: 'value', gridIndex: 0, name: amplitudeName, min: 0, nameTextStyle: { align: 'left', color: token('gray-700') },
-          axisLabel: { formatter: formatNumber, color: token('gray-600') }, splitLine: { lineStyle: { color: token('border-color') } } },
-        { type: 'value', gridIndex: 1, name: result.phaseMode === 'wrapped' ? 'Phase (°)' : 'Continuous phase (°)',
+        { ...axis(amplitudeName, true), gridIndex: 0, min: 0 },
+        { ...axis(result.phaseMode === 'wrapped' ? 'Phase (°)' : 'Continuous phase (°)', true), gridIndex: 1,
           min: result.phaseMode === 'wrapped' ? 0 : Math.floor(result.phase.reduce((min, value) => Math.min(min, value), Infinity) / 90) * 90,
           max: result.phaseMode === 'wrapped' ? 360 : Math.ceil(result.phase.reduce((max, value) => Math.max(max, value), -Infinity) / 90) * 90 + 90,
           interval: 90,
-          nameTextStyle: { align: 'left', color: token('gray-700') }, axisLabel: { formatter: formatNumber, color: token('gray-600') },
-          splitLine: { lineStyle: { color: token('border-color') } } },
+        },
       ],
-      dataZoom: [
-        { id: 'bode-zoom-inside', type: 'inside', xAxisIndex: [0, 1], filterMode: 'none' },
-        { id: 'bode-zoom-slider', type: 'slider', xAxisIndex: [0, 1], filterMode: 'none', height: 20, bottom: 10,
-          labelFormatter: formatNumber, borderColor: token('border-color'), backgroundColor: token('gray-100'),
-          fillerColor: token('primary-light'), textStyle: { color: token('gray-600') },
-          handleStyle: { color: token('primary'), borderColor: token('primary') }, moveHandleStyle: { color: token('primary') },
-          dataBackground: { lineStyle: { color: token('gray-500') }, areaStyle: { color: token('gray-200') } },
-          selectedDataBackground: { lineStyle: { color: token('primary') }, areaStyle: { color: token('primary-light') } } },
-      ],
+      dataZoom: vibrationLinearZoom(['bode-zoom-inside', 'bode-zoom-slider'], [0, 1]),
       series: [
         { id: 'bode-amplitude', name: '1X amplitude', type: 'line', xAxisIndex: 0, yAxisIndex: 0, showSymbol: result.speed.length <= 2,
-          lineStyle: { width: 1.5, color: token('primary') }, itemStyle: { color: token('primary') },
+          symbol: 'circle', symbolSize: 4, lineStyle: { width: 2, color: vibrationChartColor() }, itemStyle: { color: vibrationChartColor() },
           data: result.speed.map((speed, index) => [speed, result.amplitude[index], index]),
           markPoint: { symbol: 'circle', symbolSize: 8, itemStyle: { color: token('warning') },
             label: { show: false }, data: [{ name: 'Peak amplitude', coord: [result.speed[result.peakIndex], result.amplitude[result.peakIndex]] }] } },
         { id: 'bode-phase', name: '1X phase', type: 'line', xAxisIndex: 1, yAxisIndex: 1,
           // Wrapped runs can have isolated points between consecutive wraps.
           // Keep their markers visible even when neither adjacent line is drawn.
-          showSymbol: result.phaseMode === 'wrapped' || result.speed.length <= 2, symbol: 'circle', symbolSize: 3,
-          connectNulls: false, lineStyle: { width: 1.5, color: token('info') }, itemStyle: { color: token('info') }, data: phasePoints },
+          showSymbol: result.phaseMode === 'wrapped' || result.speed.length <= 2, symbol: 'circle', symbolSize: 4,
+          connectNulls: false, lineStyle: { width: 2, color: vibrationChartColor(1) }, itemStyle: { color: vibrationChartColor(1) }, data: phasePoints },
       ],
     };
   }

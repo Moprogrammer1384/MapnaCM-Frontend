@@ -103,4 +103,21 @@ describe('Raw frequency-domain chart request lifecycle', () => {
     expect(fixture.componentInstance.loading).toBeFalse();
     expect(fixture.componentInstance.error).toContain('FFT cannot be calculated from summary');
   });
+  it('renders ranked independent maxima, acquisition sample count and actual start without changing the spectrum', async () => {
+    const input = { ...raw, timeOriginUtc: '2026-11-08T06:30:00Z', timeUnit: 's' as const,
+      time: Array.from({ length: 16 }, (_, i) => 12 + i / 16), values: Array.from({ length: 16 }, (_, i) => i) };
+    load.and.returnValue(of(input));
+    const original = analyzeFrequencyDomain(prepareFrequencyDomainRecord(input), initial);
+    const result = { ...original, frequency: Float64Array.from([0, 1, 2, 3, 4, 5, 6, 7, 8]),
+      values: Float64Array.from([0, 10, 9, 8, 0, 6, 0, 5, 0]) };
+    TestBed.overrideProvider(FrequencyDomainAnalysisService, { useValue: { acquire: () => ({ analyze: () => Promise.resolve(result), release: () => undefined }) } });
+    mount(); await settle();
+    const footer = fixture.nativeElement.querySelector('footer') as HTMLElement;
+    const peaks = footer.querySelectorAll('[data-testid="spectrum-peak"]');
+    expect(peaks.length).toBe(3); expect(peaks[0].textContent).toContain('10.00 cm/s');
+    expect(peaks[0].textContent).toContain('1.00 Hz'); expect(peaks[1].textContent).toContain('6.00 cm/s');
+    expect(footer.querySelector('[data-testid="record-sample-count"]')!.textContent).toContain('16');
+    expect(footer.querySelector('[data-testid="acquisition-start"]')!.textContent).toContain('2026-11-08 10:00:12');
+    expect(fixture.componentInstance.analysis).toBe(result); expect(load).toHaveBeenCalledTimes(1);
+  });
 });

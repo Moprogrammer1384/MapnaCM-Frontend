@@ -5,14 +5,7 @@ import { calculateTimeDomainStatistics, selectTimeDomainAmplitude } from './time
 import { scaleSignal, unitToSi } from './time-domain-unit-conversion';
 import { timeDomainAmplitudeReference } from './time-domain-amplitude';
 
-/** X-axis transform for time records. No invented RPM/Order conversion for a time signal. */
-export function timeDomainAxis(record: PreparedTimeDomainRecord, axis: AnalysisChartSettings['xAxis']): Float64Array {
-  if (axis !== 'time') { throw new Error('Time Domain requires the Time axis.'); }
-  return record.time;
-}
-
 export function analyzeTimeDomain(record: PreparedTimeDomainRecord, settings: AnalysisChartSettings): TimeDomainAnalysis {
-  const time = timeDomainAxis(record, settings.xAxis);
   const siValues = convertTimeDomainQuantity(record, settings.quantity);
   const unit = vibrationUnit(settings).value;
   const values = scaleSignal(siValues, 1 / unitToSi(settings.quantity, unit));
@@ -25,7 +18,7 @@ export function analyzeTimeDomain(record: PreparedTimeDomainRecord, settings: An
   } else if (targetOrder > sourceOrder) {
     notices.push('Numerical differentiation amplifies high-frequency noise; no additional filter is applied.');
   }
-  return { time: time.slice(), values, statistics, amplitude: selectTimeDomainAmplitude(statistics, settings.amplitude),
+  return { time: record.time.slice(), values, statistics, amplitude: selectTimeDomainAmplitude(statistics, settings.amplitude),
     amplitudeMode: settings.amplitude, amplitudeReference: timeDomainAmplitudeReference(statistics, settings.amplitude),
     unit, quantity: settings.quantity, sampleCount: values.length, notices };
 }

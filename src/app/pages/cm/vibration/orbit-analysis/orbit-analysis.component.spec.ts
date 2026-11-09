@@ -20,6 +20,7 @@ import { assetTaxonomyFixture } from 'src/app/shared/components/asset-taxonomy-d
 import { configureMetronicPrimeNG } from 'src/app/shared/components/data-table/testing/prime-table-test-support';
 import { VibrationOrbitChartComponent } from 'src/app/shared/components/vibration-orbit-chart/vibration-orbit-chart.component';
 import { analyticalOrbit, orbitExecution } from 'src/testing/orbit-fixture';
+import { formatNumber } from 'src/app/shared/pipes/number-format.pipe';
 import { VibrationModule } from '../vibration.module';
 import { Routing } from 'src/app/pages/routing';
 
@@ -66,7 +67,7 @@ describe('Orbit workspace, real drawer, controls and ECharts', () => {
     configureMetronicPrimeNG();
     state = TestBed.inject(VibrationSelectionService); state.setRoute('/cm/vibration/orbit-analysis');
     source = spyOn(TestBed.inject(ORBIT_DATA_SOURCE), 'load').and.returnValue(of(analyticalOrbit()));
-    spyOn(TestBed.inject(VibrationOrbitAnalysisAvailabilityApiService), 'load').and.callFake((_pairs, period) => of([
+    spyOn(TestBed.inject(VibrationOrbitAnalysisAvailabilityApiService), 'load').and.callFake((_pairs, period = 'Daily') => of([
       { period, periodStart: '2026-11-04', capturedAtUtc: '2026-11-04T00:00:00Z', finishedAtUtc: '2026-11-04T00:00:01Z', sampleCount: 6400, sampleRateHz: 6400 },
     ]));
     harness = await RouterTestingHarness.create('/cm/vibration/orbit-analysis'); await settle();
@@ -101,20 +102,17 @@ describe('Orbit workspace, real drawer, controls and ECharts', () => {
     expect(controls.closest('app-analysis-panel')).not.toBeNull();
     expect(controls.compareDocumentPosition(root().querySelector('app-vibration-orbit-chart')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
-  it('has an independent period/date component without a range or Apply and resets selection when cadence changes', async () => {
+  it('selects daily captures using Date and Event time without a period selector, range or Apply', async () => {
     await createTab();
     expect(root().querySelector('app-orbit-acquisition-picker')).not.toBeNull();
+    expect(root().querySelector('select[aria-label="Acquisition period"]')).toBeNull();
     expect(root().querySelector('app-date-time-range')).toBeNull();
-    expect(root().textContent).not.toContain('Date and time range');
-    expect(Array.from(root().querySelectorAll('button')).some(button => button.textContent!.trim() === 'Apply')).toBeFalse();
     await apply(); expect(source).toHaveBeenCalledTimes(1);
-    await change('Acquisition period', 'Weekly');
-    expect(state.activeTab()!.orbitCapture).toBeUndefined(); expect(root().querySelector('app-vibration-orbit-chart')).toBeNull();
-    await apply(); expect(state.activeTab()!.orbitCapture).toEqual({ period: 'Weekly', periodStart: '2026-11-04', capturedAtUtc: '2026-11-04T00:00:00Z' });
-    expect(source).toHaveBeenCalledTimes(2);
+    expect(state.activeTab()!.orbitCapture).toEqual({ period: 'Daily', periodStart: '2026-11-04', capturedAtUtc: '2026-11-04T00:00:00Z' });
   });
   it('keeps every order choice, units and Keyphasor local and preserves tab settings/zoom', async () => {
     await createTab(); await change('Orbit filter', '0.5'); await apply();
+    expect(Array.from(root().querySelector<HTMLSelectElement>('select[aria-label="Displacement unit"]')!.options, option => option.value)).toEqual(['µm', 'mm']);
     const firstId = state.activeTabId(), first = chartComponent();
     expect(first.analysis!.points.length).toBe(6400);
     const dom = root().querySelector<HTMLElement>('[_echarts_instance_]')!, instance = echarts.getInstanceByDom(dom)!;
@@ -216,22 +214,32 @@ describe('Orbit workspace, real drawer, controls and ECharts', () => {
       keyphasor: { ...fixture.keyphasor!, values: time.map(t => t % 0.02 < 0.001 ? 5 : 0), pulseTimes: [0, 1] } }));
     await createTab(); await apply();
     const component = chartComponent(), point = component.analysis!.points[8];
+    expect(component.selectedIndex).toBe(0);
+    const initialReadout = root().querySelector<HTMLElement>('[data-testid="orbit-tracking"]')!;
+    expect(initialReadout.tagName).toBe('DL');
+    expect(initialReadout.querySelector('dd')!.textContent).toContain(formatNumber(component.analysis!.points[0].time));
+    expect(initialReadout.querySelectorAll('dt').length).toBe(4);
     const chartNodes = root().querySelectorAll<HTMLElement>('[_echarts_instance_]');
     const orbit = echarts.getInstanceByDom(chartNodes[0])!, waveform = echarts.getInstanceByDom(chartNodes[1])!;
-    const pixel = orbit.convertToPixel({ seriesId: 'direct' }, [Math.hypot(point.x, point.y),
-      (Math.atan2(point.y, point.x) * 180 / Math.PI + 360) % 360]);
+    expect((waveform.getOption() as { color: string[] }).color.slice(0, 2)).toEqual(['#2563EB', '#EA580C']);
+    const pixel = orbit.convertToPixel({ seriesId: 'direct' }, [point.x, point.y]);
     const canvas = chartNodes[0].querySelector('canvas')!, rect = canvas.getBoundingClientRect();
     canvas.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: rect.left + pixel[0], clientY: rect.top + pixel[1] }));
     await settle();
     expect(component.selectedIndex).toBe(8);
     const interaction = root().querySelector<HTMLElement>('[aria-label="Interactive X/Y orbit sample tracking"]')!;
     expect(document.activeElement).toBe(interaction);
-    expect(root().querySelector('[data-testid="orbit-tracking"]')!.textContent).toContain('Sample 9 / 33');
+    const readout = root().querySelector<HTMLElement>('[data-testid="orbit-tracking"]')!;
+    const footer = root().querySelector<HTMLElement>('[data-testid="record-summary"]')!;
+    expect(readout.classList.contains('visually-hidden')).toBeFalse();
+    expect(readout.textContent).toContain(formatNumber(point.x));
+    expect(readout.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     const key = async (value: string) => {
       const event = new KeyboardEvent('keydown', { key: value, bubbles: true, cancelable: true });
       interaction.dispatchEvent(event); await settle(); expect(event.defaultPrevented).toBeTrue();
     };
     await key('ArrowRight'); expect(component.selectedIndex).toBe(9);
+    expect(readout.textContent).toContain(formatNumber(component.selectedPoint!.x));
     await key('ArrowDown'); expect(component.selectedIndex).toBe(10);
     await key('ArrowLeft'); expect(component.selectedIndex).toBe(9);
     await key('ArrowUp'); expect(component.selectedIndex).toBe(8);
@@ -239,8 +247,23 @@ describe('Orbit workspace, real drawer, controls and ECharts', () => {
     expect(series(orbit).find(s => s.id === 'tracking-orbit')!.data.length).toBe(1);
     expect(series(waveform).find(s => s.id === 'tracking-x')!.data[0]).toEqual([point.time * 1000, point.x]);
     expect(series(waveform).find(s => s.id === 'tracking-y')!.data[0]).toEqual([point.time * 1000, point.y]);
+    const waveformPoint = component.analysis!.points[14];
+    const waveformPixel = waveform.convertToPixel({ seriesId: 'x' }, [waveformPoint.time * 1000, waveformPoint.x]) as number[];
+    const waveformCanvas = chartNodes[1].querySelector('canvas')!, waveformRect = waveformCanvas.getBoundingClientRect();
+    waveformCanvas.dispatchEvent(new MouseEvent('mousemove', { bubbles: true,
+      clientX: waveformRect.left + waveformPixel[0], clientY: waveformRect.top + waveformPixel[1] }));
+    await settle(); expect(component.selectedIndex).toBe(14);
+    expect(readout.textContent).toContain(formatNumber(waveformPoint.x));
     await key('End'); await key('ArrowRight'); expect(component.selectedIndex).toBe(32);
     await key('Home'); await key('ArrowLeft'); expect(component.selectedIndex).toBe(0);
+    expect((orbit.getOption() as unknown as { series: { type: string; symbol: string }[] }).series[0].type).toBe('scatter');
+    orbit.dispatchAction({ type: 'dataZoom', batch: ['orbit-position-zoom', 'orbit-position-y-zoom'].map(dataZoomId => ({ dataZoomId, start: 10, end: 90 })) });
+    const clicked = component.analysis!.points[12], clickPixel = orbit.convertToPixel({ seriesId: 'direct' }, [clicked.x, clicked.y]) as number[];
+    for (const type of ['mousedown', 'mouseup', 'click']) {
+      canvas.dispatchEvent(new MouseEvent(type, { bubbles: true, button: 0, clientX: rect.left + clickPixel[0], clientY: rect.top + clickPixel[1] }));
+    }
+    await settle(); expect(component.selectedIndex).toBe(12);
+    expect(series(orbit).find(s => s.id === 'tracking-orbit')!.data[0]).toEqual([clicked.x, clicked.y]);
     expect(source).toHaveBeenCalledTimes(1);
   });
   it('retains the tracked time across units, filters, themes, scale and tab switches without stealing other controls keys', async () => {
@@ -256,7 +279,7 @@ describe('Orbit workspace, real drawer, controls and ECharts', () => {
     const theme = document.documentElement.getAttribute('data-bs-theme');
     try { document.documentElement.setAttribute('data-bs-theme', 'dark'); await settle(); expect(component.selectedPoint!.time).toBe(time); }
     finally { if (theme === null) { document.documentElement.removeAttribute('data-bs-theme'); } else { document.documentElement.setAttribute('data-bs-theme', theme); } }
-    await createTab(); await apply(); expect(chartComponent().selectedIndex).toBeNull();
+    await createTab(); await apply(); expect(chartComponent().selectedIndex).toBe(0);
     state.activateTab(id); await settle(); expect(chartComponent()).toBe(component); expect(component.selectedPoint!.time).toBe(time);
     const select = root().querySelector<HTMLSelectElement>('select[aria-label="Displacement unit"]')!;
     const event = new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true });

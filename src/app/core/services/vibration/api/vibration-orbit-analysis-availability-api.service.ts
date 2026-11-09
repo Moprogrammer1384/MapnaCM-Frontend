@@ -18,7 +18,7 @@ interface OrbitCatalogue { readonly timeZone: string; readonly period: string; r
 @Injectable({ providedIn: 'root' })
 export class VibrationOrbitAnalysisAvailabilityApiService {
   private readonly http = inject(HttpClient);
-  load(pairs: readonly OrbitProbePair[], period: OrbitPeriod): Observable<readonly OrbitCaptureChoice[]> {
+  load(pairs: readonly OrbitProbePair[], period: OrbitPeriod = 'Daily'): Observable<readonly OrbitCaptureChoice[]> {
     return defer(() => {
       const ids = [...new Set(pairs.reduce<number[]>((all, pair) => [...all, pair.x.measurement.id, pair.y.measurement.id], []))];
       if (!pairs.length || ids.length > 16 || ids.some(id => !Number.isSafeInteger(id) || id <= 0) || !validOrbitPeriod(period)) {

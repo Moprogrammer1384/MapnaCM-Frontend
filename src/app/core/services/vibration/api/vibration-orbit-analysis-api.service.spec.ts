@@ -54,7 +54,7 @@ describe('Orbit discrete acquisition HTTP contract', () => {
     source.load(input()).subscribe(data => expect(data).toBeNull()); pending().flush(response(null));
     const invalid = [
       { ...response(), data: { ...response().data, xMeasurementId: 7 } },
-      response({ ...analyticalOrbit(), period: 'Weekly' }),
+      response({ ...analyticalOrbit(), period: 'Weekly' } as never),
       response({ ...analyticalOrbit(), x: [] }),
       response({ ...analyticalOrbit(), finishedAtUtc: '2026-11-04T00:00:00.161Z' }),
     ];
@@ -68,8 +68,8 @@ describe('Orbit discrete acquisition HTTP contract', () => {
     pending().flush({ success: false, message: 'Orbit unavailable' }, { status: 503, statusText: 'Unavailable' });
     const subscription = source.load(input()).subscribe(); const read = pending(); subscription.unsubscribe(); expect(read.cancelled).toBeTrue();
   });
-  it('discovers every cadence without asking for a date range', () => {
-    for (const period of ['Daily', 'Weekly', 'Monthly', 'Quarterly'] as const) {
+  it('discovers daily acquisitions without asking for a date range', () => {
+    for (const period of ['Daily'] as const) {
       TestBed.inject(VibrationOrbitAnalysisAvailabilityApiService).load([pair()], period).subscribe(data => expect(data.length).toBe(1));
       const read = http.expectOne(request => request.url.endsWith('/OrbitAnalysis/GetAvailability'));
       expect(read.request.params.getAll('MeasurementIds')).toEqual(['1', '4']); expect(read.request.params.get('Period')).toBe(period);

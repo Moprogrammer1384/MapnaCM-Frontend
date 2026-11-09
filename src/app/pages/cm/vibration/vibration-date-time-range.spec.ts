@@ -39,7 +39,7 @@ const execution: AssetTaxonomyExecution = {
 describe('Combined date/time range on Vibration pages', () => {
   let harness: RouterTestingHarness;
   let state: VibrationSelectionService;
-  const rangePages = Object.keys(VIBRATION_PAGES).filter(page => page !== 'bode-analysis' && page !== 'orbit-analysis');
+  const rangePages = Object.keys(VIBRATION_PAGES).filter(page => !['bode-analysis', 'orbit-analysis', 'rotor-position'].includes(page));
   const input = () => harness.routeNativeElement!.querySelector<HTMLInputElement>('app-date-time-range input')!;
   const picker = () => (input() as HTMLInputElement & { _flatpickr: Instance })._flatpickr;
   const detect = () => harness.fixture.detectChanges();
@@ -150,7 +150,7 @@ describe('Combined date/time range on Vibration pages', () => {
     detect(); await harness.fixture.whenStable(); detect();
     await harness.fixture.whenStable(); detect();
     expect(state.activeTab()!.chartSettings!.quantity).toBe('displacement');
-    expect(root.querySelector('app-vibration-bode-chart h3')!.textContent).toContain('Bearing 1 - X');
+    expect(root.querySelector('app-vibration-bode-chart h3')!.textContent).toContain('Bearing 1 · X: X vi508');
     expect(root.querySelector('[data-testid="bode-event-type"]')!.textContent).toContain('Startup');
     expect(root.querySelector<HTMLSelectElement>('select[aria-label="Quantity"]')!.value).toBe('displacement');
   });

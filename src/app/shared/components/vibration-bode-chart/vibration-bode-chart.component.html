@@ -1,7 +1,7 @@
 @if (title || record?.eventType) {
-  <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
     @if (title) {
-      <h3 [id]="titleId" class="fs-5 fw-bold text-break flex-grow-1 min-w-0 mb-0">{{ title }}@if (tag) {<span class="text-gray-500 fw-normal">{{ ' ' + tag }}</span>}</h3>
+      <h3 [id]="titleId" class="fs-5 fw-bold mb-0 text-break">{{ title }}{{ tag ? ' ' + tag : '' }}</h3>
     }
     @if (record?.eventType; as eventType) {
       <span class="badge flex-shrink-0" [ngClass]="eventClasses[eventType]" data-testid="bode-event-type">{{ eventType }}</span>
@@ -22,12 +22,18 @@
   <div role="img" aria-label="Bode diagrams: 1X amplitude above phase versus shaft speed, with linked zoom and cursor">
     <app-apache-echarts [options]="chartOptions" [mergeOptions]="true" height="600px"></app-apache-echarts>
   </div>
-  <div class="d-flex flex-wrap justify-content-end gap-3 gap-md-5 text-gray-500 fs-8 mt-2" role="status" aria-live="polite">
-    <span data-testid="bode-count">{{ analysis.speed.length | number }} Data</span>
-    <span>{{ analysis.minimumSpeedRpm | numberFormat }}–{{ analysis.maximumSpeedRpm | numberFormat }} RPM</span>
-    <span data-testid="bode-peak">Peak: {{ analysis.amplitude[analysis.peakIndex] | numberFormat }} {{ analysis.unit }} {{ analysis.amplitudeMode === 'rms' ? 'RMS' : analysis.amplitudeMode }}
-      at {{ record!.observations[analysis.peakIndex].speedRpm | numberFormat }} RPM</span>
-  </div>
+  <footer class="d-flex flex-column gap-3 text-gray-500 fs-7 mt-3" dir="ltr"
+    data-testid="record-summary" role="group" aria-label="Acquisition summary" aria-live="polite">
+    <div class="d-flex flex-wrap align-items-center justify-content-start gap-3 gap-md-5" data-testid="chart-statistics">
+      <span class="mw-100" data-testid="bode-peak">Peak: <strong class="text-gray-700 fw-semibold">{{ analysis.amplitude[analysis.peakIndex] | numberFormat }} {{ analysis.unit }} {{ analysis.amplitudeMode === 'rms' ? 'RMS' : analysis.amplitudeMode }}</strong>
+        at <strong class="text-gray-700 fw-semibold">{{ record!.observations[analysis.peakIndex].speedRpm | numberFormat }} RPM</strong></span>
+      <span class="text-nowrap" data-testid="bode-peak-phase">Phase at peak: <strong class="text-gray-700 fw-semibold">{{ analysis.phase[analysis.peakIndex] | numberFormat }}°</strong></span>
+    </div>
+    <div class="d-flex flex-wrap align-items-center justify-content-end gap-3 gap-md-5" data-testid="acquisition-metadata">
+      <span class="text-nowrap" data-testid="acquisition-start">Start: <time class="text-gray-700 fw-semibold" [attr.datetime]="record!.startedAtUtc || record!.observations[0].timestamp">{{ (record!.startedAtUtc || record!.observations[0].timestamp) | acquisitionDate }}</time></span>
+      <span class="text-nowrap" data-testid="bode-count"><strong class="text-gray-700 fw-semibold">{{ record!.originalSampleCount ?? record!.observations.length | number }}</strong> Data</span>
+    </div>
+  </footer>
 } @else {
   <div class="text-center py-15" role="status">
     <h4 class="fs-6 fw-semibold mb-3">No observations in this range</h4>

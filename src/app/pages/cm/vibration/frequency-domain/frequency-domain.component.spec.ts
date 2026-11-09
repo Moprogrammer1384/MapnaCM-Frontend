@@ -12,7 +12,7 @@ import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { vibrationTestRecord } from 'src/testing/vibration-test-data';
 import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
-import { VIBRATION_UNITS } from 'src/app/core/models/analysis-chart-settings.model';
+import { vibrationUnitOptions } from 'src/app/core/models/analysis-chart-settings.model';
 import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { prepareFrequencyDomainRecord, analyzeFrequencyDomain } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
@@ -115,7 +115,7 @@ describe('Frequency Domain with an isolated analytical workload', () => {
     const prepared = prepareFrequencyDomainRecord(component().raw!);
     for (const quantity of ['displacement', 'velocity', 'acceleration'] as const) {
       await change('Quantity', quantity);
-      for (const unit of VIBRATION_UNITS[quantity]) {
+      for (const unit of vibrationUnitOptions(quantity)) {
         await change('Unit', unit.value);
         const expected = analyzeFrequencyDomain(prepared, state.activeTab()!.chartSettings!);
         const data = snapshot().series[0].data;

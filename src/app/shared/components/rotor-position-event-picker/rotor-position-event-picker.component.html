@@ -1,0 +1,11 @@
+<app-vibration-event-picker [inputId]="inputId" [value]="value || emptyValue" [events]="events"
+  [disabled]="loading || !!error || !events.length" (selected)="choose($event)"></app-vibration-event-picker>
+@if (loading) {
+  <div class="text-gray-500 fs-7 mt-3" role="status"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Loading events…</div>
+} @else if (error) {
+  <div class="alert alert-danger d-flex align-items-center justify-content-between gap-3 mt-4 mb-0" role="alert">
+    <span>{{ error }}</span><button type="button" class="btn btn-sm btn-light-danger" (click)="reload()">Retry</button>
+  </div>
+} @else if (!events.length) {
+  <div class="text-gray-500 fs-7 mt-3" role="status">No common Startup, Coast down or Trip events for these probe pairs.</div>
+}

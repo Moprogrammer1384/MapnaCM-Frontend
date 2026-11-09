@@ -63,7 +63,8 @@ export class VibrationBodeAnalysisApiService implements BodeDataSource {
           return Object.freeze({ ...point, timestamp });
         });
         const start = bodeLocalTime(run.startedAtUtc).replace('T', ' ');
-        return Object.freeze({ id: String(run.id), eventType: run.eventType, label: `Measurement ${request.measurementId}`, channel: String(request.measurementId),
+        return Object.freeze({ id: String(run.id), eventType: run.eventType, startedAtUtc: run.startedAtUtc,
+          originalSampleCount: run.originalSampleCount, label: `Measurement ${request.measurementId}`, channel: String(request.measurementId),
           run: `${run.eventType} · ${start}`, phaseConvention: 'as-exported' as const, order: run.order, ...profile,
           observations: Object.freeze(observations) });
       });

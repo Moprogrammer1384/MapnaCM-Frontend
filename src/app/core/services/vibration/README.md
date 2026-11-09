@@ -1,12 +1,13 @@
 # DARP vibration data and processing
 
-Updated 2026-11-03. Time Domain and Frequency Domain use the real
+Updated 2026-11-09. Time Domain and Frequency Domain use the real
 VibrationTimeDomainApiService through VIBRATION_DATA_SOURCE in
 api/vibration-time-domain-api.service.ts. All HTTP adapters are grouped in
 [api/](api/README.md), with explicit Vibration/feature/purpose names.
 The old Time/Frequency workbook fixture and tenfold repetition were removed.
-Overview and Rotor Position have no charts; their dedicated charts are deferred
-to future tasks. Bode Analysis uses its
+Overview has no chart. Rotor Position now has a frontend-only, explicitly
+simulated DC Centerline implementation; see [Rotor Position](rotor-position/README.md).
+Bode Analysis uses its
 separate BodeAnalysis API and database entities, with discrete event selection;
 see [Bode methods and source](bode-analysis/README.md).
 Synthetic Time/Frequency workload data exists under src/testing/ for regression tests.
@@ -129,8 +130,10 @@ record, never from an earlier unit/quantity display or a downsampled waveform.
    with the selected unit and two-decimal display, alongside the total sample
    count. It reuses the result statistics without another pass over the data;
    zoom does not change the full-record extrema.
-8. `timeDomainAxis`: Time only, normalized to seconds. CPM/Order belong to a
-   frequency analysis with its actual speed metadata, not to a time record.
+8. Time Domain always uses the prepared sample times in seconds directly.
+   The redundant `timeDomainAxis` selection/validation helper was removed on
+   2026-11-09 with the Time Domain X-axis selector. CPM/Order remain Frequency
+   Domain choices, using its actual reference speed.
 
 These are documented numerical approximations, tested against analytical signals;
 they do not claim ISO instrument compliance or replace acquisition calibration.
@@ -179,4 +182,4 @@ Hours/minutes keep their existing behavior, as explicitly requested by the user.
 
 ## Orbit Analysis
 
-The independent [Orbit pipeline](orbit-analysis/README.md) owns paired-probe validation, received acquisition validation, Keyphasor reference and fractional/integer order extraction. HTTP adapters in `api/` read `/OrbitAnalysis/Get` and `/OrbitAnalysis/GetAvailability`. The page retains the shared workspace/ECharts and selects an exact stored Daily/Weekly/Monthly/Quarterly one-second acquisition through the independent Orbit date component. Orbit never sends a From/To waveform range. No Orbit reference data or runtime generators remain in the frontend.
+The independent [Orbit pipeline](orbit-analysis/README.md) owns paired-probe validation, received acquisition validation, Keyphasor reference and fractional/integer order extraction. HTTP adapters in `api/` read `/OrbitAnalysis/Get` and `/OrbitAnalysis/GetAvailability`. The page retains the shared workspace/ECharts and selects an exact stored Daily acquisition, including variable/subsecond durations through the independent Orbit date component. Orbit never sends a From/To waveform range. No Orbit reference data or runtime generators remain in the frontend.

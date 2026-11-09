@@ -1,11 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, Output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { SharedModule } from 'src/app/_metronic/shared/shared.module';
 import { AnalysisEventTime } from 'src/app/core/models/analysis-event-time.model';
 import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
-import { ORBIT_PERIODS, OrbitCaptureChoice, OrbitCaptureSelection, OrbitPeriod, OrbitProbePair } from 'src/app/core/models/orbit-analysis.model';
+import { OrbitCaptureChoice, OrbitCaptureSelection, OrbitProbePair } from 'src/app/core/models/orbit-analysis.model';
 import { VibrationOrbitAnalysisAvailabilityApiService } from 'src/app/core/services/vibration/api/vibration-orbit-analysis-availability-api.service';
 import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { formatNumber } from '../../pipes/number-format.pipe';
@@ -14,18 +12,16 @@ import { VibrationEventPickerComponent } from '../vibration-event-picker/vibrati
 /** Independent date model: choose one exact stored event, including multiple captures per day. */
 @Component({
   selector: 'app-orbit-acquisition-picker', standalone: true,
-  imports: [CommonModule, FormsModule, SharedModule, VibrationEventPickerComponent],
+  imports: [CommonModule, VibrationEventPickerComponent],
   templateUrl: './orbit-acquisition-picker.component.html', changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'd-block', '[attr.aria-busy]': 'loading' },
 })
 export class OrbitAcquisitionPickerComponent implements OnChanges, OnDestroy {
   @Input({ required: true }) inputId: string;
   @Input({ required: true }) pairs: readonly OrbitProbePair[] = [];
-  @Input() period: OrbitPeriod = 'Daily';
+  readonly period = 'Daily';
   @Input() value?: OrbitCaptureSelection;
-  @Output() readonly periodChange = new EventEmitter<OrbitPeriod>();
   @Output() readonly selected = new EventEmitter<OrbitCaptureSelection>();
-  readonly periods = ORBIT_PERIODS;
   choices: readonly OrbitCaptureChoice[] = [];
   events: readonly AnalysisEventTime[] = [];
   pickerValue: DateTimeRange = { from: '', to: '' };
@@ -34,7 +30,7 @@ export class OrbitAcquisitionPickerComponent implements OnChanges, OnDestroy {
   private readonly api = inject(VibrationOrbitAnalysisAvailabilityApiService);
   private readonly cdr = inject(ChangeDetectorRef);
   private request?: Subscription;
-  private key = '';
+  key = '';
   private version = 0;
   private readonly cache = new Map<string, readonly OrbitCaptureChoice[]>();
 
@@ -43,13 +39,12 @@ export class OrbitAcquisitionPickerComponent implements OnChanges, OnDestroy {
     if (key !== this.key) { this.key = key; this.load(); }
     else { this.syncSelection(); }
   }
-  changePeriod(period: OrbitPeriod): void { if (period !== this.period) { this.periodChange.emit(period); } }
   load(): void {
     this.request?.unsubscribe(); const version = ++this.version;
     this.loading = true; this.error = ''; this.accept([]);
     const cached = this.cache.get(this.key);
     if (cached) { this.loading = false; this.accept(cached); return; }
-    this.request = this.api.load(this.pairs, this.period).subscribe({
+    this.request = this.api.load(this.pairs).subscribe({
       next: choices => {
         if (version !== this.version) { return; }
         this.cache.set(this.key, choices); this.loading = false; this.accept(choices);

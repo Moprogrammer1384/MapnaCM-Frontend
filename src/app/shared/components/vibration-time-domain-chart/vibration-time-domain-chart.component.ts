@@ -1,21 +1,24 @@
+import { vibrationChartColor } from '../vibration-chart-presentation/vibration-chart-colors';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, inject, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import type { EChartsOption, LineSeriesOption, TooltipComponentOption } from 'echarts';
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
-import { AMPLITUDE_LABELS, AnalysisChartSettings, VIBRATION_QUANTITIES } from 'src/app/core/models/analysis-chart-settings.model';
+import { AMPLITUDE_LABELS, AnalysisChartSettings, VibrationSourceProfile, VIBRATION_QUANTITIES } from 'src/app/core/models/analysis-chart-settings.model';
 import { RawVibrationRecord, TimeDomainAnalysis } from 'src/app/core/models/vibration-data.model';
 import { TimeDomainAnalysisService, TimeDomainAnalysisSession } from 'src/app/core/services/vibration/time-domain/time-domain-analysis.service';
 import { VIBRATION_DATA_SOURCE, isVibrationDisplay, vibrationError } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { VibrationDisplayRecord } from 'src/app/core/models/vibration-api.model';
 import { displayTimeDomain } from 'src/app/core/services/vibration/time-domain/time-domain-display';
 import { formatNumber, NumberFormatPipe } from '../../pipes/number-format.pipe';
+import { AcquisitionDatePipe } from '../../pipes/acquisition-date.pipe';
+import { rawAcquisitionStart } from 'src/app/core/utils/vibration-acquisition-start';
 
 /** Raw time-record rendering. Source/API integration and all signal math remain in core/services/vibration. */
 @Component({
   selector: 'app-vibration-time-domain-chart',
   standalone: true,
-  imports: [CommonModule, ApacheEchartsComponent, NumberFormatPipe],
+  imports: [CommonModule, ApacheEchartsComponent, NumberFormatPipe, AcquisitionDatePipe],
   templateUrl: './vibration-time-domain-chart.component.html',
   host: { class: 'd-block mw-100', '[attr.aria-busy]': 'loading' },
 })
@@ -24,12 +27,14 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
   @Input({ required: true }) from: string;
   @Input({ required: true }) to: string;
   @Input() settings?: AnalysisChartSettings;
+  @Output() readonly sourceProfile = new EventEmitter<VibrationSourceProfile | undefined>(true);
   @Output() readonly sourceSettings = new EventEmitter<AnalysisChartSettings>(true);
   loading = true;
   error = '';
   raw?: RawVibrationRecord;
   display?: VibrationDisplayRecord;
   analysisNotice = '';
+  acquisitionStartedAt?: string;
   analysis?: TimeDomainAnalysis;
   chartOptions?: EChartsOption;
   private readonly source = inject(VIBRATION_DATA_SOURCE);
@@ -54,10 +59,12 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['measurementId'] || changes['from'] || changes['to']) { this.reload(); }
-    else { this.scheduleAnalysis(); }
+    else if (changes['settings']) { this.scheduleAnalysis(); }
+    else { this.updateChartTheme(); }
   }
 
   reload(): void {
+    if (this.subscription) { this.sourceProfile.emit(undefined); }
     ++this.version;
     clearTimeout(this.analysisTimer);
     this.subscription?.unsubscribe();
@@ -72,6 +79,7 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
     this.error = '';
     this.subscription = this.source.load({ measurementId: this.measurementId, from: this.from, to: this.to }).subscribe({
       next: raw => {
+        this.sourceProfile.emit({ quantity: raw.quantity, unit: raw.unit });
         this.session?.release();
         if (isVibrationDisplay(raw)) { this.display = raw; }
         else { this.raw = raw; this.session = this.processor.acquire(raw); }
@@ -81,6 +89,7 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
         this.scheduleAnalysis();
       },
       error: error => {
+        this.sourceProfile.emit(undefined);
         this.loading = false;
         this.error = vibrationError(error);
         this.changeDetector.markForCheck();
@@ -111,6 +120,7 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
       this.zone.run(() => {
         const waveformChanged = !this.analysis || this.analysis.quantity !== result.quantity || this.analysis.unit !== result.unit;
         this.analysis = result;
+        this.acquisitionStartedAt = this.raw ? rawAcquisitionStart(this.raw) : this.display?.timeOriginUtc;
         this.analysisNotice = this.display && settings.quantity !== this.display.quantity
           ? `Showing ${VIBRATION_QUANTITIES[this.display.quantity].label} from the response. Quantity conversion is unavailable for summary or discontinuous data.` : '';
         this.loading = false;
@@ -184,7 +194,7 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
     const label = `${quantity} (${result.unit})`;
     this.chartOptions = {
       animation: false,
-      color: [token('primary')],
+      color: [vibrationChartColor()],
       textStyle: { color: token('gray-600'), fontFamily: styles.fontFamily },
       tooltip: {
         trigger: 'axis',

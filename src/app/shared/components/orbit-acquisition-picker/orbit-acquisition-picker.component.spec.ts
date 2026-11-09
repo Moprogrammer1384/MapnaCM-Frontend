@@ -22,22 +22,22 @@ describe('Independent Orbit acquisition date model', () => {
     fixture.componentRef.setInput('inputId', 'orbit-picker-test'); fixture.componentRef.setInput('pairs', [orbitPair()]);
     fixture.detectChanges(); return fixture;
   };
-  it('places Acquisition period, Date and Event time in one responsive row and omits the count description', () => {
+  it('places only Date and Event time in one responsive row and omits the count description', () => {
     const fixture = create();
     const row = fixture.nativeElement.querySelector('app-vibration-event-picker > .row') as HTMLElement;
-    expect(Array.from(row.children).map(column => column.querySelector('label')?.textContent?.trim())).toEqual(['Acquisition period', 'Date', 'Event time']);
-    expect(Array.from(row.children).every(column => column.classList.contains('col-md-4'))).toBeTrue();
+    expect(Array.from(row.children).map(column => column.querySelector('label')?.textContent?.trim())).toEqual(['Date', 'Event time']);
+    expect(fixture.nativeElement.querySelector('select[aria-label="Acquisition period"]')).toBeNull();
     expect(fixture.nativeElement.textContent).not.toContain('acquisition(s)');
     expect(fixture.nativeElement.querySelector('app-date-time-range')).toBeNull(); fixture.destroy();
   });
-  it('emits an exact period key immediately and resets date filtering when changing cadence', () => {
+  it('emits an exact period key immediately and resets date filtering when changing probe pairs', () => {
     const fixture = create(), component = fixture.componentInstance;
     const emit = spyOn(component.selected, 'emit');
     const picker = fixture.debugElement.query(By.directive(VibrationEventPickerComponent)).componentInstance as VibrationEventPickerComponent;
     picker.chooseEvent(component.events[0].id);
     expect(emit).toHaveBeenCalledWith({ period: 'Daily', periodStart: '2026-11-04', capturedAtUtc: choice.capturedAtUtc });
-    picker.day = '2026-11-04'; api.load.and.returnValue(of([{ ...choice, period: 'Weekly' }]));
-    fixture.componentRef.setInput('period', 'Weekly'); fixture.detectChanges(); expect(picker.day).toBe('');
+    picker.day = '2026-11-04'; api.load.and.returnValue(of([choice]));
+    fixture.componentRef.setInput('pairs', [{ ...orbitPair(), key: 'other', x: { ...orbitPair().x, measurement: { ...orbitPair().x.measurement, id: 99 } } }]); fixture.detectChanges(); expect(picker.day).toBe('');
     expect(api.load).toHaveBeenCalledTimes(2); fixture.destroy();
   });
   it('shows separate event times on the selected day and restores the exact short capture', () => {
@@ -58,7 +58,7 @@ describe('Independent Orbit acquisition date model', () => {
     expect(emit).toHaveBeenCalledWith({ period: 'Daily', periodStart: '2026-11-04', capturedAtUtc: captures[2].capturedAtUtc });
     fixture.componentRef.setInput('value', emit.calls.mostRecent().args[0]); fixture.detectChanges();
     expect(picker.selectedEventId).toBe(component.events[2].id);
-    expect(fixture.nativeElement.querySelectorAll('app-vibration-event-picker > .row > .col-12').length).toBe(3);
+    expect(fixture.nativeElement.querySelectorAll('app-vibration-event-picker > .row > .col-12').length).toBe(2);
     fixture.destroy();
   });
   it('blocks failed and empty histories, supports retry and ignores canceled responses', () => {
@@ -68,10 +68,10 @@ describe('Independent Orbit acquisition date model', () => {
     api.load.and.returnValue(of([])); component.load(); fixture.detectChanges(); expect(component.error).toBe(''); expect(component.events).toEqual([]);
     const stale = new Subject<readonly OrbitCaptureChoice[]>(), current = new Subject<readonly OrbitCaptureChoice[]>();
     api.load.and.returnValues(stale, current);
-    fixture.componentRef.setInput('period', 'Weekly'); fixture.detectChanges();
-    fixture.componentRef.setInput('period', 'Monthly'); fixture.detectChanges();
-    stale.next([{ ...choice, period: 'Weekly' }]); expect(component.events).toEqual([]);
-    current.next([{ ...choice, period: 'Monthly' }]); fixture.detectChanges(); expect(component.events.length).toBe(1);
+    fixture.componentRef.setInput('pairs', [{ ...orbitPair(), x: { ...orbitPair().x, measurement: { ...orbitPair().x.measurement, id: 30 } } }]); fixture.detectChanges();
+    fixture.componentRef.setInput('pairs', [{ ...orbitPair(), x: { ...orbitPair().x, measurement: { ...orbitPair().x.measurement, id: 31 } } }]); fixture.detectChanges();
+    stale.next([choice]); expect(component.events).toEqual([]);
+    current.next([choice]); fixture.detectChanges(); expect(component.events.length).toBe(1);
     fixture.destroy(); expect(current.observed).toBeFalse();
   });
 });

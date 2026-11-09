@@ -1,1 +1,43 @@
-<app-analysis-workspace [state]="state"></app-analysis-workspace>
+<app-analysis-workspace [state]="state" [dateSelectionContent]="rotorDate" [controlsContent]="rotorControls"
+  dateSelectionTitle="Event date and time">
+  <ng-template let-tab>
+    @if (sessions.forTab(tab); as session) {
+      @if (!session.error) {
+        @if (session.event(); as event) {
+          <div class="row g-7">
+            @for (pair of session.pairs; track pair.key) {
+              <section class="col-12 mw-100"
+                [attr.aria-labelledby]="tab.id + '_rotor_' + pair.key">
+                @if (!$first) { <div class="separator mb-7"></div> }
+                <app-vibration-rotor-position-chart [pair]="pair" [event]="event" [settings]="session.settings()"
+                  (sourceUnit)="session.setSourceUnit(pair.key, $event)"
+                  [titleId]="tab.id + '_rotor_' + pair.key"></app-vibration-rotor-position-chart>
+              </section>
+            }
+          </div>
+        } @else {
+          <div class="text-gray-500 text-center py-10" role="status">Select a Startup, Coast down or Trip event above to view shaft position.</div>
+        }
+      }
+    }
+  </ng-template>
+</app-analysis-workspace>
+<ng-template #rotorDate let-tab>
+  @if (sessions.forTab(tab); as session) {
+    @if (session.error) {
+      <div class="alert alert-warning mb-0" role="alert">{{ session.error }}</div>
+    } @else {
+      <app-rotor-position-event-picker [inputId]="tab.id" [pairs]="session.pairs" [value]="session.event()"
+        (selected)="session.event.set($event)"></app-rotor-position-event-picker>
+    }
+  }
+</ng-template>
+<ng-template #rotorControls let-tab>
+  @if (sessions.forTab(tab); as session) {
+    @if (!session.error) {
+      <app-rotor-position-controls [inputId]="tab.id" [settings]="session.settings()"
+        [nativeUnits]="session.nativeUnits()"
+        (settingsChange)="session.settings.set($event)"></app-rotor-position-controls>
+    }
+  }
+</ng-template>

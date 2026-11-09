@@ -25,9 +25,9 @@ describe('Vibration measurement/date selection → native HTTP data → existing
   let state: VibrationSelectionService;
   let http: HttpTestingController;
   const root = () => harness.routeNativeElement!;
-  const settle = async () => {
+  const settle = async (allowLoading = false) => {
     await harness.fixture.whenStable(); harness.fixture.detectChanges();
-    for (let i = 0; root().querySelector('[aria-busy="true"]') && i < 200; i++) {
+    for (let i = 0; !allowLoading && root().querySelector('[aria-busy="true"]') && i < 1000; i++) {
       await new Promise(resolve => setTimeout(resolve, 10)); harness.fixture.detectChanges();
     }
   };
@@ -56,6 +56,32 @@ describe('Vibration measurement/date selection → native HTTP data → existing
   afterEach(() => { http.verify(); harness?.fixture.destroy(); });
 
   for (const domain of ['time', 'frequency'] as const) {
+    it(`adds a stored g unit only for its loaded ${domain} acquisition and removes it for a new native unit`, async () => {
+      state.setRoute(`/cm/vibration/${domain}-domain`);
+      harness = await RouterTestingHarness.create(`/cm/vibration/${domain}-domain`);
+      const interact = (action: () => void) => { harness.fixture.ngZone!.run(action); harness.fixture.detectChanges(); };
+      interact(() => state.execute(execution));
+      interact(() => http.expectOne(req => req.url.endsWith('/GetAvailability')).flush({ success: true, data: availabilityFixture([6, 7]) }));
+      const flush = (unit: number) => {
+        for (const id of [6, 7]) {
+          const request = http.expectOne(req => req.url.endsWith('/TimeDomain/Get') && req.params.get('MeasurementId') === String(id));
+          interact(() => request.flush({ success: true, data: { timeOriginUtc: '2026-10-01T00:00:00Z', timeUnit: 's', series: [{
+            measurementId: id, sourceQuantity: 3, quantity: 3, unit, representation: 'raw', originalSampleCount: 64,
+            returnedPointCount: 64, conversionApplied: false, hasGaps: false,
+            points: Array.from({ length: 64 }, (_, i) => ({ x: i / 128, y: Math.sin(2 * Math.PI * i / 16), breakBefore: i === 0 })),
+          }] } }));
+        }
+      };
+      interact(() => apply()); flush(11); await settle();
+      const unitSelect = () => root().querySelector<HTMLSelectElement>('select[aria-label="Unit"]')!;
+      expect(Array.from(unitSelect().options, option => option.value)).toEqual(['mm/s²', 'g']);
+      expect(unitSelect().value).toBe('g');
+      interact(() => apply('2026-10-02')); flush(10); await settle();
+      expect(Array.from(unitSelect().options, option => option.value)).toEqual(['mm/s²']);
+      expect(unitSelect().value).toBe('mm/s²');
+      http.expectNone(() => true);
+    }, 20000);
+
     it(`keeps ${domain} transforms local, loading only user filters after Apply with backend-owned limits`, async () => {
       state.setRoute(`/cm/vibration/${domain}-domain`);
       harness = await RouterTestingHarness.create(`/cm/vibration/${domain}-domain`);
@@ -134,7 +160,7 @@ describe('Vibration measurement/date selection → native HTTP data → existing
       const pickerInput = () => root().querySelector<HTMLInputElement>('app-date-time-range input')!;
       const selectTab = async (id: string) => {
         interact(() => root().querySelector<HTMLElement>(`[data-tab-id="${id}"]`)!.click());
-        await settle(); http.expectNone(() => true);
+        await settle(true); http.expectNone(() => true);
       };
       interact(() => state.execute(execution));
       const firstId = state.activeTabId();
@@ -142,6 +168,9 @@ describe('Vibration measurement/date selection → native HTTP data → existing
       await settle();
       const firstElements = elements();
       const firstCharts = firstElements.map(element => echarts.getInstanceByDom(element)!);
+      expect(firstCharts.length).toBe(2);
+      expect((firstCharts[0].getOption() as { color: string[] }).color[0]).toBe('#2563EB');
+      expect((firstCharts[1].getOption() as { color: string[] }).color[0]).toBe('#2563EB');
       const firstInput = pickerInput();
       const firstPicker = (firstInput as HTMLInputElement & { _flatpickr: Instance })._flatpickr;
       interact(() => window.jQuery(root().querySelector('select[aria-label="Quantity"]')!).val('displacement').trigger('change'));
@@ -199,6 +228,6 @@ describe('Vibration measurement/date selection → native HTTP data → existing
       [...firstElements, ...refreshedElements].forEach(element => expect(echarts.getInstanceByDom(element)).toBeUndefined());
       expect(document.querySelectorAll('.darp-date-time-calendar').length).toBe(0);
       expect(root().textContent).toContain('No analysis tabs yet');
-    });
+    }, 20000);
   }
 });

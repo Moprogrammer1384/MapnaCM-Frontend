@@ -135,3 +135,13 @@ against these accessible primary numerical references and analytical tests:
 Browser numerical, worker, control and isolated analytical and HTTP integration tests live beside
 their respective modules/components. Current verified commands/results are in
 the dated Frequency Domain maintenance entry in the root `agent.md`.
+
+### Footer maxima (2026-11-09)
+
+`frequency-domain-peaks.ts` ranks at most five positive finite local maxima of
+the full loaded spectrum in its current units, independently of zoom. Adjacent
+lower bins are not extra peaks; a flat peak contributes its first bin. Endpoints
+can be maxima; equal amplitudes sort by ascending frequency. A single scan keeps
+a bounded five-item list. Spectrum values and numerical FFT processing are
+unchanged. The acquisition count is the original time-sample count, not the
+number of FFT bins. Start is the native UTC origin plus first sample offset.

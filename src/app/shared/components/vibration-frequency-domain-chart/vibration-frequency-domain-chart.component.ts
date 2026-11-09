@@ -1,20 +1,24 @@
+import { vibrationChartColor } from '../vibration-chart-presentation/vibration-chart-colors';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, inject, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import type { EChartsOption, TooltipComponentOption } from 'echarts';
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
-import { AMPLITUDE_LABELS, AnalysisChartSettings, VIBRATION_QUANTITIES } from 'src/app/core/models/analysis-chart-settings.model';
+import { AMPLITUDE_LABELS, AnalysisChartSettings, VibrationSourceProfile, VIBRATION_QUANTITIES } from 'src/app/core/models/analysis-chart-settings.model';
 import { RawVibrationRecord } from 'src/app/core/models/vibration-data.model';
 import { FrequencyDomainAnalysis } from 'src/app/core/models/frequency-domain.model';
 import { FrequencyDomainAnalysisService, FrequencyDomainAnalysisSession } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis.service';
 import { VIBRATION_DATA_SOURCE, isVibrationDisplay, vibrationError } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { formatNumber, NumberFormatPipe } from '../../pipes/number-format.pipe';
+import { AcquisitionDatePipe } from '../../pipes/acquisition-date.pipe';
+import { rawAcquisitionStart } from 'src/app/core/utils/vibration-acquisition-start';
+import { largestSpectrumPeaks, SpectrumPeak } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-peaks';
 
 /** Raw-record FFT rendering. Source/API integration and all signal math remain in core/services/vibration. */
 @Component({
   selector: 'app-vibration-frequency-domain-chart',
   standalone: true,
-  imports: [CommonModule, ApacheEchartsComponent, NumberFormatPipe],
+  imports: [CommonModule, ApacheEchartsComponent, NumberFormatPipe, AcquisitionDatePipe],
   templateUrl: './vibration-frequency-domain-chart.component.html',
   host: { class: 'd-block mw-100', '[attr.aria-busy]': 'loading' },
 })
@@ -23,11 +27,15 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
   @Input({ required: true }) from: string;
   @Input({ required: true }) to: string;
   @Input() settings?: AnalysisChartSettings;
+  @Output() readonly sourceProfile = new EventEmitter<VibrationSourceProfile | undefined>(true);
   @Output() readonly sourceSettings = new EventEmitter<AnalysisChartSettings>(true);
   loading = true;
   error = '';
   raw?: RawVibrationRecord;
   analysis?: FrequencyDomainAnalysis;
+  peaks: readonly SpectrumPeak[] = [];
+  acquisitionStartedAt?: string;
+  readonly amplitudeLabels = AMPLITUDE_LABELS;
   chartOptions?: EChartsOption;
   private readonly source = inject(VIBRATION_DATA_SOURCE);
   private readonly processor = inject(FrequencyDomainAnalysisService);
@@ -51,10 +59,12 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['measurementId'] || changes['from'] || changes['to']) { this.reload(); }
-    else { this.scheduleAnalysis(); }
+    else if (changes['settings']) { this.scheduleAnalysis(); }
+    else { this.updateChartTheme(); }
   }
 
   reload(): void {
+    if (this.subscription) { this.sourceProfile.emit(undefined); }
     ++this.version;
     clearTimeout(this.analysisTimer);
     this.subscription?.unsubscribe();
@@ -67,6 +77,7 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
     this.error = '';
     this.subscription = this.source.load({ measurementId: this.measurementId, from: this.from, to: this.to }).subscribe({
       next: raw => {
+        this.sourceProfile.emit({ quantity: raw.quantity, unit: raw.unit });
         if (isVibrationDisplay(raw)) {
           this.loading = false;
           this.analysis = undefined;
@@ -86,6 +97,7 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
         this.scheduleAnalysis();
       },
       error: error => {
+        this.sourceProfile.emit(undefined);
         this.loading = false;
         this.error = vibrationError(error);
         this.analysis = undefined;
@@ -116,6 +128,8 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
       if (this.destroyed || version !== this.version) { return; }
       this.zone.run(() => {
         this.analysis = result;
+        this.peaks = largestSpectrumPeaks(result);
+        this.acquisitionStartedAt = rawAcquisitionStart(this.raw);
         this.loading = false;
         this.points = Array.from(result.frequency, (hz, index) => [hz, result.values[index]]);
         this.updateChartTheme();
@@ -153,7 +167,7 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
     const label = `${quantity} (${result.unit} ${AMPLITUDE_LABELS[result.amplitudeMode]})`;
     this.chartOptions = {
       animation: false,
-      color: [token('primary')],
+      color: [vibrationChartColor()],
       textStyle: { color: token('gray-600'), fontFamily: styles.fontFamily },
       tooltip: {
         trigger: 'axis',

@@ -79,7 +79,7 @@ describe('Raw time-domain chart request lifecycle', () => {
   });
 
   it('displays a large summary on Time (s) with server statistics, pen lifts and no new requests on selector changes', async () => {
-    const summary: VibrationDisplayRecord = { kind: 'display', quantity: 'velocity', unit: 'mm/s', series: {
+    const summary: VibrationDisplayRecord = { kind: 'display', quantity: 'velocity', unit: 'mm/s', timeOriginUtc: '2026-11-08T06:30:00Z', series: {
       measurementId: 42, sourceQuantity: 2, quantity: 2, unit: 5, representation: 'minmax-statistical-envelope',
       originalSampleCount: 9000000, returnedPointCount: 4, conversionApplied: false, hasGaps: false, isFftInput: false,
       points: [{ x: 0, y: -2, breakBefore: true }, { x: 1, y: 4, breakBefore: false },
@@ -93,6 +93,15 @@ describe('Raw time-domain chart request lifecycle', () => {
     const component = fixture.componentInstance;
     expect(component.error).toBe('');
     expect(component.analysis!.sampleCount).toBe(9000000);
+    const footer = fixture.nativeElement.querySelector('footer') as HTMLElement;
+    expect(footer.querySelector('[data-testid="record-sample-count"]')!.textContent).toContain('9,000,000');
+    expect(footer.querySelector('[data-testid="acquisition-start"]')!.textContent).toContain('2026-11-08 10:00:00');
+    const statistics = footer.querySelector<HTMLElement>('[data-testid="chart-statistics"]')!;
+    const metadata = footer.querySelector<HTMLElement>('[data-testid="acquisition-metadata"]')!;
+    expect(statistics.children[0].getAttribute('data-testid')).toBe('record-max');
+    expect(getComputedStyle(statistics).justifyContent).toBe('flex-start');
+    expect(metadata.children[0].getAttribute('data-testid')).toBe('acquisition-start');
+    expect(getComputedStyle(metadata).justifyContent).toBe('flex-end');
     expect(component.analysis!.statistics.min).toBe(-2); // mm/s to selected cm/s, from SERVER stats.
     const options = component.chartOptions as { xAxis: { name: string }; series: { data: [number, number | null][] }[] };
     expect(options.xAxis.name).toBe('Time (s)');

@@ -1,8 +1,7 @@
-<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
-  <h3 [id]="titleId" class="fs-5 fw-bold text-break mb-0">{{ pair.x.component.name }} · Orbit</h3>
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <h3 [id]="titleId" class="fs-5 fw-bold mb-0 text-break">{{ pair.x.component.name | measurementHeading: [pair.x.measurement, pair.y.measurement]: ['X', 'Y'] }}</h3>
   @if (record) { <span class="badge badge-light-info">Recorded acquisition</span> }
 </div>
-<p class="text-gray-600 fs-7 mb-5">X: {{ pair.x.measurement.name }} {{ pair.x.measurement.tag }} · Y: {{ pair.y.measurement.name }} {{ pair.y.measurement.tag }}</p>
 @if (loading) {
   <div class="text-center py-15" role="status"><span class="spinner-border spinner-border-sm text-primary me-3" aria-hidden="true"></span>Loading orbit data…</div>
 } @else if (error) {
@@ -10,43 +9,47 @@
     @if (!record) { <button type="button" class="btn btn-sm btn-light-danger ms-4" (click)="reload()">Retry</button> }
   </div>
 } @else if (analysis && options) {
-  <div class="d-flex flex-wrap gap-6 text-gray-700 fs-7 mb-5">
-    <span>X pp: <strong>{{ analysis.xPeakToPeak | numberFormat }} {{ settings.unit }}</strong></span>
-    <span>Y pp: <strong>{{ analysis.yPeakToPeak | numberFormat }} {{ settings.unit }}</strong></span>
-    <span>Maximum radius: <strong>{{ analysis.maximumRadius | numberFormat }} {{ settings.unit }}</strong></span>
-    @if (analysis.speedRpm !== null) { <span>{{ analysis.speedRpm | numberFormat }} RPM</span> }
-  </div>
-  @for (notice of analysis.notices; track notice) { <p class="text-gray-600 fs-7" role="status">{{ notice }}</p> }
   <div class="row g-5" data-testid="orbit-chart-pair">
     <div class="col-12 col-md-6 min-w-0">
-      <h4 class="fs-6 text-gray-700">Orbit ({{ settings.unit }})</h4>
+      <h4 class="visually-hidden">Orbit ({{ settings.unit }})</h4>
       <div #orbitInteraction tabindex="0" role="group" class="rounded focus-ring"
         aria-label="Interactive X/Y orbit sample tracking"
         (focus)="focusOrbit()" (keydown)="onOrbitKeydown($event)">
-        <app-apache-echarts [options]="options.orbit" [mergeOptions]="true" height="400px"
-          (chartInit)="bindOrbitChart($event)"></app-apache-echarts>
+        <app-apache-echarts [options]="options.orbit" [initializer]="initializeOrbit" [mergeOptions]="true" height="440px"
+          (chartInit)="bindOrbitChart($event)" (chartRendered)="resized($event)"></app-apache-echarts>
       </div>
     </div>
     <div class="col-12 col-md-6 min-w-0">
-      <h4 class="fs-6 text-gray-700">X/Y waveforms</h4>
+      <h4 class="visually-hidden">X/Y waveforms</h4>
       <div role="img" aria-label="Synchronized X and Y displacement versus time">
-        <app-apache-echarts [options]="options.waveform" [mergeOptions]="true" height="400px"
+        <app-apache-echarts [options]="options.waveform" [mergeOptions]="true" height="440px"
           (chartInit)="bindWaveformChart($event)"></app-apache-echarts>
       </div>
     </div>
   </div>
   @if (selectedPoint; as point) {
-    <div class="d-flex flex-wrap gap-5 border rounded p-4 mt-5 text-gray-700 fs-7" role="status" aria-live="polite" aria-atomic="true" data-testid="orbit-tracking">
-      <span class="fw-semibold">Sample {{ selectedIndex! + 1 }} / {{ analysis.points.length }}</span>
-      <span>Time: <strong>{{ point.time * 1000 | numberFormat }} ms</strong></span>
-      <span>X: <strong>{{ point.x | numberFormat }} {{ settings.unit }}</strong></span>
-      <span>Y: <strong>{{ point.y | numberFormat }} {{ settings.unit }}</strong></span>
-    </div>
+    <dl class="d-flex flex-wrap align-items-center justify-content-start gap-3 gap-md-5 text-gray-500 fs-7 mt-4 mb-0" dir="ltr" data-testid="orbit-tracking" aria-label="Selected orbit sample" aria-live="polite" aria-atomic="true">
+      <div class="text-nowrap"><dt class="text-gray-500 fs-7 fw-normal">Time</dt><dd class="text-gray-700 fw-semibold mb-0">{{ point.time | numberFormat }} s</dd></div>
+      <div class="text-nowrap"><dt class="text-gray-500 fs-7 fw-normal">Speed</dt><dd class="text-gray-700 fw-semibold mb-0">{{ analysis.speedRpm === null ? '—' : (analysis.speedRpm | numberFormat) + ' RPM' }}</dd></div>
+      <div class="text-nowrap"><dt class="text-gray-500 fs-7 fw-normal">X</dt><dd class="text-gray-700 fw-semibold mb-0">{{ point.x | numberFormat }} {{ settings.unit }}</dd></div>
+      <div class="text-nowrap"><dt class="text-gray-500 fs-7 fw-normal">Y</dt><dd class="text-gray-700 fw-semibold mb-0">{{ point.y | numberFormat }} {{ settings.unit }}</dd></div>
+    </dl>
   }
-  <p class="text-gray-500 fs-8 mt-5 mb-0">{{ analysis.points.length }} samples · {{ record!.sampleRateHz | numberFormat }} Hz sampling ·
-    {{ analysis.filter === 'order' || settings.center ? 'AC displacement' : 'Original X/Y offsets' }}.
-    Capture: {{ record!.capturedAtUtc | date:'medium' }} · {{ record!.period }} · {{ record!.sampleCount / record!.sampleRateHz | numberFormat }} s.
-    X/Y are shown as orthogonal display coordinates; probe mounting angles and machine viewing direction are unspecified.</p>
+  <footer class="d-flex flex-column gap-3 text-gray-500 fs-7 mt-3" dir="ltr"
+    data-testid="record-summary" role="group" aria-label="Acquisition summary" aria-live="polite">
+    <div class="d-flex flex-wrap align-items-center justify-content-start gap-3 gap-md-5" data-testid="chart-statistics">
+      <span class="text-nowrap">X pp: <strong class="text-gray-700 fw-semibold">{{ analysis.xPeakToPeak | numberFormat }} {{ settings.unit }}</strong></span>
+      <span class="text-nowrap">Y pp: <strong class="text-gray-700 fw-semibold">{{ analysis.yPeakToPeak | numberFormat }} {{ settings.unit }}</strong></span>
+      <span class="text-nowrap">Maximum radius: <strong class="text-gray-700 fw-semibold">{{ analysis.maximumRadius | numberFormat }} {{ settings.unit }}</strong></span>
+      <span class="text-nowrap"><strong class="text-gray-700 fw-semibold">{{ analysis.speedRpm === null ? '—' : (analysis.speedRpm | numberFormat) }}</strong> RPM</span>
+    </div>
+    <div class="d-flex flex-wrap align-items-center justify-content-end gap-3 gap-md-5" data-testid="acquisition-metadata">
+      <span class="text-nowrap" data-testid="acquisition-start">Start: <time class="text-gray-700 fw-semibold" [attr.datetime]="record!.capturedAtUtc">{{ record!.capturedAtUtc | acquisitionDate }}</time></span>
+      <span class="text-nowrap" data-testid="record-sample-count"><strong class="text-gray-700 fw-semibold">{{ record!.sampleCount | number }}</strong> Data</span>
+    </div>
+  </footer>
+  @for (notice of analysis.notices; track notice) { <p class="text-gray-600 fs-7 mt-3 mb-0" role="status">{{ notice }}</p> }
+
 } @else {
-  <div class="text-center text-gray-600 py-15" role="status">No Orbit acquisition available for this period. Select an existing acquisition above.</div>
+  <div class="text-center text-gray-600 py-15" role="status">No Orbit acquisition selected. Choose a date and event time above.</div>
 }

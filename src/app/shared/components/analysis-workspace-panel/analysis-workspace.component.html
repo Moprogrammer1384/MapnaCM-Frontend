@@ -5,7 +5,7 @@
       (activeIdChange)="activateTab($event)" (tabClose)="closeTab($event)">
       <ng-template let-tabId>
         <app-analysis-panel *ngIf="tabById(tabId) as tab" [tab]="tab" [domain]="domain" [chartContent]="chartContent || (measurementChartContent ? measurementCharts : undefined)"
-          [useAvailableDates]="useAvailableDates"
+          [useAvailableDates]="useAvailableDates" [showXAxis]="showXAxis"
           [dateSelectionContent]="dateSelectionContent" [dateSelectionTitle]="dateSelectionTitle"
           [controlsContent]="controlsContent"
           (dateTimeRangeApply)="applyDateTimeRange(tab.id, $event)"
@@ -48,7 +48,9 @@
           <div class="separator mb-7"></div>
         }
         @if (showMeasurementTitle) {
-          <h3 [id]="tab.id + '_chart_' + item.measurement.id" class="fs-5 fw-bold text-break mb-4">{{ item.component.name }} - {{ item.measurement.name }}@if (item.measurement.tag) {<span class="text-gray-500 fw-normal">{{ ' ' + item.measurement.tag }}</span>}</h3>
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <h3 [id]="tab.id + '_chart_' + item.measurement.id" class="fs-5 fw-bold mb-0 text-break">{{ item.component.name | measurementHeading: [item.measurement] }}</h3>
+          </div>
         }
         @if (measurementChartContent) {
           <ng-container [ngTemplateOutlet]="measurementChartContent"

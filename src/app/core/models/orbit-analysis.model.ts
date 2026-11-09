@@ -6,11 +6,7 @@ export interface OrbitProbePair {
   readonly y: SelectedMeasurementDetails;
 }
 export type OrbitUnit = 'µm' | 'mm' | 'mil' | 'in';
-export type OrbitPeriod = 'Daily' | 'Weekly' | 'Monthly' | 'Quarterly';
-export const ORBIT_PERIODS: readonly { value: OrbitPeriod; label: string }[] = [
-  { value: 'Daily', label: 'Daily' }, { value: 'Weekly', label: 'Weekly' },
-  { value: 'Monthly', label: 'Monthly' }, { value: 'Quarterly', label: 'Three-monthly' },
-];
+export type OrbitPeriod = 'Daily';
 export interface OrbitCaptureSelection {
   readonly period: OrbitPeriod;
   readonly periodStart: string;

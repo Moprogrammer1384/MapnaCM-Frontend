@@ -2,7 +2,7 @@
   dateSelectionTitle="Acquisition date and time">
   <ng-template let-tab>
     @if (!tab.orbitCapture) {
-      <div class="text-gray-500 text-center py-10" role="status">Select an acquisition period and event time above to load the recorded measurement data.</div>
+      <div class="text-gray-500 text-center py-10" role="status">Select a date and event time above to load the recorded measurement data.</div>
     } @else {
       @for (pair of tab.orbitPairs; track pair.key) {
         <section [attr.aria-labelledby]="tab.id + pair.key">
@@ -15,8 +15,8 @@
   </ng-template>
 </app-analysis-workspace>
 <ng-template #orbitDate let-tab>
-  <app-orbit-acquisition-picker [inputId]="tab.id" [pairs]="tab.orbitPairs" [period]="tab.orbitPeriod || 'Daily'" [value]="tab.orbitCapture"
-    (periodChange)="state.updateOrbitPeriod(tab.id, $event)" (selected)="state.selectOrbitCapture(tab.id, $event)"></app-orbit-acquisition-picker>
+  <app-orbit-acquisition-picker [inputId]="tab.id" [pairs]="tab.orbitPairs" [value]="tab.orbitCapture"
+    (selected)="state.selectOrbitCapture(tab.id, $event)"></app-orbit-acquisition-picker>
 </ng-template>
 <ng-template #orbitControls let-tab>
   <app-orbit-analysis-controls [inputId]="tab.id" [settings]="tab.orbitSettings || defaults"

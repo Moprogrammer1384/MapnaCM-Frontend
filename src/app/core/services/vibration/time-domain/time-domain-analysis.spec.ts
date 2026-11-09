@@ -65,9 +65,9 @@ describe('Time Domain numerical analysis', () => {
     expect(stats.rms).not.toBeCloseTo(stats.peak / Math.sqrt(2), 4);
   });
 
-  it('rejects unavailable Time Domain axes and unsupported amplitude modes', () => {
+  it('uses recorded time independently of shared axis settings and rejects unsupported amplitude modes', () => {
     const prepared = prepareTimeDomainRecord(harmonicRecord('velocity', 11));
-    expect(() => analyzeTimeDomain(prepared, { ...settings('velocity'), xAxis: 'order' })).toThrowError(/Time axis/);
+    expect(Array.from(analyzeTimeDomain(prepared, { ...settings('velocity'), xAxis: 'order' }).time)).toEqual(Array.from(prepared.time));
     expect(() => analyzeTimeDomain(prepared, { ...settings('velocity'), amplitude: 'invalid' as 'rms' })).toThrowError(/amplitude/);
   });
 

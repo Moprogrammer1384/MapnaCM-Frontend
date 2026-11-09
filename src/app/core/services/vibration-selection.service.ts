@@ -2,9 +2,9 @@ import { computed, Injectable, signal } from '@angular/core';
 import type { AssetTaxonomyExecution, AssetTaxonomySelection } from '../models/asset-taxonomy-selection.model';
 import { AnalysisDateRange, AnalysisTab, AnalysisTimeRange } from '../models/analysis-panel.model';
 import { VibrationPage, VIBRATION_PAGES } from '../models/vibration-page.model';
-import { AnalysisChartSettings, defaultChartSettings } from '../models/analysis-chart-settings.model';
+import { AnalysisChartSettings, defaultChartSettings, VibrationSourceProfile, vibrationUnitOptions } from '../models/analysis-chart-settings.model';
 import { DateTimeRange } from '../models/date-time-range.model';
-import { DEFAULT_ORBIT_SETTINGS, OrbitCaptureSelection, OrbitPeriod, OrbitSettings } from '../models/orbit-analysis.model';
+import { DEFAULT_ORBIT_SETTINGS, OrbitCaptureSelection, OrbitSettings } from '../models/orbit-analysis.model';
 import { validOrbitCaptureInstant, validOrbitPeriod, validOrbitPeriodDate } from './vibration/orbit-analysis/orbit-capture-selection';
 import { resolveOrbitProbePairs } from './vibration/orbit-analysis/orbit-probe-pairing';
 
@@ -28,7 +28,8 @@ export class VibrationSelectionService {
   readonly activeTabId = computed(() => this.workspaces()[this.page()]?.activeId ?? '');
   readonly activeTab = computed(() => this.tabs().find(tab => tab.id === this.activeTabId()));
   readonly pageTitle = computed(() => VIBRATION_PAGES[this.page()]);
-  readonly requiresOrbitPairs = computed(() => this.page() === 'orbit-analysis');
+  // Both radial analyses use the same drawer validator and Execute gate.
+  readonly requiresOrbitPairs = computed(() => this.page() === 'orbit-analysis' || this.page() === 'rotor-position');
   readonly validateOrbitExecution = (execution: AssetTaxonomyExecution | null): string =>
     resolveOrbitProbePairs(execution).error;
 
@@ -58,8 +59,9 @@ export class VibrationSelectionService {
   execute(execution: AssetTaxonomyExecution): void {
     if (!this.active() || !execution.measurements.length) { return; }
     const page = this.page();
-    const orbit = page === 'orbit-analysis' ? resolveOrbitProbePairs(execution) : undefined;
-    if (orbit?.error) { return; }
+    const pairing = this.requiresOrbitPairs() ? resolveOrbitProbePairs(execution) : undefined;
+    if (pairing?.error) { return; }
+    const orbit = page === 'orbit-analysis' ? pairing : undefined;
     const number = (this.analysisNumbers[page] ?? 0) + 1;
     this.analysisNumbers[page] = number;
     const today = new Date();
@@ -71,7 +73,7 @@ export class VibrationSelectionService {
       dateRange: { from: date(from), to: date(today) },
       timeRange: { from: '00:00', to: '23:59' },
       awaitingDateRange: page === 'time-domain' || page === 'frequency-domain' || page === 'bode-analysis' || !!orbit,
-      ...(orbit ? { orbitPairs: structuredClone(orbit.pairs), orbitSettings: { ...DEFAULT_ORBIT_SETTINGS }, orbitPeriod: 'Daily' as const } : {}),
+      ...(orbit ? { orbitPairs: structuredClone(orbit.pairs), orbitSettings: { ...DEFAULT_ORBIT_SETTINGS } } : {}),
       // Time Domain initializes its display from the arriving raw record's metadata.
       chartSettings: page === 'time-domain' || page === 'frequency-domain' || page === 'bode-analysis' || !!orbit ? undefined
         : defaultChartSettings('time'),
@@ -110,9 +112,33 @@ export class VibrationSelectionService {
 
   updateChartSettings(id: string, chartSettings: AnalysisChartSettings): void {
     this.updateWorkspace({
-      tabs: this.tabs().map(tab => tab.id === id ? { ...tab, chartSettings: { ...chartSettings } } : tab),
+      tabs: this.tabs().map(tab => {
+        if (tab.id !== id) { return tab; }
+        const options = vibrationUnitOptions(chartSettings.quantity, Object.values(tab.sourceProfiles ?? {}));
+        return { ...tab, chartSettings: { ...chartSettings,
+          unit: (options.find(option => option.value === chartSettings.unit) ?? options[0]).value } };
+      }),
       activeId: this.activeTabId(),
     });
+  }
+
+  updateSourceProfile(id: string, measurementId: number, profile?: VibrationSourceProfile): void {
+    const tab = this.tabs().find(item => item.id === id);
+    if (!tab?.measurements.some(item => item.measurement.id === measurementId)) { return; }
+    const old = tab.sourceProfiles?.[measurementId];
+    if (old?.quantity === profile?.quantity && old?.unit === profile?.unit) { return; }
+    const sourceProfiles = { ...tab.sourceProfiles };
+    if (profile) { sourceProfiles[measurementId] = { quantity: profile.quantity, unit: profile.unit }; }
+    else { delete sourceProfiles[measurementId]; }
+    let chartSettings = tab.chartSettings;
+    if (chartSettings) {
+      const options = vibrationUnitOptions(chartSettings.quantity, Object.values(sourceProfiles));
+      if (!options.some(option => option.value === chartSettings!.unit)) {
+        chartSettings = { ...chartSettings, unit: options[0].value };
+      }
+    }
+    this.updateWorkspace({ tabs: this.tabs().map(item => item.id === id ? { ...item, sourceProfiles, chartSettings } : item),
+      activeId: this.activeTabId() });
   }
 
   applyDateTimeRange(id: string, range: DateTimeRange): void {
@@ -134,15 +160,10 @@ export class VibrationSelectionService {
     this.updateWorkspace({ tabs: this.tabs().map(tab => tab.id === id && tab.orbitPairs ? { ...tab, orbitSettings: { ...orbitSettings } } : tab),
       activeId: this.activeTabId() });
   }
-  updateOrbitPeriod(id: string, period: OrbitPeriod): void {
-    if (!validOrbitPeriod(period)) { return; }
-    this.updateWorkspace({ tabs: this.tabs().map(tab => tab.id === id && tab.orbitPairs && tab.orbitPeriod !== period
-      ? { ...tab, orbitPeriod: period, orbitCapture: undefined, awaitingDateRange: true } : tab), activeId: this.activeTabId() });
-  }
   selectOrbitCapture(id: string, selection: OrbitCaptureSelection): void {
     if (!validOrbitPeriod(selection.period) || !validOrbitPeriodDate(selection.periodStart) ||
       (selection.capturedAtUtc !== undefined && !validOrbitCaptureInstant(selection.capturedAtUtc))) { return; }
-    this.updateWorkspace({ tabs: this.tabs().map(tab => tab.id === id && tab.orbitPairs && tab.orbitPeriod === selection.period
+    this.updateWorkspace({ tabs: this.tabs().map(tab => tab.id === id && tab.orbitPairs
       ? { ...tab, orbitCapture: { ...selection }, awaitingDateRange: false } : tab), activeId: this.activeTabId() });
   }
 }

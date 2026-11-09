@@ -1,0 +1,50 @@
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <h3 [id]="titleId" class="fs-5 fw-bold mb-0 text-break">{{ pair.x.component.name | measurementHeading: [pair.x.measurement, pair.y.measurement]: ['X', 'Y'] }}</h3>
+  <div class="d-flex flex-wrap gap-2">
+    <span class="badge" [ngClass]="eventClasses[event.eventType]" data-testid="rotor-event-type">{{ event.eventType === 'CoastDown' ? 'Coast down' : event.eventType }}</span>
+    @if (record?.provenance === 'simulated') { <span class="badge badge-light-warning">Simulated data</span> }
+  </div>
+</div>
+@if (loading) {
+  <div class="d-flex align-items-center justify-content-center gap-3 py-15 text-gray-500" role="status"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span>Loading rotor position…</div>
+} @else if (error) {
+  <div class="alert alert-danger d-flex align-items-center justify-content-between gap-3" role="alert">
+    <span>{{ error }}</span><button type="button" class="btn btn-sm btn-light-danger" (click)="reload()">Retry</button>
+  </div>
+} @else if (!analysis?.points?.length) {
+  <div class="text-gray-500 text-center py-10" role="status">No valid DC position observations for this event.</div>
+} @else if (options && analysis && record) {
+  <div class="row g-5">
+    <div class="col-12 col-xxl-6">
+      <h4 class="visually-hidden">Shaft centerline ({{ settings.unit }})</h4>
+      <div #sampleInteraction tabindex="0" role="group" class="rounded focus-ring" aria-label="Shaft centerline. Scroll to zoom, drag to pan, double click or press 0 to reset zoom. Arrow keys select a position; Home and End select the first and last." (keydown)="onKeydown($event)">
+        <app-apache-echarts [options]="options.position" [initializer]="initializePosition" [mergeOptions]="true" height="440px"
+          (chartInit)="bindPosition($event)" (chartRendered)="resized($event)"></app-apache-echarts>
+      </div>
+    </div>
+    <div class="col-12 col-xxl-6">
+      <h4 class="visually-hidden">Position and speed</h4>
+      <app-apache-echarts [options]="options.trend" [mergeOptions]="true" height="440px" (chartInit)="bindTrend($event)"></app-apache-echarts>
+    </div>
+  </div>
+  @if (selectedPoint; as point) {
+    <dl class="d-flex flex-wrap align-items-center justify-content-start gap-3 gap-md-5 text-gray-500 fs-7 mt-4 mb-0" dir="ltr" data-testid="rotor-tracking" aria-label="Selected rotor position sample" aria-live="polite" aria-atomic="true">
+      <div class="text-nowrap"><dt class="text-gray-500 fs-7 fw-normal">Time</dt><dd class="text-gray-700 fw-semibold mb-0">{{ point.time | numberFormat }} s</dd></div>
+      <div class="text-nowrap"><dt class="text-gray-500 fs-7 fw-normal">Speed</dt><dd class="text-gray-700 fw-semibold mb-0">{{ point.speedRpm === null ? '—' : (point.speedRpm | numberFormat) + ' RPM' }}</dd></div>
+      <div class="text-nowrap"><dt class="text-gray-500 fs-7 fw-normal">X mean</dt><dd class="text-gray-700 fw-semibold mb-0">{{ point.x | numberFormat }} {{ settings.unit }}</dd></div>
+      <div class="text-nowrap"><dt class="text-gray-500 fs-7 fw-normal">Y mean</dt><dd class="text-gray-700 fw-semibold mb-0">{{ point.y | numberFormat }} {{ settings.unit }}</dd></div>
+      @if (eccentricity !== null) {
+        <div class="text-nowrap"><dt class="text-gray-500 fs-7 fw-normal">Eccentricity</dt><dd class="text-gray-700 fw-semibold mb-0">{{ eccentricity | numberFormat }} {{ settings.unit }}</dd></div>
+      }
+    </dl>
+  }
+  <footer class="d-flex flex-column gap-3 text-gray-500 fs-7 mt-3" dir="ltr"
+    data-testid="record-summary" role="group" aria-label="Acquisition summary" aria-live="polite">
+    <div class="d-flex flex-wrap align-items-center justify-content-end gap-3 gap-md-5" data-testid="acquisition-metadata">
+      <span class="text-nowrap" data-testid="acquisition-start">Start: <time class="text-gray-700 fw-semibold" [attr.datetime]="record.event.from">{{ record.event.from | acquisitionDate }}</time></span>
+      <span class="text-nowrap" data-testid="record-sample-count"><strong class="text-gray-700 fw-semibold">{{ record.observations.length | number }}</strong> Data</span>
+    </div>
+  </footer>
+
+  @if (analysis.omittedCount) { <div class="text-warning fs-7 mt-4" role="status">{{ analysis.omittedCount }} invalid observations omitted; gaps remain visible.</div> }
+}

@@ -15,6 +15,10 @@ import { VibrationRotorPositionComponent } from './rotor-position/rotor-position
 import { VibrationOrbitAnalysisComponent } from './orbit-analysis/orbit-analysis.component';
 import { VibrationOrbitChartComponent } from 'src/app/shared/components/vibration-orbit-chart/vibration-orbit-chart.component';
 import { OrbitAnalysisControlsComponent } from 'src/app/shared/components/orbit-analysis-controls/orbit-analysis-controls.component';
+import { RotorPositionControlsComponent } from 'src/app/shared/components/rotor-position-controls/rotor-position-controls.component';
+import { RotorPositionEventPickerComponent } from 'src/app/shared/components/rotor-position-event-picker/rotor-position-event-picker.component';
+import { VibrationRotorPositionChartComponent } from 'src/app/shared/components/vibration-rotor-position-chart/vibration-rotor-position-chart.component';
+import { MeasurementHeadingPipe } from 'src/app/shared/pipes/measurement-heading.pipe';
 
 @NgModule({
   declarations: [
@@ -35,6 +39,10 @@ import { OrbitAnalysisControlsComponent } from 'src/app/shared/components/orbit-
     VibrationBodeChartComponent,
     VibrationOrbitChartComponent,
     OrbitAnalysisControlsComponent,
+    RotorPositionControlsComponent,
+    RotorPositionEventPickerComponent,
+    VibrationRotorPositionChartComponent,
+    MeasurementHeadingPipe,
     RouterModule.forChild([
       {
         path: 'overview',

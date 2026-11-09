@@ -7,11 +7,12 @@ import { ChartLayoutPreferenceService } from 'src/app/core/services/chart-layout
 import { ClosableTabsComponent } from '../closable-tabs/closable-tabs.component';
 import { AnalysisPanelComponent } from './analysis-panel/analysis-panel.component';
 import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
+import { MeasurementHeadingPipe } from '../../pipes/measurement-heading.pipe';
 
 @Component({
   selector: 'app-analysis-workspace',
   standalone: true,
-  imports: [CommonModule, SharedModule, ClosableTabsComponent, AnalysisPanelComponent],
+  imports: [CommonModule, SharedModule, ClosableTabsComponent, AnalysisPanelComponent, MeasurementHeadingPipe],
   templateUrl: './analysis-workspace.component.html',
   host: { class: 'd-block mw-100' },
 })
@@ -19,6 +20,7 @@ export class AnalysisWorkspaceComponent implements OnDestroy {
   @Input() state?: AnalysisWorkspaceState;
   @Input() showMeasurementTitle = true;
   @Input() domain: AnalysisDomain = 'time';
+  @Input() showXAxis = true;
   @Input() useAvailableDates = false;
   @Input() dateSelectionContent?: TemplateRef<{ $implicit: AnalysisTab }>;
   @Input() dateSelectionTitle?: string;

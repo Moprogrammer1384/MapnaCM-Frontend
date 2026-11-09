@@ -1,0 +1,27 @@
+<div class="row g-5 mt-0">
+  <div class="col-12 col-sm-6 col-lg-3">
+    <label class="form-label" [for]="inputId + '_rotor_quantity'">Quantity</label>
+    <input class="form-control form-control-solid" [id]="inputId + '_rotor_quantity'" value="Displacement (DC)" readonly>
+  </div>
+  <div class="col-12 col-sm-6 col-lg-3">
+    <label class="form-label" [for]="inputId + '_rotor_unit'">Unit</label>
+    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+      [id]="inputId + '_rotor_unit'" [ngModel]="settings.unit" (ngModelChange)="update('unit', $event)">
+      @for (unit of units; track unit) { <option [value]="unit">{{ unit }}</option> }
+    </select>
+  </div>
+  <div class="col-12 col-sm-6 col-lg-3">
+    <label class="form-label" [for]="inputId + '_rotor_reference'">Position reference</label>
+    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+      [id]="inputId + '_rotor_reference'" [ngModel]="settings.reference" (ngModelChange)="update('reference', $event)">
+      <option value="bearing">Bearing centre</option><option value="first">First valid point</option>
+    </select>
+  </div>
+  <div class="col-12 col-sm-6 col-lg-3">
+    <label class="form-label" [for]="inputId + '_rotor_axis'">Trend X axis</label>
+    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+      [id]="inputId + '_rotor_axis'" [ngModel]="settings.trendAxis" (ngModelChange)="update('trendAxis', $event)">
+      <option value="time">Time</option><option value="rpm">RPM</option>
+    </select>
+  </div>
+</div>

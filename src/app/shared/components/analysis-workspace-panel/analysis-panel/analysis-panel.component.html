@@ -51,24 +51,26 @@
         }
       </select>
     </div>
-    <div class="col-12 col-sm-6 col-lg-3">
-      <label class="form-label" [for]="tab.id + '_x_axis'">X axis</label>
-      <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
-        [id]="tab.id + '_x_axis'" aria-label="X axis" [ngModel]="chartSettings.xAxis"
-        [attr.aria-describedby]="chartSettings.xAxis === 'order' ? tab.id + '_reference_speed' : null"
-        (ngModelChange)="updateChartSetting('xAxis', $event)">
-        @if (domain === 'bode') {
-          <option value="rpm">RPM</option>
-          <option value="hz">Hz</option>
-        } @else if (domain === 'frequency') {
-          <option value="hz">Hz</option>
-          <option value="cpm">CPM</option>
-          <option value="order">Order</option>
-        } @else {
-          <option value="time">Time</option>
-        }
-      </select>
-    </div>
+    @if (showXAxis) {
+      <div class="col-12 col-sm-6 col-lg-3">
+        <label class="form-label" [for]="tab.id + '_x_axis'">X axis</label>
+        <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+          [id]="tab.id + '_x_axis'" aria-label="X axis" [ngModel]="chartSettings.xAxis"
+          [attr.aria-describedby]="chartSettings.xAxis === 'order' ? tab.id + '_reference_speed' : null"
+          (ngModelChange)="updateChartSetting('xAxis', $event)">
+          @if (domain === 'bode') {
+            <option value="rpm">RPM</option>
+            <option value="hz">Hz</option>
+          } @else if (domain === 'frequency') {
+            <option value="hz">Hz</option>
+            <option value="cpm">CPM</option>
+            <option value="order">Order</option>
+          } @else {
+            <option value="time">Time</option>
+          }
+        </select>
+      </div>
+    }
     <div class="col-12 col-sm-6 col-lg-3">
       <label class="form-label" [for]="tab.id + '_amplitude'">Amplitude</label>
       <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"

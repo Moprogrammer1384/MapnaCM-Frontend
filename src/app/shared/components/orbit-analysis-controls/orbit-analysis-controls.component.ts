@@ -10,7 +10,7 @@ export class OrbitAnalysisControlsComponent {
   @Input({ required: true }) inputId: string;
   @Input() settings: OrbitSettings = DEFAULT_ORBIT_SETTINGS;
   @Output() readonly settingsChange = new EventEmitter<OrbitSettings>();
-  readonly units = ['µm', 'mm', 'mil', 'in'];
+  readonly units = ['µm', 'mm'];
   readonly orders = [
     { value: 1 / 8, label: '⅛X' }, { value: 1 / 4, label: '¼X' }, { value: 1 / 3, label: '⅓X' }, { value: 1 / 2, label: '½X' },
     ...Array.from({ length: 10 }, (_, i) => ({ value: i + 1, label: `${i + 1}X` })),

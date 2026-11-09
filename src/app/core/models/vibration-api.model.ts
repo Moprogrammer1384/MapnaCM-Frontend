@@ -27,6 +27,8 @@ export interface VibrationDisplayRecord {
   readonly kind: 'display';
   readonly quantity: VibrationQuantity;
   readonly unit: VibrationUnit;
+  /** Native response origin, retained for the selected acquisition interval. */
+  readonly timeOriginUtc?: string;
   readonly series: VibrationChartSeriesDto;
 }
 

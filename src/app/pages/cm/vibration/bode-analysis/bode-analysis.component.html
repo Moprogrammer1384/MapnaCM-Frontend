@@ -1,8 +1,9 @@
 <app-analysis-workspace [state]="state" domain="bode" [useAvailableDates]="true" [showMeasurementTitle]="false" [measurementChartContent]="bodeChart"></app-analysis-workspace>
 <ng-template #bodeChart let-item let-tab="tab">
   <app-vibration-bode-chart [measurementId]="item.measurement.id" [settings]="tab.chartSettings"
-    [title]="item.component.name + ' - ' + item.measurement.name" [tag]="item.measurement.tag"
+    [title]="item.component.name | measurementHeading: [item.measurement]"
     [titleId]="tab.id + '_chart_' + item.measurement.id"
+    (sourceProfile)="state.updateSourceProfile(tab.id, item.measurement.id, $event)"
     (sourceSettings)="initializeSettings(tab.id, item.measurement.id, $event)"
     [from]="tab.dateRange.from + 'T' + tab.timeRange.from"
     [to]="tab.dateRange.to + 'T' + tab.timeRange.to"></app-vibration-bode-chart>

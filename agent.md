@@ -1,6 +1,6 @@
 # DARP frontend: project memory
 
-Updated: **2026-11-09 (Asia/Tehran)**. Read this file before each task, then inspect the relevant live source. Repository rules are in [AGENTS.md](AGENTS.md); `CLAUDE.md` is historical.
+Updated: **2026-11-10 (Asia/Tehran)**. Read this file before each task, then inspect the relevant live source. Repository rules are in [AGENTS.md](AGENTS.md); `CLAUDE.md` is historical.
 
 ## Working rules and memory maintenance
 
@@ -151,6 +151,7 @@ Taxonomy uses `<app-data-table>` and `TablePagination<T>` under `shared/componen
 
 - Existing endpoint: `GET /TimeDomain/GetAvailability`, repeated `MeasurementIds` (1–16), optional calendar From/To window (1–366 days). Day labels use Asia/Tehran; To is exclusive. Do not UTC-convert calendar labels.
 - Time/Frequency enable only proven `commonRanges` (intersection); never use union/dataBounds to fill holes. Bode enables start dates proven by exact common acquisition metadata, preserving full events across midnight/month windows. Unknown/loading/failed/empty discovery blocks selection, with Retry on failure.
+- **Available-day colour, 2026-11-10:** Time/Frequency's shared `DateTimeRangeComponent` marks only explicit proven `enabledDates` with `darp-data-available`. The existing scoped event-calendar Sass adapter now supplies the exact same Metronic primary-light/primary rule to both event and range calendars. Unrestricted/unknown dates are not marked; disabled, selected, in-range, hover and focus styling remains theme-owned. App/template and test TypeScript compilation, focused lint and 27 Chrome Headless checks passed, including computed colour equality with the event picker in light/dark themes, proof replacement and unchanged range/Apply behavior. No backend/API changes, production rebuild, publish ZIP refresh or live server verification in this task.
 - Data bounds constrain navigation only. Out-of-coverage months fetch metadata; mounted-component caching retains drafts/view, cancels stale reads and resets for changed measurements. Time/Frequency restrict days only and keep unrestricted hours/minutes. Bode's page-scoped source supplies exact common event times to its discrete picker.
 - Bode's all-dates list covers the full common history: the availability wrapper fills missing metadata windows through the existing API in requests of at most 366 days, deduplicates events and keeps selection blocked until history is complete. Failure retains Retry for the failed window; replacing/destroying the view cancels reads. Clearing or filtering Date is local and does not fetch chart data.
 

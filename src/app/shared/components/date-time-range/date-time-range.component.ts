@@ -61,6 +61,12 @@ export class DateTimeRangeComponent implements AfterViewInit, OnChanges, OnDestr
         onOpen: () => this.zone.run(() => { this.isOpen = true; this.emitCalendarWindow(); }),
         onMonthChange: () => this.zone.run(() => this.emitCalendarWindow()),
         onYearChange: () => this.zone.run(() => this.emitCalendarWindow()),
+        onDayCreate: (_dates, _value, instance, day) => {
+          if (this.enabledDates && this.dayEnabled(instance.formatDate(day.dateObj, 'Y-m-d'))) {
+            day.classList.add('darp-data-available');
+            day.setAttribute('title', 'Data available');
+          }
+        },
         onClose: () => this.zone.run(() => {
           this.isOpen = false;
           if (!this.destroyed) { this.syncPicker(); }

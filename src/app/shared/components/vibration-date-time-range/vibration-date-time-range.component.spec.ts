@@ -5,6 +5,7 @@ import { TimeAvailability } from 'src/app/core/models/time-availability.model';
 import { TIME_AVAILABILITY_SOURCE } from 'src/app/core/services/time-availability.service';
 import { availabilityFixture } from 'src/testing/time-availability-fixture';
 import { VibrationDateTimeRangeComponent } from './vibration-date-time-range.component';
+import { VibrationEventPickerComponent } from '../vibration-event-picker/vibration-event-picker.component';
 
 describe('Vibration calendar: disabled until the API proves a day has data', () => {
   let fixture: ComponentFixture<VibrationDateTimeRangeComponent>;
@@ -32,6 +33,44 @@ describe('Vibration calendar: disabled until the API proves a day has data', () 
       providers: [{ provide: TIME_AVAILABILITY_SOURCE, useValue: { getAvailability } }] });
   });
   afterEach(() => fixture?.destroy());
+
+  it('colours only proven days exactly like event calendars in both themes and refreshes the colour with availability', async () => {
+    mount(); await settle(); open();
+    picker().jumpToDate('2026-10-01');
+    const reference = TestBed.createComponent(VibrationEventPickerComponent);
+    reference.componentRef.setInput('inputId', 'reference-event-colour');
+    reference.componentRef.setInput('value', { from: '', to: '' });
+    reference.componentRef.setInput('events', [{ id: 'event', label: 'Startup', from: '2026-10-06T10:00:00', to: '2026-10-06T11:00:00' }]);
+    reference.detectChanges(); reference.componentInstance.open();
+    const eventInput = reference.nativeElement.querySelector('input') as HTMLInputElement & { _flatpickr: Instance };
+    eventInput._flatpickr.jumpToDate('2026-10-01');
+    const cell = (instance: Instance, label: string) => instance.calendarContainer.querySelector<HTMLElement>(`[aria-label="${label}"]`)!;
+    const previousTheme = document.documentElement.getAttribute('data-bs-theme');
+    try {
+      for (const theme of ['light', 'dark']) {
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        const available = cell(picker(), 'October 6, 2026');
+        const eventDay = cell(eventInput._flatpickr, 'October 6, 2026');
+        expect(available.classList).toContain('darp-data-available');
+        expect(available.title).toBe('Data available');
+        expect(getComputedStyle(available).backgroundColor).toBe(getComputedStyle(eventDay).backgroundColor);
+        expect(getComputedStyle(available).color).toBe(getComputedStyle(eventDay).color);
+        expect(getComputedStyle(available).backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+        const selected = cell(picker(), 'October 1, 2026');
+        expect(selected.classList).toContain('selected');
+        expect(getComputedStyle(selected).backgroundColor).not.toBe(getComputedStyle(available).backgroundColor);
+        expect(cell(picker(), 'October 3, 2026').classList).not.toContain('darp-data-available');
+        expect(cell(picker(), 'October 15, 2026').classList).not.toContain('darp-data-available');
+      }
+      getAvailability.and.returnValue(of({ ...result(), commonRanges: [] }));
+      fixture.componentRef.setInput('measurementIds', [9]); await settle();
+      expect(picker().calendarContainer.querySelector('.darp-data-available')).toBeNull();
+    } finally {
+      if (previousTheme === null) { document.documentElement.removeAttribute('data-bs-theme'); }
+      else { document.documentElement.setAttribute('data-bs-theme', previousTheme); }
+      reference.destroy();
+    }
+  });
 
   it('starts closed to selection, then enables only common ranges with an exclusive end and real holes', async () => {
     const pending = new Subject<TimeAvailability>(); getAvailability.and.returnValue(pending);

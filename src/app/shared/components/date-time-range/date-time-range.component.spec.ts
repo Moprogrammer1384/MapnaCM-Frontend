@@ -57,6 +57,7 @@ describe('DateTimeRangeComponent with a single Metronic range dialog', () => {
     open();
     expect(input.getAttribute('aria-expanded')).toBe('true');
     expect(picker.calendarContainer.querySelectorAll('input[type="number"][id]').length).toBe(4);
+    expect(picker.calendarContainer.querySelector('.darp-data-available')).toBeNull();
     picker.close(); fixture.detectChanges();
     expect(input.getAttribute('aria-expanded')).toBe('false');
     input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));

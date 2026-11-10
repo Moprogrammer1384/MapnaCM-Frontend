@@ -31,8 +31,8 @@ the component performs no UTC conversion, storage or API calls. An empty
 `{ from: '', to: '' }` starts without selected dates and with 00:00/23:59 times.
 Invalid external ranges have no selected calendar dates and require reselection.
 All presentation uses existing Metronic classes/tokens and Flatpickr styling.
-The shared analysis panel uses this picker on all five Vibration pages, adapting
-its values to the existing tab date/time fields and change events. The original
+The shared analysis panel uses this picker for range-based pages, including
+Time Domain and Frequency Domain, adapting its values to the existing tab date/time fields and change events. The original
 date-only and time-only components remain available for other consumers.
 
 Flatpickr behavior reference: [range/options](https://flatpickr.js.org/options/).
@@ -53,5 +53,13 @@ values; `valueChange` remains change-only. Availability updates preserve drafts 
 the visible month. Time values and hour/minute validation retain their prior behavior.
 
 Time/Frequency Domain use the connected wrapper in
-`shared/components/vibration-date-time-range/`; the other three vibration pages
-keep the original picker without availability restrictions.
+`shared/components/vibration-date-time-range/`; Bode, Orbit and Rotor use discrete
+event pickers.
+
+Available-day colour (2026-11-10): days proven by explicit `enabledDates` receive
+the same `darp-data-available` class as event calendars. Both scoped calendars use
+the shared Metronic primary-light/primary rule in `vibration-event-picker/`.
+Unknown/unrestricted calendars are not labelled as data-bearing. Disabled days,
+selected endpoints, in-range days and hover/focus retain native theme styling.
+Availability refreshes redraw the markers, preserving real gaps and exclusive
+range ends. No palette, API or date/time-selection behavior is added.

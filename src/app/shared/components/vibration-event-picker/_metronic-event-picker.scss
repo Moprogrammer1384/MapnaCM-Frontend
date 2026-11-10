@@ -1,5 +1,8 @@
-// Available acquisitions use Metronic tokens; active/focus/disabled states stay theme-owned.
-.darp-event-calendar .flatpickr-day.darp-data-available:not(.flatpickr-disabled):not(.selected):not(:hover):not(:focus) {
-  background: var(--bs-primary-light);
-  color: var(--bs-primary);
+// Event and range calendars share availability colours; selection stays theme-owned.
+.darp-event-calendar,
+.darp-date-time-calendar {
+  .flatpickr-day.darp-data-available:not(.flatpickr-disabled):not(.selected):not(.inRange):not(:hover):not(:focus) {
+    background: var(--bs-primary-light);
+    color: var(--bs-primary);
+  }
 }

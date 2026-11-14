@@ -148,11 +148,52 @@ Taxonomy uses `<app-data-table>` and `TablePagination<T>` under `shared/componen
 
 ### Waterfall (2026-11-14)
 
-- Frontend-only `/cm/vibration/waterfall`, sidebar below Rotor Position. Uses existing single-channel Execute, shared workspace/tabs/headings and column preference. **Event date and time** now uses the Bode/Orbit event picker: Date is optional; an empty Date exposes every Event time, choosing a day filters locally and clearing Date restores all recordings. Selecting an exact event ID loads immediately; there is no editable range/Apply or manual operating-condition selector. Options show date/time and state. `AnalysisTab.waterfallEvent`/`waterfallSettings` retain independent selections/settings across tabs/routes, without new browser persistence or backend/API changes.
-- `WATERFALL_DATA_SOURCE` defaults to `MockWaterfallDataSource` in `core/services/vibration/waterfall/`, with separate `listEvents(measurementIds)` and `load({ measurementId, eventId })` frontend contracts. The mock catalogue covers Nov 1–14, 2026: every day has one/two SteadyState recordings (10:00, optionally 17:00); event days retain all recorded Startup/CoastDown/Trip, including repeated startups, plus normal data. Distinct IDs are retained even for equal time bounds. Existing taxonomy selection still uses its existing integration.
-- Each acquisition contains synthetic independent two-second velocity frames covering its full interval: SteadyState 64 s/32 spectra, Startup 180 s/90, CoastDown 240 s/120, Trip 90 s/45. Frames have 1,024 samples at 512 Hz (0.50 Hz bins, 256 Hz Nyquist); speed is constant within each mock frame, with explicit 0–3,600 RPM startup/reversed coast down/nonlinear trip profiles, including valid standstill. These are demonstrations, not a continuous physical transient simulation. The Mock data/spectrum-count header row was removed at the user's request; the source remains mock-only, and charts still reject mismatched returned event metadata.
-- Frequency Domain FFT/window/coherent-gain/quantity/unit/line-amplitude functions remain shared. Waterfall processing runs synchronously on the browser main thread. The perspective/map, linked original-frame selection/readout and independently zoomable spectrum retain common scales and Metronic themes. SteadyState forces time depth. Headings show event badges sharing Bode's exact Startup success/CoastDown info/Trip danger classes via `vibration-event-presentation.ts`; SteadyState uses primary. The explanatory text beneath controls was removed as requested. No variable-speed Order tracking or invented severity limits. [Methods and ownership](src/app/core/services/vibration/waterfall/README.md).
-- Current validation: app/template and test TypeScript compilation, focused lint and **30 Chrome Headless tests** passed, covering daily/whole-event mock coverage, optional Date/all-events/clear-date, exact IDs with equal bounds, badges, FFT/conversions, independent tabs/restoration, selection/zoom/theme/resize, errors/empty/retry/cancellation and Bode/other-picker/date-range regressions. Existing hidden-panel ECharts size warnings remain. HTTP inspection confirms the current event picker/title/text removal in the actual `localhost:4200` feature bundle; its existing IPv6 dev server was preserved. No new production build, manual browser visual acceptance or backend integration was performed for this update.
+- Route/menu below Rotor Position, existing workspace/taxonomy/Select2/Flatpickr and
+  Metronic ECharts retained. Event date and time has optional Date plus source-driven
+  state filtering; blank Date lists all available exact common events. AM/PM Tehran
+  display does not round event IDs/UTC bounds or native values.
+- WATERFALL_DATA_SOURCE now defaults to VibrationWaterfallApiService, authenticated
+  Waterfall/GetAvailability (repeated MeasurementIds, same Asset) and Waterfall/Get
+  (AcquisitionEventId, MeasurementId). No executable mock/fallback/signal generator
+  remains; test-only fixtures are in src/testing with explicit test providers.
+- The explicitly authorized backend is C:/Users/hafez/Documents/Mapna/BackEnd.
+  General SQL AcquisitionEvent/AcquisitionEventPoint stores shared UTC/type/RPM once;
+  Bode/Rotor/Waterfall use exact event identity rather than matching dates. Separate
+  WaterfallCapture/Frame/Sample stores complete native windows. Legacy OperatingRun
+  APIs/CLR names/views remain compatible. SteadyState=5 is additive; other persisted
+  codes stay unchanged. Admin AcquisitionEvent/Add and Waterfall/Add handle ingestion.
+- The adapter validates IDs, native profile, full original counts, ordered frame
+  clock/indexes, finite values/rate and complete windows, retaining datetime2(7)
+  precision and null RPM distinct from zero. No summary/interpolation as FFT input.
+  Limits are <=512 frames, 3–65536 samples/frame, <=500000 original samples/capture.
+- Existing per-frame FFT/window/coherent-gain/AC calculus/unit/RMS/0p/pp functions
+  remain browser-owned. RPM depth uses recorded speed; steady/unknown-speed events
+  use time depth and unknown speed displays Unavailable. Selection/zoom/theme/cancel/
+  teardown and shared Bode badge classes remain. [Methods/contracts](src/app/core/services/vibration/waterfall/README.md).
+- User additionally authorized simulated data stored in SQL. Explicit backend seed
+  tooling authors native frames, reuses every known-Asset transient event in the
+  chosen window and adds daily normal recordings. External manifests identify
+  synthetic provenance; operational API/frontend never generate samples. Schema
+  tooling backs up and verifies previous shared/Bode/Rotor values before commit.
+- Verified: app/template and spec TypeScript compilation, focused lint, 60 Chrome
+  Headless HTTP/numeric/workspace/filter/Rotor regressions, 124 Vibration domain/model/
+  disposable SQL tests and all 88 Presentation tests (actual host/SQL/auth/bus included).
+  Optimized production build passed with font inlining disabled only for temporary
+  validation (hash c46e18bac28801b9, tmp/waterfall-api-2026-11-14/build-offline).
+  Stats/bundles include the HTTP adapter and exclude all src/testing/Waterfall generators.
+  Existing 2.80 MB bundle budget warning remains; project settings were not changed.
+- Live localhost/Mapna_Vibration migration backed up all original clock/Bode/Rotor
+  values before transactional rename, then verified exact preservation. Explicit
+  import added 42 daily normal clocks and 180 captures / 8244 frames / 4220928 native
+  samples, Nov 1–14 on six active channels, reusing all 18 known-Asset transient IDs.
+  The external import manifest retains synthetic provenance and exact capture hashes.
+  Independent post-import reads matched every old shared/Bode/Rotor value/ID/audit
+  and all 180 capture hashes; TimeDomain/Summary/Orbit counts stayed unchanged.
+- The user chose to restart the main API in Visual Studio. After that restart,
+  authenticated HTTPS localhost:7064 reads matched SQL for both common histories
+  and all 180 complete native captures, every sample included. Served localhost:4200
+  feature bundle contains the new HTTP paths and no Waterfall generator. Existing
+  VS/API/dev-server processes were preserved. No manual browser/physical acceptance.
 
 ### Available days
 
@@ -166,7 +207,7 @@ Taxonomy uses `<app-data-table>` and `TablePagination<T>` under `shared/componen
 - **Vibration date/time presentation, 2026-11-14:** all Vibration consumers use `core/utils/vibration-date-time.ts` for `YYYY-MM-DD hh:mm:ss AM/PM`; `analysis-event-label.ts` adds ` · EventType` (for example `2026-11-02 08:00:00 AM · Startup`). This covers Waterfall/Bode/Rotor event options, Orbit options (retaining the recorded-duration suffix because no operating-state metadata exists), every chart's Start footer through `AcquisitionDatePipe`, and Bode's cursor timestamp/run label. UTC/offset inputs use Asia/Tehran; local timestamps retain their wall clock. Fractional seconds are display-only omissions: exact bounds/IDs and numerical values remain intact.
 - Vibration's range pickers, including Overview/Time/Frequency, opt into `DateTimeRangeComponent.hour12`: independent 1–12 hour/minute and AM/PM fields, shared seconds/AM-PM visible range text, with unchanged local 24-hour `YYYY-MM-DDTHH:mm` state/emissions/API bounds. Generic non-Vibration consumers retain default 24-hour behavior. Period selectors use a full-width row below hour/minute to fit the narrow calendar. Date-only filters and elapsed-time chart axes retain their proper units. Rotor uses `CoastDown`; Waterfall retains `Steady state` and optional Date/all-events behavior.
 - AM/PM validation: app/template and test TypeScript compilation, focused lint and 71 Chrome Headless checks passed; 19 relevant calendar/page checks passed again after the final period-selector layout change, including actual rendered width and midnight/noon round trips. Coverage includes all event labels, UTC/Tehran day rollover, precise Rotor bounds, existing Time/Frequency API calls and chart footers. HTTP inspection confirms current 12-hour controls and removal of the Waterfall Mock data row on `localhost:4200`. Existing hidden-panel ECharts warnings remain. No production rebuild or manual browser visual acceptance was performed.
-- **Event type filter, 2026-11-14:** shared `VibrationEventPickerComponent.showEventTypeFilter` adds a Metronic Select2 before Date in Bode, Rotor Position and Waterfall. All states is the default; options derive solely from source-provided `AnalysisEventTime.eventType`/`eventTypes`, never label parsing or a hardcoded inventory. Bode retains types from its existing availability API's measurement-event metadata; Rotor uses its API event type; Waterfall uses mock metadata. Orbit has no operating-state metadata and keeps its original Date/Event time layout. State and Date filters intersect without additional HTTP/chart reads; clearing Date retains state, and changing state clears only an incompatible date. Calendar proof follows the selected state; exact event IDs/bounds remain unchanged. [Picker API/behavior](src/app/shared/components/vibration-event-picker/README.md). App/template and test TypeScript compilation, focused lint and **63 Chrome Headless checks** passed, including real Select2 interaction, source-driven options, metadata-only matching, multi-type events, API-backed Bode selection, combined filters and Rotor label/gesture regressions. Existing hidden-panel ECharts warnings remain; no backend changes, production rebuild or manual authenticated live-API/browser acceptance were performed.
+- **Event type filter, 2026-11-14:** shared `VibrationEventPickerComponent.showEventTypeFilter` adds a Metronic Select2 before Date in Bode, Rotor Position and Waterfall. All states is the default; options derive solely from source-provided `AnalysisEventTime.eventType`/`eventTypes`, never label parsing or a hardcoded inventory. Bode retains types from its existing availability API's measurement-event metadata; Rotor uses its API event type; Waterfall uses its backend event metadata. Orbit has no operating-state metadata and keeps its original Date/Event time layout. State and Date filters intersect without additional HTTP/chart reads; clearing Date retains state, and changing state clears only an incompatible date. Calendar proof follows the selected state; exact event IDs/bounds remain unchanged. [Picker API/behavior](src/app/shared/components/vibration-event-picker/README.md). App/template and test TypeScript compilation, focused lint and **63 Chrome Headless checks** passed, including real Select2 interaction, source-driven options, metadata-only matching, multi-type events, API-backed Bode selection, combined filters and Rotor label/gesture regressions. Existing hidden-panel ECharts warnings remain; no backend changes, production rebuild or manual authenticated live-API/browser acceptance were performed.
 
 ### Numerical organization and chart lifecycle
 

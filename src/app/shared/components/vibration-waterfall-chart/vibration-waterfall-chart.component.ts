@@ -117,7 +117,7 @@ export class VibrationWaterfallChartComponent implements OnChanges, OnDestroy {
 
   private draw(): void {
     if (!this.frame) { return; }
-    const settings = this.event.eventType === 'SteadyState' ? { ...this.settings, depthAxis: 'time' as const } : this.settings;
+    const settings = (this.event.eventType === 'SteadyState' || this.frames.some(frame => frame.rpm === null)) ? { ...this.settings, depthAxis: 'time' as const } : this.settings;
     this.options = waterfallOptions(this.frames, settings, this.selected);
     this.sliceOptions = waterfallSliceOptions(this.frame, this.settings.amplitude, Math.max(...this.frames.map(frame => frame.max), Number.EPSILON) * 1.1);
   }

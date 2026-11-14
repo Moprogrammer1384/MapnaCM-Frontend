@@ -12,12 +12,13 @@ export class WaterfallControlsComponent {
   @Input({ required: true }) inputId: string;
   @Input({ required: true }) settings: WaterfallSettings;
   @Input() eventType?: WaterfallEventType;
+  @Input() hasSpeed = true;
   @Output() readonly settingsChange = new EventEmitter<WaterfallSettings>();
   get units() { return vibrationUnitOptions(this.settings.quantity); }
   update<K extends keyof WaterfallSettings>(key: K, value: WaterfallSettings[K]): void {
     const settings = { ...this.settings, [key]: value };
     const units = vibrationUnitOptions(settings.quantity);
-    this.settingsChange.emit({ ...settings, depthAxis: this.eventType === 'SteadyState' ? 'time' : settings.depthAxis,
+    this.settingsChange.emit({ ...settings, depthAxis: (this.eventType === 'SteadyState' || !this.hasSpeed) ? 'time' : settings.depthAxis,
       unit: units.find(unit => unit.value === settings.unit)?.value ?? units[0].value });
   }
 }

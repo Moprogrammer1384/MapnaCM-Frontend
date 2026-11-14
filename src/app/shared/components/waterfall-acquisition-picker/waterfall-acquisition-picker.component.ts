@@ -45,9 +45,9 @@ export class WaterfallAcquisitionPickerComponent implements OnChanges, OnDestroy
         const valid = events.every(event => {
           if (!event.id || ids.has(event.id)) { return false; }
           ids.add(event.id);
-          return ['SteadyState', 'Startup', 'CoastDown', 'Trip'].includes(event.eventType)
-            && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(event.from)
-            && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(event.to)
+          return ['SteadyState', 'Startup', 'CoastDown', 'Trip', 'LoadChange'].includes(event.eventType)
+            && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?$/.test(event.from)
+            && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?$/.test(event.to)
             && Number.isFinite(Date.parse(event.from)) && Number.isFinite(Date.parse(event.to)) && event.from < event.to;
         });
         if (!valid) { this.error = 'The acquisition catalogue contains invalid or duplicate recordings.'; }

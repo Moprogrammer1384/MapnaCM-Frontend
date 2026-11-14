@@ -38,7 +38,7 @@
     <label class="form-label" [for]="inputId + '_depth'">Depth axis</label>
     <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
       [id]="inputId + '_depth'" [ngModel]="settings.depthAxis" (ngModelChange)="update('depthAxis', $event)"
-      [disabled]="eventType === 'SteadyState'">
+      [disabled]="eventType === 'SteadyState' || !hasSpeed">
       <option value="time">Elapsed time (s)</option><option value="rpm">Speed (RPM)</option>
     </select>
   </div>

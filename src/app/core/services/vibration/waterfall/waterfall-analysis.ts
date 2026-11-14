@@ -3,7 +3,7 @@ import { analyzeFrequencyDomain, prepareFrequencyDomainRecord } from '../frequen
 
 /** Each snapshot is transformed independently; time gaps are never interpolated. */
 export function prepareWaterfall(capture: WaterfallCapture) {
-  if (capture.source !== 'mock' || capture.frames.some((frame, index) => !Number.isFinite(frame.rpm) || frame.rpm < 0
+  if (!capture.frames.length || capture.frames.some((frame, index) => frame.rpm !== null && (!Number.isFinite(frame.rpm) || frame.rpm < 0)
     || !Number.isFinite(frame.elapsedSeconds) || frame.elapsedSeconds < 0
     || (index > 0 && frame.elapsedSeconds <= capture.frames[index - 1].elapsedSeconds))) {
     throw new Error('Invalid Waterfall snapshot timing or speed metadata.');

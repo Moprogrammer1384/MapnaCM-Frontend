@@ -6,18 +6,19 @@ import { vibrationChartAppearance, vibrationLinearGrid, vibrationLinearZoom } fr
 import { vibrationChartColor } from '../vibration-chart-presentation/vibration-chart-colors';
 
 export function waterfallFrameOrder(frames: readonly WaterfallSpectrum[], settings: WaterfallSettings): number[] {
-  return frames.map((_, index) => index).sort((a, b) => settings.depthAxis === 'rpm'
-    ? frames[a].rpm - frames[b].rpm || a - b : frames[a].elapsedSeconds - frames[b].elapsedSeconds);
+  return frames.map((_, index) => index).sort((a, b) => settings.depthAxis === 'rpm' && frames.every(frame => frame.rpm !== null)
+    ? frames[a].rpm! - frames[b].rpm! || a - b : frames[a].elapsedSeconds - frames[b].elapsedSeconds);
 }
 
 export function waterfallOptions(frames: readonly WaterfallSpectrum[], settings: WaterfallSettings, selected: number): EChartsOption {
+  if (settings.depthAxis === 'rpm' && frames.some(frame => frame.rpm === null)) { settings = { ...settings, depthAxis: 'time' }; }
   const { base, text, border, muted, token, tooltip } = vibrationChartAppearance();
   const first = frames[0], order = waterfallFrameOrder(frames, settings);
   const frequencyMax = first.frequency[first.frequency.length - 1];
   const amplitudeMax = Math.max(...frames.map(frame => frame.max), Number.EPSILON) * 1.1;
   const amplitudeLabel = `${first.unit} ${AMPLITUDE_LABELS[settings.amplitude]}`;
   const depthLabel = settings.depthAxis === 'rpm' ? 'Speed (RPM)' : 'Elapsed time (s)';
-  const depth = (index: number) => settings.depthAxis === 'rpm' ? frames[index].rpm : frames[index].elapsedSeconds;
+  const depth = (index: number) => settings.depthAxis === 'rpm' ? frames[index].rpm! : frames[index].elapsedSeconds;
   const depthMin = depth(order[0]), depthMax = depth(order[order.length - 1]);
 
   if (settings.view === 'map') {
@@ -25,7 +26,7 @@ export function waterfallOptions(frames: readonly WaterfallSpectrum[], settings:
       const value = (params as { value: number[] }).value;
       const frame = frames[order[value[1]]];
       return `Spectrum ${order[value[1]] + 1}<br/>${formatNumber(first.frequency[value[0]])} ${first.axisUnit}`
-        + `<br/>${formatNumber(frame.values[value[0]])} ${amplitudeLabel}<br/>${formatNumber(frame.rpm)} RPM`
+        + `<br/>${formatNumber(frame.values[value[0]])} ${amplitudeLabel}<br/>${frame.rpm === null ? 'Speed unavailable' : formatNumber(frame.rpm) + ' RPM'}`
         + `<br/>${formatNumber(frame.elapsedSeconds)} s`;
     } },
     grid: { left: 85, right: 30, top: 35, bottom: 95 },
@@ -87,7 +88,7 @@ export function waterfallOptions(frames: readonly WaterfallSpectrum[], settings:
   };
   return { ...base, tooltip: { ...tooltip, formatter: params => {
     const index = Number((params as { value: number[] }).value[0]), frame = frames[index];
-    return `Spectrum ${index + 1}<br/>${formatNumber(frame.elapsedSeconds)} s · ${formatNumber(frame.rpm)} RPM`
+    return `Spectrum ${index + 1}<br/>${formatNumber(frame.elapsedSeconds)} s · ${frame.rpm === null ? 'Speed unavailable' : formatNumber(frame.rpm) + ' RPM'}`
       + `<br/>Peak: ${formatNumber(frame.max)} ${amplitudeLabel} @ ${formatNumber(frame.peakFrequency)} ${frame.axisUnit}`;
   } },
   grid: { left: 65, right: 85, top: 55, bottom: 65 },

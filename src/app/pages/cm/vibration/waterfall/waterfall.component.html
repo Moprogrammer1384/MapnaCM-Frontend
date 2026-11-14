@@ -8,7 +8,7 @@
 </ng-template>
 <ng-template #waterfallControls let-tab>
   <app-waterfall-controls [inputId]="tab.id" [settings]="tab.waterfallSettings || defaults"
-    [eventType]="tab.waterfallEvent?.eventType"
+    [eventType]="tab.waterfallEvent?.eventType" [hasSpeed]="tab.waterfallEvent?.hasSpeed !== false"
     (settingsChange)="state.updateWaterfallSettings(tab.id, $event)"></app-waterfall-controls>
 </ng-template>
 <ng-template #waterfallChart let-item let-tab="tab">

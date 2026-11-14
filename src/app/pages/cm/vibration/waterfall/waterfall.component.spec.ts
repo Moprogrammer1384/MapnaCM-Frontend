@@ -11,7 +11,8 @@ import type { ECharts, ECElementEvent } from 'echarts';
 import type { Instance } from 'flatpickr/dist/types/instance';
 import { orbitExecution as baseExecution } from 'src/testing/orbit-fixture';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
-import { WATERFALL_DATA_SOURCE, createMockWaterfall, mockWaterfallEvents } from 'src/app/core/services/vibration/waterfall/waterfall-data-source.service';
+import { WATERFALL_DATA_SOURCE } from 'src/app/core/services/vibration/waterfall/waterfall-data-source.service';
+import { createMockWaterfall, mockWaterfallEvents, MockWaterfallDataSource } from 'src/testing/waterfall-fixture';
 import { DEFAULT_WATERFALL_SETTINGS, WaterfallCapture, WaterfallEventType } from 'src/app/core/models/waterfall.model';
 import { METRONIC_PRIMENG_CONFIG } from 'src/app/shared/components/metronic-primeng.config';
 import { VibrationWaterfallChartComponent } from 'src/app/shared/components/vibration-waterfall-chart/vibration-waterfall-chart.component';
@@ -67,6 +68,7 @@ describe('Waterfall daily acquisitions workspace', () => {
     document.documentElement.setAttribute('data-bs-theme', 'light');
     await TestBed.configureTestingModule({ imports: [NoopAnimationsModule], providers: [
       provideHttpClient(), provideHttpClientTesting(), providePrimeNG(METRONIC_PRIMENG_CONFIG),
+      { provide: WATERFALL_DATA_SOURCE, useClass: MockWaterfallDataSource },
       provideRouter([{ path: 'cm/vibration', loadChildren: () => VibrationModule }]), VibrationSelectionService,
     ] }).compileComponents();
     state = TestBed.inject(VibrationSelectionService); state.setRoute('/cm/vibration/waterfall');

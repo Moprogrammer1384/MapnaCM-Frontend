@@ -165,14 +165,14 @@ export class VibrationSelectionService {
   updateWaterfallSettings(id: string, waterfallSettings: WaterfallSettings): void {
     this.updateWorkspace({ tabs: this.tabs().map(tab => tab.id === id && tab.waterfallSettings
       ? { ...tab, waterfallSettings: { ...waterfallSettings,
-        depthAxis: tab.waterfallEvent?.eventType === 'SteadyState' ? 'time' : waterfallSettings.depthAxis } } : tab), activeId: this.activeTabId() });
+        depthAxis: (tab.waterfallEvent?.eventType === 'SteadyState' || tab.waterfallEvent?.hasSpeed === false) ? 'time' : waterfallSettings.depthAxis } } : tab), activeId: this.activeTabId() });
   }
   selectWaterfallEvent(id: string, event?: WaterfallEvent): void {
-    if (event && (!event.id || !['SteadyState', 'Startup', 'CoastDown', 'Trip'].includes(event.eventType)
+    if (event && (!event.id || !['SteadyState', 'Startup', 'CoastDown', 'Trip', 'LoadChange'].includes(event.eventType)
       || !Number.isFinite(Date.parse(event.from)) || !Number.isFinite(Date.parse(event.to)) || event.from >= event.to)) { return; }
     this.updateWorkspace({ tabs: this.tabs().map(tab => tab.id === id && tab.waterfallSettings
       ? { ...tab, waterfallEvent: event ? { ...event } : undefined, awaitingDateRange: !event,
-        waterfallSettings: { ...tab.waterfallSettings, depthAxis: event?.eventType === 'SteadyState' ? 'time' : tab.waterfallSettings.depthAxis },
+        waterfallSettings: { ...tab.waterfallSettings, depthAxis: (event?.eventType === 'SteadyState' || event?.hasSpeed === false) ? 'time' : tab.waterfallSettings.depthAxis },
         ...(event ? { dateRange: { from: event.from.slice(0, 10), to: event.to.slice(0, 10) },
           timeRange: { from: event.from.slice(11), to: event.to.slice(11) } } : {}) } : tab), activeId: this.activeTabId() });
   }

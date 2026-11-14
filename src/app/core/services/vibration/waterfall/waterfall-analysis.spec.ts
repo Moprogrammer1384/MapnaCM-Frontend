@@ -1,7 +1,7 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { DEFAULT_WATERFALL_SETTINGS as defaults, WaterfallEventType, WaterfallRequest } from '../../../models/waterfall.model';
 import { analyzeWaterfall, prepareWaterfall } from './waterfall-analysis';
-import { createMockWaterfall, mockWaterfallEvents, MockWaterfallDataSource } from './waterfall-data-source.service';
+import { createMockWaterfall, mockWaterfallEvents, MockWaterfallDataSource } from 'src/testing/waterfall-fixture';
 
 const requestFor = (type: WaterfallEventType): WaterfallRequest => ({
   measurementId: 6, eventId: mockWaterfallEvents().find(event => event.eventType === type)!.id,

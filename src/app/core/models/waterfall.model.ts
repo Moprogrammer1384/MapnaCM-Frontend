@@ -2,7 +2,7 @@ import { AnalysisChartSettings } from './analysis-chart-settings.model';
 import { RawVibrationRecord } from './vibration-data.model';
 import { FrequencyDomainAnalysis } from './frequency-domain.model';
 
-/** Frontend models only; these do not define a backend API contract. */
+/** Display settings; native acquisition DTOs are defined in waterfall-api.model.ts. */
 export interface WaterfallSettings extends AnalysisChartSettings {
   readonly xAxis: 'hz' | 'cpm';
   readonly depthAxis: 'time' | 'rpm';
@@ -14,7 +14,7 @@ export const DEFAULT_WATERFALL_SETTINGS: WaterfallSettings = {
   depthAxis: 'time', view: 'waterfall',
 };
 
-export type WaterfallEventType = 'SteadyState' | 'Startup' | 'CoastDown' | 'Trip';
+export type WaterfallEventType = 'SteadyState' | 'Startup' | 'CoastDown' | 'Trip' | 'LoadChange';
 
 /** One recorded acquisition, identified independently of its date/type. Tehran wall clock. */
 export interface WaterfallEvent {
@@ -22,6 +22,7 @@ export interface WaterfallEvent {
   readonly eventType: WaterfallEventType;
   readonly from: string;
   readonly to: string;
+  readonly hasSpeed?: boolean;
 }
 
 export interface WaterfallRequest {
@@ -31,7 +32,7 @@ export interface WaterfallRequest {
 
 export interface WaterfallFrame {
   readonly elapsedSeconds: number;
-  readonly rpm: number;
+  readonly rpm: number | null;
   readonly raw: RawVibrationRecord;
 }
 
@@ -39,10 +40,9 @@ export interface WaterfallCapture {
   readonly event: WaterfallEvent;
   readonly startedAt: string;
   readonly frames: readonly WaterfallFrame[];
-  readonly source: 'mock';
 }
 
 export interface WaterfallSpectrum extends FrequencyDomainAnalysis {
   readonly elapsedSeconds: number;
-  readonly rpm: number;
+  readonly rpm: number | null;
 }

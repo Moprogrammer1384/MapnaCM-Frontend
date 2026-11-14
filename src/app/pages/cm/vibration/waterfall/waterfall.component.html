@@ -1,0 +1,20 @@
+<app-analysis-workspace [state]="state" domain="frequency" [controlsContent]="waterfallControls"
+  [dateSelectionContent]="waterfallDate" dateSelectionTitle="Event date and time"
+  awaitingSelectionMessage="Select an acquisition time above to load the recorded measurement data. Date is an optional filter."
+  [showMeasurementTitle]="false" [measurementChartContent]="waterfallChart"></app-analysis-workspace>
+<ng-template #waterfallDate let-tab>
+  <app-waterfall-acquisition-picker [inputId]="tab.id" [measurements]="tab.measurements" [value]="tab.waterfallEvent"
+    (selected)="state.selectWaterfallEvent(tab.id, $event)"></app-waterfall-acquisition-picker>
+</ng-template>
+<ng-template #waterfallControls let-tab>
+  <app-waterfall-controls [inputId]="tab.id" [settings]="tab.waterfallSettings || defaults"
+    [eventType]="tab.waterfallEvent?.eventType"
+    (settingsChange)="state.updateWaterfallSettings(tab.id, $event)"></app-waterfall-controls>
+</ng-template>
+<ng-template #waterfallChart let-item let-tab="tab">
+  <app-vibration-waterfall-chart [measurementId]="item.measurement.id" [inputId]="tab.id + '_' + item.measurement.id"
+    [settings]="tab.waterfallSettings || defaults"
+    [event]="tab.waterfallEvent" [title]="item.component.name | measurementHeading: [item.measurement]"
+    [titleId]="tab.id + '_chart_' + item.measurement.id">
+  </app-vibration-waterfall-chart>
+</ng-template>

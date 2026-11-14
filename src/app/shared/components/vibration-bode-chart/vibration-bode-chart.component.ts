@@ -1,5 +1,7 @@
 import { vibrationChartColor } from '../vibration-chart-presentation/vibration-chart-colors';
 import { CommonModule } from '@angular/common';
+import { VIBRATION_EVENT_CLASSES } from '../vibration-chart-presentation/vibration-event-presentation';
+import { formatVibrationDateTime } from 'src/app/core/utils/vibration-date-time';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, inject, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import type { EChartsOption, TooltipComponentOption } from 'echarts';
@@ -23,7 +25,7 @@ import { vibrationChartAppearance, vibrationLinearZoom } from '../vibration-char
   host: { class: 'd-block mw-100', '[attr.aria-busy]': 'loading' },
 })
 export class VibrationBodeChartComponent implements OnChanges, OnDestroy {
-  readonly eventClasses = { Startup: 'badge-light-success', CoastDown: 'badge-light-info', Trip: 'badge-light-danger', LoadChange: 'badge-light-warning' };
+  readonly eventClasses = VIBRATION_EVENT_CLASSES;
   @Input({ required: true }) measurementId: number;
   @Input({ required: true }) from: string;
   @Input({ required: true }) to: string;
@@ -111,7 +113,7 @@ export class VibrationBodeChartComponent implements OnChanges, OnDestroy {
       const quantity = VIBRATION_QUANTITIES[result.quantity].label;
       return `${formatNumber(point.speedRpm)} RPM · ${formatNumber(point.speedRpm / 60)} Hz<br/>` +
         `${quantity}: ${formatNumber(result.amplitude[index])} ${result.unit} ${AMPLITUDE_LABELS[result.amplitudeMode]}<br/>` +
-        `Phase: ${formatNumber(result.phase[index])}°<br/>${point.timestamp.replace('T', ' ')}`;
+        `Phase: ${formatNumber(result.phase[index])}°<br/>${formatVibrationDateTime(point.timestamp)}`;
     };
   }
 

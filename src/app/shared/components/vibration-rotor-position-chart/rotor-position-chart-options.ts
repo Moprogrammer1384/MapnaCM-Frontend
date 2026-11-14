@@ -76,9 +76,10 @@ export function rotorPositionChartOptions(analysis: RotorPositionAnalysis, setti
     ...shared, tooltip: { ...shared.tooltip, trigger: 'axis' },
     legend,
     axisPointer: { link: [{ xAxisIndex: 'all' }], snap: true, lineStyle: { color: muted } },
-    grid: [{ left: 64, right: 24, top: 55, height: '40%' }, { left: 64, right: 24, top: '61%', height: '18%' }],
+    grid: [{ left: 64, right: 24, top: 55, height: '36%' }, { left: 64, right: 24, top: '65%', height: '15%' }],
     xAxis: [0, 1].map(gridIndex => ({ ...axis(gridIndex === 1 ? settings.trendAxis === 'time' ? 'Time (s)' : 'Speed (RPM)' : ''), gridIndex })),
-    yAxis: [{ ...axis(`Mean (${unit})`, true), gridIndex: 0 }, { ...axis('RPM', true), gridIndex: 1, min: 0 }],
+    yAxis: [{ ...axis(`Mean (${unit})`, true), gridIndex: 0 },
+      { ...axis('RPM', true), nameGap: 24, gridIndex: 1, min: 0, splitNumber: 2 }],
     dataZoom: vibrationLinearZoom(['rotor-trend-inside', 'rotor-trend-slider'], [0, 1]),
     series: [...series, ...rotorPositionTrackingSeries(points[selected], settings, selected)],
   };

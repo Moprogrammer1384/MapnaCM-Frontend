@@ -26,7 +26,7 @@ describe('Bode acquisition footer', () => {
       expect(footer.querySelector('[data-testid="bode-peak"]')!.textContent).toContain('9054.73 RPM');
       expect(footer.querySelector('[data-testid="bode-peak-phase"]')!.textContent).toContain('123.45°');
       expect(footer.querySelector('[data-testid="bode-count"]')!.textContent).toContain('99,999');
-      expect(footer.querySelector('[data-testid="acquisition-start"]')!.textContent).toContain('2026-11-08 10:00:00');
+      expect(footer.querySelector('[data-testid="acquisition-start"]')!.textContent).toContain('2026-11-08 10:00:00 AM');
       const statistics = footer.querySelector<HTMLElement>('[data-testid="chart-statistics"]')!;
       const metadata = footer.querySelector<HTMLElement>('[data-testid="acquisition-metadata"]')!;
       expect(getComputedStyle(footer).direction).toBe('ltr');

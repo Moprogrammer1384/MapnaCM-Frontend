@@ -37,9 +37,12 @@ describe('Vibration measurement/date selection → native HTTP data → existing
     const picker = (input as HTMLInputElement & { _flatpickr: Instance })._flatpickr;
     picker.setDate([day, day], true, 'Y-m-d');
     harness.fixture.detectChanges();
-    ['0', '0', '0', '1'].forEach((value, index) => {
+    ['12', '0', '12', '1'].forEach((value, index) => {
       const control = picker.calendarContainer.querySelectorAll<HTMLInputElement>('input[id]')[index];
       control.value = value; control.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    picker.calendarContainer.querySelectorAll<HTMLSelectElement>('select').forEach(control => {
+      control.value = 'AM'; control.dispatchEvent(new Event('change', { bubbles: true }));
     });
     harness.fixture.detectChanges();
     Array.from(picker.calendarContainer.querySelectorAll('button')).find(button => button.textContent!.trim() === 'Apply')!.click();
@@ -202,14 +205,14 @@ describe('Vibration measurement/date selection → native HTTP data → existing
       expect(elements()).toEqual(firstElements);
       expect(pickerInput()).toBe(firstInput);
       expect((pickerInput() as HTMLInputElement & { _flatpickr: Instance })._flatpickr).toBe(firstPicker);
-      expect(firstInput.value).toBe('2026-10-01 00:00 to 2026-10-01 00:01');
+      expect(firstInput.value).toBe('2026-10-01 12:00:00 AM to 2026-10-01 12:01:00 AM');
       expect(firstCharts[0].getOption()).toEqual(firstOption);
       expect(state.activeTab()!.chartSettings!.quantity).toBe('displacement');
       firstElements.forEach((element, i) => expect(echarts.getInstanceByDom(element)).toBe(firstCharts[i]));
       await selectTab(secondId);
       expect(elements()).toEqual([secondElement]);
       expect(pickerInput()).toBe(secondInput);
-      expect(secondInput.value).toBe('2026-10-02 00:00 to 2026-10-02 00:01');
+      expect(secondInput.value).toBe('2026-10-02 12:00:00 AM to 2026-10-02 12:01:00 AM');
       await selectTab(firstId);
 
       // A changed date range still loads new data only for the affected tab.

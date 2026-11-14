@@ -7,6 +7,7 @@ import { SharedModule } from 'src/app/_metronic/shared/shared.module';
 import { AnalysisEventTime } from 'src/app/core/models/analysis-event-time.model';
 import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
 import { CalendarDateRange } from 'src/app/core/models/time-availability.model';
+import { VIBRATION_EVENT_LABELS } from '../vibration-chart-presentation/vibration-event-presentation';
 
 /** Select one existing transient. Its exact acquisition bounds are never edited by the user. */
 @Component({
@@ -22,6 +23,7 @@ export class VibrationEventPickerComponent implements AfterViewInit, OnChanges, 
   @Input() eventId?: string;
   @Input() events: readonly AnalysisEventTime[] = [];
   @Input() disabled = false;
+  @Input() showEventTypeFilter = false;
   @Input() minDate?: string;
   @Input() maxDate?: string;
   @Input() calendarDate?: string;
@@ -32,6 +34,8 @@ export class VibrationEventPickerComponent implements AfterViewInit, OnChanges, 
   @Output() readonly calendarWindowChange = new EventEmitter<CalendarDateRange>();
   @ViewChild('dateInput', { static: true }) private dateInput: ElementRef<HTMLInputElement>;
   day = '';
+  selectedEventType: string | null = null;
+  eventTypeOptions: readonly { value: string; label: string }[] = [];
   selectedEventId: string | null = null;
   visibleEvents: readonly AnalysisEventTime[] = [];
   private picker?: Instance;
@@ -72,8 +76,18 @@ export class VibrationEventPickerComponent implements AfterViewInit, OnChanges, 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['resetDateKey'] && !changes['resetDateKey'].firstChange) { this.day = ''; this.selectedEventId = null; }
-    if (changes['value'] || changes['events'] || changes['eventId']) {
+    if (changes['resetDateKey'] && !changes['resetDateKey'].firstChange) {
+      this.day = ''; this.selectedEventId = null; this.selectedEventType = null;
+    }
+    if (changes['events']) {
+      const types = new Set<string>();
+      this.events.forEach(event => this.typesFor(event).forEach(type => types.add(type)));
+      this.eventTypeOptions = [...types].sort().map(value => ({ value,
+        label: VIBRATION_EVENT_LABELS[value as keyof typeof VIBRATION_EVENT_LABELS] ?? value }));
+      if (types.size && this.selectedEventType && !types.has(this.selectedEventType)) { this.selectedEventType = null; }
+      if (this.events.length && this.day && !this.dayEnabled(this.day)) { this.day = ''; }
+    }
+    if (changes['value'] || changes['events'] || changes['eventId'] || changes['showEventTypeFilter']) {
       const saved = this.savedEvent();
       if (changes['value'] || changes['eventId'] || saved) { this.selectedEventId = saved?.id ?? null; }
       this.filterEvents();
@@ -82,6 +96,14 @@ export class VibrationEventPickerComponent implements AfterViewInit, OnChanges, 
   }
 
   open(): void { if (!this.disabled) { this.picker?.open(); } }
+
+  changeEventType(type: string | null): void {
+    if (this.disabled || (type !== null && !this.eventTypeOptions.some(option => option.value === type))) { return; }
+    this.selectedEventType = type;
+    if (this.day && !this.dayEnabled(this.day)) { this.day = ''; }
+    this.selectedEventId = this.savedEvent()?.id ?? null;
+    this.filterEvents(); this.syncPicker();
+  }
 
   clearDate(): void {
     if (this.disabled) { return; }
@@ -102,8 +124,16 @@ export class VibrationEventPickerComponent implements AfterViewInit, OnChanges, 
   }
 
   private filterEvents(): void {
-    this.visibleEvents = this.day ? this.events.filter(event => event.from.slice(0, 10) === this.day) : this.events;
+    this.visibleEvents = this.events.filter(event => this.matchesType(event) && (!this.day || event.from.slice(0, 10) === this.day));
     if (!this.visibleEvents.some(event => event.id === this.selectedEventId)) { this.selectedEventId = null; }
+  }
+
+  private typesFor(event: AnalysisEventTime): readonly string[] {
+    return [...(event.eventTypes ?? []), ...(event.eventType ? [event.eventType] : [])].filter(type => typeof type === 'string' && !!type);
+  }
+
+  private matchesType(event: AnalysisEventTime): boolean {
+    return !this.showEventTypeFilter || this.selectedEventType === null || this.typesFor(event).includes(this.selectedEventType);
   }
 
   private savedEvent(): AnalysisEventTime | undefined {
@@ -115,7 +145,7 @@ export class VibrationEventPickerComponent implements AfterViewInit, OnChanges, 
   private dayEnabled(day: string): boolean {
     // Exact common acquisition metadata proves its start day, including an event
     // discovered through the next day's/month's window after it crosses midnight.
-    return this.events.some(event => event.from.slice(0, 10) === day);
+    return this.events.some(event => this.matchesType(event) && event.from.slice(0, 10) === day);
   }
 
   private syncPicker(): void {
@@ -124,7 +154,9 @@ export class VibrationEventPickerComponent implements AfterViewInit, OnChanges, 
     this.picker.set({ minDate: this.minDate, maxDate: this.maxDate,
       enable: [date => this.dayEnabled(flatpickr.formatDate(date, 'Y-m-d'))] });
     this.picker.setDate(this.day, false, 'Y-m-d');
-    const fallbackDay = this.calendarDate || this.events[this.events.length - 1]?.from.slice(0, 10);
+    const matchingEvents = this.events.filter(event => this.matchesType(event));
+    const fallbackDay = this.selectedEventType ? matchingEvents[matchingEvents.length - 1]?.from.slice(0, 10)
+      : this.calendarDate || matchingEvents[matchingEvents.length - 1]?.from.slice(0, 10);
     this.picker.jumpToDate(this.picker.isOpen ? visibleMonth : this.day || fallbackDay || visibleMonth, false);
   }
 

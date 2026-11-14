@@ -39,7 +39,7 @@ const execution: AssetTaxonomyExecution = {
 describe('Combined date/time range on Vibration pages', () => {
   let harness: RouterTestingHarness;
   let state: VibrationSelectionService;
-  const rangePages = Object.keys(VIBRATION_PAGES).filter(page => !['bode-analysis', 'orbit-analysis', 'rotor-position'].includes(page));
+  const rangePages = Object.keys(VIBRATION_PAGES).filter(page => !['bode-analysis', 'orbit-analysis', 'rotor-position', 'waterfall'].includes(page));
   const input = () => harness.routeNativeElement!.querySelector<HTMLInputElement>('app-date-time-range input')!;
   const picker = () => (input() as HTMLInputElement & { _flatpickr: Instance })._flatpickr;
   const detect = () => harness.fixture.detectChanges();
@@ -48,8 +48,12 @@ describe('Combined date/time range on Vibration pages', () => {
     const calendar = picker().calendarContainer;
     [fromHour, fromMinute, toHour, toMinute].forEach((value, index) => {
       const control = calendar.querySelectorAll<HTMLInputElement>('input[id]')[index];
-      control.value = value;
+      control.value = index % 2 === 0 ? String(Number(value) % 12 || 12) : value;
       control.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    [fromHour, toHour].forEach((hour, index) => {
+      const period = calendar.querySelectorAll<HTMLSelectElement>('select')[index];
+      period.value = Number(hour) < 12 ? 'AM' : 'PM'; period.dispatchEvent(new Event('change', { bubbles: true }));
     });
     detect();
     Array.from(calendar.querySelectorAll('button')).find(item => item.textContent!.trim() === 'Apply')!.click();
@@ -102,13 +106,13 @@ describe('Combined date/time range on Vibration pages', () => {
       expect(root.querySelector('app-date-range')).toBeNull();
       expect(root.querySelector('app-time-range')).toBeNull();
       expect(root.textContent).toContain('Date and time range');
-      expect(input().value).toBe('2026-10-01 00:00 to 2026-10-12 23:59');
+      expect(input().value).toBe('2026-10-01 12:00:00 AM to 2026-10-12 11:59:00 PM');
       await apply(String(index + 1), '07', '18', String(index + 10));
       expect(state.activeTab()!.timeRange).toEqual({ from: `0${index + 1}:07`, to: `18:${index + 10}` });
     }
     for (const [index, page] of rangePages.entries()) {
       await navigate(page);
-      expect(input().value).toBe(`2026-10-01 0${index + 1}:07 to 2026-10-12 18:${index + 10}`);
+      expect(input().value).toBe(`2026-10-01 0${index + 1}:07:00 AM to 2026-10-12 06:${index + 10}:00 PM`);
       expect(document.querySelectorAll('.darp-date-time-calendar').length).toBe(1);
     }
   });
@@ -134,7 +138,13 @@ describe('Combined date/time range on Vibration pages', () => {
     expect(root.querySelectorAll('app-vibration-event-picker').length).toBe(1);
     const times = root.querySelector<HTMLSelectElement>('select[aria-label="Event time"]')!;
     expect(times.disabled).toBeFalse();
-    expect(times.options[1].textContent).toContain('Startup');
+    expect(times.options[1].textContent?.trim()).toBe('2026-10-01 08:00:00 AM · Startup');
+    const eventTypes = root.querySelector<HTMLSelectElement>('select[aria-label="Event type"]')!;
+    expect(Array.from(eventTypes.options, option => option.textContent!.trim())).toEqual(['All states', 'Startup']);
+    // The filter inventory comes from the just-received backend metadata.
+    window.jQuery(eventTypes).val(eventTypes.options[1].value).trigger('change'); detect();
+    expect(times.options.length).toBe(2);
+    http.expectNone(request => request.url.endsWith('/BodeAnalysis/Get'));
     window.jQuery(times).val(times.options[1].value).trigger('change');
     detect(); await harness.fixture.whenStable(); detect();
     const data = http.expectOne(request => request.url.endsWith('/BodeAnalysis/Get'));
@@ -173,15 +183,15 @@ describe('Combined date/time range on Vibration pages', () => {
     detect(); await harness.fixture.whenStable(); detect();
     expect(previousCalendar.isConnected).toBeTrue();
     expect(previousCalendar.classList.contains('open')).toBeFalse();
-    expect(input().value).toBe('2026-10-01 00:00 to 2026-10-12 23:59');
+    expect(input().value).toBe('2026-10-01 12:00:00 AM to 2026-10-12 11:59:00 PM');
     harness.routeNativeElement!.querySelector<HTMLElement>(`[data-tab-id="${secondId}"]`)!.click();
     detect(); await harness.fixture.whenStable(); detect();
     expect(picker().calendarContainer).toBe(previousCalendar);
-    expect(input().value).toBe('2026-10-05 23:59 to 2026-10-06 00:00');
+    expect(input().value).toBe('2026-10-05 11:59:00 PM to 2026-10-06 12:00:00 AM');
     harness.routeNativeElement!.querySelector<HTMLButtonElement>('[aria-label="Close Analysis 2"]')!.click();
     detect(); await harness.fixture.whenStable(); detect();
     expect(previousCalendar.isConnected).toBeFalse();
-    expect(input().value).toBe('2026-10-01 00:00 to 2026-10-12 23:59');
+    expect(input().value).toBe('2026-10-01 12:00:00 AM to 2026-10-12 11:59:00 PM');
   });
 
   it('preserves unfinished edits during unrelated state updates and cancels without changing tab state', async () => {

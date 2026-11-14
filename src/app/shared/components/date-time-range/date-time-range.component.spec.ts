@@ -5,11 +5,12 @@ import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
 import { DateTimeRangeComponent } from './date-time-range.component';
 
 @Component({
-  template: '<app-date-time-range inputId="datetime-test" [value]="range" [disabled]="disabled" (valueChange)="changes.push($event)"></app-date-time-range>',
+  template: '<app-date-time-range inputId="datetime-test" [value]="range" [disabled]="disabled" [hour12]="hour12" (valueChange)="changes.push($event)"></app-date-time-range>',
 })
 class DateTimeRangeHostComponent {
   range: DateTimeRange = { from: '2026-10-01T08:30', to: '2026-10-12T17:45' };
   disabled = false;
+  hour12 = false;
   changes: DateTimeRange[] = [];
 }
 
@@ -74,6 +75,22 @@ describe('DateTimeRangeComponent with a single Metronic range dialog', () => {
     expect(input.value).toBe('2026-10-02 08:07 to 2026-10-09 18:43');
     expect(picker.isOpen).toBeFalse();
     expect(document.activeElement).toBe(input);
+  });
+
+  it('edits midnight/noon with AM/PM while emitting the original 24-hour date contract', async () => {
+    fixture.componentInstance.hour12 = true; fixture.detectChanges(); await fixture.whenStable(); fixture.detectChanges(); open();
+    expect(input.value).toBe('2026-10-01 08:30:00 AM to 2026-10-12 05:45:00 PM');
+    enterTime('from', '12', '10'); enterTime('to', '12', '20');
+    const periods = picker.calendarContainer.querySelectorAll<HTMLSelectElement>('select');
+    expect(periods.length).toBe(2); expect(periods[0].value).toBe('AM'); expect(periods[1].value).toBe('PM');
+    expect(periods[0].getBoundingClientRect().width).toBeGreaterThan(80);
+    periods[0].value = 'AM'; periods[0].dispatchEvent(new Event('change', { bubbles: true }));
+    periods[1].value = 'PM'; periods[1].dispatchEvent(new Event('change', { bubbles: true }));
+    button('Apply').click(); fixture.detectChanges();
+    expect(fixture.componentInstance.changes).toEqual([{ from: '2026-10-01T00:10', to: '2026-10-12T12:20' }]);
+    expect(input.value).toBe('2026-10-01 12:10:00 AM to 2026-10-12 12:20:00 PM');
+    open(); enterTime('from', '0', '0'); button('Apply').click(); fixture.detectChanges();
+    expect(picker.isOpen).toBeTrue(); expect(picker.calendarContainer.textContent).toContain('01 to 12');
   });
 
   it('supports same-day ranges and prevents an earlier end time until corrected', () => {

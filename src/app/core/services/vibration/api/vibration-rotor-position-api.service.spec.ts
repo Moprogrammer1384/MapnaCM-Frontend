@@ -35,11 +35,13 @@ describe('Rotor Position recorded API source', () => {
     expect(source).toBe(TestBed.inject(VibrationRotorPositionApiService));
     source.listEvents([pair]).subscribe(events => {
       expect(events[0].id).toBe('42'); expect(events[0].from).toBe('2026-11-08T10:00:00');
+      expect(events[0].label).toBe('2026-11-08 10:00:00 AM · Startup');
+      expect(events[1].label).toBe('2026-11-08 10:00:00 AM · CoastDown');
     });
     const request = http.expectOne(req => req.url === `${environment.apiUrl}/RotorPosition/GetAvailability`);
     expect(request.request.params.getAll('XMeasurementIds')).toEqual(['11']);
     expect(request.request.params.getAll('YMeasurementIds')).toEqual(['12']);
-    request.flush({ success: true, data: { timeZone: 'Asia/Tehran', events: [event] } });
+    request.flush({ success: true, data: { timeZone: 'Asia/Tehran', events: [event, { ...event, operatingRunId: 43, eventType: 'CoastDown' }] } });
   });
   it('keeps recorded DC, standstill, unknown RPM and quality gaps without generated replacements', () => {
     source.load(pair, '42').subscribe(value => {
@@ -53,7 +55,12 @@ describe('Rotor Position recorded API source', () => {
     expect(request.request.params.get('OperatingRunId')).toBe('42'); request.flush({ success: true, data: record() });
   });
   it('retains sub-millisecond event intervals', () => {
-    source.load(pair, '42').subscribe(value => expect(value!.observations[1].timeSeconds).toBe(.0000001));
+    source.load(pair, '42').subscribe(value => {
+      expect(value!.observations[1].timeSeconds).toBe(.0000001);
+      expect(value!.event.from).toBe('2026-11-08T10:00:00.0000001');
+      expect(value!.event.to).toBe('2026-11-08T10:00:00.0000003');
+      expect(value!.event.label).toBe('2026-11-08 10:00:00 AM · Startup');
+    });
     const data = record();
     http.expectOne(req => req.url.endsWith('/RotorPosition/Get')).flush({ success: true, data: {
       ...data, startedAtUtc: '2026-11-08T06:30:00.0000001Z', endedAtUtc: '2026-11-08T06:30:00.0000003Z',

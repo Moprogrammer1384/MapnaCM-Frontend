@@ -1,0 +1,52 @@
+<div class="row g-5 mt-0">
+  <div class="col-12 col-sm-6 col-lg-3">
+    <label class="form-label" [for]="inputId + '_quantity'">Quantity</label>
+    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+      [id]="inputId + '_quantity'" [ngModel]="settings.quantity" (ngModelChange)="update('quantity', $event)">
+      <option value="displacement">Displacement</option><option value="velocity">Velocity</option><option value="acceleration">Acceleration</option>
+    </select>
+  </div>
+  <div class="col-12 col-sm-6 col-lg-3">
+    <label class="form-label" [for]="inputId + '_unit'">Unit</label>
+    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+      [id]="inputId + '_unit'" [ngModel]="settings.unit" (ngModelChange)="update('unit', $event)">
+      @for (unit of units; track unit.value) { <option [value]="unit.value">{{ unit.value }}</option> }
+    </select>
+  </div>
+  <div class="col-12 col-sm-6 col-lg-3">
+    <label class="form-label" [for]="inputId + '_frequency'">Frequency axis</label>
+    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+      [id]="inputId + '_frequency'" [ngModel]="settings.xAxis" (ngModelChange)="update('xAxis', $event)">
+      <option value="hz">Hz</option><option value="cpm">CPM</option>
+    </select>
+  </div>
+  <div class="col-12 col-sm-6 col-lg-3">
+    <label class="form-label" [for]="inputId + '_amplitude'">Amplitude</label>
+    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+      [id]="inputId + '_amplitude'" [ngModel]="settings.amplitude" (ngModelChange)="update('amplitude', $event)">
+      <option value="rms">RMS</option><option value="0p">0p</option><option value="pp">pp</option>
+    </select>
+  </div>
+  <div class="col-12 col-sm-6 col-lg-3">
+    <label class="form-label" [for]="inputId + '_window'">FFT window</label>
+    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+      [id]="inputId + '_window'" [ngModel]="settings.window" (ngModelChange)="update('window', $event)">
+      <option value="hann">Hann</option><option value="rectangular">Rectangular</option>
+    </select>
+  </div>
+  <div class="col-12 col-sm-6 col-lg-3">
+    <label class="form-label" [for]="inputId + '_depth'">Depth axis</label>
+    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+      [id]="inputId + '_depth'" [ngModel]="settings.depthAxis" (ngModelChange)="update('depthAxis', $event)"
+      [disabled]="eventType === 'SteadyState'">
+      <option value="time">Elapsed time (s)</option><option value="rpm">Speed (RPM)</option>
+    </select>
+  </div>
+  <div class="col-12 col-sm-6 col-lg-3">
+    <label class="form-label" [for]="inputId + '_view'">Display</label>
+    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+      [id]="inputId + '_view'" [ngModel]="settings.view" (ngModelChange)="update('view', $event)">
+      <option value="waterfall">Waterfall</option><option value="map">Spectral map</option>
+    </select>
+  </div>
+</div>

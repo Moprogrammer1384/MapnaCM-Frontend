@@ -5,6 +5,7 @@ export const VIBRATION_PAGES = {
   'bode-analysis': 'Bode analysis',
   'orbit-analysis': 'Orbit Analysis',
   'rotor-position': 'Rotor position',
+  waterfall: 'Waterfall',
 } as const;
 
 export type VibrationPage = keyof typeof VIBRATION_PAGES;

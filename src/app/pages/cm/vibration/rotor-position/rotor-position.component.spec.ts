@@ -89,6 +89,43 @@ describe('Rotor Position frontend workspace', () => {
     load.and.returnValue(of(record)); component.reload(); await settle();
     expect(units()).toEqual(['µm', 'mm']); expect(component.settings.unit).toBe('µm');
   });
+
+  it('filters source event types before Date without re-reading history or loading chart data', async () => {
+    const source = TestBed.inject(ROTOR_POSITION_DATA_SOURCE), history = spyOn(source, 'listEvents').and.callThrough();
+    await createTab();
+    const select = root().querySelector('select[aria-label="Event type"]') as HTMLSelectElement;
+    expect(Array.from(select.options, option => option.textContent!.trim())).toEqual(['All states', 'CoastDown', 'Startup', 'Trip']);
+    const option = Array.from(select.options).find(item => item.textContent!.trim() === 'Trip')!;
+    window.jQuery(select).val(option.value).trigger('change'); await settle();
+    const times = root().querySelector('select[aria-label="Event time"]') as HTMLSelectElement;
+    expect(times.options.length).toBe(4);
+    expect(Array.from(times.options).slice(1).every(item => item.textContent!.includes('Trip'))).toBeTrue();
+    expect(history).toHaveBeenCalledTimes(1); expect(load).not.toHaveBeenCalled();
+    await choose('Trip'); expect(chartComponent().event.eventType).toBe('Trip');
+  });
+
+  it('keeps the lower RPM axis title clear of numeric labels at narrow and wide plot sizes', async () => {
+    await createTab(); await choose();
+    const hosts = Array.from(root().querySelectorAll<HTMLElement>('[_echarts_instance_]'));
+    const trend = echarts.getInstanceByDom(hosts[1])!;
+    for (const width of [360, 900]) {
+      trend.resize({ width, height: 440 }); await frame();
+      const labels = trend.getZr().storage.getDisplayList().filter(item => item.type === 'tspan').map(item => {
+        const text = (item.style as { text?: string }).text ?? '';
+        const rect = item.getBoundingRect().clone(), transform = item.getComputedTransform();
+        if (transform) { rect.applyTransform(transform); }
+        return { text, rect };
+      });
+      const rpm = labels.find(label => label.text === 'RPM');
+      expect(rpm).withContext('RPM title at width ' + width).toBeDefined();
+      if (!rpm) { continue; }
+      const numeric = labels.filter(label => label.text.trim() && Number.isFinite(Number(label.text.replace(/,/g, ''))));
+      expect(numeric.length).toBeGreaterThan(0);
+      for (const label of numeric) {
+        expect(rpm.rect.intersect(label.rect)).withContext('RPM overlaps ' + label.text + ' at width ' + width).toBeFalse();
+      }
+    }
+  });
   it('preserves native DC, performs local controls and links keyboard selection to the readout without data reads', async () => {
     await createTab(); await choose();
     const component = chartComponent(), y = component.analysis!.points[0].y;

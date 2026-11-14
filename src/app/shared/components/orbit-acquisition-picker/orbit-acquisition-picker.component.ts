@@ -6,6 +6,7 @@ import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
 import { OrbitCaptureChoice, OrbitCaptureSelection, OrbitProbePair } from 'src/app/core/models/orbit-analysis.model';
 import { VibrationOrbitAnalysisAvailabilityApiService } from 'src/app/core/services/vibration/api/vibration-orbit-analysis-availability-api.service';
 import { apiErrorMessage } from 'src/app/core/utils/api-error';
+import { analysisEventLabel } from 'src/app/core/utils/analysis-event-label';
 import { formatNumber } from '../../pipes/number-format.pipe';
 import { VibrationEventPickerComponent } from '../vibration-event-picker/vibration-event-picker.component';
 
@@ -66,7 +67,7 @@ export class OrbitAcquisitionPickerComponent implements OnChanges, OnDestroy {
     this.choices = choices;
     this.events = choices.map(choice => ({ id: this.captureKey(choice), from: this.localInstant(choice.capturedAtUtc),
       to: this.localInstant(choice.finishedAtUtc),
-      label: `${new Date(choice.capturedAtUtc).toLocaleString()} · ${formatNumber(choice.sampleCount / choice.sampleRateHz)} s` }));
+      label: analysisEventLabel(this.localInstant(choice.capturedAtUtc), `${formatNumber(choice.sampleCount / choice.sampleRateHz)} s`) }));
     this.syncSelection(); this.cdr.markForCheck();
   }
   private syncSelection(): void {

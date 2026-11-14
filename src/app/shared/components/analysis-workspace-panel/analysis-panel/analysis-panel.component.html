@@ -18,7 +18,7 @@
           [eventSelection]="domain === 'bode'"
           (applied)="updateDateTimeRange($event)"></app-vibration-date-time-range>
       } @else {
-        <app-date-time-range [inputId]="tab.id" [value]="dateTimeRange"
+        <app-date-time-range [inputId]="tab.id" [value]="dateTimeRange" [hour12]="true"
           (applied)="updateDateTimeRange($event)"></app-date-time-range>
       }
     </section>

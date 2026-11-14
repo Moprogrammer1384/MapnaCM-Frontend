@@ -25,7 +25,7 @@
 <ng-template #measurementCharts let-tab>
   @if (tab.awaitingDateRange) {
     <div class="text-gray-500 text-center py-10" role="status">
-      {{ domain === 'bode' ? 'Select an event date and time above to load its measurement data.' : 'Select the date and time range above and press Apply to load measurement data.' }}
+      {{ awaitingSelectionMessage || (domain === 'bode' ? 'Select an event date and time above to load its measurement data.' : 'Select the date and time range above and press Apply to load measurement data.') }}
     </div>
   } @else {
   <div class="d-flex justify-content-end mb-5">

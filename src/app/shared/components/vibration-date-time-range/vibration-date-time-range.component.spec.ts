@@ -97,7 +97,7 @@ describe('Vibration calendar: disabled until the API proves a day has data', () 
     const applied = spyOn(fixture.componentInstance.applied, 'emit');
     const controls = picker().calendarContainer.querySelectorAll<HTMLInputElement>('input[id]');
     expect(controls.length).toBe(4);
-    ['0', '0', '23', '59'].forEach((value, index) => {
+    ['12', '0', '11', '59'].forEach((value, index) => {
       controls[index].value = value; controls[index].dispatchEvent(new Event('input', { bubbles: true }));
     });
     fixture.detectChanges();
@@ -156,8 +156,8 @@ describe('Vibration calendar: disabled until the API proves a day has data', () 
 
   it('loads older event metadata in bounded windows so All dates includes history beyond the initial year', async () => {
     const events = [
-      { id: 'old', label: 'Startup · 2024-10-04 08:00:00', from: '2024-10-04T08:00:00', to: '2024-10-04T08:17:00' },
-      { id: 'recent', label: 'Trip · 2026-10-18 18:00:00', from: '2026-10-18T18:00:00', to: '2026-10-18T18:10:00' },
+      { id: 'old', label: '2024-10-04 08:00:00 AM · Startup', eventTypes: ['Startup'], from: '2024-10-04T08:00:00', to: '2024-10-04T08:17:00' },
+      { id: 'recent', label: '2026-10-18 06:00:00 PM · Trip', eventTypes: ['Trip'], from: '2026-10-18T18:00:00', to: '2026-10-18T18:10:00' },
     ];
     getAvailability.and.callFake((_ids: readonly number[], window?: {from: string; to: string}) => {
       const discovered = window ?? { from: '2025-11-01', to: '2026-11-01' };
@@ -171,7 +171,7 @@ describe('Vibration calendar: disabled until the API proves a day has data', () 
     fixture.componentRef.setInput('eventSelection', true); await settle();
     expect(getAvailability).toHaveBeenCalledTimes(3);
     expect(fixture.componentInstance.availableTimes!.map(event => event.id)).toEqual(['old', 'recent']);
-    expect(fixture.nativeElement.querySelectorAll('select option').length).toBe(3);
+    expect(fixture.nativeElement.querySelectorAll('select[aria-label="Event time"] option').length).toBe(3);
     for (const call of getAvailability.calls.all().slice(1)) {
       const requested = call.args[1];
       expect((Date.parse(requested.to) - Date.parse(requested.from)) / 86400000).toBeLessThanOrEqual(366);
@@ -179,7 +179,7 @@ describe('Vibration calendar: disabled until the API proves a day has data', () 
     fixture.componentInstance.showWindow({ from: '2024-10-01', to: '2024-11-01' });
     expect(getAvailability).toHaveBeenCalledTimes(3);
     const selected = spyOn(fixture.componentInstance.applied, 'emit');
-    const select = fixture.nativeElement.querySelector('select') as HTMLSelectElement;
+    const select = fixture.nativeElement.querySelector('select[aria-label="Event time"]') as HTMLSelectElement;
     select.selectedIndex = 1; select.dispatchEvent(new Event('change', { bubbles: true })); await settle();
     expect(selected).toHaveBeenCalledOnceWith({ from: events[0].from, to: events[0].to });
   });

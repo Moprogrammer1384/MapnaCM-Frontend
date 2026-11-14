@@ -3,6 +3,7 @@ import { map, Observable } from 'rxjs';
 import { CalendarDateRange, TimeAvailability } from '../../../models/time-availability.model';
 import { VibrationTimeDomainAvailabilityApiService } from './vibration-time-domain-availability-api.service';
 import { bodeLocalTime } from './vibration-bode-analysis-api.service';
+import { analysisEventLabel } from '../../../utils/analysis-event-label';
 
 @Injectable({ providedIn: 'root' })
 export class VibrationBodeAnalysisAvailabilityApiService extends VibrationTimeDomainAvailabilityApiService {
@@ -26,7 +27,8 @@ export class VibrationBodeAnalysisAvailabilityApiService extends VibrationTimeDo
             if (event.fromUtc < range.toUtc && event.toUtc > range.fromUtc) { types.add(event.eventType); }
           }
         }
-        return { id: `${from}|${to}`, from, to, label: `${[...types].join(' / ') || 'Tracking event'} · ${from.replace('T', ' ')}` };
+        return { id: `${from}|${to}`, from, to, eventTypes: [...types],
+          label: analysisEventLabel(from, [...types].join(' / ') || 'Tracking event') };
       });
       return { ...data, availableTimes };
     }));

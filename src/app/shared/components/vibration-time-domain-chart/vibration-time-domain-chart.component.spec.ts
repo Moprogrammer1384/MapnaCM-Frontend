@@ -95,7 +95,7 @@ describe('Raw time-domain chart request lifecycle', () => {
     expect(component.analysis!.sampleCount).toBe(9000000);
     const footer = fixture.nativeElement.querySelector('footer') as HTMLElement;
     expect(footer.querySelector('[data-testid="record-sample-count"]')!.textContent).toContain('9,000,000');
-    expect(footer.querySelector('[data-testid="acquisition-start"]')!.textContent).toContain('2026-11-08 10:00:00');
+    expect(footer.querySelector('[data-testid="acquisition-start"]')!.textContent).toContain('2026-11-08 10:00:00 AM');
     const statistics = footer.querySelector<HTMLElement>('[data-testid="chart-statistics"]')!;
     const metadata = footer.querySelector<HTMLElement>('[data-testid="acquisition-metadata"]')!;
     expect(statistics.children[0].getAttribute('data-testid')).toBe('record-max');

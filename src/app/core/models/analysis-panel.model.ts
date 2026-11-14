@@ -2,6 +2,7 @@ import type { AssetTaxonomyExecution } from './asset-taxonomy-selection.model';
 import type { AnalysisChartSettings, VibrationSourceProfile } from './analysis-chart-settings.model';
 import type { DateTimeRange } from './date-time-range.model';
 import type { OrbitCaptureSelection, OrbitProbePair, OrbitSettings } from './orbit-analysis.model';
+import type { WaterfallEvent, WaterfallSettings } from './waterfall.model';
 
 /** Calendar dates in local YYYY-MM-DD form; no UTC conversion or backend contract. */
 export interface AnalysisDateRange {
@@ -26,6 +27,8 @@ export interface AnalysisTab extends AssetTaxonomyExecution {
   readonly orbitPairs?: readonly OrbitProbePair[];
   readonly orbitSettings?: OrbitSettings;
   readonly orbitCapture?: OrbitCaptureSelection;
+  readonly waterfallSettings?: WaterfallSettings;
+  readonly waterfallEvent?: WaterfallEvent;
 }
 
 export interface AnalysisDateRangeChange {

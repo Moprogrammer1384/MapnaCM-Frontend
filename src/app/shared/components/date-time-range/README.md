@@ -19,7 +19,9 @@ period: DateTimeRange = {
 ```
 
 One input opens the existing Metronic Flatpickr range calendar with independent
-24-hour hour/minute fields for both endpoints in its footer. Select two dates
+24-hour hour/minute fields by default. Set `[hour12]="true"` for 1–12 hour fields
+with independent AM/PM selectors and `YYYY-MM-DD hh:mm:ss AM/PM` display; Vibration
+consumers use this mode. Both modes emit the same local 24-hour values. Select two dates
 (click the same day twice for a same-day range), set the times, and press Apply.
 Enter in a time field also applies. Only complete, ordered ranges emit
 `valueChange`; equal endpoints and ranges spanning midnight are supported.

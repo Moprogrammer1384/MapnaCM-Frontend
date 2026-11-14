@@ -1,5 +1,16 @@
 <div class="row g-3 mx-0">
   @if (dateAdjacentContent) { <ng-container [ngTemplateOutlet]="dateAdjacentContent"></ng-container> }
+  @if (showEventTypeFilter) {
+    <div class="col-12 col-md-4">
+      <label class="form-label" [for]="inputId + '_event_type'">Event type</label>
+      <select [id]="inputId + '_event_type'" class="form-select form-select-solid" data-control="select2" data-width="100%"
+        data-hide-search="true" aria-label="Event type" [disabled]="disabled || !eventTypeOptions.length"
+        [ngModel]="selectedEventType" [ngModelOptions]="{standalone: true}" (ngModelChange)="changeEventType($event)">
+        <option [ngValue]="null">All states</option>
+        @for (option of eventTypeOptions; track option.value) { <option [ngValue]="option.value">{{ option.label }}</option> }
+      </select>
+    </div>
+  }
   <div class="col-12 col-md-4">
     <label class="form-label" [for]="inputId + '_event_date'">Date</label>
     <div class="input-group input-group-solid flex-nowrap">
@@ -15,7 +26,7 @@
       </button>
     </div>
   </div>
-  <div class="col-12" [class.col-md-8]="!dateAdjacentContent" [class.col-md-4]="!!dateAdjacentContent">
+  <div class="col-12" [class.col-md-8]="!dateAdjacentContent && !showEventTypeFilter" [class.col-md-4]="!!dateAdjacentContent || showEventTypeFilter">
     <label class="form-label" [for]="inputId + '_event_time'">Event time</label>
     <select [id]="inputId + '_event_time'" class="form-select form-select-solid" data-control="select2" data-width="100%"
       data-placeholder="Search and select an event time" aria-label="Event time" [disabled]="disabled || !visibleEvents.length"

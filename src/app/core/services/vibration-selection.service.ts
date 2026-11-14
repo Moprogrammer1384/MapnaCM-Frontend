@@ -7,6 +7,7 @@ import { DateTimeRange } from '../models/date-time-range.model';
 import { DEFAULT_ORBIT_SETTINGS, OrbitCaptureSelection, OrbitSettings } from '../models/orbit-analysis.model';
 import { validOrbitCaptureInstant, validOrbitPeriod, validOrbitPeriodDate } from './vibration/orbit-analysis/orbit-capture-selection';
 import { resolveOrbitProbePairs } from './vibration/orbit-analysis/orbit-probe-pairing';
+import { DEFAULT_WATERFALL_SETTINGS, WaterfallEvent, WaterfallSettings } from '../models/waterfall.model';
 
 interface PageTabs {
   readonly tabs: readonly AnalysisTab[];
@@ -72,7 +73,8 @@ export class VibrationSelectionService {
       ...structuredClone(execution), id: `vibration-${++this.tabSequence}`, title: `Analysis ${number}`,
       dateRange: { from: date(from), to: date(today) },
       timeRange: { from: '00:00', to: '23:59' },
-      awaitingDateRange: page === 'time-domain' || page === 'frequency-domain' || page === 'bode-analysis' || !!orbit,
+      awaitingDateRange: page === 'time-domain' || page === 'frequency-domain' || page === 'bode-analysis' || page === 'waterfall' || !!orbit,
+      ...(page === 'waterfall' ? { waterfallSettings: { ...DEFAULT_WATERFALL_SETTINGS } } : {}),
       ...(orbit ? { orbitPairs: structuredClone(orbit.pairs), orbitSettings: { ...DEFAULT_ORBIT_SETTINGS } } : {}),
       // Time Domain initializes its display from the arriving raw record's metadata.
       chartSettings: page === 'time-domain' || page === 'frequency-domain' || page === 'bode-analysis' || !!orbit ? undefined
@@ -142,7 +144,7 @@ export class VibrationSelectionService {
   }
 
   applyDateTimeRange(id: string, range: DateTimeRange): void {
-    if (this.requiresOrbitPairs()) { return; }
+    if (this.requiresOrbitPairs() || this.page() === 'waterfall') { return; }
     if (!Number.isFinite(Date.parse(range.from)) || !Number.isFinite(Date.parse(range.to)) || range.from >= range.to) { return; }
     this.updateWorkspace({
       tabs: this.tabs().map(tab => tab.id === id ? { ...tab, awaitingDateRange: false,
@@ -159,6 +161,20 @@ export class VibrationSelectionService {
   updateOrbitSettings(id: string, orbitSettings: OrbitSettings): void {
     this.updateWorkspace({ tabs: this.tabs().map(tab => tab.id === id && tab.orbitPairs ? { ...tab, orbitSettings: { ...orbitSettings } } : tab),
       activeId: this.activeTabId() });
+  }
+  updateWaterfallSettings(id: string, waterfallSettings: WaterfallSettings): void {
+    this.updateWorkspace({ tabs: this.tabs().map(tab => tab.id === id && tab.waterfallSettings
+      ? { ...tab, waterfallSettings: { ...waterfallSettings,
+        depthAxis: tab.waterfallEvent?.eventType === 'SteadyState' ? 'time' : waterfallSettings.depthAxis } } : tab), activeId: this.activeTabId() });
+  }
+  selectWaterfallEvent(id: string, event?: WaterfallEvent): void {
+    if (event && (!event.id || !['SteadyState', 'Startup', 'CoastDown', 'Trip'].includes(event.eventType)
+      || !Number.isFinite(Date.parse(event.from)) || !Number.isFinite(Date.parse(event.to)) || event.from >= event.to)) { return; }
+    this.updateWorkspace({ tabs: this.tabs().map(tab => tab.id === id && tab.waterfallSettings
+      ? { ...tab, waterfallEvent: event ? { ...event } : undefined, awaitingDateRange: !event,
+        waterfallSettings: { ...tab.waterfallSettings, depthAxis: event?.eventType === 'SteadyState' ? 'time' : tab.waterfallSettings.depthAxis },
+        ...(event ? { dateRange: { from: event.from.slice(0, 10), to: event.to.slice(0, 10) },
+          timeRange: { from: event.from.slice(11), to: event.to.slice(11) } } : {}) } : tab), activeId: this.activeTabId() });
   }
   selectOrbitCapture(id: string, selection: OrbitCaptureSelection): void {
     if (!validOrbitPeriod(selection.period) || !validOrbitPeriodDate(selection.periodStart) ||

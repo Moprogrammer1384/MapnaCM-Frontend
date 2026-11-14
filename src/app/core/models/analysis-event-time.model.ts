@@ -4,4 +4,7 @@ import { DateTimeRange } from './date-time-range.model';
 export interface AnalysisEventTime extends DateTimeRange {
   readonly id: string;
   readonly label: string;
+  /** Operating-state metadata supplied by the owning source; never inferred from label text. */
+  readonly eventType?: string;
+  readonly eventTypes?: readonly string[];
 }

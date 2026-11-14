@@ -7,6 +7,7 @@ import { RotorPositionAvailabilityDto, RotorPositionEventDto, RotorPositionRecor
 import { RotorPositionEvent, RotorPositionPair, RotorPositionRecord, RotorPositionUnit } from '../../../models/rotor-position.model';
 import { apiErrorMessage } from '../../../utils/api-error';
 import { elapsedSeconds } from '../../../utils/elapsed-seconds';
+import { analysisEventLabel } from '../../../utils/analysis-event-label';
 import type { RotorPositionDataSource } from '../rotor-position/rotor-position-data-source.service';
 import { vibrationProfile } from './vibration-time-domain-api.service';
 
@@ -33,7 +34,7 @@ function eventOf(value: RotorPositionEventDto): RotorPositionEvent {
     throw new Error('The Rotor Position API returned incompatible event metadata.');
   }
   return { id: id(value.operatingRunId), eventType: value.eventType, from, to,
-    label: `${from.replace('T', ' ')} · ${value.eventType === 'CoastDown' ? 'Coast down' : value.eventType}` };
+    label: analysisEventLabel(from, value.eventType) };
 }
 function validatePair(pair: RotorPositionPair): void {
   const x = pair.x, y = pair.y;

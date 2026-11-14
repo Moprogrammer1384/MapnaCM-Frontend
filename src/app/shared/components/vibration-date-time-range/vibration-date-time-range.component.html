@@ -1,9 +1,10 @@
 @if (eventSelection) {
   <app-vibration-event-picker [inputId]="inputId" [value]="value" [disabled]="!ready || loading || !!error"
+    [showEventTypeFilter]="true"
     [events]="availableTimes || []" [minDate]="minDate" [maxDate]="maxDate" [calendarDate]="calendarDate"
     (calendarWindowChange)="showWindow($event)" (selected)="applied.emit($event)"></app-vibration-event-picker>
 } @else {
-<app-date-time-range [inputId]="inputId" [value]="value" [disabled]="!ready"
+<app-date-time-range [inputId]="inputId" [value]="value" [disabled]="!ready" [hour12]="true"
   [selectionDisabled]="loading || !!error || !enabledDates.length" [enabledDates]="enabledDates"
   [minDate]="minDate" [maxDate]="maxDate" [calendarDate]="calendarDate"
   (calendarWindowChange)="showWindow($event)" (applied)="applied.emit($event)"></app-date-time-range>

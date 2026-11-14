@@ -7,6 +7,7 @@ import type { Options } from 'flatpickr/dist/types/options';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
 import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
 import { CalendarDateRange } from 'src/app/core/models/time-availability.model';
+import { formatVibrationDateTime } from 'src/app/core/utils/vibration-date-time';
 
 @Component({
   selector: 'app-date-time-range',
@@ -19,6 +20,7 @@ export class DateTimeRangeComponent implements AfterViewInit, OnChanges, OnDestr
   @Input({ required: true }) inputId = 'date-time';
   @Input({ required: true }) value: DateTimeRange = { from: '', to: '' };
   @Input() disabled = false;
+  @Input() hour12 = false;
   @Input() selectionDisabled = false;
   @Input() enabledDates?: readonly CalendarDateRange[];
   @Input() minDate?: string;
@@ -35,6 +37,7 @@ export class DateTimeRangeComponent implements AfterViewInit, OnChanges, OnDestr
   times: Record<keyof DateTimeRange, { hour: number | null; minute: number | null }> = {
     from: { hour: 0, minute: 0 }, to: { hour: 23, minute: 59 },
   };
+  periods: Record<keyof DateTimeRange, 'AM' | 'PM'> = { from: 'AM', to: 'PM' };
   isOpen = false;
   error = '';
   private picker?: Instance;
@@ -85,7 +88,7 @@ export class DateTimeRangeComponent implements AfterViewInit, OnChanges, OnDestr
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.disabled) { this.picker?.close(); }
-    if (changes['value'] || changes['disabled']) { this.syncPicker(); }
+    if (changes['value'] || changes['disabled'] || changes['hour12']) { this.syncPicker(); }
     if (changes['enabledDates'] || changes['minDate'] || changes['maxDate'] || changes['calendarDate']) { this.configureAvailability(!!changes['calendarDate']); }
   }
 
@@ -106,7 +109,8 @@ export class DateTimeRangeComponent implements AfterViewInit, OnChanges, OnDestr
       return;
     }
     if (this.endpoints.some(endpoint => !this.validTime(endpoint))) {
-      this.error = 'Enter hours from 00 to 23 and minutes from 00 to 59.';
+      this.error = this.hour12 ? 'Enter hours from 01 to 12, minutes from 00 to 59 and select AM or PM.'
+        : 'Enter hours from 00 to 23 and minutes from 00 to 59.';
       return;
     }
     const next: DateTimeRange = {
@@ -141,7 +145,7 @@ export class DateTimeRangeComponent implements AfterViewInit, OnChanges, OnDestr
   private validTime(endpoint: keyof DateTimeRange): boolean {
     const { hour, minute } = this.times[endpoint];
     return hour !== null && minute !== null && Number.isInteger(hour) && Number.isInteger(minute)
-      && hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59;
+      && hour >= (this.hour12 ? 1 : 0) && hour <= (this.hour12 ? 12 : 23) && minute >= 0 && minute <= 59;
   }
 
   private dayEnabled(day: string): boolean {
@@ -177,7 +181,8 @@ export class DateTimeRangeComponent implements AfterViewInit, OnChanges, OnDestr
 
   private dateTime(endpoint: keyof DateTimeRange, date: string): string {
     const { hour, minute } = this.times[endpoint];
-    return `${date}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+    const hour24 = this.hour12 ? hour! % 12 + (this.periods[endpoint] === 'PM' ? 12 : 0) : hour;
+    return `${date}T${String(hour24).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
   }
 
   private syncPicker(): void {
@@ -193,6 +198,9 @@ export class DateTimeRangeComponent implements AfterViewInit, OnChanges, OnDestr
       } else {
         this.times[endpoint] = { hour: index === 0 ? 0 : 23, minute: index === 0 ? 0 : 59 };
       }
+      const hour = this.times[endpoint].hour!;
+      this.periods[endpoint] = hour < 12 ? 'AM' : 'PM';
+      if (this.hour12) { this.times[endpoint].hour = hour % 12 || 12; }
     });
     this.draftDates = dates.length === 2 && this.value.from <= this.value.to && dates.every(day => this.dayEnabled(day)) ? dates : [];
     this.error = '';
@@ -203,7 +211,8 @@ export class DateTimeRangeComponent implements AfterViewInit, OnChanges, OnDestr
   private renderValue(): void {
     this.rangeInput.nativeElement.value = this.value.from && this.value.to
       && this.dayEnabled(this.value.from.slice(0, 10)) && this.dayEnabled(this.value.to.slice(0, 10))
-      ? `${this.value.from.replace('T', ' ')} to ${this.value.to.replace('T', ' ')}` : '';
+      ? this.hour12 ? `${formatVibrationDateTime(this.value.from)} to ${formatVibrationDateTime(this.value.to)}`
+        : `${this.value.from.replace('T', ' ')} to ${this.value.to.replace('T', ' ')}` : '';
   }
 
   ngOnDestroy(): void {

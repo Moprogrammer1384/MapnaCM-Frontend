@@ -18,7 +18,7 @@
       <div class="d-flex align-items-center gap-1">
         <div class="flex-grow-1 min-w-0">
           <label [for]="inputId + '_' + endpoint + '_hour'" class="text-gray-600 fs-8">Hour</label>
-          <input [id]="inputId + '_' + endpoint + '_hour'" type="number" min="0" max="23" step="1"
+          <input [id]="inputId + '_' + endpoint + '_hour'" type="number" [min]="hour12 ? 1 : 0" [max]="hour12 ? 12 : 23" step="1"
             class="form-control form-control-sm form-control-solid px-2" [disabled]="disabled || selectionDisabled"
             [attr.aria-label]="(endpoint === 'from' ? 'Start' : 'End') + ' hour'"
             [attr.aria-describedby]="error ? inputId + '_error' : null" [attr.aria-invalid]="!!error"
@@ -34,6 +34,16 @@
             [(ngModel)]="times[endpoint].minute" [ngModelOptions]="{ standalone: true }" (ngModelChange)="error = ''">
         </div>
       </div>
+      @if (hour12) {
+        <div class="mt-2">
+          <label [for]="inputId + '_' + endpoint + '_period'" class="text-gray-600 fs-8">AM/PM</label>
+          <select [id]="inputId + '_' + endpoint + '_period'" class="form-select form-select-sm form-select-solid"
+            [disabled]="disabled || selectionDisabled" [attr.aria-label]="(endpoint === 'from' ? 'Start' : 'End') + ' AM/PM'"
+            [(ngModel)]="periods[endpoint]" [ngModelOptions]="{ standalone: true }" (ngModelChange)="error = ''">
+            <option value="AM">AM</option><option value="PM">PM</option>
+          </select>
+        </div>
+      }
     </div>
   </div>
   <div *ngIf="error" [id]="inputId + '_error'" class="text-danger fs-7 mt-3" role="alert">{{ error }}</div>

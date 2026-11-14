@@ -54,6 +54,8 @@ describe('Independent Orbit acquisition date model', () => {
     expect(picker.visibleEvents.length).toBe(4);
     expect(new Set(picker.visibleEvents.map(event => event.id)).size).toBe(4);
     expect(picker.visibleEvents.every(event => event.label.endsWith('0.20 s'))).toBeTrue();
+    expect(picker.visibleEvents[0].label).toBe('2026-11-04 10:00:00 AM · 0.20 s');
+    expect(picker.visibleEvents[2].label).toBe('2026-11-04 04:00:00 PM · 0.20 s');
     picker.chooseEvent(component.events[2].id);
     expect(emit).toHaveBeenCalledWith({ period: 'Daily', periodStart: '2026-11-04', capturedAtUtc: captures[2].capturedAtUtc });
     fixture.componentRef.setInput('value', emit.calls.mostRecent().args[0]); fixture.detectChanges();

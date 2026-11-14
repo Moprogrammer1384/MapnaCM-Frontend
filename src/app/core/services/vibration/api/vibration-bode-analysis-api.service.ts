@@ -6,6 +6,7 @@ import { BodeChartDto } from '../../../models/bode-api.model';
 import { BodeRecord } from '../../../models/bode-analysis.model';
 import { ApiEnvelope } from '../../../models/response.model';
 import { apiErrorMessage } from '../../../utils/api-error';
+import { analysisEventLabel } from '../../../utils/analysis-event-label';
 import { vibrationProfile, vibrationUtc } from './vibration-time-domain-api.service';
 import type { BodeDataRequest, BodeDataSource } from '../bode-analysis/bode-data-source.service';
 
@@ -62,10 +63,9 @@ export class VibrationBodeAnalysisApiService implements BodeDataSource {
           previous = instant;
           return Object.freeze({ ...point, timestamp });
         });
-        const start = bodeLocalTime(run.startedAtUtc).replace('T', ' ');
         return Object.freeze({ id: String(run.id), eventType: run.eventType, startedAtUtc: run.startedAtUtc,
           originalSampleCount: run.originalSampleCount, label: `Measurement ${request.measurementId}`, channel: String(request.measurementId),
-          run: `${run.eventType} · ${start}`, phaseConvention: 'as-exported' as const, order: run.order, ...profile,
+          run: analysisEventLabel(bodeLocalTime(run.startedAtUtc), run.eventType), phaseConvention: 'as-exported' as const, order: run.order, ...profile,
           observations: Object.freeze(observations) });
       });
     }));

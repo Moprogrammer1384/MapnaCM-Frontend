@@ -36,4 +36,7 @@ also block Apply. Waveform/analysis requests still start only after explicit App
 
 The API's `granularity: day` does not describe hours, minutes or FFT continuity.
 As clarified by the user on 2026-10-25, hour/minute choices keep their existing
-behavior. No `minTime`, `maxTime` or new time filtering is applied.
+unrestricted availability. Since 2026-11-14, Vibration shows 12-hour controls
+with AM/PM and a shared `YYYY-MM-DD hh:mm:ss AM/PM` timestamp format. Internal
+values and emitted API-selection bounds remain local 24-hour `YYYY-MM-DDTHH:mm`.
+No `minTime`, `maxTime` or new time filtering is applied.

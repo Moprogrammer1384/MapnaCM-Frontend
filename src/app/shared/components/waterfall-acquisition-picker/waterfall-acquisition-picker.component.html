@@ -1,0 +1,14 @@
+<app-vibration-event-picker [inputId]="inputId + '_waterfall'" [events]="events" [value]="value || emptyValue"
+  [showEventTypeFilter]="true"
+  [eventId]="value?.id" [resetDateKey]="key" [disabled]="loading || !!error || !events.length"
+  (eventSelected)="choose($event)"></app-vibration-event-picker>
+@if (loading) {
+  <p class="text-gray-600 fs-7 mt-3 mb-0" role="status"><span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Loading daily acquisitions…</p>
+}
+@if (error) {
+  <div class="alert alert-danger d-flex flex-wrap align-items-center gap-3 mt-3" role="alert">
+    <span>{{ error }}</span><button type="button" class="btn btn-sm btn-light-danger" (click)="reload()">Retry</button>
+  </div>
+} @else if (!loading && !events.length) {
+  <p class="text-gray-600 fs-7 mt-3 mb-0" role="status">No common acquisitions for the selected measurements.</p>
+}

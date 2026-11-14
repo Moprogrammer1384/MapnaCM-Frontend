@@ -19,6 +19,7 @@ import { MeasurementHeadingPipe } from '../../pipes/measurement-heading.pipe';
 export class AnalysisWorkspaceComponent implements OnDestroy {
   @Input() state?: AnalysisWorkspaceState;
   @Input() showMeasurementTitle = true;
+  @Input() awaitingSelectionMessage?: string;
   @Input() domain: AnalysisDomain = 'time';
   @Input() showXAxis = true;
   @Input() useAvailableDates = false;

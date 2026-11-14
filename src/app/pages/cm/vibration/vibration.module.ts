@@ -19,6 +19,10 @@ import { RotorPositionControlsComponent } from 'src/app/shared/components/rotor-
 import { RotorPositionEventPickerComponent } from 'src/app/shared/components/rotor-position-event-picker/rotor-position-event-picker.component';
 import { VibrationRotorPositionChartComponent } from 'src/app/shared/components/vibration-rotor-position-chart/vibration-rotor-position-chart.component';
 import { MeasurementHeadingPipe } from 'src/app/shared/pipes/measurement-heading.pipe';
+import { VibrationWaterfallComponent } from './waterfall/waterfall.component';
+import { WaterfallControlsComponent } from 'src/app/shared/components/waterfall-controls/waterfall-controls.component';
+import { WaterfallAcquisitionPickerComponent } from 'src/app/shared/components/waterfall-acquisition-picker/waterfall-acquisition-picker.component';
+import { VibrationWaterfallChartComponent } from 'src/app/shared/components/vibration-waterfall-chart/vibration-waterfall-chart.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +32,7 @@ import { MeasurementHeadingPipe } from 'src/app/shared/pipes/measurement-heading
     VibrationBodeAnalysisComponent,
     VibrationOrbitAnalysisComponent,
     VibrationRotorPositionComponent,
+    VibrationWaterfallComponent,
   ],
   imports: [
     CommonModule,
@@ -43,6 +48,9 @@ import { MeasurementHeadingPipe } from 'src/app/shared/pipes/measurement-heading
     RotorPositionEventPickerComponent,
     VibrationRotorPositionChartComponent,
     MeasurementHeadingPipe,
+    WaterfallControlsComponent,
+    WaterfallAcquisitionPickerComponent,
+    VibrationWaterfallChartComponent,
     RouterModule.forChild([
       {
         path: 'overview',
@@ -66,6 +74,7 @@ import { MeasurementHeadingPipe } from 'src/app/shared/pipes/measurement-heading
         component: VibrationRotorPositionComponent,
       },
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
+      { path: 'waterfall', component: VibrationWaterfallComponent },
     ]),
   ],
 })

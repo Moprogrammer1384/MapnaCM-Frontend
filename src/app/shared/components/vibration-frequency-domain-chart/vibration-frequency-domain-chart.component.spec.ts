@@ -117,7 +117,7 @@ describe('Raw frequency-domain chart request lifecycle', () => {
     expect(peaks.length).toBe(3); expect(peaks[0].textContent).toContain('10.00 cm/s');
     expect(peaks[0].textContent).toContain('1.00 Hz'); expect(peaks[1].textContent).toContain('6.00 cm/s');
     expect(footer.querySelector('[data-testid="record-sample-count"]')!.textContent).toContain('16');
-    expect(footer.querySelector('[data-testid="acquisition-start"]')!.textContent).toContain('2026-11-08 10:00:12');
+    expect(footer.querySelector('[data-testid="acquisition-start"]')!.textContent).toContain('2026-11-08 10:00:12 AM');
     expect(fixture.componentInstance.analysis).toBe(result); expect(load).toHaveBeenCalledTimes(1);
   });
 });

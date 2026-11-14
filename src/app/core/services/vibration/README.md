@@ -1,12 +1,14 @@
 # DARP vibration data and processing
 
-Updated 2026-11-09. Time Domain and Frequency Domain use the real
+Updated 2026-11-14. Time Domain and Frequency Domain use the real
 VibrationTimeDomainApiService through VIBRATION_DATA_SOURCE in
 api/vibration-time-domain-api.service.ts. All HTTP adapters are grouped in
 [api/](api/README.md), with explicit Vibration/feature/purpose names.
 The old Time/Frequency workbook fixture and tenfold repetition were removed.
-Overview has no chart. Rotor Position now has a frontend-only, explicitly
-simulated DC Centerline implementation; see [Rotor Position](rotor-position/README.md).
+Overview has no chart. Rotor Position uses recorded DC acquisitions through its
+own API adapter; see [Rotor Position](rotor-position/README.md).
+Waterfall is frontend-only with an isolated mock source and sequential FFT
+snapshots; see [Waterfall](waterfall/README.md). It introduces no backend endpoints.
 Bode Analysis uses its
 separate BodeAnalysis API and database entities, with discrete event selection;
 see [Bode methods and source](bode-analysis/README.md).

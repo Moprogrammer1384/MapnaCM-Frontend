@@ -64,6 +64,7 @@ import { VibrationWaterfallChartComponent } from 'src/app/shared/components/vibr
         path: 'frequency-domain',
         component: VibrationFrequencyDomainComponent,
       },
+      { path: 'signal-indicators', loadComponent: () => import('./signal-indicators/signal-indicators.component').then(module => module.VibrationSignalIndicatorsComponent) },
       {
         path: 'bode-analysis',
         component: VibrationBodeAnalysisComponent,

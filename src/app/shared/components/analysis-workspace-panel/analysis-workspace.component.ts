@@ -22,10 +22,12 @@ export class AnalysisWorkspaceComponent implements OnDestroy {
   @Input() awaitingSelectionMessage?: string;
   @Input() domain: AnalysisDomain = 'time';
   @Input() showXAxis = true;
+  @Input() showAmplitude = true;
   @Input() useAvailableDates = false;
   @Input() dateSelectionContent?: TemplateRef<{ $implicit: AnalysisTab }>;
   @Input() dateSelectionTitle?: string;
   @Input() controlsContent?: TemplateRef<{ $implicit: AnalysisTab }>;
+  @Input() additionalControlsContent?: TemplateRef<{ $implicit: AnalysisTab }>;
   @Input() measurementChartContent?: TemplateRef<{ $implicit: AnalysisTab['measurements'][number]; tab: AnalysisTab }>;
   @Input() title = 'Analysis';
   @Input() tabs: readonly AnalysisTab[] = [];

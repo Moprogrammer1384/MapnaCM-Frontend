@@ -2,6 +2,7 @@ export const VIBRATION_PAGES = {
   overview: 'Overview',
   'time-domain': 'Time domain',
   'frequency-domain': 'Frequency domain',
+  'signal-indicators': 'Signal Indicators',
   'bode-analysis': 'Bode analysis',
   'orbit-analysis': 'Orbit Analysis',
   'rotor-position': 'Rotor position',

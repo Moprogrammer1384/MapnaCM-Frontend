@@ -35,6 +35,16 @@ describe('Vibration page analysis numbering', () => {
     expect(ids.size).toBe(pages.length * 2);
   });
 
+  it('gives Signal Indicators the standard measurement drawer and Execute/date/Apply gate with independent tabs', () => {
+    state.setRoute('/cm/vibration/time-domain'); state.execute(execution);
+    const tabId = state.activeTabId();
+    state.setRoute('/cm/vibration/signal-indicators?view=local');
+    expect(state.active()).toBeTrue(); state.open(); expect(state.drawerOpen()).toBeTrue();
+    state.execute(execution); expect(state.activeTab()!.awaitingDateRange).toBeTrue(); expect(state.activeTab()!.chartSettings).toBeUndefined();
+    state.applyDateTimeRange(state.activeTabId(), { from: '2026-10-23T00:00', to: '2026-10-23T01:00' });
+    expect(state.activeTab()!.awaitingDateRange).toBeFalse();
+    state.setRoute('/cm/vibration/time-domain'); expect(state.active()).toBeTrue(); expect(state.activeTabId()).toBe(tabId);
+  });
   it('continues a page counter after closing its tabs and visiting another page', () => {
     state.setRoute('/cm/vibration/time-domain');
     state.execute(execution);

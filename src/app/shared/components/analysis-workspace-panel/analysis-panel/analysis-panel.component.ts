@@ -19,12 +19,14 @@ export class AnalysisPanelComponent implements OnChanges {
   @Input({ required: true }) tab: AnalysisTab;
   @Input() domain: AnalysisDomain = 'time';
   @Input() showXAxis = true;
+  @Input() showAmplitude = true;
   @Input() chartContent?: TemplateRef<{ $implicit: AnalysisTab }>;
   @Input() useAvailableDates = false;
   @Input() dateSelectionContent?: TemplateRef<{ $implicit: AnalysisTab }>;
   @Input() dateSelectionTitle?: string;
   /** Feature controls render below dates, before charts. */
   @Input() controlsContent?: TemplateRef<{ $implicit: AnalysisTab }>;
+  @Input() additionalControlsContent?: TemplateRef<{ $implicit: AnalysisTab }>;
   @Output() readonly dateRangeChange = new EventEmitter<AnalysisDateRange>();
   @Output() readonly timeRangeChange = new EventEmitter<AnalysisTimeRange>();
   @Output() readonly chartSettingsChange = new EventEmitter<AnalysisChartSettings>();

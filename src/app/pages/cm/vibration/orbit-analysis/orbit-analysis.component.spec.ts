@@ -200,6 +200,29 @@ describe('Orbit workspace, real drawer, controls and ECharts', () => {
     expect(ranges(waveform)).toEqual([{ start: 20, end: 60 }, { start: 20, end: 60 }]);
     expect(source).toHaveBeenCalledTimes(1);
   });
+  it('keeps a full 1.2-second orbit visible immediately on native mouse tracking', async () => {
+    const time = Array.from({ length: 7680 }, (_, index) => index / 6400);
+    const record = analyticalOrbit();
+    source.and.returnValue(of({ ...record, time, sampleCount: time.length, keyphasor: undefined,
+      finishedAtUtc: '2026-11-04T00:00:01.200Z',
+      x: time.map(t => (10 + 20 * t / 1.2) * Math.cos(6 * Math.PI * t / 1.2)),
+      y: time.map(t => (10 + 20 * t / 1.2) * Math.sin(6 * Math.PI * t / 1.2)) }));
+    await createTab(); await apply();
+    const component = chartComponent(), dom = root().querySelector<HTMLElement>('[_echarts_instance_]')!;
+    const chart = echarts.getInstanceByDom(dom)!, canvas = dom.querySelector('canvas')!, bounds = canvas.getBoundingClientRect();
+    const renderedPoints = () => chart.getZr().storage.getDisplayList(true).filter(item =>
+      item.type === 'path' && (item.style as { fill?: string }).fill === '#2563EB' && !item.ignore).length;
+    expect(component.analysis!.points.length).toBe(time.length);
+    for (const index of [2300, 5000, 7000]) {
+      const point = component.analysis!.points[index], pixel = chart.convertToPixel({ seriesId: 'direct' }, [point.x, point.y]) as number[];
+      canvas.dispatchEvent(new MouseEvent('mousemove', { bubbles: true,
+        clientX: bounds.left + pixel[0], clientY: bounds.top + pixel[1] }));
+      expect(component.selectedIndex).toBeGreaterThan(0);
+      expect(renderedPoints()).withContext('complete trace before the next animation frame').toBeGreaterThanOrEqual(time.length);
+      await settle();
+    }
+    expect(source).toHaveBeenCalledTimes(1);
+  });
   it('shows an empty API result and reloads only when the applied range changes', async () => {
     await createTab(); await apply();
     const first = chartComponent().record!;

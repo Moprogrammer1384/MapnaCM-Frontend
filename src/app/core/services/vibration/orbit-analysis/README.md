@@ -61,6 +61,8 @@ With the chart focused, Right/Down advances one sample and Left/Up goes back one
 
 Tracking updates only dedicated cursor series through the public ECharts API; it does not rerun numerical analysis, refetch data, recreate charts or change the measured samples. Selected time survives compatible unit/filter changes and visited-tab switches. A new acquisition selects its first sample immediately. The visible readout uses exactly Rotor Position's definition-list structure, label/value typography, spacing and alignment below the plots and above the footer. Waveform hover selects the closest time sample too. Component-owned ZRender listeners are removed on replacement/destruction; the existing shared ECharts host continues to own chart creation/disposal. See `shared/components/vibration-orbit-chart/orbit-point-tracking.ts` for screen-space hit testing.
 
+Direct, filtered and overlay scatter series use `progressive: 0` so dense acquisitions remain fully drawn in the same frame after cursor patches, zoom, reset and resize (2026-11-15). ECharts' default progressive path restarted in 400-point chunks above 3000 observations, causing visible disappearance during interaction. All original observations are retained. Browser regressions inspect rendered symbols on a 1.2-second/7680-point capture and native mouse tracking.
+
 ## References reviewed
 
 - [ISO 20816-1:2026 official scope](https://committee.iso.org/standard/89921.html): includes radial shaft vibration and machine-dependent evaluation. The public scope was reviewed; this UI does not claim certification or apply unspecified machine limits.

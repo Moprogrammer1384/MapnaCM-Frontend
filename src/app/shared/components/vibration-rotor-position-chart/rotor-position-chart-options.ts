@@ -47,7 +47,8 @@ export function rotorPositionChartOptions(analysis: RotorPositionAnalysis, setti
       { id: 'clearance', name: 'Clearance', type: 'line', silent: true, showSymbol: false, tooltip: { show: false },
         data: clearance ? Array.from({ length: 181 }, (_, i) => [clearance.radialX * Math.cos(i * Math.PI / 90), clearance.radialY * Math.sin(i * Math.PI / 90)]) : [],
         lineStyle: { color: muted, type: 'dashed', width: 1 } },
-      { id: 'centerline', name: 'Centerline', type: 'scatter', symbol: 'circle', symbolSize: 4,
+      // Progressive scatter clears/restarts the measured trace on cursor patches and zoom.
+      { id: 'centerline', name: 'Centerline', type: 'scatter', progressive: 0, symbol: 'circle', symbolSize: 4,
         data: trace, encode: { x: 0, y: 1 }, itemStyle: { color: primary },
         markPoint: { symbol: 'circle', symbolSize: 9, tooltip: { show: false },
           data: points.length ? [marker(points[0], 'Start', success), marker(points[points.length - 1], 'End', token('danger'))] : [] } },
@@ -65,7 +66,7 @@ export function rotorPositionChartOptions(analysis: RotorPositionAnalysis, setti
       data.push([trendValue(point), point[key], index]);
     });
     const color = [primary, secondary, muted][seriesIndex];
-    return { id: `trend-${key}`, name: ['X mean', 'Y mean', 'Speed'][seriesIndex], type: 'scatter',
+    return { id: `trend-${key}`, name: ['X mean', 'Y mean', 'Speed'][seriesIndex], type: 'scatter', progressive: 0,
       xAxisIndex: seriesIndex === 2 ? 1 : 0, yAxisIndex: seriesIndex === 2 ? 1 : 0,
       symbol: 'circle', symbolSize: 4, data, encode: { x: 0, y: 1 }, itemStyle: { color },
       markLine: { silent: true, symbol: 'none', label: { show: false },

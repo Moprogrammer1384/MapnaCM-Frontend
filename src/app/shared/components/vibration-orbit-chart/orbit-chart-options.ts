@@ -23,7 +23,8 @@ export function orbitChartOptions(analysis: OrbitAnalysis, settings: OrbitSettin
     axisLine: { ...axis(name).axisLine, onZero: true }, splitLine: { show: true, lineStyle: { color: token('border-color'), width: 1 } } });
   const orbitTrace = (id: string, name: string, points: readonly OrbitPoint[], color: string): ScatterSeriesOption => ({
     id, name, type: 'scatter', data: points.map(xy), encode: { x: 0, y: 1 }, symbol: 'circle', symbolSize: name === 'Direct' ? 3 : 4,
-    animation: false, itemStyle: { color },
+    // Cursor patches and zoom must keep the full trace visible in the same frame.
+    animation: false, progressive: 0, itemStyle: { color },
     markPoint: { symbol: 'circle', symbolSize: 9, tooltip: { show: false }, data: points.length && name !== 'Direct' ? [
       { name: 'Start', coord: [points[0].x, points[0].y], itemStyle: { color: token('success') }, label: { formatter: 'Start', color: text, position: 'right' } },
       { name: 'End', coord: [points[points.length - 1].x, points[points.length - 1].y], itemStyle: { color: token('danger') }, label: { formatter: 'End', color: text, position: 'right' } },

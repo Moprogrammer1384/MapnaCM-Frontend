@@ -143,6 +143,12 @@ inside the plot or press `0` in its focus group to reset both position axes;
 the trend zoom is independent. No visible instruction row or zoom toolbar was
 added. Wheel listeners and pending animation frames are released on destruction.
 
+Position and X/Y/speed trend scatter series use `progressive: 0` (2026-11-15).
+This keeps dense observations fully rendered during cursor updates and zoom,
+instead of restarting ECharts' incremental 400-point redraw on each interaction.
+All observations are retained; browser regressions inspect the rendered symbols
+with 7680 points in the position and trend charts.
+
 ## Validation
 
 Adjacent Jasmine suites cover numeric DC/reference/geometry/unit/gap behavior,

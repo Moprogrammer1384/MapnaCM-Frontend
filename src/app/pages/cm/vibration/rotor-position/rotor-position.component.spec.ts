@@ -217,7 +217,7 @@ describe('Rotor Position frontend workspace', () => {
       else { document.documentElement.setAttribute('data-bs-theme', oldTheme); }
     }
   });
-  it('normalizes wheel zoom around the pointer, preserves it on hover and resets without changing trend zoom', async () => {
+  it('normalizes canvas wheel zoom around the pointer, preserves it on hover and resets without changing trend zoom', async () => {
     await createTab(); await choose();
     const component = chartComponent(), doms = root().querySelectorAll<HTMLElement>('[_echarts_instance_]');
     const chart = echarts.getInstanceByDom(doms[0])!, trend = echarts.getInstanceByDom(doms[1])!;
@@ -227,7 +227,8 @@ describe('Rotor Position frontend workspace', () => {
     const bounds = doms[0].getBoundingClientRect();
     const before = chart.convertFromPixel({ gridIndex: 0 }, pixel) as number[];
     const wheel = new WheelEvent('wheel', { clientX: bounds.left + pixel[0], clientY: bounds.top + pixel[1], deltaY: -10000, bubbles: true, cancelable: true });
-    doms[0].dispatchEvent(wheel);
+    const canvas = doms[0].querySelector('canvas')!;
+    canvas.dispatchEvent(wheel);
     await new Promise<void>(resolve => requestAnimationFrame(() => resolve())); await settle();
     expect(wheel.defaultPrevented).toBeTrue();
     const anchoredPixel = chart.convertToPixel({ gridIndex: 0 }, before) as number[], zoomed = ranges();
@@ -244,8 +245,8 @@ describe('Rotor Position frontend workspace', () => {
     chart.getZr().trigger('dblclick', { offsetX: pixel[0], offsetY: pixel[1] }); await settle();
     expect(ranges()).toEqual([{ start: 0, end: 100 }, { start: 0, end: 100 }]);
     expect((trend.getOption() as unknown as { dataZoom: { start: number; end: number }[] }).dataZoom[0].start).toBe(20);
-    const outside = new WheelEvent('wheel', { clientX: bounds.left + 2, clientY: bounds.top + 2, deltaY: -100, cancelable: true });
-    doms[0].dispatchEvent(outside); expect(outside.defaultPrevented).toBeFalse();
+    const outside = new WheelEvent('wheel', { clientX: bounds.left + 2, clientY: bounds.top + 2, deltaY: -100, bubbles: true, cancelable: true });
+    canvas.dispatchEvent(outside); expect(outside.defaultPrevented).toBeFalse();
     expect(load).toHaveBeenCalledTimes(1);
   });
   it('pans vertically without diagonal movement, keeps pinch scales equal and resets with the keyboard', async () => {

@@ -55,7 +55,9 @@ export class XyChartInteraction {
   };
   bind(chart: ECharts): void {
     this.destroy(); this.chart = chart; this.dom = chart.getDom();
-    this.zone.runOutsideAngular(() => this.dom!.addEventListener('wheel', this.wheel, { passive: false }));
+    // ECharts stops wheel propagation inside the canvas even with native wheel zoom disabled.
+    // Capture on the host so our bounded zoom receives the event before that happens.
+    this.zone.runOutsideAngular(() => this.dom!.addEventListener('wheel', this.wheel, { passive: false, capture: true }));
     chart.getZr().on('dblclick', this.doubleClick); chart.on('datazoom', this.viewportChanged);
   }
   cancelPending(): void {
@@ -69,7 +71,7 @@ export class XyChartInteraction {
     }
   }
   destroy(): void {
-    this.cancelPending(); this.dom?.removeEventListener('wheel', this.wheel); this.dom = undefined;
+    this.cancelPending(); this.dom?.removeEventListener('wheel', this.wheel, true); this.dom = undefined;
     if (this.chart && !this.chart.isDisposed()) {
       this.chart.getZr().off('dblclick', this.doubleClick); this.chart.off('datazoom', this.viewportChanged);
     }

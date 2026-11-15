@@ -169,12 +169,43 @@ describe('Orbit workspace, real drawer, controls and ECharts', () => {
       else { document.documentElement.setAttribute('data-bs-theme', theme); }
     }
   });
+  it('zooms both orbit axes from canvas wheel events without changing waveform zoom or reloading data', async () => {
+    await createTab(); await apply();
+    const doms = root().querySelectorAll<HTMLElement>('[_echarts_instance_]');
+    const orbit = echarts.getInstanceByDom(doms[0])!, waveform = echarts.getInstanceByDom(doms[1])!;
+    const ranges = (chart: echarts.ECharts) => (chart.getOption() as unknown as {
+      dataZoom: { start: number; end: number }[];
+    }).dataZoom.map(({ start, end }) => ({ start, end }));
+    waveform.dispatchAction({ type: 'dataZoom', dataZoomId: 'orbit-waveform-zoom-inside', start: 20, end: 60 });
+    const grid = (orbit.getOption() as unknown as { grid: { left: number; top: number; width: number; height: number }[] }).grid[0];
+    const pixel = [grid.left + grid.width * 0.3, grid.top + grid.height * 0.7];
+    const before = orbit.convertFromPixel({ gridIndex: 0 }, pixel) as number[];
+    const bounds = doms[0].getBoundingClientRect(), canvas = doms[0].querySelector('canvas')!;
+    const wheel = async (deltaY: number) => {
+      const event = new WheelEvent('wheel', { clientX: bounds.left + pixel[0], clientY: bounds.top + pixel[1],
+        deltaY, bubbles: true, cancelable: true });
+      canvas.dispatchEvent(event);
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve())); await settle();
+      expect(event.defaultPrevented).toBeTrue();
+    };
+    await wheel(-120);
+    const zoomed = ranges(orbit), span = zoomed[0].end - zoomed[0].start;
+    expect(span).toBeGreaterThan(94); expect(span).toBeLessThan(100);
+    expect(zoomed[1].end - zoomed[1].start).toBeCloseTo(span, 10);
+    const anchoredPixel = orbit.convertToPixel({ gridIndex: 0 }, before) as number[];
+    expect(Math.abs(anchoredPixel[0] - pixel[0])).toBeLessThanOrEqual(0.5);
+    expect(Math.abs(anchoredPixel[1] - pixel[1])).toBeLessThanOrEqual(0.5);
+    await wheel(120);
+    expect(ranges(orbit)).toEqual([{ start: 0, end: 100 }, { start: 0, end: 100 }]);
+    expect(ranges(waveform)).toEqual([{ start: 20, end: 60 }, { start: 20, end: 60 }]);
+    expect(source).toHaveBeenCalledTimes(1);
+  });
   it('shows an empty API result and reloads only when the applied range changes', async () => {
     await createTab(); await apply();
     const first = chartComponent().record!;
     source.and.returnValue(of(null));
     state.selectOrbitCapture(state.activeTabId(), { period: 'Daily', periodStart: '2026-12-01' }); await settle();
-    expect(root().textContent).toContain('No Orbit acquisition available for this period.');
+    expect(root().textContent).toContain('No Orbit acquisition selected. Choose a date and event time above.');
     expect(root().querySelectorAll('app-apache-echarts').length).toBe(0);
     expect(root().textContent).not.toContain('Use available acquisition');
     source.and.returnValue(of(first));

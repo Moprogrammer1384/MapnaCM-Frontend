@@ -34,6 +34,7 @@ class IndicatorsTestHostComponent { constructor(public state: VibrationSelection
 describe('Signal Indicators standard vibration workspace', () => {
   let harness: RouterTestingHarness, state: VibrationSelectionService, load: jasmine.Spy;
   let oldTheme: string | null;
+  let settingsFailure = false, missingSettings = false;
   const root = () => harness.routeNativeElement!;
   const flushAvailability = () => {
     const requests = TestBed.inject(HttpTestingController).match(request => request.url.endsWith('/TimeDomain/GetAvailability'));
@@ -49,7 +50,16 @@ describe('Signal Indicators standard vibration workspace', () => {
   const settle = async () => {
     const started = performance.now();
     do {
-      harness.fixture.detectChanges(); flushAvailability(); await harness.fixture.whenStable(); harness.fixture.detectChanges();
+      harness.fixture.detectChanges(); flushAvailability();
+      for (const request of TestBed.inject(HttpTestingController).match(r => r.url.endsWith('/SignalIndicatorSettings/Get'))) {
+        if (request.cancelled) { continue; }
+        if (settingsFailure) { request.flush({ message: 'Settings unavailable' }, { status: 503, statusText: 'Unavailable' }); continue; }
+        const data = [1, 2, 3].map(quantity => [1, 2, 3].map(metric => ({ id: quantity * 3 + metric, quantity,
+          unit: quantity === 1 ? 1 : quantity === 2 ? 5 : 9, metric,
+          upperNormal: 10, upperCaution: 12, upperDanger: 14 }))).reduce((all, rows) => all.concat(rows));
+        request.flush({ success: true, data: missingSettings ? [] : data });
+      }
+      await harness.fixture.whenStable(); harness.fixture.detectChanges();
       if (!root().querySelector('app-vibration-signal-indicators-chart[aria-busy="true"]')) { return; }
       await new Promise(resolve => setTimeout(resolve, 10));
     } while (performance.now() - started < 8000);
@@ -83,11 +93,8 @@ describe('Signal Indicators standard vibration workspace', () => {
   const change = async (label: string, value: string) => {
     window.jQuery(root().querySelector(`select[aria-label="${label}"]`)!).val(value).trigger('change'); await settle();
   };
-  const setLimit = async (label: 'Lower alarm' | 'Upper alarm', value: number | null) => {
-    const input = root().querySelector<HTMLInputElement>(`input[aria-label="${label}"]`)!;
-    input.value = value === null ? '' : String(value); input.dispatchEvent(new Event('input', { bubbles: true })); await settle();
-  };
   beforeEach(async () => {
+    settingsFailure = false; missingSettings = false;
     oldTheme = document.documentElement.getAttribute('data-bs-theme');
     const data = assetTaxonomyFixture();
     const api = jasmine.createSpyObj<AssetApiService>('AssetApiService', ['getAllPlants', 'getAllUnits', 'getAllSystems', 'getAllAssets', 'getAllComponents', 'getAllMeasurements']);
@@ -213,41 +220,57 @@ describe('Signal Indicators standard vibration workspace', () => {
     expect(root().querySelector<HTMLInputElement>('input[id$="_range"]')!.disabled).toBeFalse();
     expect(load).not.toHaveBeenCalled(); await apply(); expect(load).toHaveBeenCalledTimes(1);
   });
-  it('switches to one blue indicator with editable upper/lower limits, preserves physical limits across units and returns to All', async () => {
+  it('uses stored limits only for curve colours and preserves zoom and physical boundaries through units and modes', async () => {
     await execute(); await apply(); const instance = chart(), analysis = chartComponent().analysis!;
-    expect(root().querySelector('input[aria-label="Lower alarm"]')).toBeNull();
+    expect(root().querySelector('input[type="number"]')).toBeNull();
     expect(root().textContent).not.toContain('statistics windows. Select RMS');
     instance.dispatchAction({ type: 'dataZoom', dataZoomId: 'signal-indicators-inside', start: 20, end: 70 });
     await change('Indicator', '0p');
-    const snapshot = () => instance.getOption() as unknown as { color: string[]; series: { data: number[][]; lineStyle: { color: unknown }; markLine: { data: { yAxis: number }[] } }[]; dataZoom: { start: number }[] };
+    const snapshot = () => instance.getOption() as unknown as { color: string[]; series: { data: number[][]; markLine: { data: { yAxis: number }[] } }[]; dataZoom: { start: number }[] };
     expect(snapshot().color).toEqual(['#2563EB', '#2563EB', '#2563EB']);
     expect(snapshot().series.map(series => series.data.length > 0)).toEqual([false, true, false]);
-    expect(snapshot().series[1].markLine.data.length).toBe(2);
-    const values = analysis.points.map(point => point.statistics.peak), minimum = Math.min(...values), maximum = Math.max(...values);
-    const lower = minimum + (maximum - minimum) * 0.3, upper = minimum + (maximum - minimum) * 0.7;
-    await setLimit('Lower alarm', lower); await setLimit('Upper alarm', upper);
-    expect(typeof snapshot().series[1].lineStyle.color).toBe('object');
+    expect(snapshot().series.every(series => series.markLine.data.length === 0)).toBeTrue();
     expect(chartComponent().analysis).toBe(analysis); expect(snapshot().dataZoom[0].start).toBe(20);
+    expect(root().querySelector('[aria-label="Configured alarm limits"]')).toBeNull();
+    expect(root().textContent).not.toContain('Danger / Caution / Normal');
+    expect(root().textContent).not.toContain('Normal / Caution / Danger');
     await change('Unit', 'mm');
-    expect(chartComponent().lowerAlarm!).toBeCloseTo(lower / 1000, 12); expect(chartComponent().upperAlarm!).toBeCloseTo(upper / 1000, 12);
+    expect(chartComponent().alarmLimits!.upperNormal).toBeCloseTo(0.010, 12);
+    expect(chartComponent().alarmLimits!.upperDanger).toBeCloseTo(0.014, 12);
     await change('Indicator', 'rms'); expect(snapshot().series.map(series => series.data.length > 0)).toEqual([true, false, false]);
-    await change('Indicator', '0p'); expect(chartComponent().upperAlarm!).toBeCloseTo(upper / 1000, 12);
     await change('Indicator', 'all');
-    expect(root().querySelector('input[aria-label="Upper alarm"]')).toBeNull();
     expect(snapshot().color).toEqual(['#2563EB', '#EA580C', '#0D9488']);
     expect(snapshot().series.every(series => series.data.length > 0 && series.markLine.data.length === 0)).toBeTrue();
     expect(chart()).toBe(instance); expect(load).toHaveBeenCalledTimes(1);
   });
-  it('validates alarm inputs and keeps each tab settings independent without API requests', async () => {
-    await execute(); await apply(); const first = state.activeTabId();
-    await change('Indicator', 'pp'); await setLimit('Lower alarm', 30); await setLimit('Upper alarm', 20);
-    expect(root().querySelector('[id$="_alarm_error"]')!.textContent).toContain('greater than lower');
-    await setLimit('Lower alarm', 10); await setLimit('Upper alarm', null);
-    expect(root().querySelector('[id$="_alarm_error"]')!.textContent).toContain('both');
-    await setLimit('Upper alarm', 60); expect(root().querySelector('[id$="_alarm_error"]')).toBeNull();
+  it('shows missing/failed settings explicitly, retries only settings and keeps each tab mode independent', async () => {
+    settingsFailure = true; await execute(); await apply(); const first = state.activeTabId();
+    await change('Indicator', 'pp');
+    expect(chartComponent().alarmLimits).toBeUndefined(); expect(root().textContent).toContain('Settings unavailable');
+    settingsFailure = false; missingSettings = true;
+    root().querySelector<HTMLButtonElement>('.alert-warning button')!.click(); await settle();
+    expect(root().textContent).toContain('No alarm settings are configured');
+    missingSettings = false;
+    root().querySelector<HTMLButtonElement>('.alert-warning button')!.click(); await settle();
+    expect(chartComponent().alarmLimits!.upperDanger).toBe(14);
     await execute(); expect(state.activeTab()!.signalIndicatorSettings!.mode).toBe('all');
     state.activateTab(first); await settle(); expect(state.activeTab()!.signalIndicatorSettings!.mode).toBe('pp');
-    expect(chartComponent().lowerAlarm!).toBeCloseTo(10, 12); expect(chartComponent().upperAlarm!).toBeCloseTo(60, 12);
+    expect(load).toHaveBeenCalledTimes(1);
+  });
+  it('defaults alarm colours to on and toggles a plain curve locally without changing zoom, samples or settings', async () => {
+    await execute(); await apply(); await change('Indicator', 'rms');
+    const component = chartComponent(), instance = chart(), analysis = component.analysis;
+    const control = () => root().querySelector<HTMLInputElement>('input[aria-label="Show alarms"]')!;
+    const mapping = () => (instance.getOption() as unknown as { visualMap: { seriesIndex: number[] }[] }).visualMap[0].seriesIndex;
+    expect(control().checked).toBeTrue(); expect(state.activeTab()!.signalIndicatorSettings!.showAlarms).toBeTrue();
+    expect(mapping()).toEqual([0]);
+    instance.dispatchAction({ type: 'dataZoom', dataZoomId: 'signal-indicators-inside', start: 20, end: 70 });
+    control().click(); await settle();
+    expect(control().checked).toBeFalse(); expect(mapping()).toEqual([]); expect(component.alarmLimits).toBeUndefined();
+    expect(component.analysis).toBe(analysis); expect(chart()).toBe(instance);
+    expect((instance.getOption() as unknown as { dataZoom: { start: number }[] }).dataZoom[0].start).toBe(20);
+    await change('Indicator', 'pp'); expect(control().checked).toBeFalse(); expect(mapping()).toEqual([]);
+    control().click(); await settle(); expect(mapping()).toEqual([2]);
     expect(load).toHaveBeenCalledTimes(1);
   });
 });

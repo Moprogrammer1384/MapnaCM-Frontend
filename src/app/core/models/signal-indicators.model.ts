@@ -2,19 +2,20 @@ import { TimeDomainAnalysis, TimeDomainStatistics } from './vibration-data.model
 import { AmplitudeMode, VibrationQuantity } from './analysis-chart-settings.model';
 
 export type SignalIndicatorMode = 'all' | AmplitudeMode;
-export interface SignalIndicatorAlarmLimits { readonly lowerSi: number | null; readonly upperSi: number | null; }
-export interface SignalIndicatorAlarmRange { readonly lower: number; readonly upper: number; }
-export interface SignalIndicatorViewSettings {
-  readonly mode: SignalIndicatorMode;
-  /** Measurement/quantity/metric key; physical SI values survive compatible display-unit changes. */
-  readonly limits: Readonly<Record<string, SignalIndicatorAlarmLimits>>;
+export interface SignalIndicatorAlarmRange {
+  readonly upperNormal: number;
+  readonly upperCaution: number;
+  readonly upperDanger: number;
 }
-export interface SignalIndicatorAlarmChange extends SignalIndicatorAlarmLimits {
+export const SIGNAL_INDICATOR_BOUNDARIES = ['upperNormal', 'upperCaution', 'upperDanger'] as const;
+export interface SignalIndicatorAlarmSetting {
   readonly quantity: VibrationQuantity;
   readonly metric: AmplitudeMode;
+  readonly limitsSi: SignalIndicatorAlarmRange;
 }
-export function signalIndicatorAlarmKey(measurementId: number, quantity: VibrationQuantity, metric: AmplitudeMode): string {
-  return `${measurementId}:${quantity}:${metric}`;
+export interface SignalIndicatorViewSettings {
+  readonly mode: SignalIndicatorMode;
+  readonly showAlarms?: boolean;
 }
 
 export interface SignalIndicatorPoint {

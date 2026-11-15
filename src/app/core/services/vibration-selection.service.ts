@@ -8,7 +8,7 @@ import { DEFAULT_ORBIT_SETTINGS, OrbitCaptureSelection, OrbitSettings } from '..
 import { validOrbitCaptureInstant, validOrbitPeriod, validOrbitPeriodDate } from './vibration/orbit-analysis/orbit-capture-selection';
 import { resolveOrbitProbePairs } from './vibration/orbit-analysis/orbit-probe-pairing';
 import { DEFAULT_WATERFALL_SETTINGS, WaterfallEvent, WaterfallSettings } from '../models/waterfall.model';
-import { SignalIndicatorAlarmChange, signalIndicatorAlarmKey, SignalIndicatorMode } from '../models/signal-indicators.model';
+import { SignalIndicatorMode } from '../models/signal-indicators.model';
 
 interface PageTabs {
   readonly tabs: readonly AnalysisTab[];
@@ -76,7 +76,7 @@ export class VibrationSelectionService {
       timeRange: { from: '00:00', to: '23:59' },
       awaitingDateRange: page === 'time-domain' || page === 'frequency-domain' || page === 'signal-indicators' || page === 'bode-analysis' || page === 'waterfall' || !!orbit,
       ...(page === 'waterfall' ? { waterfallSettings: { ...DEFAULT_WATERFALL_SETTINGS } } : {}),
-      ...(page === 'signal-indicators' ? { signalIndicatorSettings: { mode: 'all' as const, limits: {} } } : {}),
+      ...(page === 'signal-indicators' ? { signalIndicatorSettings: { mode: 'all' as const, showAlarms: true } } : {}),
       ...(orbit ? { orbitPairs: structuredClone(orbit.pairs), orbitSettings: { ...DEFAULT_ORBIT_SETTINGS } } : {}),
       // Time Domain initializes its display from the arriving raw record's metadata.
       chartSettings: page === 'time-domain' || page === 'frequency-domain' || page === 'signal-indicators' || page === 'bode-analysis' || !!orbit ? undefined
@@ -132,13 +132,9 @@ export class VibrationSelectionService {
       ? { ...tab, signalIndicatorSettings: { ...tab.signalIndicatorSettings, mode } } : tab), activeId: this.activeTabId() });
   }
 
-  updateSignalIndicatorLimits(id: string, measurementId: number, change: SignalIndicatorAlarmChange): void {
-    if (!['rms', '0p', 'pp'].includes(change.metric) || !['displacement', 'velocity', 'acceleration'].includes(change.quantity)) { return; }
-    const key = signalIndicatorAlarmKey(measurementId, change.quantity, change.metric);
-    this.updateWorkspace({ tabs: this.tabs().map(tab => tab.id === id && tab.signalIndicatorSettings && tab.measurements.some(item => item.measurement.id === measurementId)
-      ? { ...tab, signalIndicatorSettings: { ...tab.signalIndicatorSettings, limits: { ...tab.signalIndicatorSettings.limits,
-        [key]: { lowerSi: Number.isFinite(change.lowerSi) ? change.lowerSi : null, upperSi: Number.isFinite(change.upperSi) ? change.upperSi : null } } } }
-      : tab), activeId: this.activeTabId() });
+  updateSignalIndicatorAlarmsVisible(id: string, showAlarms: boolean): void {
+    this.updateWorkspace({ tabs: this.tabs().map(tab => tab.id === id && tab.signalIndicatorSettings
+      ? { ...tab, signalIndicatorSettings: { ...tab.signalIndicatorSettings, showAlarms } } : tab), activeId: this.activeTabId() });
   }
 
   updateSourceProfile(id: string, measurementId: number, profile?: VibrationSourceProfile): void {

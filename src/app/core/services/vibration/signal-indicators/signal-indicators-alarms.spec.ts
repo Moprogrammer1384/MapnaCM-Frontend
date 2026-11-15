@@ -1,33 +1,22 @@
-import { analyzeSignalIndicators } from './signal-indicators-analysis';
-import { initialSignalIndicatorLimits, signalIndicatorAlarmExceedance, signalIndicatorLimitError } from './signal-indicators-alarms';
-import { signalIndicatorRecords } from 'src/testing/signal-indicators-fixture';
+import { scaleSignalIndicatorLimits, signalIndicatorAlarmLevel, validSignalIndicatorLimits } from './signal-indicators-alarms';
 
-describe('Signal indicator display alarm limits', () => {
-  it('measures both upper and lower violations relative to the same normal-band width', () => {
-    const limits = { lower: 10, upper: 20 };
-    for (const value of [10, 15, 20]) { expect(signalIndicatorAlarmExceedance(value, limits)).toBe(0); }
-    expect(signalIndicatorAlarmExceedance(21, limits)).toBeCloseTo(0.1, 12);
-    expect(signalIndicatorAlarmExceedance(9, limits)).toBeCloseTo(0.1, 12);
-    expect(signalIndicatorAlarmExceedance(22.5, limits)).toBeCloseTo(0.25, 12);
-    expect(signalIndicatorAlarmExceedance(7.5, limits)).toBeCloseTo(0.25, 12);
+describe('Upper-only stored signal indicator alarms', () => {
+  const limits = { upperNormal: 10, upperCaution: 12, upperDanger: 14 };
+  it('keeps zero and low vibration normal and applies the four upper bands', () => {
+    for (const value of [0, 1, 6, 8, 10]) { expect(signalIndicatorAlarmLevel(value, limits)).toBe('normal'); }
+    for (const value of [10.01, 11, 12]) { expect(signalIndicatorAlarmLevel(value, limits)).toBe('yellow'); }
+    for (const value of [12.01, 13, 14]) { expect(signalIndicatorAlarmLevel(value, limits)).toBe('orange'); }
+    for (const value of [14.01, 100]) { expect(signalIndicatorAlarmLevel(value, limits)).toBe('red'); }
   });
-  it('starts with editable data-derived limits that remain physically identical through display-unit changes', () => {
-    const raw = signalIndicatorRecords[0];
-    const micrometres = analyzeSignalIndicators(raw, 'displacement', 'µm', 60);
-    const millimetres = analyzeSignalIndicators(raw, 'displacement', 'mm', 60);
-    for (const metric of ['rms', '0p', 'pp'] as const) {
-      const first = initialSignalIndicatorLimits(micrometres, metric), second = initialSignalIndicatorLimits(millimetres, metric);
-      expect(first.lowerSi!).toBeGreaterThanOrEqual(0); expect(first.upperSi!).toBeGreaterThan(first.lowerSi!);
-      expect(second.lowerSi!).toBeCloseTo(first.lowerSi!, 15); expect(second.upperSi!).toBeCloseTo(first.upperSi!, 15);
+  it('validates three positive ordered limits and scales without changing severity', () => {
+    expect(validSignalIndicatorLimits(limits)).toBeTrue();
+    const scaled = scaleSignalIndicatorLimits(limits, 0.001);
+    for (const value of [0, 3, 5, 8, 11, 13, 15]) {
+      expect(signalIndicatorAlarmLevel(value * 0.001, scaled)).toBe(signalIndicatorAlarmLevel(value, limits));
     }
-  });
-  it('keeps zero-valued signals configurable and rejects blank, reversed, equal or non-finite limits', () => {
-    const raw = { ...signalIndicatorRecords[0], time: [0, 1, 2], values: [0, 0, 0] };
-    const limits = initialSignalIndicatorLimits(analyzeSignalIndicators(raw, 'displacement', 'µm', 60), 'rms');
-    expect(limits.lowerSi).toBe(0); expect(limits.upperSi).toBeGreaterThan(0);
-    expect(signalIndicatorLimitError(0, 10)).toBe('');
-    for (const [lower, upper] of [[null, 10], [0, null], [10, 10], [20, 10], [-1, 10], [NaN, Infinity]]) {
-      expect(signalIndicatorLimitError(lower, upper)).not.toBe('');
+    for (const bad of [{ ...limits, upperNormal: 0 }, { ...limits, upperNormal: -1 }, { ...limits, upperNormal: 12 },
+      { ...limits, upperCaution: 14 }, { ...limits, upperDanger: NaN }, { ...limits, upperCaution: Infinity }]) {
+      expect(validSignalIndicatorLimits(bad)).toBeFalse();
     }
   });
 });

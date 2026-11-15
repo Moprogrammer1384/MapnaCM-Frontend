@@ -1,25 +1,25 @@
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, inject, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import type { EChartsOption } from 'echarts';
 import { Subscription } from 'rxjs';
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
 import { AnalysisChartSettings, VibrationSourceProfile } from 'src/app/core/models/analysis-chart-settings.model';
-import { SignalIndicatorAlarmChange, signalIndicatorAlarmKey, SignalIndicatorAlarmRange, SignalIndicatorAnalysis, SignalIndicatorViewSettings } from 'src/app/core/models/signal-indicators.model';
+import { SignalIndicatorAlarmRange, SignalIndicatorAlarmSetting, SignalIndicatorAnalysis, SignalIndicatorViewSettings } from 'src/app/core/models/signal-indicators.model';
 import { RawVibrationRecord } from 'src/app/core/models/vibration-data.model';
 import { VibrationDisplayRecord } from 'src/app/core/models/vibration-api.model';
 import { VIBRATION_DATA_SOURCE, isVibrationDisplay, vibrationError } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { TimeDomainAnalysisService, TimeDomainAnalysisSession } from 'src/app/core/services/vibration/time-domain/time-domain-analysis.service';
 import { signalIndicatorsFromSummary, signalIndicatorsFromTimeDomain } from 'src/app/core/services/vibration/signal-indicators/signal-indicators-analysis';
 import { rawAcquisitionStart } from 'src/app/core/utils/vibration-acquisition-start';
-import { initialSignalIndicatorLimits, signalIndicatorLimitError } from 'src/app/core/services/vibration/signal-indicators/signal-indicators-alarms';
+import { scaleSignalIndicatorLimits } from 'src/app/core/services/vibration/signal-indicators/signal-indicators-alarms';
+import { VibrationSignalIndicatorSettingsApiService } from 'src/app/core/services/vibration/api/vibration-signal-indicator-settings-api.service';
 import { unitToSi } from 'src/app/core/services/vibration/time-domain/time-domain-unit-conversion';
 import { AcquisitionDatePipe } from '../../pipes/acquisition-date.pipe';
 import { NumberFormatPipe } from '../../pipes/number-format.pipe';
 import { signalIndicatorsChartOptions } from './signal-indicators-chart-options';
 
 @Component({ selector: 'app-vibration-signal-indicators-chart', standalone: true,
-  imports: [CommonModule, FormsModule, ApacheEchartsComponent, AcquisitionDatePipe, NumberFormatPipe],
+  imports: [CommonModule, ApacheEchartsComponent, AcquisitionDatePipe, NumberFormatPipe],
   templateUrl: './vibration-signal-indicators-chart.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush, host: { class: 'd-block mw-100', '[attr.aria-busy]': 'loading' } })
 export class VibrationSignalIndicatorsChartComponent implements OnChanges, OnDestroy {
@@ -29,7 +29,6 @@ export class VibrationSignalIndicatorsChartComponent implements OnChanges, OnDes
   @Input() settings?: AnalysisChartSettings;
   @Input() inputId = 'signal-indicator';
   @Input() viewSettings?: SignalIndicatorViewSettings;
-  @Output() readonly alarmLimitsChange = new EventEmitter<SignalIndicatorAlarmChange>();
   @Output() readonly sourceProfile = new EventEmitter<VibrationSourceProfile | undefined>(true);
   @Output() readonly sourceSettings = new EventEmitter<AnalysisChartSettings>(true);
   analysis?: SignalIndicatorAnalysis;
@@ -37,19 +36,25 @@ export class VibrationSignalIndicatorsChartComponent implements OnChanges, OnDes
   acquisitionStartedAt?: string;
   loading = true;
   error = '';
-  lowerAlarm: number | null = null;
-  upperAlarm: number | null = null;
+  alarmLimits?: SignalIndicatorAlarmRange;
+  alarmLoading = false;
   alarmError = '';
   get mode() { return this.viewSettings?.mode ?? 'all'; }
+  get showAlarms() { return this.viewSettings?.showAlarms !== false; }
   private raw?: RawVibrationRecord;
   private display?: VibrationDisplayRecord;
   private subscription?: Subscription;
+  private alarmSubscription?: Subscription;
+  private alarmSettings: readonly SignalIndicatorAlarmSetting[] = [];
+  private alarmFailure = '';
+  private alarmVersion = 0;
   private session?: TimeDomainAnalysisSession;
   private analysisTimer?: ReturnType<typeof setTimeout>;
   private version = 0;
   private requestVersion = 0;
   private destroyed = false;
   private readonly data = inject(VIBRATION_DATA_SOURCE);
+  private readonly alarms = inject(VibrationSignalIndicatorSettingsApiService);
   private readonly processor = inject(TimeDomainAnalysisService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly zone = inject(NgZone);
@@ -67,6 +72,7 @@ export class VibrationSignalIndicatorsChartComponent implements OnChanges, OnDes
     this.sourceProfile.emit(undefined);
     this.raw = undefined; this.display = undefined; this.analysis = undefined; this.options = undefined;
     this.acquisitionStartedAt = undefined; this.error = ''; this.loading = true;
+    this.reloadAlarms();
     this.subscription = this.data.load({ measurementId: this.measurementId, from: this.from, to: this.to }).subscribe({
       next: record => {
         if (this.destroyed || requestVersion !== this.requestVersion) { return; }
@@ -79,6 +85,22 @@ export class VibrationSignalIndicatorsChartComponent implements OnChanges, OnDes
       error: error => {
         if (this.destroyed || requestVersion !== this.requestVersion) { return; }
         this.loading = false; this.error = vibrationError(error); this.sourceProfile.emit(undefined); this.cdr.markForCheck();
+      },
+    });
+  }
+  reloadAlarms(): void {
+    const version = ++this.alarmVersion;
+    this.alarmSubscription?.unsubscribe(); this.alarmSettings = []; this.alarmFailure = ''; this.alarmLoading = true;
+    this.draw(); this.cdr.markForCheck();
+    this.alarmSubscription = this.alarms.load().subscribe({
+      next: settings => {
+        if (this.destroyed || version !== this.alarmVersion) { return; }
+        this.alarmSettings = settings; this.alarmLoading = false; this.draw(); this.cdr.markForCheck();
+      },
+      error: error => {
+        if (this.destroyed || version !== this.alarmVersion) { return; }
+        this.alarmFailure = error instanceof Error ? error.message : 'Unable to load alarm settings.';
+        this.alarmLoading = false; this.draw(); this.cdr.markForCheck();
       },
     });
   }
@@ -116,31 +138,20 @@ export class VibrationSignalIndicatorsChartComponent implements OnChanges, OnDes
   }
   private draw(): void {
     if (!this.analysis) { return; }
-    let range: SignalIndicatorAlarmRange | undefined;
-    this.alarmError = '';
-    if (this.mode !== 'all') {
+    this.alarmLimits = undefined; this.alarmError = '';
+    if (this.showAlarms && this.mode !== 'all') {
       const signal = this.analysis.signal, scale = unitToSi(signal.quantity, signal.unit);
-      const key = signalIndicatorAlarmKey(this.measurementId, signal.quantity, this.mode);
-      const limits = this.viewSettings?.limits[key] ?? initialSignalIndicatorLimits(this.analysis, this.mode);
-      this.lowerAlarm = limits.lowerSi === null ? null : limits.lowerSi / scale;
-      this.upperAlarm = limits.upperSi === null ? null : limits.upperSi / scale;
-      this.alarmError = signalIndicatorLimitError(this.lowerAlarm, this.upperAlarm);
-      if (!this.alarmError) { range = { lower: this.lowerAlarm!, upper: this.upperAlarm! }; }
+      const setting = this.alarmSettings.find(item => item.quantity === signal.quantity && item.metric === this.mode);
+      if (setting) { this.alarmLimits = scaleSignalIndicatorLimits(setting.limitsSi, 1 / scale); }
+      else if (!this.alarmLoading) {
+        this.alarmError = this.alarmFailure || 'No alarm settings are configured for this quantity and indicator.';
+      }
     }
-    this.options = signalIndicatorsChartOptions(this.analysis, this.mode, range);
-  }
-  updateAlarm(boundary: 'lower' | 'upper', value: number | null): void {
-    if (!this.analysis || this.mode === 'all') { return; }
-    if (boundary === 'lower') { this.lowerAlarm = value; } else { this.upperAlarm = value; }
-    const signal = this.analysis.signal, scale = unitToSi(signal.quantity, signal.unit), metric = this.mode;
-    const limits = { lowerSi: this.lowerAlarm === null ? null : this.lowerAlarm * scale,
-      upperSi: this.upperAlarm === null ? null : this.upperAlarm * scale };
-    const key = signalIndicatorAlarmKey(this.measurementId, signal.quantity, metric);
-    this.viewSettings = { mode: metric, limits: { ...this.viewSettings?.limits, [key]: limits } };
-    this.draw(); this.alarmLimitsChange.emit({ ...limits, quantity: signal.quantity, metric });
+    this.options = signalIndicatorsChartOptions(this.analysis, this.mode, this.alarmLimits);
   }
   ngOnDestroy(): void {
     this.destroyed = true; ++this.version; ++this.requestVersion; clearTimeout(this.analysisTimer);
+    ++this.alarmVersion; this.alarmSubscription?.unsubscribe();
     this.subscription?.unsubscribe(); this.session?.release(); this.observer.disconnect();
   }
 }

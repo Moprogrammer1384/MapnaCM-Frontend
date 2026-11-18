@@ -13,7 +13,7 @@ import { BODE_DATA_SOURCE } from 'src/app/core/services/vibration/bode-analysis/
 import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { formatNumber, NumberFormatPipe } from '../../pipes/number-format.pipe';
 import { AcquisitionDatePipe } from '../../pipes/acquisition-date.pipe';
-import { vibrationChartAppearance, vibrationLinearZoom } from '../vibration-chart-presentation/vibration-chart-presentation';
+import { vibrationChartAppearance, vibrationLinearZoom, vibrationStackedGrids } from '../vibration-chart-presentation/vibration-chart-presentation';
 
 /** Paired phase/amplitude plots of one tracking run, sharing speed cursor and zoom. */
 @Component({
@@ -142,10 +142,7 @@ export class VibrationBodeChartComponent implements OnChanges, OnDestroy {
       tooltip: { ...tooltip, trigger: 'axis', formatter: this.tooltipFormatter() },
       axisPointer: { link: [{ xAxisIndex: 'all' }], snap: true,
         label: { backgroundColor: token('gray-700') }, lineStyle: { color: token('gray-500') } },
-      grid: [
-        { id: 'bode-amplitude-grid', left: 64, right: 30, top: 36, height: '34%' },
-        { id: 'bode-phase-grid', left: 64, right: 30, top: '52%', height: '30%' },
-      ],
+      grid: vibrationStackedGrids(['bode-amplitude-grid', 'bode-phase-grid']),
       xAxis: [xAxis(0), xAxis(1)],
       yAxis: [
         { ...axis(amplitudeName, true), gridIndex: 0, min: 0 },

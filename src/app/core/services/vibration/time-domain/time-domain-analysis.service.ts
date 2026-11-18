@@ -5,7 +5,7 @@ import { prepareTimeDomainRecord } from './time-domain-preparation';
 import { analyzeTimeDomain } from './time-domain-analysis';
 
 export interface TimeDomainAnalysisSession {
-  analyze(settings: AnalysisChartSettings): Promise<TimeDomainAnalysis>;
+  analyze(settings: AnalysisChartSettings, includeAmplitudeTrend?: boolean): Promise<TimeDomainAnalysis>;
   release(): void;
 }
 
@@ -26,7 +26,8 @@ export class TimeDomainAnalysisService implements OnDestroy {
     let released = false;
     const current = entry;
     return {
-      analyze: settings => released ? Promise.reject(new Error('Analysis session is closed.')) : current.engine.analyze(settings),
+      analyze: (settings, includeAmplitudeTrend) => released ? Promise.reject(new Error('Analysis session is closed.'))
+        : current.engine.analyze(settings, includeAmplitudeTrend),
       release: () => {
         if (released) { return; }
         released = true;
@@ -73,15 +74,15 @@ class TimeDomainAnalysisEngine {
     void this.ready.catch(() => undefined);
   }
 
-  analyze(settings: AnalysisChartSettings): Promise<TimeDomainAnalysis> {
+  analyze(settings: AnalysisChartSettings, includeAmplitudeTrend = false): Promise<TimeDomainAnalysis> {
     if (this.closed) { return Promise.reject(new Error('Analysis engine is closed.')); }
-    const key = JSON.stringify(settings);
+    const key = JSON.stringify([settings, includeAmplitudeTrend]);
     const existing = this.cache.get(key);
     if (existing) { this.cache.delete(key); this.cache.set(key, existing); return existing; }
     const operation = this.ready.then(async () => {
       if (this.closed) { throw new Error('Analysis engine is closed.'); }
       if (this.worker) {
-        const response = await this.send({ type: 'analyze', settings });
+        const response = await this.send({ type: 'analyze', settings, includeAmplitudeTrend });
         if ('result' in response) { return response.result; }
         throw new Error('Unexpected worker response.');
       }
@@ -89,7 +90,7 @@ class TimeDomainAnalysisEngine {
       await new Promise<void>(resolve => setTimeout(resolve, 0));
       if (this.closed) { throw new Error('Analysis engine is closed.'); }
       this.fallback ??= prepareTimeDomainRecord(this.raw);
-      return analyzeTimeDomain(this.fallback, settings);
+      return analyzeTimeDomain(this.fallback, settings, includeAmplitudeTrend);
     });
     this.cache.set(key, operation);
     if (this.cache.size > 6) { this.cache.delete(this.cache.keys().next().value!); }
@@ -111,7 +112,8 @@ class TimeDomainAnalysisEngine {
     this.pending.clear();
   }
 
-  private send(message: { type: 'load'; record: RawVibrationRecord } | { type: 'analyze'; settings: AnalysisChartSettings }): Promise<TimeDomainWorkerResponse> {
+  private send(message: { type: 'load'; record: RawVibrationRecord } |
+    { type: 'analyze'; settings: AnalysisChartSettings; includeAmplitudeTrend: boolean }): Promise<TimeDomainWorkerResponse> {
     const id = ++this.sequence;
     return new Promise((resolve, reject) => {
       this.pending.set(id, { resolve, reject });

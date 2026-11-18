@@ -2,8 +2,8 @@
 
 These are ECharts option/interaction helpers, not a shared chart component.
 Orbit, Rotor Position and Bode retain their components and domain processing.
-Time Domain and Frequency Domain explicitly retain their original independent
-appearance/configuration at the user's request (2026-11-09).
+Time Domain Offline and Bode share the vertically stacked linear grid layout.
+Each pairs its plots with a linked horizontal cursor and one zoom slider.
 
 - The same Metronic tokens supply primary blue, secondary green, muted speed,
   warning selection/Keyphasor indicators, axes, legends, tooltips and zoom sliders.

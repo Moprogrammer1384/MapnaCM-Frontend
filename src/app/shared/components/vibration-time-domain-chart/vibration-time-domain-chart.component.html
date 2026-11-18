@@ -1,5 +1,9 @@
 @if (chartOptions) {
-  <app-apache-echarts [options]="chartOptions" [mergeOptions]="true" height="400px"></app-apache-echarts>
+  <div [attr.role]="analysis?.amplitudeTrend ? 'img' : null"
+    [attr.aria-label]="analysis?.amplitudeTrend ? 'Time waveform above RMS, 0p and pp trends, with linked zoom and cursor' : null">
+    <app-apache-echarts [options]="chartOptions" [mergeOptions]="true"
+      [height]="analysis?.amplitudeTrend ? '600px' : '400px'"></app-apache-echarts>
+  </div>
 }
 @if (loading) {
   <div class="d-flex align-items-center gap-3 py-3 text-gray-600" role="status">

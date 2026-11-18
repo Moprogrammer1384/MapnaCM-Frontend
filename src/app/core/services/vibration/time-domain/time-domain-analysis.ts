@@ -4,8 +4,10 @@ import { convertTimeDomainQuantity, TIME_DOMAIN_QUANTITY_ORDER } from './time-do
 import { calculateTimeDomainStatistics, selectTimeDomainAmplitude } from './time-domain-statistics';
 import { scaleSignal, unitToSi } from './time-domain-unit-conversion';
 import { timeDomainAmplitudeReference } from './time-domain-amplitude';
+import { calculateTimeDomainAmplitudeTrend } from './time-domain-amplitude-trend';
 
-export function analyzeTimeDomain(record: PreparedTimeDomainRecord, settings: AnalysisChartSettings): TimeDomainAnalysis {
+export function analyzeTimeDomain(record: PreparedTimeDomainRecord, settings: AnalysisChartSettings,
+  includeAmplitudeTrend = false): TimeDomainAnalysis {
   const siValues = convertTimeDomainQuantity(record, settings.quantity);
   const unit = vibrationUnit(settings).value;
   const values = scaleSignal(siValues, 1 / unitToSi(settings.quantity, unit));
@@ -20,5 +22,6 @@ export function analyzeTimeDomain(record: PreparedTimeDomainRecord, settings: An
   }
   return { time: record.time.slice(), values, statistics, amplitude: selectTimeDomainAmplitude(statistics, settings.amplitude),
     amplitudeMode: settings.amplitude, amplitudeReference: timeDomainAmplitudeReference(statistics, settings.amplitude),
+    ...(includeAmplitudeTrend ? { amplitudeTrend: calculateTimeDomainAmplitudeTrend(record.time, values) } : {}),
     unit, quantity: settings.quantity, sampleCount: values.length, notices };
 }

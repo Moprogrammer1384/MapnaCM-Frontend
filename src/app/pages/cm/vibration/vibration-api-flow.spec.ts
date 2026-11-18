@@ -153,7 +153,7 @@ describe('Vibration measurement/date selection → native HTTP data → existing
       expect(elements.length).toBe(2);
       const charts = elements.map(element => echarts.getInstanceByDom(element)!);
       const option = () => charts[0].getOption() as { xAxis: { name: string; max: number }[]; series: { data: [number, number][] }[] };
-      expect(option().xAxis[0].name).toBe(isTime ? 'Time (ms)' : 'Frequency (Hz)');
+      expect(option().xAxis[isTime ? 1 : 0].name).toBe(isTime ? 'Time (ms)' : 'Frequency (Hz)');
       if (isTime) { expect(option().series[0].data.length).toBe(2048); expect(option().series[0].data[2047][0]).toBe(2047 / 2560 * 1000); }
       else { expect(option().series[0].data.length).toBe(31); expect(option().xAxis[0].max).toBe(0.5); }
       // Quantity, Unit, Amplitude, Window and zoom operate on the same received record.

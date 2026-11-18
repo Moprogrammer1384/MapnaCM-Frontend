@@ -12,7 +12,7 @@ addEventListener('message', ({ data }: MessageEvent<TimeDomainWorkerRequest>) =>
       postMessage({ id: data.id, loaded: true } satisfies TimeDomainWorkerResponse);
     } else {
       if (!record) { throw new Error('Raw record has not been loaded.'); }
-      const result = analyzeTimeDomain(record, data.settings);
+      const result = analyzeTimeDomain(record, data.settings, data.includeAmplitudeTrend);
       postMessage({ id: data.id, result } satisfies TimeDomainWorkerResponse, [result.time.buffer, result.values.buffer]);
     }
   } catch (error) {

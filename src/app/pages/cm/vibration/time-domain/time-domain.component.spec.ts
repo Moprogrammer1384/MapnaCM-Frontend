@@ -44,11 +44,13 @@ interface Snapshot {
   xAxis: { min: number; max: number; name: string; axisLabel: { formatter: (value: number) => string };
     axisPointer: { label: { formatter: (params: { value: number }) => string } } }[];
   yAxis: { name: string; axisLabel: { formatter: (value: number) => string } }[];
-  series: { data: [number, number][]; markLine?: {
+  series: { id: string; name: string; xAxisIndex?: number; yAxisIndex?: number; data: number[][]; markLine?: {
     data: { yAxis: number }[]; label: { formatter: string }; lineStyle: { color: string };
   } }[];
-  dataZoom: { start: number; end: number; labelFormatter?: (value: number) => string }[];
-  tooltip: { formatter: (params: { value: [number, number] }) => string }[];
+  dataZoom: { start: number; end: number; xAxisIndex: number | number[]; labelFormatter?: (value: number) => string }[];
+  tooltip: { formatter: (params: { value: number[] } | { value: number[]; seriesId: string; seriesName: string }[]) => string }[];
+  grid: { left: number; right: number; top: number | string }[];
+  legend: { selected: Record<string, boolean> }[];
   color: string[];
 }
 
@@ -118,6 +120,9 @@ describe('Time Domain with an isolated analytical workload', () => {
     expect(root().querySelector('app-vibration-event-picker')).toBeNull();
     expect(component().analysis?.sampleCount).toBe(2560);
     expect(snapshot().xAxis[0].name).toBe('Time (ms)');
+    expect(snapshot().grid.length).toBe(1);
+    expect(snapshot().series.length).toBe(1);
+    expect(component().analysis?.amplitudeTrend).toBeUndefined();
     expect(snapshot().xAxis[0].max).toBe(vibrationTestRecord.time[2559] * 1000);
     const input = root().querySelector<HTMLInputElement>('input[id$="_recent_seconds"]')!;
     expect(input.value).toBe('1');
@@ -145,6 +150,7 @@ describe('Time Domain with an isolated analytical workload', () => {
     await settle();
     expect(root().querySelector('app-vibration-event-picker')).not.toBeNull();
     expect(component().analysis?.sampleCount).toBe(vibrationTestRecord.time.length);
+    expect(snapshot().grid.length).toBe(2);
   });
 
   it('filters recorded days and waits for Event time before drawing the waveform', async () => {
@@ -189,7 +195,7 @@ describe('Time Domain with an isolated analytical workload', () => {
     expect(chart()).toBe(originalChart);
   });
 
-  it('plots the waveform in milliseconds while preserving the analysis times and original chart layout', () => {
+  it('plots the complete waveform above aligned RMS, 0p and pp curves in milliseconds', () => {
     expect(root().querySelector('select[aria-label="X axis"]')).toBeNull();
     expect(root().querySelector('[id$="_x_axis"]')).toBeNull();
     const options = snapshot();
@@ -200,9 +206,40 @@ describe('Time Domain with an isolated analytical workload', () => {
       expect(component().analysis!.time[index]).toBe(vibrationTestRecord.time[index]);
       expect(data[index][1]).toBeCloseTo(vibrationTestRecord.values[index], 12);
     }
-    expect(options.xAxis[0].name).toBe('Time (ms)');
+    expect(options.xAxis.map(axis => axis.name)).toEqual(['', 'Time (ms)']);
+    expect(options.grid.map(grid => grid.top)).toEqual([36, '52%']);
+    expect(options.grid[0].left).toBe(options.grid[1].left);
+    expect(options.grid[0].right).toBe(options.grid[1].right);
     expect(options.xAxis[0].min).toBe(0);
     expect(options.xAxis[0].max).toBe(vibrationTestRecord.time[409599] * 1000);
+    expect(options.xAxis[1].min).toBe(options.xAxis[0].min);
+    expect(options.xAxis[1].max).toBe(options.xAxis[0].max);
+    expect(options.dataZoom.map(zoom => zoom.xAxisIndex)).toEqual([[0, 1], [0, 1]]);
+    const instance = chart();
+    const cursor = jasmine.createSpy('cursor');
+    instance.on('updateAxisPointer', cursor);
+    const [x, y] = instance.convertToPixel({ gridIndex: 0 }, [data[80000][0], 0]) as number[];
+    instance.dispatchAction({ type: 'updateAxisPointer', x, y });
+    expect(cursor).toHaveBeenCalledWith(jasmine.objectContaining({ axesInfo: jasmine.arrayContaining([
+      jasmine.objectContaining({ axisDim: 'x', axisIndex: 0 }),
+      jasmine.objectContaining({ axisDim: 'x', axisIndex: 1 }),
+    ]) }));
+    instance.off('updateAxisPointer', cursor);
+    const lowerSeries = options.series.slice(1);
+    const firstWindow = component().analysis!.amplitudeTrend![0];
+    expect(lowerSeries.map(series => series.name)).toEqual(['RMS', '0p', 'pp']);
+    expect(lowerSeries.map(series => [series.xAxisIndex, series.yAxisIndex])).toEqual([[1, 1], [1, 1], [1, 1]]);
+    expect(lowerSeries[0].data[0][0]).toBeCloseTo((firstWindow.from + firstWindow.to) * 500, 12);
+    expect(lowerSeries.map(series => series.data[0][1])).toEqual([
+      firstWindow.statistics.rms, firstWindow.statistics.peak, firstWindow.statistics.peakToPeak,
+    ]);
+    const lowerTooltip = options.tooltip[0].formatter(lowerSeries.map(series => ({
+      seriesId: series.id, seriesName: series.name, value: series.data[0],
+    })));
+    expect(lowerTooltip).toContain('0.00–99.91 ms');
+    expect(lowerTooltip).toContain('RMS:');
+    expect(lowerTooltip).toContain('0p:');
+    expect(lowerTooltip).toContain('pp:');
     expect(options.xAxis[0].axisLabel.formatter(1250.1234)).toBe('1250.12');
     expect(options.xAxis[0].axisPointer.label.formatter({ value: 1250.1234 })).toBe('1250.12');
     expect(options.dataZoom[1].labelFormatter!(1250.1234)).toBe('1250.12');
@@ -259,8 +296,13 @@ describe('Time Domain with an isolated analytical workload', () => {
   it('shows the selected amplitude as chart reference levels after one selection, including cached results', async () => {
     const instance = chart();
     instance.dispatchAction({ type: 'dataZoom', start: 30, end: 60 });
+    instance.dispatchAction({ type: 'legendUnSelect', name: 'pp' });
+    const time = 12000;
+    expect(Number(instance.convertToPixel({ xAxisIndex: 0 }, time)))
+      .toBeCloseTo(Number(instance.convertToPixel({ xAxisIndex: 1 }, time)), 8);
     const setOption = spyOn(instance, 'setOption').and.callThrough();
     const waveform = snapshot().series[0].data;
+    const windowedValues = snapshot().series.slice(1).map(series => series.data);
     for (const amplitude of ['rms', 'pp', '0p', 'rms'] as const) {
       setOption.calls.reset();
       await change('Amplitude', amplitude);
@@ -277,6 +319,8 @@ describe('Time Domain with an isolated analytical workload', () => {
         `1.23 ms<br/>Displacement: -12.35 ${result.unit}<br/>${AMPLITUDE_LABELS[amplitude]}: ${result.amplitude.toFixed(2)} ${result.unit}`);
       expect(reference.lineStyle.color).toBe(getComputedStyle(document.documentElement).getPropertyValue('--bs-warning').trim());
       expect(options.series[0].data).toEqual(waveform);
+      expect(options.series.slice(1).map(series => series.data)).toEqual(windowedValues);
+      expect(options.legend[0].selected['pp']).toBeFalse();
       expect(options.dataZoom[0].start).toBe(30);
       expect(chart()).toBe(instance);
       expect(setOption).toHaveBeenCalled();

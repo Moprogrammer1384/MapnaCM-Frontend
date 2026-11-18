@@ -1,16 +1,21 @@
-import { vibrationChartColor } from '../vibration-chart-presentation/vibration-chart-colors';
+import { VIBRATION_PEAK_TO_PEAK_COLOR, vibrationChartColor } from '../vibration-chart-presentation/vibration-chart-colors';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, inject, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import type { EChartsOption, LineSeriesOption, TooltipComponentOption } from 'echarts';
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
 import { AMPLITUDE_LABELS, AnalysisChartSettings, VibrationSourceProfile, VIBRATION_QUANTITIES } from 'src/app/core/models/analysis-chart-settings.model';
-import { RawVibrationRecord, TimeDomainAnalysis } from 'src/app/core/models/vibration-data.model';
+import { RawVibrationRecord, TimeDomainAmplitudeWindow, TimeDomainAnalysis } from 'src/app/core/models/vibration-data.model';
 import { TimeDomainAnalysisService, TimeDomainAnalysisSession } from 'src/app/core/services/vibration/time-domain/time-domain-analysis.service';
 import { VIBRATION_DATA_SOURCE, isVibrationDisplay, vibrationError } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { formatNumber, NumberFormatPipe } from '../../pipes/number-format.pipe';
 import { AcquisitionDatePipe } from '../../pipes/acquisition-date.pipe';
 import { rawAcquisitionStart } from 'src/app/core/utils/vibration-acquisition-start';
+import { selectTimeDomainAmplitude } from 'src/app/core/services/vibration/time-domain/time-domain-statistics';
+import { vibrationChartAppearance, vibrationLinearZoom, vibrationStackedGrids } from '../vibration-chart-presentation/vibration-chart-presentation';
+
+const amplitudeModes = ['rms', '0p', 'pp'] as const;
+const amplitudeSeriesPrefix = 'time-domain-window-';
 
 /** Raw time-record rendering. Source/API integration and all signal math remain in core/services/vibration. */
 @Component({
@@ -125,7 +130,7 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
     this.loading = true;
     this.error = '';
     try {
-      const result = await this.session!.analyze(settings);
+      const result = await this.session!.analyze(settings, this.recentSeconds === undefined);
       if (this.destroyed || version !== this.version) { return; }
       this.zone.run(() => {
         const waveformChanged = !this.analysis || this.analysis.quantity !== result.quantity || this.analysis.unit !== result.unit;
@@ -184,8 +189,20 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
 
   private tooltipFormatter(result: TimeDomainAnalysis): TooltipComponentOption['formatter'] {
     return params => {
-      const point = Array.isArray(params) ? params[0] : params;
+      const entries = Array.isArray(params) ? params : [params];
+      const point = entries[0];
+      if (!point) { return ''; }
       if (!Array.isArray(point.value)) { return ''; }
+      if (point.seriesId?.startsWith(amplitudeSeriesPrefix)) {
+        const window = result.amplitudeTrend?.[Number(point.value[2])];
+        if (!window) { return ''; }
+        const from = formatNumber(window.from * 1000);
+        const to = formatNumber(window.to * 1000);
+        return [`${from}–${to} ms`, ...entries
+          .filter(entry => entry.seriesId?.startsWith(amplitudeSeriesPrefix) && Array.isArray(entry.value))
+          .map(entry => `${entry.marker ?? ''}${entry.seriesName}: ${formatNumber(Number((entry.value as number[])[1]))} ${result.unit}`)]
+          .join('<br/>');
+      }
       const quantity = VIBRATION_QUANTITIES[result.quantity].label;
       return `${formatNumber(Number(point.value[0]))} ms<br/>${quantity}: ${formatNumber(Number(point.value[1]))} ${result.unit}`
         + `<br/>${AMPLITUDE_LABELS[result.amplitudeMode]}: ${formatNumber(result.amplitude)} ${result.unit}`;
@@ -195,6 +212,10 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
   private updateChartTheme(): void {
     const result = this.analysis;
     if (!result) { return; }
+    if (result.amplitudeTrend) {
+      this.chartOptions = this.offlineChartOptions(result, result.amplitudeTrend);
+      return;
+    }
     const styles = getComputedStyle(document.documentElement);
     const token = (name: string) => styles.getPropertyValue(`--bs-${name}`).trim();
     const quantity = VIBRATION_QUANTITIES[result.quantity].label;
@@ -228,9 +249,45 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
           dataBackground: { lineStyle: { color: token('gray-500') }, areaStyle: { color: token('gray-200') } },
           selectedDataBackground: { lineStyle: { color: token('primary') }, areaStyle: { color: token('primary-light') } } },
       ],
-      series: [{ id: 'raw-time', name: quantity, type: 'line', showSymbol: false, lineStyle: { width: 1 },
-        connectNulls: false, sampling: 'minmax', progressive: 5000,
-        data: this.points, markLine: this.amplitudeMarkLine(result) }],
+      series: [this.waveformSeries(result, 1)],
+    };
+  }
+
+  private waveformSeries(result: TimeDomainAnalysis, width: number): LineSeriesOption {
+    return { id: 'raw-time', name: VIBRATION_QUANTITIES[result.quantity].label, type: 'line',
+      showSymbol: false, lineStyle: { width, color: vibrationChartColor() },
+      connectNulls: false, sampling: 'minmax', progressive: 5000,
+      data: this.points, markLine: this.amplitudeMarkLine(result) };
+  }
+
+  private offlineChartOptions(result: TimeDomainAnalysis, windows: readonly TimeDomainAmplitudeWindow[]): EChartsOption {
+    const { base, legend, tooltip, axis, token } = vibrationChartAppearance();
+    const names = amplitudeModes.map(mode => AMPLITUDE_LABELS[mode]);
+    const colors = [vibrationChartColor(), vibrationChartColor(1), VIBRATION_PEAK_TO_PEAK_COLOR];
+    const xAxis = (gridIndex: number) => ({ ...axis(gridIndex === 1 ? 'Time (ms)' : ''), gridIndex,
+      min: this.points[0][0], max: this.points[this.points.length - 1][0] });
+    return {
+      ...base, color: colors, legend: { ...legend, data: names, selectedMode: 'multiple' },
+      tooltip: { ...tooltip, trigger: 'axis', formatter: this.tooltipFormatter(result) },
+      axisPointer: { link: [{ xAxisIndex: 'all' }], snap: true,
+        label: { backgroundColor: token('gray-700') }, lineStyle: { color: token('gray-500') } },
+      grid: vibrationStackedGrids(['time-domain-waveform-grid', 'time-domain-amplitude-grid']),
+      xAxis: [xAxis(0), xAxis(1)],
+      yAxis: [
+        { ...axis(`${VIBRATION_QUANTITIES[result.quantity].label} (${result.unit})`, true), gridIndex: 0,
+          scale: true, ...this.amplitudeAxisRange(result) },
+        { ...axis(`Amplitude (${result.unit})`, true), gridIndex: 1, min: 0 },
+      ],
+      dataZoom: vibrationLinearZoom(['time-domain-zoom-inside', 'time-domain-zoom-slider'], [0, 1]),
+      series: [this.waveformSeries(result, 2), ...amplitudeModes.map((mode, index): LineSeriesOption => ({
+        id: `${amplitudeSeriesPrefix}${mode}`, name: names[index], type: 'line', xAxisIndex: 1, yAxisIndex: 1,
+        encode: { x: 0, y: 1 }, showSymbol: windows.length <= 2, symbol: 'circle', symbolSize: 4,
+        lineStyle: { width: 2, color: colors[index] }, itemStyle: { color: colors[index] },
+        data: windows.map((window, windowIndex) => [
+          (window.from + (window.to - window.from) / 2) * 1000,
+          selectTimeDomainAmplitude(window.statistics, mode), windowIndex,
+        ]),
+      }))],
     };
   }
 

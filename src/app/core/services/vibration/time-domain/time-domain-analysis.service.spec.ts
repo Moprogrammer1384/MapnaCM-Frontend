@@ -19,6 +19,11 @@ describe('Time Domain analysis worker sessions', () => {
     const expected = analyzeTimeDomain(prepareTimeDomainRecord(raw), settings);
     expect(Array.from(actual.values)).toEqual(Array.from(expected.values));
     expect(actual.statistics).toEqual(expected.statistics);
+    expect(actual.amplitudeTrend).toBeUndefined();
+    const offline = await first.analyze(settings, true);
+    expect(offline.amplitudeTrend?.length).toBe(1);
+    expect(offline.amplitudeTrend?.[0].statistics).toEqual(actual.statistics);
+    expect(await second.analyze(settings, true)).toBe(offline);
     first.release(); first.release();
     await expectAsync(first.analyze(settings)).toBeRejectedWithError(/closed/);
     expect(await second.analyze(settings)).toBe(actual);
@@ -41,8 +46,10 @@ describe('Time Domain analysis worker sessions', () => {
   it('uses identical numerical processing when worker construction is unavailable', async () => {
     spyOn(window, 'Worker').and.throwError('Workers unavailable');
     const session = TestBed.inject(TimeDomainAnalysisService).acquire(raw);
-    const result = await session.analyze(settings);
-    expect(Array.from(result.values)).toEqual(Array.from(analyzeTimeDomain(prepareTimeDomainRecord(raw), settings).values));
+    const result = await session.analyze(settings, true);
+    const expected = analyzeTimeDomain(prepareTimeDomainRecord(raw), settings, true);
+    expect(Array.from(result.values)).toEqual(Array.from(expected.values));
+    expect(result.amplitudeTrend).toEqual(expected.amplitudeTrend);
     session.release();
   });
 });

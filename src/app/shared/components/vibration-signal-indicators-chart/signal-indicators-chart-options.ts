@@ -3,14 +3,14 @@ import { SignalIndicatorAlarmRange, SignalIndicatorAnalysis, SignalIndicatorMode
 import { signalIndicatorValue } from 'src/app/core/services/vibration/signal-indicators/signal-indicators-alarms';
 import { formatNumber } from '../../pipes/number-format.pipe';
 import { vibrationChartAppearance, vibrationLinearGrid, vibrationLinearZoom } from '../vibration-chart-presentation/vibration-chart-presentation';
-import { vibrationChartColor } from '../vibration-chart-presentation/vibration-chart-colors';
+import { VIBRATION_PEAK_TO_PEAK_COLOR, vibrationChartColor } from '../vibration-chart-presentation/vibration-chart-colors';
 import { signalIndicatorAlarmColor } from './signal-indicators-alarm-colors';
 
 export function signalIndicatorsChartOptions(analysis: SignalIndicatorAnalysis, mode: SignalIndicatorMode = 'all', alarms?: SignalIndicatorAlarmRange): EChartsOption {
   const { base, tooltip, axis, legend, token } = vibrationChartAppearance();
   const { signal, points } = analysis;
   const metrics = ['rms', '0p', 'pp'] as const, names = ['RMS', '0p', 'pp'];
-  const all = mode === 'all', colors = all ? [vibrationChartColor(), vibrationChartColor(1), '#0D9488'] : metrics.map(() => vibrationChartColor());
+  const all = mode === 'all', colors = all ? [vibrationChartColor(), vibrationChartColor(1), VIBRATION_PEAK_TO_PEAK_COLOR] : metrics.map(() => vibrationChartColor());
   const palette = { normal: vibrationChartColor(), yellow: token('warning'), orange: token('orange') || vibrationChartColor(1), red: token('danger') };
   return { ...base, color: colors, grid: vibrationLinearGrid(),
     legend: { ...legend, selectedMode: all ? 'multiple' : false, data: all ? names : [names[metrics.indexOf(mode)]],

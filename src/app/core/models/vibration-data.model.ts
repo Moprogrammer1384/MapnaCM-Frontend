@@ -42,10 +42,17 @@ export interface TimeDomainAnalysis {
   readonly amplitude: number;
   readonly amplitudeMode: AmplitudeMode;
   readonly amplitudeReference: TimeDomainAmplitudeReference;
+  readonly amplitudeTrend?: readonly TimeDomainAmplitudeWindow[];
   readonly unit: VibrationUnit;
   readonly quantity: VibrationQuantity;
   readonly sampleCount: number;
   readonly notices: readonly string[];
+}
+
+export interface TimeDomainAmplitudeWindow {
+  readonly from: number;
+  readonly to: number;
+  readonly statistics: TimeDomainStatistics;
 }
 
 /** Selected amplitude's reference levels, expressed in the result's display unit. */
@@ -64,7 +71,7 @@ export interface PreparedTimeDomainRecord {
 
 export type TimeDomainWorkerRequest =
   | { readonly id: number; readonly type: 'load'; readonly record: RawVibrationRecord }
-  | { readonly id: number; readonly type: 'analyze'; readonly settings: AnalysisChartSettings };
+  | { readonly id: number; readonly type: 'analyze'; readonly settings: AnalysisChartSettings; readonly includeAmplitudeTrend: boolean };
 
 export type TimeDomainWorkerResponse =
   | { readonly id: number; readonly result: TimeDomainAnalysis }

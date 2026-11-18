@@ -26,6 +26,12 @@ export function vibrationChartAppearance() {
 export function vibrationLinearGrid(): GridComponentOption {
   return { left: 64, right: 24, top: 52, bottom: 88, containLabel: false };
 }
+export function vibrationStackedGrids(ids: readonly [string, string]): GridComponentOption[] {
+  return [
+    { id: ids[0], left: 64, right: 30, top: 36, height: '34%' },
+    { id: ids[1], left: 64, right: 30, top: '52%', height: '30%' },
+  ];
+}
 export function vibrationLinearZoom(ids: readonly [string, string], axes: number | number[]): DataZoomComponentOption[] {
   const { token, text, muted, border } = vibrationChartAppearance();
   return [

@@ -104,7 +104,8 @@ record, never from an earlier unit/quantity display or a downsampled waveform.
    with the selected unit and two-decimal display, alongside the total sample
    count. It reuses the result statistics without another pass over the data;
    zoom does not change the full-record extrema.
-8. Time Domain always uses the prepared sample times in seconds directly.
+8. Time Domain uses prepared sample times in seconds for analysis and converts
+   them to milliseconds for chart coordinates.
    The redundant `timeDomainAxis` selection/validation helper was removed on
    2026-11-09 with the Time Domain X-axis selector. CPM/Order remain Frequency
    Domain choices, using its actual reference speed.
@@ -113,6 +114,21 @@ These are documented numerical approximations, tested against analytical signals
 they do not claim ISO instrument compliance or replace acquisition calibration.
 Future parameters should add a named pure stage here and become part of the
 worker request/cache key, preserving source metadata and raw samples.
+
+### Offline amplitude trends
+
+The lower plot uses the displayed quantity and unit of the same raw waveform.
+`time-domain-amplitude-trend.ts` measures 100 ms windows with a nominal 50 ms hop.
+At 2560 Hz each window contains 256 samples and the regular hop is 128 samples.
+The last full window ends at the last observation. A capture shorter than one
+window produces a single point from all its samples. Each point is plotted at
+the window centre and its tooltip shows the first and last contributing times.
+
+RMS is `sqrt(sum(y²) / N)`, 0p is `max(abs(y))`, and pp is `max(y) − min(y)`.
+The worker measures each directly from that window and preserves any DC in the
+displayed waveform. The waveform and the three curves share the Bode-style
+zoom and cursor. The top reference lines continue to use the full-record
+Amplitude selection. [SKF vibration guide](https://www.skf.com/binaries/pub12/Images/0901d196802179ea-JM02001_Introduction_Guide_to_Vibration_Monitoring_2017_tcm_12-312756.pdf) · [MathWorks windowed RMS](https://www.mathworks.com/help/dsp/ug/energy-detection-in-time-domain.html)
 
 ## Runtime and verification
 

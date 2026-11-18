@@ -71,6 +71,27 @@ describe('Time Domain numerical analysis', () => {
     expect(() => analyzeTimeDomain(prepared, { ...settings('velocity'), amplitude: 'invalid' as 'rms' })).toThrowError(/amplitude/);
   });
 
+  it('calculates true amplitudes in overlapping offline windows and includes the last sample', () => {
+    const raw: RawVibrationRecord = { id: 'windows', label: 'Offline capture', quantity: 'displacement', unit: 'µm',
+      timeUnit: 's', time: Array.from({ length: 401 }, (_, i) => i / 2560),
+      values: Array.from({ length: 401 }, (_, i) => i === 400 ? 9 : i % 4 === 0 ? -6 : 2) };
+    const prepared = prepareTimeDomainRecord(raw);
+    const result = analyzeTimeDomain(prepared, settings('displacement'), true);
+    const windows = result.amplitudeTrend!;
+    expect(windows.map(window => window.from)).toEqual([0, 128 / 2560, 145 / 2560]);
+    expect(windows[0].to).toBe(255 / 2560);
+    expect(windows[0].statistics.rms).toBeCloseTo(Math.sqrt(12), 12);
+    expect(windows[0].statistics.peak).toBeCloseTo(6, 12);
+    expect(windows[0].statistics.peakToPeak).toBeCloseTo(8, 12);
+    expect(windows[2].to).toBe(raw.time[400]);
+    expect(windows[2].statistics.rms).toBeCloseTo(Math.sqrt(3117 / 256), 12);
+    expect(windows[2].statistics.peak).toBeCloseTo(9, 12);
+    expect(windows[2].statistics.peakToPeak).toBeCloseTo(15, 12);
+    const millimetres = analyzeTimeDomain(prepared, { ...settings('displacement'), unit: 'mm' }, true);
+    expect(millimetres.amplitudeTrend![2].statistics.peakToPeak).toBeCloseTo(0.015, 12);
+    expect(analyzeTimeDomain(prepared, settings('displacement')).amplitudeTrend).toBeUndefined();
+  });
+
   it('reuses bounded quantity arrays and benchmarks a full 40960-sample record across all display units', () => {
     const raw = harmonicRecord('displacement', 40960);
     const started = performance.now();

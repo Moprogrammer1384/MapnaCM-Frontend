@@ -72,8 +72,7 @@ export class VibrationTimeDomainApiService implements VibrationDataSource {
     if (series && series.representation !== 'raw') {
       throw new Error('The vibration API returned an incomplete raw record.');
     }
-    if (data.timeUnit !== 's' || !series?.points.length
-      || series.points.length !== series.returnedPointCount || series.conversionApplied
+    if (data.timeUnit !== 's' || !series?.points.length || series.conversionApplied
       || series.sourceQuantity !== series.quantity) {
       throw new Error('The vibration API returned no native points or an incompatible time unit.');
     }
@@ -82,7 +81,6 @@ export class VibrationTimeDomainApiService implements VibrationDataSource {
       || series.points.some((point, index) => index > 0 && point.breakBefore)) {
       return Object.freeze({ kind: 'display', ...metadata, timeOriginUtc: data.timeOriginUtc, series });
     }
-    if (series.originalSampleCount !== series.points.length) { throw new Error('The vibration API returned an incomplete raw record.'); }
     return Object.freeze({ id: `${request.measurementId}:${request.from}:${request.to}`, label: `Measurement ${request.measurementId}`,
       ...metadata, timeUnit: 's', timeOriginUtc: data.timeOriginUtc,
       time: Object.freeze(series.points.map(point => point.x)), values: Object.freeze(series.points.map(point => point.y)) });

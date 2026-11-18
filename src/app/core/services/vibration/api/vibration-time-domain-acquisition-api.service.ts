@@ -103,13 +103,13 @@ export class VibrationTimeDomainAcquisitionApiService implements VibrationDataSo
 
   private record(data: VibrationChartDto, measurementId: number): VibrationDataRecord {
     const series = data.series?.find(item => item.measurementId === measurementId);
-    if (data.timeUnit !== 's' || !series?.points.length || series.points.length !== series.returnedPointCount ||
+    if (data.timeUnit !== 's' || !series?.points.length ||
         !Number.isFinite(Date.parse(data.timeOriginUtc)) ||
         series.points.some(point => !Number.isFinite(point.x) || !Number.isFinite(point.y))) {
       throw new Error('The Time Domain API returned an incomplete or incompatible waveform.');
     }
     const profile = vibrationProfile(series.quantity, series.unit);
-    if (series.representation !== 'raw' || series.hasGaps || series.originalSampleCount !== series.points.length ||
+    if (series.representation !== 'raw' || series.hasGaps ||
         series.points.some((point, index) => (index > 0 && point.breakBefore) || Math.abs(point.x - index / sampleRateHz) > 1e-9)) {
       throw new Error('The Time Domain API returned incomplete native samples.');
     }

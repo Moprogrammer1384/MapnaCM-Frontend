@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OrbitAcquisitionPickerComponent } from 'src/app/shared/components/orbit-acquisition-picker/orbit-acquisition-picker.component';
+import { VibrationEventPickerComponent } from 'src/app/shared/components/vibration-event-picker/vibration-event-picker.component';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
 import { AnalysisWorkspaceComponent } from 'src/app/shared/components/analysis-workspace-panel/analysis-workspace.component';
@@ -39,6 +40,7 @@ import { VibrationWaterfallChartComponent } from 'src/app/shared/components/vibr
     SharedModule,
     AnalysisWorkspaceComponent,
     OrbitAcquisitionPickerComponent,
+    VibrationEventPickerComponent,
     VibrationFrequencyDomainChartComponent,
     VibrationTimeDomainChartComponent,
     VibrationBodeChartComponent,

@@ -1,4 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
+import type { AnalysisEventTime } from '../models/analysis-event-time.model';
 import type { AssetTaxonomyExecution, AssetTaxonomySelection } from '../models/asset-taxonomy-selection.model';
 import { AnalysisDateRange, AnalysisTab, AnalysisTimeRange } from '../models/analysis-panel.model';
 import { VibrationPage, VIBRATION_PAGES } from '../models/vibration-page.model';
@@ -169,6 +170,23 @@ export class VibrationSelectionService {
 
   private updateWorkspace(value: PageTabs): void {
     this.workspaces.update(workspaces => ({ ...workspaces, [this.page()]: value }));
+  }
+
+  setTimeDomainRecentSeconds(id: string, seconds?: number): void {
+    if (this.page() !== 'time-domain') { return; }
+    this.updateWorkspace({
+      tabs: this.tabs().map(tab => tab.id === id ? { ...tab, timeDomainRecentSeconds: seconds,
+        timeDomainRecentRevision: (tab.timeDomainRecentRevision ?? 0) + 1 } : tab),
+      activeId: this.activeTabId(),
+    });
+  }
+
+  selectTimeDomainEvent(id: string, event: AnalysisEventTime): void {
+    if (this.page() !== 'time-domain') { return; }
+    this.updateWorkspace({
+      tabs: this.tabs().map(tab => tab.id === id ? { ...tab, timeDomainEvent: event, awaitingDateRange: false } : tab),
+      activeId: this.activeTabId(),
+    });
   }
 
   updateOrbitSettings(id: string, orbitSettings: OrbitSettings): void {

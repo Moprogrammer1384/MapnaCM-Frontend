@@ -20,6 +20,7 @@ export class AnalysisWorkspaceComponent implements OnDestroy {
   @Input() state?: AnalysisWorkspaceState;
   @Input() showMeasurementTitle = true;
   @Input() awaitingSelectionMessage?: string;
+  @Input() isMeasurementChartReady = (tab: AnalysisTab) => !tab.awaitingDateRange;
   @Input() domain: AnalysisDomain = 'time';
   @Input() showXAxis = true;
   @Input() showAmplitude = true;

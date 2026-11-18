@@ -1,0 +1,62 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { VibrationTimeDomainAcquisitionApiService } from './vibration-time-domain-acquisition-api.service';
+
+describe('Time Domain acquisition API', () => {
+  let api: VibrationTimeDomainAcquisitionApiService;
+  let http: HttpTestingController;
+  const from = '2026-08-16T20:30:00Z';
+  const to = '2026-08-16T20:30:00.8Z';
+  const raw = (measurementId: number) => ({ measurementId, sourceQuantity: 2, quantity: 1, unit: 1,
+    originalSampleCount: 3, returnedPointCount: 3, conversionApplied: true, hasGaps: false, representation: 'raw',
+    points: [0, 1, 2].map(index => ({ x: index / 2560, y: index + measurementId, breakBefore: false })),
+  });
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting(), VibrationTimeDomainAcquisitionApiService] });
+    api = TestBed.inject(VibrationTimeDomainAcquisitionApiService);
+    http = TestBed.inject(HttpTestingController);
+  });
+  afterEach(() => http.verify());
+
+  it('maps an exact UTC event to the Tehran calendar day and uses the server recent limit', () => {
+    api.availability([1, 4]).subscribe(result => {
+      expect(result.events[0].from).toBe('2026-08-17T00:00:00');
+      expect(result.events[0].label).toBe('2026-08-17 12:00:00 AM · 0.80 s');
+      expect(result.maximumRecentSeconds).toBe(900);
+    });
+    const request = http.expectOne(req => req.url.endsWith('/GetCaptureAvailability'));
+    expect(request.request.params.getAll('MeasurementIds')).toEqual(['1', '4']);
+    request.flush({ success: true, data: { timeZone: 'Asia/Tehran', events: [{ id: 'key', from, to,
+      sampleCount: 2048, sampleRateHz: 2560 }], onlineWindow: { maximumSeconds: 900 } } });
+  });
+
+  it('shares one exact capture request for multiple channels and accepts normalized complete samples', () => {
+    const selection = { from, to, measurementIds: [1, 4], sourceKey: 'exact-key' };
+    for (const measurementId of [1, 4]) {
+      api.load({ ...selection, measurementId }).subscribe(result => {
+        expect(result.quantity).toBe('displacement');
+        expect('values' in result && result.values[0]).toBe(measurementId);
+      });
+    }
+    const request = http.expectOne(req => req.url.endsWith('/GetCaptures'));
+    expect(request.request.params.get('SourceKey')).toBe('exact-key');
+    expect(request.request.params.getAll('MeasurementIds')).toEqual(['1', '4']);
+    request.flush({ success: true, data: { timeOriginUtc: from, timeUnit: 's', series: [raw(1), raw(4)] } });
+  });
+
+  it('requests the latest seconds on every submit and uses the server envelope for large ranges', () => {
+    for (let revision = 1; revision <= 2; revision++) {
+      api.load({ measurementId: 1, from: '', to: '', recentSeconds: 1000, recentRevision: revision, quantity: 'velocity' })
+        .subscribe(result => expect('kind' in result && result.series.originalSampleCount).toBe(2560000));
+      const request = http.expectOne(req => req.url.endsWith('/GetRecent'));
+      expect(request.request.params.get('Seconds')).toBe('1000');
+      expect(request.request.params.get('Quantity')).toBe('2');
+      expect(request.request.params.has('EndedAtUtc')).toBeFalse();
+      request.flush({ success: true, data: { timeOriginUtc: from, timeUnit: 's', series: [{
+        ...raw(1), quantity: 2, unit: 5, representation: 'minmax-statistical-envelope', originalSampleCount: 2560000,
+      }] } });
+    }
+  });
+});

@@ -12,6 +12,7 @@ import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { vibrationTestRecord } from 'src/testing/vibration-test-data';
 import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
+import { VibrationDataRequest } from 'src/app/core/models/vibration-data.model';
 import { AMPLITUDE_LABELS, VIBRATION_UNITS, vibrationUnitOptions } from 'src/app/core/models/analysis-chart-settings.model';
 import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { prepareTimeDomainRecord } from 'src/app/core/services/vibration/time-domain/time-domain-preparation';
@@ -21,6 +22,8 @@ import { METRONIC_PRIMENG_CONFIG } from 'src/app/shared/components/metronic-prim
 import { VibrationTimeDomainChartComponent } from 'src/app/shared/components/vibration-time-domain-chart/vibration-time-domain-chart.component';
 import { VibrationModule } from '../vibration.module';
 import { VibrationTimeDomainComponent } from './time-domain.component';
+import { VibrationTimeDomainAcquisitionApiService } from 'src/app/core/services/vibration/api/vibration-time-domain-acquisition-api.service';
+import type { Instance } from 'flatpickr/dist/types/instance';
 
 const execution: AssetTaxonomyExecution = {
   selection: { plantId: 1, unitId: 2, measurementIds: [6] },
@@ -28,6 +31,13 @@ const execution: AssetTaxonomyExecution = {
     asset: { id: 4, name: 'Asset', tag: null }, system: { id: 3, name: 'System', tag: null },
     unit: { id: 2, name: 'Unit', tag: null }, sensitivity: null }],
 };
+
+const events = [
+  { id: 'first', from: '2026-08-17T00:00:00', to: '2026-08-17T00:00:00.800', label: '2026-08-17 12:00:00 AM · 0.80 s' },
+  { id: 'second', from: '2026-08-19T00:00:00', to: '2026-08-19T00:00:00.800', label: '2026-08-19 12:00:00 AM · 0.80 s' },
+  { id: 'third', from: '2026-08-19T01:00:00', to: '2026-08-19T01:00:00.800', label: '2026-08-19 01:00:00 AM · 0.80 s' },
+  { id: 'fourth', from: '2026-08-20T00:00:00', to: '2026-08-20T00:00:00.800', label: '2026-08-20 12:00:00 AM · 0.80 s' },
+];
 
 interface Snapshot {
   xAxis: { min: number; max: number; name: string; axisLabel: { formatter: (value: number) => string };
@@ -50,6 +60,7 @@ describe('Time Domain with an isolated analytical workload', () => {
   const snapshot = () => chart().getOption() as unknown as Snapshot;
   const component = () => harness.routeDebugElement!.query(By.directive(VibrationTimeDomainChartComponent)).componentInstance as VibrationTimeDomainChartComponent;
   const interact = (action: () => void) => harness.fixture.ngZone!.run(action);
+  const selectFirstEvent = () => state.selectTimeDomainEvent(state.activeTab()!.id, events[0]);
   const settle = async () => {
     const started = performance.now();
     do {
@@ -68,20 +79,104 @@ describe('Time Domain with an isolated analytical workload', () => {
     // a response: the chart must notify Angular without a second user interaction.
     await TestBed.configureTestingModule({ imports: [NoopAnimationsModule], providers: [provideHttpClient(),
       provideRouter([{ path: 'cm/vibration', loadChildren: () => VibrationModule }]),
-      providePrimeNG(METRONIC_PRIMENG_CONFIG), { provide: TIME_AVAILABILITY_SOURCE, useValue: availabilityFixtureSource }, VibrationSelectionService,
-      { provide: VIBRATION_DATA_SOURCE, useValue: { load: () => of(vibrationTestRecord) } }] })
-      .overrideComponent(VibrationTimeDomainComponent, { set: { changeDetection: ChangeDetectionStrategy.OnPush } })
+      providePrimeNG(METRONIC_PRIMENG_CONFIG), { provide: TIME_AVAILABILITY_SOURCE, useValue: availabilityFixtureSource },
+      VibrationSelectionService] })
+      .overrideComponent(VibrationTimeDomainComponent, { set: { changeDetection: ChangeDetectionStrategy.OnPush,
+        providers: [
+          { provide: VibrationTimeDomainAcquisitionApiService, useValue: {
+            availability: () => of({ events, maximumRecentSeconds: 1000 }),
+          } },
+          { provide: VIBRATION_DATA_SOURCE, useValue: {
+            load: ({ recentSeconds }: VibrationDataRequest) => {
+              if (recentSeconds === undefined) { return of(vibrationTestRecord); }
+              const count = recentSeconds * 2560;
+              return of({ ...vibrationTestRecord, id: `recent-${recentSeconds}`,
+                time: vibrationTestRecord.time.slice(0, count),
+                values: vibrationTestRecord.values.slice(0, count),
+              });
+            },
+          } },
+        ],
+      } })
       .compileComponents();
     state = TestBed.inject(VibrationSelectionService);
     state.setRoute('/cm/vibration/time-domain');
     harness = await RouterTestingHarness.create('/cm/vibration/time-domain');
     harness.fixture.autoDetectChanges();
-    interact(() => { state.execute(execution);
-      const tab = state.activeTab()!;
-      state.applyDateTimeRange(tab.id, { from: tab.dateRange.from + 'T' + tab.timeRange.from, to: tab.dateRange.to + 'T' + tab.timeRange.to });
-    }); await settle();
+    interact(() => { state.execute(execution); selectFirstEvent(); }); await settle();
   });
   afterEach(() => harness.fixture.destroy());
+
+  it('switches between the saved offline event and a recent online window', async () => {
+    const toggle = root().querySelector<HTMLInputElement>('input[role="switch"]')!;
+    const originalEvent = state.activeTab()!.timeDomainEvent;
+    expect(toggle.checked).toBeFalse();
+    interact(() => toggle.click());
+    await settle();
+    expect(root().querySelector('app-vibration-event-picker')).toBeNull();
+    expect(component().analysis?.sampleCount).toBe(2560);
+    const input = root().querySelector<HTMLInputElement>('input[id$="_recent_seconds"]')!;
+    expect(input.value).toBe('1');
+    interact(() => {
+      input.value = '0';
+      input.form!.requestSubmit();
+    });
+    await settle();
+    expect(component().analysis?.sampleCount).toBe(2560);
+    interact(() => {
+      input.value = '2';
+      input.form!.requestSubmit();
+    });
+    await settle();
+    expect(component().analysis?.sampleCount).toBe(5120);
+    expect(state.activeTab()!.timeDomainEvent).toBe(originalEvent);
+    interact(() => toggle.click());
+    await settle();
+    expect(root().querySelector('app-vibration-event-picker')).not.toBeNull();
+    expect(component().analysis?.sampleCount).toBe(vibrationTestRecord.time.length);
+  });
+
+  it('filters recorded days and waits for Event time before drawing the waveform', async () => {
+    interact(() => state.execute(execution));
+    await settle();
+    const input = root().querySelector<HTMLInputElement>('input[id$="_event_date"]')!;
+    const picker = (input as HTMLInputElement & { _flatpickr: Instance })._flatpickr;
+    expect(picker.config.mode).toBe('single');
+    expect(input.placeholder).toBe('All dates');
+    const clear = root().querySelector<HTMLButtonElement>('button[aria-label="All dates; clear date filter"]')!;
+    expect(clear.disabled).toBeTrue();
+    expect(control('Event time').options.length).toBe(5);
+    expect(root().querySelector('app-vibration-time-domain-chart')).toBeNull();
+    expect(picker.isEnabled('2026-08-18')).toBeFalse();
+    expect(picker.isEnabled('2026-08-19')).toBeTrue();
+    interact(() => picker.setDate('2026-08-19', true));
+    await settle();
+    expect(control('Event time').options.length).toBe(3);
+    expect(control('Event time').options[1].textContent).toContain('2026-08-19 12:00:00 AM · 0.80 s');
+    expect(state.activeTab()!.awaitingDateRange).toBeTrue();
+    expect(root().querySelector('app-vibration-time-domain-chart')).toBeNull();
+    interact(() => {
+      const events = control('Event time');
+      events.selectedIndex = 2;
+      events.dispatchEvent(new Event('change'));
+    });
+    await settle();
+    expect(state.activeTab()!.timeDomainEvent?.id).toBe('third');
+    expect(component().analysis).toBeDefined();
+    const originalChart = chart();
+    const originalAnalysis = component().analysis;
+    interact(() => picker.setDate('2026-08-20', true));
+    await settle();
+    expect(control('Event time').options.length).toBe(2);
+    expect(chart()).toBe(originalChart);
+    expect(component().analysis).toBe(originalAnalysis);
+    expect(state.activeTab()!.timeDomainEvent?.from.slice(0, 10)).toBe('2026-08-19');
+    interact(() => clear.click());
+    await settle();
+    expect(input.value).toBe('');
+    expect(control('Event time').options.length).toBe(5);
+    expect(chart()).toBe(originalChart);
+  });
 
   it('retains the Time (s) waveform, full precision and original chart layout', () => {
     expect(root().querySelector('select[aria-label="X axis"]')).toBeNull();
@@ -179,10 +274,7 @@ describe('Time Domain with an isolated analytical workload', () => {
   it('retains independent tab settings and uses Metronic colors without rerunning signal processing on theme changes', async () => {
     const first = state.activeTabId();
     await change('Quantity', 'velocity'); await change('Unit', 'mm/s'); await change('Amplitude', 'rms');
-    interact(() => { state.execute(execution);
-      const tab = state.activeTab()!;
-      state.applyDateTimeRange(tab.id, { from: tab.dateRange.from + 'T' + tab.timeRange.from, to: tab.dateRange.to + 'T' + tab.timeRange.to });
-    }); await settle();
+    interact(() => { state.execute(execution); selectFirstEvent(); }); await settle();
     expect(control('Quantity').value).toBe('displacement');
     interact(() => state.activateTab(first)); await settle();
     expect(control('Unit').value).toBe('mm/s');

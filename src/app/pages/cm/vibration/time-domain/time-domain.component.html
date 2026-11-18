@@ -1,8 +1,54 @@
-<app-analysis-workspace [state]="state" [useAvailableDates]="true" [showXAxis]="false" [measurementChartContent]="timeChart"></app-analysis-workspace>
+<app-analysis-workspace [state]="state" [showXAxis]="false" [measurementChartContent]="timeChart" [isMeasurementChartReady]="chartReady"
+  [dateSelectionContent]="timeDate" dateSelectionTitle="Acquisition date and time"
+  awaitingSelectionMessage="Select an event time above to display its waveform."></app-analysis-workspace>
+<ng-template #timeDate let-tab>
+  @if (catalogue(tab) | async; as availability) {
+  @if (availability.error) {
+    <div class="alert alert-danger d-flex align-items-center flex-wrap gap-3" role="alert">
+      <span>{{ availability.error }}</span>
+      <button type="button" class="btn btn-sm btn-light-danger" (click)="retryCatalogue(tab)">Retry</button>
+    </div>
+  }
+  <div class="row g-3 mx-0 align-items-start">
+    <div class="col-12 col-md-auto">
+      <label class="form-label" [for]="tab.id + '_online'">Online</label>
+      <div class="form-check form-switch form-check-custom form-check-solid min-h-45px">
+        <input #online type="checkbox" role="switch" class="form-check-input" [id]="tab.id + '_online'"
+          [checked]="tab.timeDomainRecentSeconds !== undefined"
+          [disabled]="tab.timeDomainRecentSeconds === undefined && !availability.data?.maximumRecentSeconds"
+          (change)="state.setTimeDomainRecentSeconds(tab.id, online.checked ? 1 : undefined)">
+      </div>
+    </div>
+    @if (tab.timeDomainRecentSeconds !== undefined) {
+      <form class="col-12 col-md" (submit)="$event.preventDefault(); showRecent(tab.id, recentSeconds.valueAsNumber, availability.data?.maximumRecentSeconds ?? 0)">
+        <label class="form-label" [for]="tab.id + '_recent_seconds'">Recent seconds</label>
+        <div class="input-group input-group-solid">
+          <input #recentSeconds type="number" class="form-control form-control-solid" required min="1" step="1"
+            [max]="availability.data?.maximumRecentSeconds ?? 0" [id]="tab.id + '_recent_seconds'" [value]="tab.timeDomainRecentSeconds">
+          <button type="submit" class="btn btn-primary" [disabled]="!availability.data?.maximumRecentSeconds">Display</button>
+        </div>
+      </form>
+    } @else {
+      <div class="col-12 col-md px-0">
+        <app-vibration-event-picker [inputId]="tab.id + '_time_domain'" [events]="availability.data?.events ?? []" [value]="range(tab)"
+          [eventId]="tab.timeDomainEvent?.id" [disabled]="!availability.data?.events?.length"
+          (eventSelected)="state.selectTimeDomainEvent(tab.id, $event)"></app-vibration-event-picker>
+      </div>
+    }
+  </div>
+  @if (availability.loading) {
+    <p class="text-gray-600 fs-7 mt-3 mb-0" role="status">Loading stored acquisitions…</p>
+  } @else if (availability.data) {
+    @if (!availability.data.events.length) { <p class="text-gray-600 fs-7 mt-3 mb-0" role="status">No common offline acquisitions.</p> }
+    @if (!availability.data.maximumRecentSeconds) { <p class="text-gray-600 fs-7 mt-3 mb-0" role="status">No common online recording.</p> }
+  }
+  }
+</ng-template>
 <ng-template #timeChart let-item let-tab="tab">
-  <app-vibration-time-domain-chart [measurementId]="item.measurement.id" [settings]="tab.chartSettings"
-    (sourceProfile)="state.updateSourceProfile(tab.id, item.measurement.id, $event)"
-    (sourceSettings)="initializeSettings(tab.id, $event)"
-    [from]="tab.dateRange.from + 'T' + tab.timeRange.from"
-    [to]="tab.dateRange.to + 'T' + tab.timeRange.to"></app-vibration-time-domain-chart>
+    <app-vibration-time-domain-chart [measurementId]="item.measurement.id" [settings]="tab.chartSettings"
+      [measurementIds]="tab.selection.measurementIds" [sourceKey]="tab.timeDomainEvent?.id"
+      [recentSeconds]="tab.timeDomainRecentSeconds" [recentRevision]="tab.timeDomainRecentRevision"
+      (sourceProfile)="state.updateSourceProfile(tab.id, item.measurement.id, $event)"
+      (sourceSettings)="initializeSettings(tab.id, $event)"
+      [from]="range(tab).from" [to]="range(tab).to"></app-vibration-time-domain-chart>
 </ng-template>

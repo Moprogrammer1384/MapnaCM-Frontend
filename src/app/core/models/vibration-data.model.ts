@@ -19,6 +19,11 @@ export interface VibrationDataRequest {
   readonly measurementId: number;
   readonly from: string;
   readonly to: string;
+  readonly measurementIds?: readonly number[];
+  readonly sourceKey?: string;
+  readonly recentSeconds?: number;
+  readonly recentRevision?: number;
+  readonly quantity?: VibrationQuantity;
 }
 
 export interface TimeDomainStatistics {

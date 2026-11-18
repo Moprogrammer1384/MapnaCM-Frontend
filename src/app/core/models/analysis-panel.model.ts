@@ -1,6 +1,7 @@
 import type { AssetTaxonomyExecution } from './asset-taxonomy-selection.model';
 import type { AnalysisChartSettings, VibrationSourceProfile } from './analysis-chart-settings.model';
 import type { DateTimeRange } from './date-time-range.model';
+import type { AnalysisEventTime } from './analysis-event-time.model';
 import type { OrbitCaptureSelection, OrbitProbePair, OrbitSettings } from './orbit-analysis.model';
 import type { WaterfallEvent, WaterfallSettings } from './waterfall.model';
 import type { SignalIndicatorViewSettings } from './signal-indicators.model';
@@ -25,6 +26,9 @@ export interface AnalysisTab extends AssetTaxonomyExecution {
   readonly chartSettings?: AnalysisChartSettings;
   readonly sourceProfiles?: Readonly<Record<number, VibrationSourceProfile>>;
   readonly awaitingDateRange?: boolean;
+  readonly timeDomainRecentSeconds?: number;
+  readonly timeDomainRecentRevision?: number;
+  readonly timeDomainEvent?: AnalysisEventTime;
   readonly orbitPairs?: readonly OrbitProbePair[];
   readonly orbitSettings?: OrbitSettings;
   readonly orbitCapture?: OrbitCaptureSelection;

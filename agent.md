@@ -1,6 +1,6 @@
 # DARP frontend: project memory
 
-Updated: **2026-11-15 (Asia/Tehran)**. Read this file before each task, then inspect the relevant live source. Repository rules are in [AGENTS.md](AGENTS.md); `CLAUDE.md` is historical.
+Updated: **2026-11-18 (Asia/Tehran)**. Read this file before each task, then inspect the relevant live source. Repository rules are in [AGENTS.md](AGENTS.md); `CLAUDE.md` is historical.
 
 ## Working rules and memory maintenance
 
@@ -23,6 +23,10 @@ Adopted 2026-10-10. This policy supersedes conflicting older styling/library res
 - Keep existing `data-kt-*` hooks and theme/plugin lifecycle behavior. Angular owns state, bindings, forms and integration; do not invent replacement theme behavior or initialize plugins twice.
 
 ## Project map
+
+Time Domain has no standalone mock-data file. Its tests use inline event responses and the existing shared vibration test fixture.
+
+**Time Domain, 2026-11-18:** the shared Orbit-style picker uses `TimeDomain/GetCaptureAvailability` for exact common offline events in the Tehran calendar and the server's maximum online window. Changing Date filters Event time and preserves the current chart. Selecting Event time reads the full original samples using `TimeDomain/GetCaptures` and the stable source key. The per-tab Online switch defaults off, preserves the selected offline event, and uses `TimeDomain/GetRecent` with recent seconds measured from the latest common stored sample window. A single in-flight request serves all selected measurements. Large online responses display server-generated extrema/statistics from original samples. Production Time Domain has no mock fallback. Frequency and Signal Indicators continue to use their existing integrations. Verified through focused Chrome Headless tests and a versioned HTTP test host with real SQL reads. The HTTP host used test authentication and measurement ownership, and no database migration or seed ran.
 
 DARP uses Angular 18, TypeScript 5.5, RxJS 7, Metronic 8 demo1, Bootstrap 5 and ng-bootstrap 17. The npm package is `darp`; Angular target/output remain `demo1` / `dist/demo1`. Most features use NgModules; several shared components are standalone.
 

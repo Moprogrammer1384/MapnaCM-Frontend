@@ -27,6 +27,10 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
   @Input({ required: true }) from: string;
   @Input({ required: true }) to: string;
   @Input() settings?: AnalysisChartSettings;
+  @Input() measurementIds?: readonly number[];
+  @Input() sourceKey?: string;
+  @Input() recentSeconds?: number;
+  @Input() recentRevision?: number;
   @Output() readonly sourceProfile = new EventEmitter<VibrationSourceProfile | undefined>(true);
   @Output() readonly sourceSettings = new EventEmitter<AnalysisChartSettings>(true);
   loading = true;
@@ -58,7 +62,10 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['measurementId'] || changes['from'] || changes['to']) { this.reload(); }
+    const quantityChanged = this.recentSeconds !== undefined && changes['settings'] &&
+      (changes['settings'].previousValue?.quantity ?? 'displacement') !== (this.settings?.quantity ?? 'displacement');
+    if (changes['measurementId'] || changes['from'] || changes['to'] || changes['measurementIds'] ||
+        changes['sourceKey'] || changes['recentSeconds'] || changes['recentRevision'] || quantityChanged) { this.reload(); }
     else if (changes['settings']) { this.scheduleAnalysis(); }
     else { this.updateChartTheme(); }
   }
@@ -77,7 +84,10 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
     this.chartOptions = undefined;
     this.loading = true;
     this.error = '';
-    this.subscription = this.source.load({ measurementId: this.measurementId, from: this.from, to: this.to }).subscribe({
+    this.subscription = this.source.load({ measurementId: this.measurementId, from: this.from, to: this.to,
+      ...(this.measurementIds ? { measurementIds: this.measurementIds, sourceKey: this.sourceKey, recentSeconds: this.recentSeconds,
+        recentRevision: this.recentRevision, quantity: this.recentSeconds === undefined ? undefined : this.settings?.quantity } : {}),
+    }).subscribe({
       next: raw => {
         this.sourceProfile.emit({ quantity: raw.quantity, unit: raw.unit });
         this.session?.release();

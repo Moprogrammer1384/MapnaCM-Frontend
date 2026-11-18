@@ -39,7 +39,7 @@ const execution: AssetTaxonomyExecution = {
 describe('Combined date/time range on Vibration pages', () => {
   let harness: RouterTestingHarness;
   let state: VibrationSelectionService;
-  const rangePages = Object.keys(VIBRATION_PAGES).filter(page => !['bode-analysis', 'orbit-analysis', 'rotor-position', 'waterfall'].includes(page));
+  const rangePages = Object.keys(VIBRATION_PAGES).filter(page => !['time-domain', 'bode-analysis', 'orbit-analysis', 'rotor-position', 'waterfall'].includes(page));
   const input = () => harness.routeNativeElement!.querySelector<HTMLInputElement>('app-date-time-range input')!;
   const picker = () => (input() as HTMLInputElement & { _flatpickr: Instance })._flatpickr;
   const detect = () => harness.fixture.detectChanges();
@@ -115,6 +115,11 @@ describe('Combined date/time range on Vibration pages', () => {
       expect(input().value).toBe(`2026-10-01 0${index + 1}:07:00 AM to 2026-10-12 06:${index + 10}:00 PM`);
       expect(document.querySelectorAll('.darp-date-time-calendar').length).toBe(1);
     }
+    const settingsRequests = TestBed.inject(HttpTestingController).match(
+      request => request.url.endsWith('/SignalIndicatorSettings/Get'));
+    for (const request of settingsRequests) {
+      if (!request.cancelled) { request.flush({ success: true, data: [] }); }
+    }
   });
 
   it('uses the Bode availability and data APIs for single-click event selection', async () => {
@@ -166,7 +171,7 @@ describe('Combined date/time range on Vibration pages', () => {
   });
 
   it('saves dates and times together through existing workspace events and restores them on tab switches', async () => {
-    await navigate('time-domain');
+    await navigate('frequency-domain');
     const firstId = await createTab(); const secondId = await createTab();
     const workspace = harness.routeDebugElement!.query(By.directive(AnalysisWorkspaceComponent)).componentInstance as AnalysisWorkspaceComponent;
     const dates = spyOn(workspace.dateRangeChange, 'emit').and.callThrough();
@@ -195,7 +200,7 @@ describe('Combined date/time range on Vibration pages', () => {
   });
 
   it('preserves unfinished edits during unrelated state updates and cancels without changing tab state', async () => {
-    await navigate('time-domain'); await createTab();
+    await navigate('frequency-domain'); await createTab();
     const originalTab = state.activeTab();
     input().click(); picker().jumpToDate('2026-10-01');
     picker().calendarContainer.querySelector<HTMLElement>('[aria-label="October 5, 2026"]')!.click();

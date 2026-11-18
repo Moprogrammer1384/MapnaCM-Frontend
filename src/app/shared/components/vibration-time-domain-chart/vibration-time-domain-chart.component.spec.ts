@@ -78,7 +78,26 @@ describe('Raw time-domain chart request lifecycle', () => {
     expect(fixture.nativeElement.querySelector('app-apache-echarts')).not.toBeNull();
   });
 
-  it('displays a large summary in milliseconds with server statistics, pen lifts and no new requests on selector changes', async () => {
+  it('keeps raw acquisition statistics and metadata in the chart footer', async () => {
+    const record = { ...raw, timeOriginUtc: '2026-11-08T06:30:00Z' };
+    load.and.returnValue(of(record));
+    const result = analyzeTimeDomain(prepareTimeDomainRecord(record), initial);
+    TestBed.overrideProvider(TimeDomainAnalysisService, { useValue: {
+      acquire: () => ({ analyze: () => Promise.resolve(result), release: () => undefined }),
+    } });
+    mount(); await settle();
+    const footer = fixture.nativeElement.querySelector('footer') as HTMLElement;
+    expect(footer.querySelector('[data-testid="record-sample-count"]')!.textContent).toContain('4 Data');
+    expect(footer.querySelector('[data-testid="acquisition-start"]')!.textContent).toContain('2026-11-08 10:00:00 AM');
+    const statistics = footer.querySelector<HTMLElement>('[data-testid="chart-statistics"]')!;
+    const metadata = footer.querySelector<HTMLElement>('[data-testid="acquisition-metadata"]')!;
+    expect(statistics.children[0].getAttribute('data-testid')).toBe('record-max');
+    expect(getComputedStyle(statistics).justifyContent).toBe('flex-start');
+    expect(metadata.children[0].getAttribute('data-testid')).toBe('acquisition-start');
+    expect(getComputedStyle(metadata).justifyContent).toBe('flex-end');
+  });
+
+  it('rejects a summary from the data source before analysis and leaves the chart empty', async () => {
     const summary: VibrationDisplayRecord = { kind: 'display', quantity: 'velocity', unit: 'mm/s', timeOriginUtc: '2026-11-08T06:30:00Z', series: {
       measurementId: 42, sourceQuantity: 2, quantity: 2, unit: 5, representation: 'minmax-statistical-envelope',
       originalSampleCount: 9000000, returnedPointCount: 4, conversionApplied: false, hasGaps: false, isFftInput: false,
@@ -90,29 +109,9 @@ describe('Raw time-domain chart request lifecycle', () => {
     const acquire = jasmine.createSpy('acquire');
     TestBed.overrideProvider(TimeDomainAnalysisService, { useValue: { acquire } });
     mount(); await settle();
-    const component = fixture.componentInstance;
-    expect(component.error).toBe('');
-    expect(component.analysis!.sampleCount).toBe(9000000);
-    const footer = fixture.nativeElement.querySelector('footer') as HTMLElement;
-    expect(footer.querySelector('[data-testid="record-sample-count"]')!.textContent).toContain('9,000,000');
-    expect(footer.querySelector('[data-testid="acquisition-start"]')!.textContent).toContain('2026-11-08 10:00:00 AM');
-    const statistics = footer.querySelector<HTMLElement>('[data-testid="chart-statistics"]')!;
-    const metadata = footer.querySelector<HTMLElement>('[data-testid="acquisition-metadata"]')!;
-    expect(statistics.children[0].getAttribute('data-testid')).toBe('record-max');
-    expect(getComputedStyle(statistics).justifyContent).toBe('flex-start');
-    expect(metadata.children[0].getAttribute('data-testid')).toBe('acquisition-start');
-    expect(getComputedStyle(metadata).justifyContent).toBe('flex-end');
-    expect(component.analysis!.statistics.min).toBe(-2); // mm/s to selected cm/s, from SERVER stats.
-    const options = component.chartOptions as { xAxis: { name: string; max: number }; series: { data: [number, number | null][] }[] };
-    expect(options.xAxis.name).toBe('Time (ms)');
-    expect(options.xAxis.max).toBe(101000);
-    expect(options.series[0].data.map(([time]) => time)).toEqual([0, 1000, 100000, 100000, 101000]);
-    expect(options.series[0].data[2]).toEqual([100000, null]);
-    expect(component.analysis!.time[3]).toBe(101);
-    fixture.componentRef.setInput('settings', { ...initial, quantity: 'displacement', unit: 'µm' }); await settle();
-    expect(component.error).toBe('');
-    expect(component.analysis!.quantity).toBe('velocity');
-    expect(component.analysisNotice).toContain('Quantity conversion is unavailable');
+    expect(fixture.nativeElement.querySelector('app-apache-echarts')).toBeNull();
+    expect(fixture.nativeElement.querySelector('footer')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain('incomplete raw record');
     expect(load).toHaveBeenCalledTimes(1); expect(acquire).not.toHaveBeenCalled();
   });
 });

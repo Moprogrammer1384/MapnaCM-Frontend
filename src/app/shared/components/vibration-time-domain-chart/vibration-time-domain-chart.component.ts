@@ -8,8 +8,6 @@ import { AMPLITUDE_LABELS, AnalysisChartSettings, VibrationSourceProfile, VIBRAT
 import { RawVibrationRecord, TimeDomainAnalysis } from 'src/app/core/models/vibration-data.model';
 import { TimeDomainAnalysisService, TimeDomainAnalysisSession } from 'src/app/core/services/vibration/time-domain/time-domain-analysis.service';
 import { VIBRATION_DATA_SOURCE, isVibrationDisplay, vibrationError } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
-import { VibrationDisplayRecord } from 'src/app/core/models/vibration-api.model';
-import { displayTimeDomain } from 'src/app/core/services/vibration/time-domain/time-domain-display';
 import { formatNumber, NumberFormatPipe } from '../../pipes/number-format.pipe';
 import { AcquisitionDatePipe } from '../../pipes/acquisition-date.pipe';
 import { rawAcquisitionStart } from 'src/app/core/utils/vibration-acquisition-start';
@@ -36,8 +34,6 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
   loading = true;
   error = '';
   raw?: RawVibrationRecord;
-  display?: VibrationDisplayRecord;
-  analysisNotice = '';
   acquisitionStartedAt?: string;
   analysis?: TimeDomainAnalysis;
   chartOptions?: EChartsOption;
@@ -49,7 +45,7 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
   private session?: TimeDomainAnalysisSession;
   private observer?: MutationObserver;
   private version = 0;
-  private points: [number, number | null][] = [];
+  private points: [number, number][] = [];
   private destroyed = false;
   private analysisTimer?: ReturnType<typeof setTimeout>;
 
@@ -78,8 +74,6 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
     this.session?.release();
     this.session = undefined;
     this.raw = undefined;
-    this.display = undefined;
-    this.analysisNotice = '';
     this.analysis = undefined;
     this.chartOptions = undefined;
     this.loading = true;
@@ -89,26 +83,32 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
         recentRevision: this.recentRevision, quantity: this.recentSeconds === undefined ? undefined : this.settings?.quantity } : {}),
     }).subscribe({
       next: raw => {
+        if (isVibrationDisplay(raw)) {
+          this.showLoadError('The vibration API returned an incomplete raw record.');
+          return;
+        }
         this.sourceProfile.emit({ quantity: raw.quantity, unit: raw.unit });
         this.session?.release();
-        if (isVibrationDisplay(raw)) { this.display = raw; }
-        else { this.raw = raw; this.session = this.processor.acquire(raw); }
+        this.raw = raw;
+        this.session = this.processor.acquire(raw);
         if (!this.settings) {
           this.sourceSettings.emit({ quantity: raw.quantity, unit: raw.unit, xAxis: 'time', amplitude: '0p' });
         }
         this.scheduleAnalysis();
       },
-      error: error => {
-        this.sourceProfile.emit(undefined);
-        this.loading = false;
-        this.error = vibrationError(error);
-        this.changeDetector.markForCheck();
-      },
+      error: error => this.showLoadError(vibrationError(error)),
     });
   }
 
+  private showLoadError(message: string): void {
+    this.sourceProfile.emit(undefined);
+    this.loading = false;
+    this.error = message;
+    this.changeDetector.markForCheck();
+  }
+
   private scheduleAnalysis(): void {
-    if (!this.session && !this.display) { return; }
+    if (!this.session) { return; }
     ++this.version;
     clearTimeout(this.analysisTimer);
     this.loading = true;
@@ -118,28 +118,24 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
   }
 
   private async analyze(): Promise<void> {
-    const raw = this.raw ?? this.display;
+    const raw = this.raw;
     if (!raw) { return; }
     const version = ++this.version;
     const settings = this.settings ?? { quantity: raw.quantity, unit: raw.unit, xAxis: 'time', amplitude: '0p' };
     this.loading = true;
     this.error = '';
     try {
-      const result = this.display ? displayTimeDomain(this.display, settings) : await this.session!.analyze(settings);
+      const result = await this.session!.analyze(settings);
       if (this.destroyed || version !== this.version) { return; }
       this.zone.run(() => {
         const waveformChanged = !this.analysis || this.analysis.quantity !== result.quantity || this.analysis.unit !== result.unit;
         this.analysis = result;
-        this.acquisitionStartedAt = this.raw ? rawAcquisitionStart(this.raw) : this.display?.timeOriginUtc;
-        this.analysisNotice = this.display && settings.quantity !== this.display.quantity
-          ? `Showing ${VIBRATION_QUANTITIES[this.display.quantity].label} from the response. Quantity conversion is unavailable for summary or discontinuous data.` : '';
+        this.acquisitionStartedAt = rawAcquisitionStart(raw);
         this.loading = false;
         if (waveformChanged) {
           this.points = [];
           result.time.forEach((seconds, index) => {
-            const time = seconds * 1000;
-            if (index && this.display?.series.points[index].breakBefore) { this.points.push([time, null]); }
-            this.points.push([time, result.values[index]]);
+            this.points.push([seconds * 1000, result.values[index]]);
           });
           this.updateChartTheme();
         } else {
@@ -232,8 +228,8 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
           dataBackground: { lineStyle: { color: token('gray-500') }, areaStyle: { color: token('gray-200') } },
           selectedDataBackground: { lineStyle: { color: token('primary') }, areaStyle: { color: token('primary-light') } } },
       ],
-      series: [{ id: 'raw-time', name: quantity, type: 'line', showSymbol: !!this.display, symbolSize: 3, lineStyle: { width: 1 },
-        connectNulls: false, sampling: this.display ? undefined : 'minmax', progressive: 5000,
+      series: [{ id: 'raw-time', name: quantity, type: 'line', showSymbol: false, lineStyle: { width: 1 },
+        connectNulls: false, sampling: 'minmax', progressive: 5000,
         data: this.points, markLine: this.amplitudeMarkLine(result) }],
     };
   }

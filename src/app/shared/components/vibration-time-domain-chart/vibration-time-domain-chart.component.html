@@ -12,12 +12,6 @@
   </div>
 }
 @if (analysis; as result) {
-  @if (display) {
-    <div class="text-gray-500 fs-7 mt-2" role="status">{{ display.series.representation === 'raw' ? 'Separate acquisitions' : 'Min/max summary' }} · Statistics cover the full selected range.</div>
-  }
-  @if (analysisNotice) {
-    <div class="text-gray-600 fs-7 mt-2" role="status">{{ analysisNotice }}</div>
-  }
   <footer class="d-flex flex-column gap-3 text-gray-500 fs-7 mt-3" dir="ltr"
     data-testid="record-summary" role="group" aria-label="Acquisition summary" aria-live="polite">
     <div class="d-flex flex-wrap align-items-center justify-content-start gap-3 gap-md-5" data-testid="chart-statistics">

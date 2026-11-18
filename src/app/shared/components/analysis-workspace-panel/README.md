@@ -123,7 +123,7 @@ Bode Analysis supplies its own paired tracking charts through
 ## Chart controls (2026-10-19)
 
 Time Domain provides the reusable `vibration-time-domain-chart` template, loading
-measurement records through `VIBRATION_DATA_SOURCE` / `VibrationTimeDomainApiService`.
+measurement records through `VIBRATION_DATA_SOURCE` / `VibrationTimeDomainAcquisitionApiService`.
 It initializes Quantity and Unit from source metadata, performs raw-record numerical conversions in a shared Web Worker,
 and displays true full-record RMS/0p/pp as a separate scalar without rescaling the
 instantaneous waveform. See [processing and API-adapter documentation](../../../core/services/vibration/README.md).
@@ -145,7 +145,7 @@ existing `SharedModule` directive (no extra plugin initialization):
   Y-axis labels and tooltips, retaining chart instances and zoom.
 - X axis: Hz, CPM, Order for `domain="frequency"`; RPM/Hz for Bode.
   Time Domain disables the selector through `showXAxis=false` (2026-11-09)
-  and displays elapsed time in milliseconds for raw points and summaries.
+  and displays elapsed time in milliseconds for raw points.
   The chart converts the coordinates from seconds when rendering. Signal processing
   and the Online `Recent seconds` input continue to use seconds. The shared
   workspace/panel flag defaults to true so other pages keep their controls.

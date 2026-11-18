@@ -20,7 +20,7 @@ describe('Time Domain acquisition API', () => {
   });
   afterEach(() => http.verify());
 
-  it('maps an exact UTC event to the Tehran calendar day and uses the server recent limit', () => {
+  it('maps an exact UTC event to Tehran and uses the online duration provided by the API', () => {
     api.availability([1, 4]).subscribe(result => {
       expect(result.events[0].from).toBe('2026-08-17T00:00:00');
       expect(result.events[0].label).toBe('2026-08-17 12:00:00 AM · 0.80 s');
@@ -46,17 +46,43 @@ describe('Time Domain acquisition API', () => {
     request.flush({ success: true, data: { timeOriginUtc: from, timeUnit: 's', series: [raw(1), raw(4)] } });
   });
 
-  it('requests the latest seconds on every submit and uses the server envelope for large ranges', () => {
+  it('requests the latest seconds on every submit and accepts complete raw points', () => {
     for (let revision = 1; revision <= 2; revision++) {
-      api.load({ measurementId: 1, from: '', to: '', recentSeconds: 1000, recentRevision: revision, quantity: 'velocity' })
-        .subscribe(result => expect('kind' in result && result.series.originalSampleCount).toBe(2560000));
+      api.load({ measurementId: 1, from: '', to: '', recentSeconds: 1, recentRevision: revision, quantity: 'velocity' })
+        .subscribe(result => expect('values' in result && result.values[2]).toBe(3));
       const request = http.expectOne(req => req.url.endsWith('/GetRecent'));
-      expect(request.request.params.get('Seconds')).toBe('1000');
+      expect(request.request.params.get('Seconds')).toBe('1');
       expect(request.request.params.get('Quantity')).toBe('2');
       expect(request.request.params.has('EndedAtUtc')).toBeFalse();
       request.flush({ success: true, data: { timeOriginUtc: from, timeUnit: 's', series: [{
-        ...raw(1), quantity: 2, unit: 5, representation: 'minmax-statistical-envelope', originalSampleCount: 2560000,
+        ...raw(1), quantity: 2, unit: 5,
       }] } });
     }
+  });
+
+  it('forwards the requested duration and exposes the server rejection without emitting data', () => {
+    const error = jasmine.createSpy('error');
+    const next = jasmine.createSpy('next');
+    api.load({ measurementId: 1, measurementIds: [1, 4], from: '', to: '', recentSeconds: 196 }).subscribe({ next, error });
+    const request = http.expectOne(req => req.url.endsWith('/GetRecent'));
+    expect(request.request.params.get('Seconds')).toBe('196');
+    const message = 'The selected range exceeds the server sample limit.';
+    request.flush({ success: false, message }, { status: 400, statusText: 'Bad Request' });
+    expect(next).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith(jasmine.objectContaining({ error: { success: false, message } }));
+  });
+
+  it('shares an offline rejection across selected channels without emitting any points', () => {
+    const request = { measurementId: 1, measurementIds: [1, 4], from, to, sourceKey: 'oversized' };
+    const error = jasmine.createSpy('error');
+    const next = jasmine.createSpy('next');
+    api.load(request).subscribe({ next, error });
+    api.load({ ...request, measurementId: 4 }).subscribe({ next, error });
+    const message = 'Select fewer measurements to load this capture.';
+    http.expectOne(req => req.url.endsWith('/GetCaptures'))
+      .flush({ success: false, message }, { status: 400, statusText: 'Bad Request' });
+    expect(next).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledTimes(2);
+    expect(error).toHaveBeenCalledWith(jasmine.objectContaining({ error: { success: false, message } }));
   });
 });

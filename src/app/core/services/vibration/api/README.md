@@ -1,13 +1,14 @@
 # DARP Vibration APIs
 
-Updated 2026-11-09. All Vibration HTTP adapters live in this folder. Filenames
+Updated 2026-11-18. All Vibration HTTP adapters live in this folder. Filenames
 and injectable classes identify the Vibration module, backend feature and purpose.
 Numerical analysis and workers remain in their respective feature folders.
 
 | Service file | Injectable class | Page / purpose | Existing GET endpoint |
 | --- | --- | --- | --- |
-| `vibration-time-domain-api.service.ts` | `VibrationTimeDomainApiService` | Time Domain and Frequency Domain waveform/summary reads | `/TimeDomain/Get` |
-| `vibration-time-domain-availability-api.service.ts` | `VibrationTimeDomainAvailabilityApiService` | Available calendar days for Time Domain and Frequency Domain | `/TimeDomain/GetAvailability` |
+| `vibration-time-domain-acquisition-api.service.ts` | `VibrationTimeDomainAcquisitionApiService` | Time Domain online and offline waveforms | `/TimeDomain/GetRecent`, `/TimeDomain/GetCaptures`, `/TimeDomain/GetCaptureAvailability` |
+| `vibration-time-domain-api.service.ts` | `VibrationTimeDomainApiService` | Frequency Domain and Signal Indicators raw waveform reads | `/TimeDomain/Get` |
+| `vibration-time-domain-availability-api.service.ts` | `VibrationTimeDomainAvailabilityApiService` | Available calendar days for range-based consumers | `/TimeDomain/GetAvailability` |
 | `vibration-bode-analysis-api.service.ts` | `VibrationBodeAnalysisApiService` | Bode Analysis acquisitions | `/BodeAnalysis/Get` |
 | `vibration-bode-analysis-availability-api.service.ts` | `VibrationBodeAnalysisAvailabilityApiService` | Bode Analysis event times and available dates | `/BodeAnalysis/GetAvailability` |
 | `vibration-orbit-analysis-api.service.ts` | `VibrationOrbitAnalysisApiService` | Complete daily Orbit acquisition | `/OrbitAnalysis/Get` |
@@ -16,6 +17,11 @@ Numerical analysis and workers remain in their respective feature folders.
 
 Frequency Domain computes its FFT locally from the Time Domain response; it has
 no separate HTTP endpoint.
+
+Time Domain waveform endpoints enforce a server-owned limit of 1,000,000 raw
+samples per request, counting all series together. The adapters submit the
+requested window and the chart shows the API message on rejection. A failed
+request leaves the chart empty.
 
 `VIBRATION_DATA_SOURCE` defaults to `VibrationTimeDomainApiService`.
 `BODE_DATA_SOURCE` remains in `../bode-analysis/bode-data-source.service.ts` and

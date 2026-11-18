@@ -32,6 +32,7 @@ export interface TimeDomainAvailability {
 const tehran = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Tehran', year: 'numeric', month: '2-digit',
   day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
 const quantityCodes = { displacement: 1, velocity: 2, acceleration: 3 } as const;
+const sampleRateHz = 2560;
 
 function tehranWallTime(utc: string): string {
   const parts = tehran.formatToParts(new Date(utc));
@@ -62,7 +63,7 @@ export class VibrationTimeDomainAcquisitionApiService implements VibrationDataSo
       const events = (data.events as readonly CaptureEventDto[]).map(event => {
         if (!event.id || seen.has(event.id) || !event.from?.endsWith('Z') || !event.to?.endsWith('Z') ||
             !Number.isFinite(Date.parse(event.from)) || !(Date.parse(event.to) > Date.parse(event.from)) ||
-            event.sampleRateHz !== 2560 || !Number.isInteger(event.sampleCount) || event.sampleCount < 2048) {
+            event.sampleRateHz !== sampleRateHz || !Number.isInteger(event.sampleCount) || event.sampleCount < 2048) {
           throw new Error('The Time Domain API returned invalid acquisition metadata.');
         }
         seen.add(event.id);
@@ -108,11 +109,8 @@ export class VibrationTimeDomainAcquisitionApiService implements VibrationDataSo
       throw new Error('The Time Domain API returned an incomplete or incompatible waveform.');
     }
     const profile = vibrationProfile(series.quantity, series.unit);
-    if (series.representation === 'minmax-statistical-envelope') {
-      return { kind: 'display', ...profile, timeOriginUtc: data.timeOriginUtc, series };
-    }
     if (series.representation !== 'raw' || series.hasGaps || series.originalSampleCount !== series.points.length ||
-        series.points.some((point, index) => (index > 0 && point.breakBefore) || Math.abs(point.x - index / 2560) > 1e-9)) {
+        series.points.some((point, index) => (index > 0 && point.breakBefore) || Math.abs(point.x - index / sampleRateHz) > 1e-9)) {
       throw new Error('The Time Domain API returned incomplete native samples.');
     }
     return { id: `${measurementId}:${data.timeOriginUtc}:${series.originalSampleCount}:${series.quantity}:${series.unit}`,

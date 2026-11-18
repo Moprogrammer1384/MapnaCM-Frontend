@@ -42,7 +42,7 @@ export function vibrationError(error: unknown): string {
   return apiErrorMessage(error, 'vibration data', 'vibration API');
 }
 
-/** Time Domain API shared by Time/Frequency pages. Only measurement/range changes fetch data. */
+/** Range-based Time Domain API used by Frequency Domain and Signal Indicators. */
 @Injectable({ providedIn: 'root' })
 export class VibrationTimeDomainApiService implements VibrationDataSource {
   private readonly http = inject(HttpClient);
@@ -53,7 +53,7 @@ export class VibrationTimeDomainApiService implements VibrationDataSource {
       if (!Number.isInteger(request.measurementId) || request.measurementId <= 0 || from >= to) {
         throw new Error('Select a measurement and an end time after the start time.');
       }
-      // The backend owns point limits and resolution selection. Send only the user's filters.
+      // Send only the user's filters. The backend counts the stored samples in the range.
       const params = new HttpParams().set('MeasurementId', request.measurementId)
         .set('From', from).set('To', to);
       return this.http.get<ApiEnvelope<VibrationChartDto>>(`${environment.apiUrl}/TimeDomain/Get`, { params }).pipe(
@@ -69,13 +69,16 @@ export class VibrationTimeDomainApiService implements VibrationDataSource {
 
   private record(data: VibrationChartDto, request: VibrationDataRequest): VibrationDataRecord {
     const series = data.series?.find(item => item.measurementId === request.measurementId);
+    if (series && series.representation !== 'raw') {
+      throw new Error('The vibration API returned an incomplete raw record.');
+    }
     if (data.timeUnit !== 's' || !series?.points.length
       || series.points.length !== series.returnedPointCount || series.conversionApplied
       || series.sourceQuantity !== series.quantity) {
       throw new Error('The vibration API returned no native points or an incompatible time unit.');
     }
     const metadata = vibrationProfile(series.quantity, series.unit);
-    if (series.representation !== 'raw' || series.hasGaps || series.points.length < 3
+    if (series.hasGaps || series.points.length < 3
       || series.points.some((point, index) => index > 0 && point.breakBefore)) {
       return Object.freeze({ kind: 'display', ...metadata, timeOriginUtc: data.timeOriginUtc, series });
     }

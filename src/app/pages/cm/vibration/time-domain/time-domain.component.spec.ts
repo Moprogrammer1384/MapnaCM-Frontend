@@ -9,7 +9,7 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { By } from '@angular/platform-browser';
 import * as echarts from 'echarts';
 import { providePrimeNG } from 'primeng/config';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { vibrationTestRecord } from 'src/testing/vibration-test-data';
 import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
 import { VibrationDataRequest } from 'src/app/core/models/vibration-data.model';
@@ -38,6 +38,7 @@ const events = [
   { id: 'third', from: '2026-08-19T01:00:00', to: '2026-08-19T01:00:00.800', label: '2026-08-19 01:00:00 AM · 0.80 s' },
   { id: 'fourth', from: '2026-08-20T00:00:00', to: '2026-08-20T00:00:00.800', label: '2026-08-20 12:00:00 AM · 0.80 s' },
 ];
+const serverLimitMessage = 'The API rejected this selection because it exceeds the sample limit.';
 
 interface Snapshot {
   xAxis: { min: number; max: number; name: string; axisLabel: { formatter: (value: number) => string };
@@ -84,11 +85,12 @@ describe('Time Domain with an isolated analytical workload', () => {
       .overrideComponent(VibrationTimeDomainComponent, { set: { changeDetection: ChangeDetectionStrategy.OnPush,
         providers: [
           { provide: VibrationTimeDomainAcquisitionApiService, useValue: {
-            availability: () => of({ events, maximumRecentSeconds: 1000 }),
+            availability: () => of({ events, maximumRecentSeconds: 390 }),
           } },
           { provide: VIBRATION_DATA_SOURCE, useValue: {
             load: ({ recentSeconds }: VibrationDataRequest) => {
               if (recentSeconds === undefined) { return of(vibrationTestRecord); }
+              if (recentSeconds === 391) { return throwError(() => new Error(serverLimitMessage)); }
               const count = recentSeconds * 2560;
               return of({ ...vibrationTestRecord, id: `recent-${recentSeconds}`,
                 time: vibrationTestRecord.time.slice(0, count),
@@ -107,7 +109,7 @@ describe('Time Domain with an isolated analytical workload', () => {
   });
   afterEach(() => harness.fixture.destroy());
 
-  it('switches between the saved offline event and a recent online window', async () => {
+  it('clears the online chart above the limit and restores the saved offline event', async () => {
     const toggle = root().querySelector<HTMLInputElement>('input[role="switch"]')!;
     const originalEvent = state.activeTab()!.timeDomainEvent;
     expect(toggle.checked).toBeFalse();
@@ -132,6 +134,13 @@ describe('Time Domain with an isolated analytical workload', () => {
     await settle();
     expect(component().analysis?.sampleCount).toBe(5120);
     expect(state.activeTab()!.timeDomainEvent).toBe(originalEvent);
+    interact(() => {
+      input.value = '391';
+      input.form!.requestSubmit();
+    });
+    await settle();
+    expect(root().querySelector('app-apache-echarts')).toBeNull();
+    expect(root().querySelector('[role="alert"]')!.textContent).toContain(serverLimitMessage);
     interact(() => toggle.click());
     await settle();
     expect(root().querySelector('app-vibration-event-picker')).not.toBeNull();

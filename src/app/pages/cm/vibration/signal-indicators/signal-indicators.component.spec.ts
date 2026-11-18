@@ -185,15 +185,11 @@ describe('Signal Indicators standard vibration workspace', () => {
     expect(load).toHaveBeenCalledTimes(1);
     state.closeTab(id); await settle(); expect(instance.isDisposed()).toBeTrue();
   });
-  it('reads summary RMS/0p/pp from server buckets with original counts and preserves native quantity semantics', async () => {
+  it('rejects legacy envelopes returned by the shared Time Domain API', async () => {
     await execute(); await apply(12, 1, signalIndicatorSummaryDto);
-    const component = chartComponent();
-    expect(component.analysis!.basis).toBe('summary'); expect(component.analysis!.signal.sampleCount).toBe(100);
-    expect(component.analysis!.points.map(point => point.statistics.rms)).toEqual([2, 5]);
-    await change('Unit', 'mm'); expect(component.analysis!.points[0].statistics.rms).toBe(0.002);
-    await change('Quantity', 'velocity');
-    expect(component.analysis!.signal.quantity).toBe('displacement');
-    expect(root().textContent).toContain('Quantity conversion requires continuous raw');
+    expect(chartComponent().analysis).toBeUndefined();
+    expect(root().querySelector('app-apache-echarts')).toBeNull();
+    expect(root().querySelector('[role="alert"]')!.textContent).toContain('incomplete raw record');
     expect(load).toHaveBeenCalledTimes(1);
   });
   it('surfaces calendar/API failures, supports Retry and cancels an outstanding read when its tab closes', async () => {

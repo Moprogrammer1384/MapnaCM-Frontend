@@ -20,13 +20,17 @@
       </div>
     </div>
     @if (tab.timeDomainRecentSeconds !== undefined) {
-      <form class="col-12 col-md" (submit)="$event.preventDefault(); showRecent(tab.id, recentSeconds.valueAsNumber, availability.data?.maximumRecentSeconds ?? 0)">
+      <form class="col-12 col-md" (submit)="$event.preventDefault(); showRecent(tab.id, recentSeconds.valueAsNumber)">
         <label class="form-label" [for]="tab.id + '_recent_seconds'">Recent seconds</label>
         <div class="input-group input-group-solid">
           <input #recentSeconds type="number" class="form-control form-control-solid" required min="1" step="1"
-            [max]="availability.data?.maximumRecentSeconds ?? 0" [id]="tab.id + '_recent_seconds'" [value]="tab.timeDomainRecentSeconds">
+            [attr.aria-describedby]="availability.data?.maximumRecentSeconds ? tab.id + '_recent_limit' : null"
+            [id]="tab.id + '_recent_seconds'" [value]="tab.timeDomainRecentSeconds">
           <button type="submit" class="btn btn-primary" [disabled]="!availability.data?.maximumRecentSeconds">Display</button>
         </div>
+        @if (availability.data?.maximumRecentSeconds) {
+          <p class="form-text mb-0" [id]="tab.id + '_recent_limit'">Up to {{ availability.data?.maximumRecentSeconds }} seconds for this selection.</p>
+        }
       </form>
     } @else {
       <div class="col-12 col-md px-0">

@@ -51,8 +51,8 @@ export class VibrationTimeDomainComponent {
     this.availability.get(tab.selection)?.refresh.next();
   }
 
-  showRecent(tabId: string, seconds: number, maximum: number): void {
-    if (Number.isInteger(seconds) && seconds >= 1 && seconds <= maximum) {
+  showRecent(tabId: string, seconds: number): void {
+    if (Number.isInteger(seconds) && seconds >= 1) {
       this.state.setTimeDomainRecentSeconds(tabId, seconds);
     }
   }

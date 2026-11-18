@@ -1,8 +1,8 @@
 # DARP vibration data and processing
 
-Updated 2026-11-14. Time Domain and Frequency Domain use the real
-VibrationTimeDomainApiService through VIBRATION_DATA_SOURCE in
-api/vibration-time-domain-api.service.ts. All HTTP adapters are grouped in
+Updated 2026-11-18. Time Domain uses `VibrationTimeDomainAcquisitionApiService`
+for exact offline captures and recent online data. Frequency Domain and Signal
+Indicators use the range-based `VibrationTimeDomainApiService`. HTTP adapters are grouped in
 [api/](api/README.md), with explicit Vibration/feature/purpose names.
 The old Time/Frequency workbook fixture and tenfold repetition were removed.
 Overview has no chart. Rotor Position uses recorded DC acquisitions through its
@@ -17,30 +17,15 @@ Synthetic Time/Frequency workload data exists under src/testing/ for regression 
 ## Data access and selection
 
 The active backend contract is docs/Vibration-TimeDomain-API.fa.md (seconds version).
-Both backend documents, DTOs and query/service implementations were reviewed.
-All X/time values are seconds (timeUnit=s). The current development data is sampled
-at one point per second; the frontend derives FFT sample rate from actual times.
+API time coordinates are in seconds. Time Domain loads all selected channels in
+one GetCaptures or GetRecent request. Frequency Domain and Signal Indicators use
+one Get request per measurement and applied UTC range, sending MeasurementId,
+From and To.
 
-1. Measurement Execute opens the same workspace/controls, awaiting date confirmation.
-2. The existing date/hour/minute picker Apply confirms the range, including when
-   unchanged defaults are explicitly accepted. No API call occurs before this.
-3. VibrationTimeDomainApiService requests GET /TimeDomain/Get for the actual measurement and
-   UTC From/To. The backend decides whether that interval returns raw or summary.
-4. Complete raw selections with no reported gaps map the SAME response points
-   directly into time/values arrays for the existing Time/Frequency Domain workers.
-   Each measurement/range uses one Get request; there is no second waveform request.
-5. Summary/discontinuous selections stay display-only. Time Domain renders their
-   server statistics/extrema. Frequency Domain displays a frontend FFT error and
-   never passes them to its worker. There is no raw retry, chunking or fixture fallback.
-
-Point limits, counts and resolution selection belong entirely to the backend.
-Get sends ONLY MeasurementId, From and To. MaxPoints,
-ChartWidthPixels and client-selected counts are omitted. There is no local point
-ceiling, count-based budget division, truncation or rejection by response size.
-Checks for complete arrays, supported metadata and at least three native samples
-remain numerical/contract validation, not display caps. Separate native-channel
-requests avoid GetMultiple's automatic cross-quantity calculus; selectors remain
-frontend operations. GetMultiple batching is not implemented.
+The API returns all requested raw samples up to 1,000,000 per request, inclusive.
+Larger requests return a business error. The frontend submits the selection and
+shows the API's message if the request fails. Reported gaps or insufficient
+raw input prevent FFT. Complete contiguous points map to the existing workers.
 
 HttpParams carries measurement ID and explicit UTC ISO timestamps. Local picker
 values are converted once; existing offsets are respected. From is inclusive, To
@@ -51,24 +36,11 @@ There is no new storage, credential, dependency or backend/database implementati
 
 ## Preserve vibration meaning and the existing charts
 
-The raw mathematical modules, workers, caches and formulas are unchanged. Time
-Domain keeps its numeric Time (s) axis, instantaneous physical waveform, RMS/0p/pp
+Time Domain displays a numeric Time (ms) axis, instantaneous physical waveform, RMS/0p/pp
 reference levels and footer. Frequency Domain keeps FFT, resampling/windowing,
 Fourier quantity conversion, units/amplitudes and Hz/CPM/Order with explicit RPM.
 Settings and zoom work on the already loaded record and do not cause HTTP calls.
 There is no calendar-axis replacement or server fetch on zoom.
-
-For a Time Domain summary, time-domain-display.ts uses the server's full-record
-statistics/count and exact compatible unit scaling. It lifts the pen at breakBefore
-and labels the summary. It never computes new statistics from extrema or applies
-calculus to them. If another Quantity is selected, the chart explicitly retains
-and labels the available response Quantity, with an informational explanation.
-
-For a Frequency Domain summary response, the existing Metronic error alert says
-FFT cannot be calculated from summary data and raw waveform samples are required.
-Discontinuous or fewer-than-three-point raw responses also show an FFT input error.
-These are explicit frontend errors, as requested by the user on 2026-10-25.
-They do not trigger extra HTTP reads or numerical processing of extrema.
 
 The raw mapping requires representation=raw, all original points present, no
 reported gaps or internal breakBefore markers, and at least three samples. Quantity

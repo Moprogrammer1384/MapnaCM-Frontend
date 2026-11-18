@@ -115,6 +115,8 @@ describe('Time Domain with an isolated analytical workload', () => {
     await settle();
     expect(root().querySelector('app-vibration-event-picker')).toBeNull();
     expect(component().analysis?.sampleCount).toBe(2560);
+    expect(snapshot().xAxis[0].name).toBe('Time (ms)');
+    expect(snapshot().xAxis[0].max).toBe(vibrationTestRecord.time[2559] * 1000);
     const input = root().querySelector<HTMLInputElement>('input[id$="_recent_seconds"]')!;
     expect(input.value).toBe('1');
     interact(() => {
@@ -178,21 +180,25 @@ describe('Time Domain with an isolated analytical workload', () => {
     expect(chart()).toBe(originalChart);
   });
 
-  it('retains the Time (s) waveform, full precision and original chart layout', () => {
+  it('plots the waveform in milliseconds while preserving the analysis times and original chart layout', () => {
     expect(root().querySelector('select[aria-label="X axis"]')).toBeNull();
     expect(root().querySelector('[id$="_x_axis"]')).toBeNull();
     const options = snapshot();
     const data = options.series[0].data;
     expect(data.length).toBe(409600);
     for (const index of [0, 1, 100, 40959, 40960, 409599]) {
-      expect(data[index][0]).toBe(vibrationTestRecord.time[index]);
+      expect(data[index][0]).toBe(vibrationTestRecord.time[index] * 1000);
+      expect(component().analysis!.time[index]).toBe(vibrationTestRecord.time[index]);
       expect(data[index][1]).toBeCloseTo(vibrationTestRecord.values[index], 12);
     }
-    expect(options.xAxis[0].name).toBe('Time (s)');
-    expect(options.xAxis[0].max).toBe(vibrationTestRecord.time[409599]);
-    expect(options.xAxis[0].axisLabel.formatter(options.xAxis[0].max)).toBe('25.00');
+    expect(options.xAxis[0].name).toBe('Time (ms)');
+    expect(options.xAxis[0].min).toBe(0);
+    expect(options.xAxis[0].max).toBe(vibrationTestRecord.time[409599] * 1000);
+    expect(options.xAxis[0].axisLabel.formatter(1250.1234)).toBe('1250.12');
+    expect(options.xAxis[0].axisPointer.label.formatter({ value: 1250.1234 })).toBe('1250.12');
+    expect(options.dataZoom[1].labelFormatter!(1250.1234)).toBe('1250.12');
     expect(options.yAxis[0].axisLabel.formatter(-12.3456789)).toBe('-12.35');
-    expect(options.tooltip[0].formatter({ value: data[1] })).toContain(' s<br/>Displacement:');
+    expect(options.tooltip[0].formatter({ value: data[1] })).toContain('0.06 ms<br/>Displacement:');
     expect(root().querySelector('[data-testid="record-sample-count"]')!.textContent).toBe('409,600 Data');
     expect(control('Quantity').value).toBe('displacement');
     expect(control('Unit').value).toBe(vibrationTestRecord.unit);
@@ -259,7 +265,7 @@ describe('Time Domain with an isolated analytical workload', () => {
       expect(levels[1]).toBeCloseTo(amplitude === 'pp' ? result.statistics.max : result.amplitude, 10);
       expect(reference.label.formatter).toBe(`${AMPLITUDE_LABELS[amplitude]}: ${result.amplitude.toFixed(2)} ${result.unit}`);
       expect(options.tooltip[0].formatter({ value: [1.23456789, -12.3456789] })).toBe(
-        `1.23 s<br/>Displacement: -12.35 ${result.unit}<br/>${AMPLITUDE_LABELS[amplitude]}: ${result.amplitude.toFixed(2)} ${result.unit}`);
+        `1.23 ms<br/>Displacement: -12.35 ${result.unit}<br/>${AMPLITUDE_LABELS[amplitude]}: ${result.amplitude.toFixed(2)} ${result.unit}`);
       expect(reference.lineStyle.color).toBe(getComputedStyle(document.documentElement).getPropertyValue('--bs-warning').trim());
       expect(options.series[0].data).toEqual(waveform);
       expect(options.dataZoom[0].start).toBe(30);

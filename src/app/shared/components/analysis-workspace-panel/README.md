@@ -145,8 +145,10 @@ existing `SharedModule` directive (no extra plugin initialization):
   Y-axis labels and tooltips, retaining chart instances and zoom.
 - X axis: Hz, CPM, Order for `domain="frequency"`; RPM/Hz for Bode.
   Time Domain disables the selector through `showXAxis=false` (2026-11-09)
-  and uses sample times in seconds directly. The shared workspace/panel flag
-  defaults to true so the other pages, including Overview, keep their controls.
+  and displays elapsed time in milliseconds for raw points and summaries.
+  The chart converts the coordinates from seconds when rendering. Signal processing
+  and the Online `Recent seconds` input continue to use seconds. The shared
+  workspace/panel flag defaults to true so other pages keep their controls.
 - Amplitude: RMS, 0p (zero-to-peak), pp (peak-to-peak). Raw Time/Frequency tabs
   initialize Quantity/Unit from source metadata.
 - Frequency-only Window: Rectangular (default) or Hann, with coherent-gain correction.

@@ -136,7 +136,8 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
         this.loading = false;
         if (waveformChanged) {
           this.points = [];
-          result.time.forEach((time, index) => {
+          result.time.forEach((seconds, index) => {
+            const time = seconds * 1000;
             if (index && this.display?.series.points[index].breakBefore) { this.points.push([time, null]); }
             this.points.push([time, result.values[index]]);
           });
@@ -190,7 +191,7 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
       const point = Array.isArray(params) ? params[0] : params;
       if (!Array.isArray(point.value)) { return ''; }
       const quantity = VIBRATION_QUANTITIES[result.quantity].label;
-      return `${formatNumber(Number(point.value[0]))} s<br/>${quantity}: ${formatNumber(Number(point.value[1]))} ${result.unit}`
+      return `${formatNumber(Number(point.value[0]))} ms<br/>${quantity}: ${formatNumber(Number(point.value[1]))} ${result.unit}`
         + `<br/>${AMPLITUDE_LABELS[result.amplitudeMode]}: ${formatNumber(result.amplitude)} ${result.unit}`;
     };
   }
@@ -212,8 +213,8 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
         backgroundColor: token('body-bg'), borderColor: token('border-color'), textStyle: { color: token('body-color') },
       },
       grid: { left: 20, right: 24, top: 45, bottom: 75, containLabel: true },
-      xAxis: { type: 'value', name: 'Time (s)', nameLocation: 'middle', nameGap: 30,
-        min: result.time[0], max: result.time[result.time.length - 1], splitLine: { show: false },
+      xAxis: { type: 'value', name: 'Time (ms)', nameLocation: 'middle', nameGap: 30,
+        min: this.points[0]?.[0], max: this.points[this.points.length - 1]?.[0], splitLine: { show: false },
         axisLabel: { formatter: formatNumber },
         axisPointer: { label: { formatter: params => formatNumber(Number(params.value)) } },
         axisLine: { lineStyle: { color: token('gray-500') } } },

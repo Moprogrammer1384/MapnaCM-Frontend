@@ -78,7 +78,7 @@ describe('Raw time-domain chart request lifecycle', () => {
     expect(fixture.nativeElement.querySelector('app-apache-echarts')).not.toBeNull();
   });
 
-  it('displays a large summary on Time (s) with server statistics, pen lifts and no new requests on selector changes', async () => {
+  it('displays a large summary in milliseconds with server statistics, pen lifts and no new requests on selector changes', async () => {
     const summary: VibrationDisplayRecord = { kind: 'display', quantity: 'velocity', unit: 'mm/s', timeOriginUtc: '2026-11-08T06:30:00Z', series: {
       measurementId: 42, sourceQuantity: 2, quantity: 2, unit: 5, representation: 'minmax-statistical-envelope',
       originalSampleCount: 9000000, returnedPointCount: 4, conversionApplied: false, hasGaps: false, isFftInput: false,
@@ -103,9 +103,12 @@ describe('Raw time-domain chart request lifecycle', () => {
     expect(metadata.children[0].getAttribute('data-testid')).toBe('acquisition-start');
     expect(getComputedStyle(metadata).justifyContent).toBe('flex-end');
     expect(component.analysis!.statistics.min).toBe(-2); // mm/s to selected cm/s, from SERVER stats.
-    const options = component.chartOptions as { xAxis: { name: string }; series: { data: [number, number | null][] }[] };
-    expect(options.xAxis.name).toBe('Time (s)');
-    expect(options.series[0].data[2][1]).toBeNull();
+    const options = component.chartOptions as { xAxis: { name: string; max: number }; series: { data: [number, number | null][] }[] };
+    expect(options.xAxis.name).toBe('Time (ms)');
+    expect(options.xAxis.max).toBe(101000);
+    expect(options.series[0].data.map(([time]) => time)).toEqual([0, 1000, 100000, 100000, 101000]);
+    expect(options.series[0].data[2]).toEqual([100000, null]);
+    expect(component.analysis!.time[3]).toBe(101);
     fixture.componentRef.setInput('settings', { ...initial, quantity: 'displacement', unit: 'µm' }); await settle();
     expect(component.error).toBe('');
     expect(component.analysis!.quantity).toBe('velocity');

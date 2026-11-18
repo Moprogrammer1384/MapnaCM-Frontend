@@ -24,12 +24,12 @@ describe('Time Domain acquisition API', () => {
     api.availability([1, 4]).subscribe(result => {
       expect(result.events[0].from).toBe('2026-08-17T00:00:00');
       expect(result.events[0].label).toBe('2026-08-17 12:00:00 AM · 0.80 s');
-      expect(result.maximumRecentSeconds).toBe(900);
+      expect(result.maximumRecentSeconds).toBe(390);
     });
     const request = http.expectOne(req => req.url.endsWith('/GetCaptureAvailability'));
     expect(request.request.params.getAll('MeasurementIds')).toEqual(['1', '4']);
     request.flush({ success: true, data: { timeZone: 'Asia/Tehran', events: [{ id: 'key', from, to,
-      sampleCount: 2048, sampleRateHz: 2560 }], onlineWindow: { maximumSeconds: 900 } } });
+      sampleCount: 2048, sampleRateHz: 2560 }], onlineWindow: { maximumSeconds: 390 } } });
   });
 
   it('shares one exact capture request for multiple channels and accepts normalized complete samples', () => {
@@ -63,10 +63,10 @@ describe('Time Domain acquisition API', () => {
   it('forwards the requested duration and exposes the server rejection without emitting data', () => {
     const error = jasmine.createSpy('error');
     const next = jasmine.createSpy('next');
-    api.load({ measurementId: 1, measurementIds: [1, 4], from: '', to: '', recentSeconds: 196 }).subscribe({ next, error });
+    api.load({ measurementId: 1, measurementIds: [1, 4], from: '', to: '', recentSeconds: 391 }).subscribe({ next, error });
     const request = http.expectOne(req => req.url.endsWith('/GetRecent'));
-    expect(request.request.params.get('Seconds')).toBe('196');
-    const message = 'The selected range exceeds the server sample limit.';
+    expect(request.request.params.get('Seconds')).toBe('391');
+    const message = 'The selected range exceeds the limit of 1,000,000 samples per measurement. Select a shorter range.';
     request.flush({ success: false, message }, { status: 400, statusText: 'Bad Request' });
     expect(next).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(jasmine.objectContaining({ error: { success: false, message } }));

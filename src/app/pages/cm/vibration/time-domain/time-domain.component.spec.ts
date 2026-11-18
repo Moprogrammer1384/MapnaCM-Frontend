@@ -44,10 +44,11 @@ interface Snapshot {
   xAxis: { min: number; max: number; name: string; axisLabel: { formatter: (value: number) => string };
     axisPointer: { label: { formatter: (params: { value: number }) => string } } }[];
   yAxis: { name: string; axisLabel: { formatter: (value: number) => string } }[];
-  series: { id: string; name: string; xAxisIndex?: number; yAxisIndex?: number; data: number[][]; markLine?: {
+  series: { id: string; name: string; xAxisIndex?: number; yAxisIndex?: number; data: number[][]; lineStyle: { color: string }; markLine?: {
     data: { yAxis: number }[]; label: { formatter: string }; lineStyle: { color: string };
   } }[];
-  dataZoom: { start: number; end: number; xAxisIndex: number | number[]; labelFormatter?: (value: number) => string }[];
+  dataZoom: { start: number; end: number; xAxisIndex: number | number[]; labelFormatter?: (value: number) => string;
+    selectedDataBackground?: { lineStyle: { color: string } } }[];
   tooltip: { formatter: (params: { value: number[] } | { value: number[]; seriesId: string; seriesName: string }[]) => string }[];
   grid: { left: number; right: number; top: number | string }[];
   legend: { selected: Record<string, boolean> }[];
@@ -122,6 +123,9 @@ describe('Time Domain with an isolated analytical workload', () => {
     expect(snapshot().xAxis[0].name).toBe('Time (ms)');
     expect(snapshot().grid.length).toBe(1);
     expect(snapshot().series.length).toBe(1);
+    expect(snapshot().series[0].lineStyle.color).toBe('#2563EB');
+    expect(chart().getVisual({ seriesIndex: 0 }, 'color')).toBe('#2563EB');
+    expect(snapshot().dataZoom[1].selectedDataBackground?.lineStyle.color).toBe('#2563EB');
     expect(component().analysis?.amplitudeTrend).toBeUndefined();
     expect(snapshot().xAxis[0].max).toBe(vibrationTestRecord.time[2559] * 1000);
     const input = root().querySelector<HTMLInputElement>('input[id$="_recent_seconds"]')!;
@@ -228,6 +232,9 @@ describe('Time Domain with an isolated analytical workload', () => {
     const lowerSeries = options.series.slice(1);
     const firstWindow = component().analysis!.amplitudeTrend![0];
     expect(lowerSeries.map(series => series.name)).toEqual(['RMS', '0p', 'pp']);
+    expect(options.series.map(series => series.lineStyle.color)).toEqual(['#2563EB', '#EA580C', '#2563EB', '#0D9488']);
+    expect(options.series.map((_, seriesIndex) => instance.getVisual({ seriesIndex }, 'color')))
+      .toEqual(['#2563EB', '#EA580C', '#2563EB', '#0D9488']);
     expect(lowerSeries.map(series => [series.xAxisIndex, series.yAxisIndex])).toEqual([[1, 1], [1, 1], [1, 1]]);
     expect(lowerSeries[0].data[0][0]).toBeCloseTo((firstWindow.from + firstWindow.to) * 500, 12);
     expect(lowerSeries.map(series => series.data[0][1])).toEqual([
@@ -345,7 +352,7 @@ describe('Time Domain with an isolated analytical workload', () => {
         document.documentElement.setAttribute('data-bs-theme', theme);
         await new Promise(resolve => setTimeout(resolve, 0)); await settle();
         expect(component().analysis).toBe(result);
-        expect(snapshot().color[0]).toBe('#2563EB');
+        expect(snapshot().series.map(series => series.lineStyle.color)).toEqual(['#2563EB', '#EA580C', '#2563EB', '#0D9488']);
         for (const width of [320, 768, 1280]) {
           harness.fixture.nativeElement.style.width = `${width}px`;
           await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));

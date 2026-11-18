@@ -19,7 +19,7 @@ Frequency Domain computes its FFT locally from the Time Domain response; it has
 no separate HTTP endpoint.
 
 Time Domain waveform endpoints enforce a server-owned limit of 1,000,000 raw
-samples per request, counting all series together. The adapters submit the
+samples for each measurement. The adapters submit the
 requested window and the chart shows the API message on rejection. A failed
 request leaves the chart empty.
 

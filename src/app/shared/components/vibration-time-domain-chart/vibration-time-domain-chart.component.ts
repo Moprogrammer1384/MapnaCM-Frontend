@@ -220,9 +220,10 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
     const token = (name: string) => styles.getPropertyValue(`--bs-${name}`).trim();
     const quantity = VIBRATION_QUANTITIES[result.quantity].label;
     const label = `${quantity} (${result.unit})`;
+    const signalColor = vibrationChartColor();
     this.chartOptions = {
       animation: false,
-      color: [vibrationChartColor()],
+      color: [signalColor],
       textStyle: { color: token('gray-600'), fontFamily: styles.fontFamily },
       tooltip: {
         trigger: 'axis',
@@ -247,15 +248,16 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
           textStyle: { color: token('gray-600') }, handleStyle: { color: token('primary'), borderColor: token('primary') },
           moveHandleStyle: { color: token('primary') },
           dataBackground: { lineStyle: { color: token('gray-500') }, areaStyle: { color: token('gray-200') } },
-          selectedDataBackground: { lineStyle: { color: token('primary') }, areaStyle: { color: token('primary-light') } } },
+          selectedDataBackground: { lineStyle: { color: signalColor }, areaStyle: { color: token('primary-light') } } },
       ],
       series: [this.waveformSeries(result, 1)],
     };
   }
 
   private waveformSeries(result: TimeDomainAnalysis, width: number): LineSeriesOption {
+    const color = vibrationChartColor();
     return { id: 'raw-time', name: VIBRATION_QUANTITIES[result.quantity].label, type: 'line',
-      showSymbol: false, lineStyle: { width, color: vibrationChartColor() },
+      showSymbol: false, lineStyle: { width, color }, itemStyle: { color },
       connectNulls: false, sampling: 'minmax', progressive: 5000,
       data: this.points, markLine: this.amplitudeMarkLine(result) };
   }
@@ -263,11 +265,11 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
   private offlineChartOptions(result: TimeDomainAnalysis, windows: readonly TimeDomainAmplitudeWindow[]): EChartsOption {
     const { base, legend, tooltip, axis, token } = vibrationChartAppearance();
     const names = amplitudeModes.map(mode => AMPLITUDE_LABELS[mode]);
-    const colors = [vibrationChartColor(), vibrationChartColor(1), VIBRATION_PEAK_TO_PEAK_COLOR];
+    const trendColors = [vibrationChartColor(1), vibrationChartColor(), VIBRATION_PEAK_TO_PEAK_COLOR];
     const xAxis = (gridIndex: number) => ({ ...axis(gridIndex === 1 ? 'Time (ms)' : ''), gridIndex,
       min: this.points[0][0], max: this.points[this.points.length - 1][0] });
     return {
-      ...base, color: colors, legend: { ...legend, data: names, selectedMode: 'multiple' },
+      ...base, color: [vibrationChartColor(), ...trendColors], legend: { ...legend, data: names, selectedMode: 'multiple' },
       tooltip: { ...tooltip, trigger: 'axis', formatter: this.tooltipFormatter(result) },
       axisPointer: { link: [{ xAxisIndex: 'all' }], snap: true,
         label: { backgroundColor: token('gray-700') }, lineStyle: { color: token('gray-500') } },
@@ -282,7 +284,7 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
       series: [this.waveformSeries(result, 2), ...amplitudeModes.map((mode, index): LineSeriesOption => ({
         id: `${amplitudeSeriesPrefix}${mode}`, name: names[index], type: 'line', xAxisIndex: 1, yAxisIndex: 1,
         encode: { x: 0, y: 1 }, showSymbol: windows.length <= 2, symbol: 'circle', symbolSize: 4,
-        lineStyle: { width: 2, color: colors[index] }, itemStyle: { color: colors[index] },
+        lineStyle: { width: 2, color: trendColors[index] }, itemStyle: { color: trendColors[index] },
         data: windows.map((window, windowIndex) => [
           (window.from + (window.to - window.from) / 2) * 1000,
           selectTimeDomainAmplitude(window.statistics, mode), windowIndex,

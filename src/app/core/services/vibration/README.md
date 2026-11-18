@@ -22,8 +22,9 @@ one GetCaptures or GetRecent request. Frequency Domain and Signal Indicators use
 one Get request per measurement and applied UTC range, sending MeasurementId,
 From and To.
 
-The API returns all requested raw samples up to 1,000,000 per request, inclusive.
-Larger requests return a business error. The frontend submits the selection and
+The API returns all requested raw samples up to 1,000,000 per measurement, inclusive.
+If any measurement exceeds its limit, the request returns a business error.
+The frontend submits the selection and
 shows the API's message if the request fails. Reported gaps or insufficient
 raw input prevent FFT. Complete contiguous points map to the existing workers.
 

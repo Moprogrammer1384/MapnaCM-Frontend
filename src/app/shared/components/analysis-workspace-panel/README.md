@@ -114,9 +114,9 @@ and opposite event-type badge together inside `app-vibration-bode-chart`.
 
 Frequency Domain uses the shared raw-data FFT chart in
 `shared/components/vibration-frequency-domain-chart/`. It loads measurement records
-through the same API as Time Domain, initializes quantity/unit from source metadata, and plots
-all one-sided FFT bins with unit/amplitude/axis conversions. The old ideal spectrum
-preview was removed. See [Frequency Domain methods and limitations](../../../core/services/vibration/frequency-domain/README.md).
+from the selected Time Domain offline capture, initializes quantity/unit from
+source metadata, and plots all one-sided FFT bins with unit/amplitude/axis conversions.
+See [Frequency Domain methods and limitations](../../../core/services/vibration/frequency-domain/README.md).
 Bode Analysis supplies its own paired tracking charts through
 `measurementChartContent` and `domain="bode"`.
 
@@ -211,7 +211,7 @@ charts below. Presentation uses Metronic utilities and semantic headings.
 Full snapshot metadata remains available to consumers.
 The drawer and execution builder enforce selection within a single Asset.
 
-`../date-time-range/` supplies the combined picker for the four range-based Vibration pages.
+`../date-time-range/` supplies the combined picker for range-based Vibration pages.
 A single input opens the installed Flatpickr 4.6.13 range calendar with independent
 Start/End hour/minute fields and Apply/Cancel in its Metronic footer. Select both
 dates (the same day twice for a same-day range), then adjust 24-hour times. Apply
@@ -246,16 +246,15 @@ References used:
 - [Flatpickr range calendar](https://flatpickr.js.org/examples/#range-calendar)
 - [Flatpickr 24-hour time picker](https://flatpickr.js.org/examples/#24-hour-time-picker)
 
-## API integration update (2026-10-24)
+## Time and Frequency Domain acquisition selection (2026-11-22)
 
-Time/Frequency Domain provide their real measurement templates.
-New analyses wait for the existing picker Apply before fetching.
-DateTimeRangeComponent.applied confirms even an unchanged selection while its
-valueChange remains change-only. The state awaitingDateRange flag is in memory only.
-VibrationTimeDomainApiService in core/services/vibration/api/ uses Get alone
-and maps complete continuous raw points to the existing workers;
-all raw chart transforms remain frontend operations.
-See core/services/vibration/README.md for the current flow.
+Time Domain Offline and Frequency Domain use the same Date and Event time
+picker. New analyses wait for an event selection before requesting chart data.
+Date filters the available events in Tehran time while preserving the displayed
+chart. Selecting an event sends its source key and all selected measurement IDs
+to the Time Domain API. Both charts process the returned raw samples locally.
+Time Domain also offers an Online control for recent samples.
+See [Vibration data access](../../../core/services/vibration/README.md#data-access-and-selection).
 
 ## Bode tracking mode (2026-11-02)
 
@@ -276,8 +275,7 @@ clears a chosen day. Selecting an event does not activate a date filter. The
 availability wrapper loads and caches complete common history using existing
 bounded API windows, so older years are included in Event time as well.
 The existing availability wrapper caches actual common Bode events and colors
-available dates blue. Returning tabs retain their values. Time/Frequency retain
-their existing range picker and Apply workflow.
+available dates blue. Returning tabs retain their values.
 The standalone Bode chart displays amplitude above phase with linked cursor/zoom.
 See [Bode source and methods](../../../core/services/vibration/bode-analysis/README.md).
 
@@ -287,7 +285,10 @@ See [Bode source and methods](../../../core/services/vibration/bode-analysis/REA
 
 ### Consumer-owned date selection
 
-`dateSelectionContent?: TemplateRef<{ $implicit: AnalysisTab }>` replaces only the standard date selector; `dateSelectionTitle` labels that header. Both are forwarded by the workspace to its panel. Orbit supplies its independent acquisition picker and exact period selection through this slot. Default Time/Frequency ranges and the Bode event selector are unchanged.
+`dateSelectionContent?: TemplateRef<{ $implicit: AnalysisTab }>` replaces the
+standard date selector. `dateSelectionTitle` labels that header. The workspace
+forwards both to its panel. Time and Frequency Domain supply their shared event
+picker through this slot. Orbit supplies its own acquisition picker.
 
 ### Chart footers and sample readouts (2026-11-09)
 
@@ -303,6 +304,6 @@ Orbit/Rotor selected-point values occupy a matching visible definition list
 above the footer. Labels are gray-500 normal fs-7; values are gray-700
 fw-semibold. Both start on the first sample, follow hover/click/arrows and retain
 chart zoom. This live readout is separate from static acquisition statistics.
-Signal colours reset inside every analysis: blue `#2563EB`, then orange
-`#EA580C` for a second signal. Time/Frequency always stay blue; measurement or
-Asset ordering never assigns a different colour to another analysis.
+Signal colour order starts in each plot. The Time Domain waveform and FFT
+spectrum use blue `#2563EB`. The lower Time Domain plot uses blue for RMS,
+orange `#EA580C` for 0p and teal `#0D9488` for pp.

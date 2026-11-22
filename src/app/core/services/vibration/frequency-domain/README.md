@@ -1,14 +1,14 @@
 # DARP Frequency Domain calculations
 
-Updated 2026-11-03. VIBRATION_DATA_SOURCE uses VibrationTimeDomainApiService
-from the sibling `api/` folder and ONE
-TimeDomain/Get request per selected measurement/range. Complete continuous raw
-points in that response directly supply the existing FFT pipeline, retaining the
-returned quantity/unit, seconds timestamps and full precision. No second waveform
-endpoint is called. Summary data displays a frontend FFT error, and discontinuous
-or insufficient raw records are also excluded from FFT. The formulas below are
-unchanged. Backend alone controls point limits; no frontend cap/count is sent.
-See ../README.md for selection, API flow and summary handling.
+Updated 2026-11-22. Frequency Domain shares the Time Domain Offline Date and
+Event time picker. `TimeDomain/GetCaptureAvailability` supplies common
+captures for the selected measurements in the Tehran calendar. Date filters
+that list and preserves the displayed spectrum. Event time loads a single
+`TimeDomain/GetCaptures` request with the capture's `SourceKey` and the
+selected `MeasurementIds`. The continuous raw records feed the existing local
+FFT pipeline with their native quantity, unit and timestamps in seconds.
+The API owns the per-measurement limit and the chart displays its message on
+failure. See [waveform data access](../README.md#data-access-and-selection).
 
 ## Modules and purpose
 
@@ -29,9 +29,9 @@ See ../README.md for selection, API flow and summary handling.
 
 FFT-specific input interpolation and windowing live in this folder, as clarified
 by the user on 2026-10-21. They are used only by the FFT pipeline. The existing
-`../time-domain/time-domain-preparation.ts` is reused for validation/SI normalization;
-no new files or behavior are added to Time Domain. No time-domain numerical
-derivative or integral is used to obtain the frequency-domain quantities.
+`../time-domain/time-domain-preparation.ts` is reused for validation and SI
+normalization. Frequency-domain quantity conversion uses Fourier differentiation
+and integration.
 The reusable chart is `shared/components/vibration-frequency-domain-chart/`;
 page components contain no numerical processing.
 

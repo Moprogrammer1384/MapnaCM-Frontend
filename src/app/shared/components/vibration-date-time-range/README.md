@@ -1,7 +1,7 @@
 # DARP vibration calendar availability
 
 `VibrationDateTimeRangeComponent` wraps the existing `DateTimeRangeComponent` for
-Time Domain and Frequency Domain only. It loads calendar metadata through the
+range-based consumers such as Signal Indicators. It loads calendar metadata through the
 shared `TimeAvailabilitySource` / `TIME_AVAILABILITY_SOURCE` contract/token in
 `core/services/time-availability.service.ts`, with its model in
 `core/models/time-availability.model.ts`. Other modules can consume this source

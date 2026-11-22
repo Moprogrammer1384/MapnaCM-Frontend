@@ -2,6 +2,7 @@ import { TIME_AVAILABILITY_SOURCE } from 'src/app/core/services/time-availabilit
 import { availabilityFixtureSource } from 'src/testing/time-availability-fixture';
 import { of } from 'rxjs';
 import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
+import { VibrationTimeDomainAcquisitionApiService } from 'src/app/core/services/vibration/api/vibration-time-domain-acquisition-api.service';
 import { TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
@@ -12,6 +13,7 @@ import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selec
 import { AmplitudeMode, AnalysisXAxis, VibrationQuantity, VibrationUnit, vibrationUnit } from 'src/app/core/models/analysis-chart-settings.model';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
 import { VibrationModule } from 'src/app/pages/cm/vibration/vibration.module';
+import { VibrationFrequencyDomainComponent } from 'src/app/pages/cm/vibration/frequency-domain/frequency-domain.component';
 import { METRONIC_PRIMENG_CONFIG } from '../../metronic-primeng.config';
 
 const execution: AssetTaxonomyExecution = {
@@ -22,6 +24,8 @@ const execution: AssetTaxonomyExecution = {
     unit: { id: 2, name: 'Unit', tag: null }, sensitivity: null,
   }],
 };
+
+const event = { id: 'analytic', from: '2026-10-01T00:00:00', to: '2026-10-01T00:00:02', label: 'Analytical capture' };
 
 interface ChartSnapshot {
   xAxis: { name: string; max: number; axisLabel: { formatter: (value: number) => string } }[];
@@ -61,20 +65,27 @@ describe('Analysis panel Select2 chart controls', () => {
     await harness.navigateByUrl(`/cm/vibration/${page}`);
     await settle();
   };
-  const createTab = async () => { state.execute(execution); const tab = state.activeTab()!;
-    state.applyDateTimeRange(tab.id, { from: tab.dateRange.from + 'T' + tab.timeRange.from, to: tab.dateRange.to + 'T' + tab.timeRange.to }); await settle(); return state.activeTabId(); };
+  const createTab = async () => {
+    state.execute(execution);
+    state.selectTimeDomainEvent(state.activeTabId(), event);
+    await settle();
+    return state.activeTabId();
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [NoopAnimationsModule],
       providers: [provideRouter([{ path: 'cm/vibration', loadChildren: () => VibrationModule }]),
         providePrimeNG(METRONIC_PRIMENG_CONFIG), { provide: TIME_AVAILABILITY_SOURCE, useValue: availabilityFixtureSource }, VibrationSelectionService,
-        { provide: VIBRATION_DATA_SOURCE, useValue: { load: () => of({
-          id: 'analytic', label: 'Analytical fixture', quantity: 'velocity', unit: 'mm/s', timeUnit: 's',
-          time: Array.from({ length: 500 }, (_, i) => i / 250),
-          values: Array.from({ length: 500 }, (_, i) => 2 * Math.sin(2 * Math.PI * 10 * i / 250) + Math.sin(2 * Math.PI * 25 * i / 250)),
-        }) } }],
-    }).compileComponents();
+      ],
+    }).overrideComponent(VibrationFrequencyDomainComponent, { add: { providers: [
+      { provide: VibrationTimeDomainAcquisitionApiService, useValue: { availability: () => of({ events: [event] }) } },
+      { provide: VIBRATION_DATA_SOURCE, useValue: { load: () => of({
+        id: 'analytic', label: 'Analytical fixture', quantity: 'velocity', unit: 'mm/s', timeUnit: 's',
+        time: Array.from({ length: 500 }, (_, i) => i / 250),
+        values: Array.from({ length: 500 }, (_, i) => 2 * Math.sin(2 * Math.PI * 10 * i / 250) + Math.sin(2 * Math.PI * 25 * i / 250)),
+      }) } },
+    ] } }).compileComponents();
     state = TestBed.inject(VibrationSelectionService);
     harness = await RouterTestingHarness.create();
   });
@@ -185,13 +196,12 @@ describe('Analysis panel Select2 chart controls', () => {
 
   it('updates every measurement chart while preserving independent zoom and date/time state', async () => {
     await navigate('frequency-domain');
-    state.execute({ ...execution, measurements: [...execution.measurements,
+    state.execute({ ...execution, selection: { ...execution.selection, measurementIds: [6, 7] }, measurements: [...execution.measurements,
       { ...execution.measurements[0], measurement: { id: 7, name: 'Y', tag: null } }] });
     const tab = state.activeTab()!;
-    state.applyDateTimeRange(tab.id, { from: tab.dateRange.from + 'T' + tab.timeRange.from, to: tab.dateRange.to + 'T' + tab.timeRange.to });
+    state.selectTimeDomainEvent(tab.id, event);
     await settle();
     const instances = Array.from(root().querySelectorAll<HTMLElement>('[_echarts_instance_]'), el => echarts.getInstanceByDom(el)!);
-    const ranges = { dateRange: state.activeTab()!.dateRange, timeRange: state.activeTab()!.timeRange };
     instances[0].dispatchAction({ type: 'dataZoom', start: 20, end: 70 });
     await change('X axis', 'cpm'); await change('Amplitude', 'pp'); await change('Unit', 'mm/s');
     expect(instances.length).toBe(2);
@@ -202,8 +212,7 @@ describe('Analysis panel Select2 chart controls', () => {
     }
     expect(snapshot().dataZoom[0].start).toBe(20); expect(snapshot().dataZoom[0].end).toBe(70);
     expect((instances[1].getOption() as unknown as ChartSnapshot).dataZoom[0].start).toBe(0);
-    expect(state.activeTab()!.dateRange).toEqual(ranges.dateRange);
-    expect(state.activeTab()!.timeRange).toEqual(ranges.timeRange);
+    expect(state.activeTab()!.timeDomainEvent).toBe(event);
   });
 
   it('supports visible Select2 selection, accessible labels and cleanup of open dropdowns and charts', async () => {
@@ -243,7 +252,7 @@ describe('Analysis panel Select2 chart controls', () => {
           const panel = root().querySelector<HTMLElement>('app-analysis-panel')!;
           expect(panel.scrollWidth).toBeLessThanOrEqual(panel.clientWidth);
           const controls = Array.from(panel.querySelectorAll<HTMLElement>('.select2-selection'));
-          expect(controls.length).toBe(5);
+          expect(controls.length).toBe(6);
           controls.forEach(control => {
             expect(control.classList).toContain('form-select-solid');
             expect(control.getBoundingClientRect().width).toBeGreaterThan(0);

@@ -11,7 +11,6 @@ import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selec
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
 import { METRONIC_PRIMENG_CONFIG } from 'src/app/shared/components/metronic-primeng.config';
 import { VibrationModule } from './vibration.module';
-import { availabilityFixture } from 'src/testing/time-availability-fixture';
 
 const execution: AssetTaxonomyExecution = {
   selection: { plantId: 1, unitId: 2, measurementIds: [6, 7] },
@@ -31,34 +30,51 @@ describe('Vibration measurement/date selection → native HTTP data → existing
       await new Promise(resolve => setTimeout(resolve, 10)); harness.fixture.detectChanges();
     }
   };
-  const apply = (day = '2026-10-01') => {
-    const input = root().querySelector<HTMLInputElement>('app-date-time-range input')!;
-    input.click(); harness.fixture.detectChanges();
-    const picker = (input as HTMLInputElement & { _flatpickr: Instance })._flatpickr;
-    picker.setDate([day, day], true, 'Y-m-d');
-    harness.fixture.detectChanges();
-    ['12', '0', '12', '1'].forEach((value, index) => {
-      const control = picker.calendarContainer.querySelectorAll<HTMLInputElement>('input[id]')[index];
-      control.value = value; control.dispatchEvent(new Event('input', { bubbles: true }));
-    });
-    picker.calendarContainer.querySelectorAll<HTMLSelectElement>('select').forEach(control => {
-      control.value = 'AM'; control.dispatchEvent(new Event('change', { bubbles: true }));
-    });
-    harness.fixture.detectChanges();
-    Array.from(picker.calendarContainer.querySelectorAll('button')).find(button => button.textContent!.trim() === 'Apply')!.click();
-    harness.fixture.detectChanges();
-  };
-  const captureDays = ['2026-10-01', '2026-10-02', '2026-10-03'];
-  const captureFromUtc = (day: string) => Date.parse(`${day}T00:00:00+03:30`);
+  const captureIds = ['2026-10-01', '2026-10-02', '2026-10-02-later', '2026-10-03'];
+  const captureFromUtc = (id: string) => Date.parse(`${id.slice(0, 10)}T00:00:00+03:30`) + (id.endsWith('-later') ? 60000 : 0);
   const captureCatalogue = {
     timeZone: 'Asia/Tehran',
-    events: captureDays.map(id => ({
+    events: captureIds.map(id => ({
       id, from: new Date(captureFromUtc(id)).toISOString(), to: new Date(captureFromUtc(id) + 800).toISOString(),
       sampleCount: 2048, sampleRateHz: 2560,
     })),
-    onlineWindow: null,
+    onlineWindow: { maximumSeconds: 390 },
   };
   const eventTime = () => root().querySelector<HTMLSelectElement>('select[aria-label="Event time"]')!;
+  const pickerInput = () => root().querySelector<HTMLInputElement & { _flatpickr: Instance }>('input[id$="_event_date"]')!;
+  const selectEvent = (index = 1) => {
+    eventTime().selectedIndex = index;
+    eventTime().dispatchEvent(new Event('change'));
+    harness.fixture.detectChanges();
+  };
+  const expectCatalogue = (ids: number[]) => {
+    const request = http.expectOne(req => req.url.endsWith('/TimeDomain/GetCaptureAvailability'));
+    expect(request.request.params.getAll('MeasurementIds')).toEqual(ids.map(String));
+    return request;
+  };
+  const flushCatalogue = (ids: number[]) => expectCatalogue(ids).flush({ success: true, data: captureCatalogue });
+  const expectWaveform = (ids: number[], captureId: string) => {
+    const request = http.expectOne(req => req.url.endsWith('/TimeDomain/GetCaptures'));
+    expect(request.request.params.getAll('MeasurementIds')).toEqual(ids.map(String));
+    expect(request.request.params.get('SourceKey')).toBe(captureId);
+    expect(request.request.params.get('Quantity')).toBe('1');
+    expect(request.request.params.keys().sort()).toEqual(['MeasurementIds', 'Quantity', 'SourceKey']);
+    return request;
+  };
+  const waveform = (ids: number[], captureId: string, quantity = 2, unit = 5) => ({ success: true, data: {
+    timeOriginUtc: new Date(captureFromUtc(captureId)).toISOString(),
+    timeUnit: 's', series: ids.map(id => ({
+      measurementId: id, sourceQuantity: quantity, quantity, unit, representation: 'raw',
+      originalSampleCount: 2048, returnedPointCount: 2048, conversionApplied: false, hasGaps: false, isFftInput: false,
+      points: Array.from({ length: 2048 }, (_, i) => ({ x: i / 2560,
+        y: id * Math.sin(2 * Math.PI * 80 * i / 2560), breakBefore: i === 0 })),
+    })),
+  } });
+  const chartElements = () => Array.from(root().querySelectorAll<HTMLElement>('[_echarts_instance_]'));
+  const interact = (action: () => void) => {
+    harness.fixture.ngZone!.run(action);
+    harness.fixture.detectChanges();
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({ imports: [NoopAnimationsModule], providers: [
@@ -71,61 +87,21 @@ describe('Vibration measurement/date selection → native HTTP data → existing
 
   for (const domain of ['time', 'frequency'] as const) {
     const isTime = domain === 'time';
-    const selectRange = (day = '2026-10-01') => {
-      if (!isTime) { apply(day); return; }
-      eventTime().selectedIndex = captureDays.indexOf(day) + 1;
-      eventTime().dispatchEvent(new Event('change'));
-      harness.fixture.detectChanges();
-    };
-    const expectCatalogue = (ids: number[]) => {
-      const request = http.expectOne(req => req.url.endsWith(isTime ? '/GetCaptureAvailability' : '/GetAvailability'));
-      expect(request.request.params.getAll('MeasurementIds')).toEqual(ids.map(String));
-      request.flush({ success: true, data: isTime ? captureCatalogue : availabilityFixture(ids) });
-    };
-    const rawSeries = (id: number, count: number, quantity: number, unit: number) => ({
-      measurementId: id, sourceQuantity: quantity, quantity, unit, representation: 'raw',
-      originalSampleCount: count, returnedPointCount: count, conversionApplied: false, hasGaps: false, isFftInput: false,
-      points: Array.from({ length: count }, (_, i) => ({ x: isTime ? i / 2560 : i, y: id * Math.sin(2 * Math.PI * 0.1 * i),
-        breakBefore: i === 0 })),
-    });
-    const expectWaveforms = (ids: number[], day: string) => {
-      if (isTime) {
-        const request = http.expectOne(req => req.url.endsWith('/GetCaptures'));
-        expect(request.request.params.getAll('MeasurementIds')).toEqual(ids.map(String));
-        expect(request.request.params.get('SourceKey')).toBe(day);
-        expect(request.request.params.keys().sort()).toEqual(['MeasurementIds', 'Quantity', 'SourceKey']);
-        return [{ request, ids }];
-      }
-      return ids.map(id => {
-        const request = http.expectOne(req => req.url.endsWith('/TimeDomain/Get') && req.params.get('MeasurementId') === String(id));
-        expect(request.request.params.get('From')).toBe(new Date(`${day}T00:00`).toISOString());
-        expect(request.request.params.get('To')).toBe(new Date(`${day}T00:01`).toISOString());
-        expect(request.request.params.keys().sort()).toEqual(['From', 'MeasurementId', 'To']);
-        return { request, ids: [id] };
-      });
-    };
-    const waveform = (ids: number[], day: string, quantity = 2, unit = 5) => ({ success: true, data: {
-      timeOriginUtc: isTime ? new Date(captureFromUtc(day)).toISOString() : new Date(`${day}T00:00`).toISOString(),
-      timeUnit: 's', series: ids.map(id => rawSeries(id, isTime ? 2048 : 60, quantity, unit)),
-    } });
-
     it(`adds a stored g unit only for its loaded ${domain} acquisition and removes it for a new native unit`, async () => {
       state.setRoute(`/cm/vibration/${domain}-domain`);
       harness = await RouterTestingHarness.create(`/cm/vibration/${domain}-domain`);
-      const interact = (action: () => void) => { harness.fixture.ngZone!.run(action); harness.fixture.detectChanges(); };
       interact(() => state.execute(execution));
-      interact(() => expectCatalogue([6, 7]));
-      const flush = (day: string, unit: number) => {
-        interact(() => selectRange(day));
-        for (const { request, ids } of expectWaveforms([6, 7], day)) {
-          interact(() => request.flush(waveform(ids, day, 3, unit)));
-        }
+      interact(() => flushCatalogue([6, 7]));
+      const flush = (index: number, unit: number) => {
+        const id = captureIds[index - 1];
+        interact(() => selectEvent(index));
+        interact(() => expectWaveform([6, 7], id).flush(waveform([6, 7], id, 3, unit)));
       };
-      flush('2026-10-01', 11); await settle();
+      flush(1, 11); await settle();
       const unitSelect = () => root().querySelector<HTMLSelectElement>('select[aria-label="Unit"]')!;
       expect(Array.from(unitSelect().options, option => option.value)).toEqual(['mm/s²', 'g']);
       expect(unitSelect().value).toBe('g');
-      flush('2026-10-02', 10); await settle();
+      flush(2, 10); await settle();
       expect(Array.from(unitSelect().options, option => option.value)).toEqual(['mm/s²']);
       expect(unitSelect().value).toBe('mm/s²');
       http.expectNone(() => true);
@@ -135,27 +111,46 @@ describe('Vibration measurement/date selection → native HTTP data → existing
       state.setRoute(`/cm/vibration/${domain}-domain`);
       harness = await RouterTestingHarness.create(`/cm/vibration/${domain}-domain`);
       harness.fixture.ngZone!.run(() => state.execute(execution)); harness.fixture.detectChanges();
-      expect(root().textContent).toContain(isTime ? 'Select an event time' : 'press Apply');
-      harness.fixture.ngZone!.run(() => expectCatalogue([6, 7]));
-      harness.fixture.detectChanges();
+      expect(root().textContent).toContain('Select an event time');
+      interact(() => flushCatalogue([6, 7]));
+      expect(!!root().querySelector('input[role="switch"]')).toBe(isTime);
+      const calendar = pickerInput()._flatpickr;
+      expect(calendar.config.mode).toBe('single');
+      expect(calendar.isEnabled('2026-09-30')).toBeFalse();
+      expect(calendar.isEnabled('2026-10-01')).toBeTrue();
       http.expectNone(() => true);
       // Changes made before the first date confirmation must not trigger any reads.
       const amplitude = root().querySelector<HTMLSelectElement>('select[aria-label="Amplitude"]')!;
       window.jQuery(amplitude).val('pp').trigger('change'); harness.fixture.detectChanges();
       http.expectNone(() => true);
-      harness.fixture.ngZone!.run(() => selectRange());
-      for (const { request, ids } of expectWaveforms([6, 7], '2026-10-01')) {
-        harness.fixture.ngZone!.run(() => request.flush(waveform(ids, '2026-10-01')));
-      }
+      interact(() => calendar.setDate('2026-10-02', true));
+      expect(eventTime().options.length).toBe(3);
+      http.expectNone(() => true);
+      interact(() => selectEvent(2));
+      const id = '2026-10-02-later';
+      interact(() => expectWaveform([6, 7], id).flush(waveform([6, 7], id)));
       http.expectNone(() => true);
       await settle();
-      const elements = Array.from(root().querySelectorAll<HTMLElement>('[_echarts_instance_]'));
+      const elements = chartElements();
       expect(elements.length).toBe(2);
       const charts = elements.map(element => echarts.getInstanceByDom(element)!);
-      const option = () => charts[0].getOption() as { xAxis: { name: string; max: number }[]; series: { data: [number, number][] }[] };
+      const option = () => charts[0].getOption() as { xAxis: { name: string; max: number }[];
+        series: { data: [number, number][]; lineStyle: { color: string }; itemStyle: { color: string } }[] };
       expect(option().xAxis[isTime ? 1 : 0].name).toBe(isTime ? 'Time (ms)' : 'Frequency (Hz)');
       if (isTime) { expect(option().series[0].data.length).toBe(2048); expect(option().series[0].data[2047][0]).toBe(2047 / 2560 * 1000); }
-      else { expect(option().series[0].data.length).toBe(31); expect(option().xAxis[0].max).toBe(0.5); }
+      else {
+        expect(option().series[0].data.length).toBe(1025);
+        expect(option().xAxis[0].max).toBeCloseTo(1280);
+        expect(option().series[0].data[64][0]).toBeCloseTo(80);
+        expect(option().series[0].data[64][1]).toBeCloseTo(12);
+      }
+      expect(option().series[0].lineStyle.color).toBe('#2563EB');
+      expect(option().series[0].itemStyle.color).toBe('#2563EB');
+      interact(() => calendar.setDate('2026-10-03', true));
+      expect(eventTime().options.length).toBe(2);
+      expect(state.activeTab()?.timeDomainEvent?.id).toBe(id);
+      expect(chartElements()).toEqual(elements);
+      http.expectNone(() => true);
       // Quantity, Unit, Amplitude, Window and zoom operate on the same received record.
       for (const [label, value] of [['Quantity', 'displacement'], ['Unit', 'mm'], ['Amplitude', 'rms'],
         ...(domain === 'frequency' ? [['Window', 'hann']] : [])]) {
@@ -170,24 +165,16 @@ describe('Vibration measurement/date selection → native HTTP data → existing
     it(`retains ${domain} tab data, calendars, transforms and zoom without repeating HTTP; closes release charts`, async () => {
       state.setRoute(`/cm/vibration/${domain}-domain`);
       harness = await RouterTestingHarness.create(`/cm/vibration/${domain}-domain`);
-      const interact = (action: () => void) => {
-        harness.fixture.ngZone!.run(action); harness.fixture.detectChanges();
-      };
-      const flushWaveforms = (ids: number[], day: string) => {
-        for (const reply of expectWaveforms(ids, day)) {
-          interact(() => reply.request.flush(waveform(reply.ids, day)));
-        }
-      };
-      const elements = () => Array.from(root().querySelectorAll<HTMLElement>('[_echarts_instance_]'));
-      const pickerInput = () => root().querySelector<HTMLInputElement>(isTime ? 'input[id$="_event_date"]' : 'app-date-time-range input')!;
-      const calendars = () => document.querySelectorAll(isTime ? '.darp-event-calendar' : '.darp-date-time-calendar');
+      const elements = chartElements;
+      const calendars = () => document.querySelectorAll('.darp-event-calendar');
       const selectTab = async (id: string) => {
         interact(() => root().querySelector<HTMLElement>(`[data-tab-id="${id}"]`)!.click());
         await settle(true); http.expectNone(() => true);
       };
       interact(() => state.execute(execution));
       const firstId = state.activeTabId();
-      interact(() => expectCatalogue([6, 7])); interact(() => selectRange()); flushWaveforms([6, 7], '2026-10-01');
+      interact(() => flushCatalogue([6, 7])); interact(() => selectEvent());
+      interact(() => expectWaveform([6, 7], '2026-10-01').flush(waveform([6, 7], '2026-10-01')));
       await settle();
       const firstElements = elements();
       const firstCharts = firstElements.map(element => echarts.getInstanceByDom(element)!);
@@ -195,7 +182,7 @@ describe('Vibration measurement/date selection → native HTTP data → existing
       expect((firstCharts[0].getOption() as { color: string[] }).color[0]).toBe('#2563EB');
       expect((firstCharts[1].getOption() as { color: string[] }).color[0]).toBe('#2563EB');
       const firstInput = pickerInput();
-      const firstPicker = (firstInput as HTMLInputElement & { _flatpickr: Instance })._flatpickr;
+      const firstPicker = firstInput._flatpickr;
       interact(() => window.jQuery(root().querySelector('select[aria-label="Quantity"]')!).val('displacement').trigger('change'));
       await settle();
       firstCharts[0].dispatchAction({ type: 'dataZoom', start: 20, end: 70 });
@@ -204,12 +191,12 @@ describe('Vibration measurement/date selection → native HTTP data → existing
       interact(() => state.execute({ ...execution, selection: { ...execution.selection, measurementIds: [9] },
         measurements: [{ ...execution.measurements[0], measurement: { id: 9, name: 'Z', tag: null } }] }));
       const secondId = state.activeTabId();
-      interact(() => expectCatalogue([9]));
-      expect(root().textContent).toContain(isTime ? 'Select an event time' : 'press Apply');
+      interact(() => flushCatalogue([9]));
+      expect(root().textContent).toContain('Select an event time');
       expect(elements().length).toBe(0);
       http.expectNone(() => true);
-      interact(() => selectRange('2026-10-02'));
-      const [{ request: pending }] = expectWaveforms([9], '2026-10-02');
+      interact(() => selectEvent(2));
+      const pending = expectWaveform([9], '2026-10-02');
       await selectTab(firstId);
       expect(pending.cancelled).toBeFalse();
       await selectTab(secondId);
@@ -224,21 +211,20 @@ describe('Vibration measurement/date selection → native HTTP data → existing
       await selectTab(firstId);
       expect(elements()).toEqual(firstElements);
       expect(pickerInput()).toBe(firstInput);
-      expect((pickerInput() as HTMLInputElement & { _flatpickr: Instance })._flatpickr).toBe(firstPicker);
-      if (isTime) { expect(state.activeTab()!.timeDomainEvent?.id).toBe('2026-10-01'); }
-      else { expect(firstInput.value).toBe('2026-10-01 12:00:00 AM to 2026-10-01 12:01:00 AM'); }
+      expect(pickerInput()._flatpickr).toBe(firstPicker);
+      expect(state.activeTab()!.timeDomainEvent?.id).toBe('2026-10-01');
       expect(firstCharts[0].getOption()).toEqual(firstOption);
       expect(state.activeTab()!.chartSettings!.quantity).toBe('displacement');
       firstElements.forEach((element, i) => expect(echarts.getInstanceByDom(element)).toBe(firstCharts[i]));
       await selectTab(secondId);
       expect(elements()).toEqual([secondElement]);
       expect(pickerInput()).toBe(secondInput);
-      if (isTime) { expect(state.activeTab()!.timeDomainEvent?.id).toBe('2026-10-02'); }
-      else { expect(secondInput.value).toBe('2026-10-02 12:00:00 AM to 2026-10-02 12:01:00 AM'); }
+      expect(state.activeTab()!.timeDomainEvent?.id).toBe('2026-10-02');
       await selectTab(firstId);
 
-      // A changed date range still loads new data only for the affected tab.
-      interact(() => selectRange('2026-10-03')); flushWaveforms([6, 7], '2026-10-03');
+      // Selecting a new acquisition loads new data only for the affected tab.
+      interact(() => selectEvent(4));
+      interact(() => expectWaveform([6, 7], '2026-10-03').flush(waveform([6, 7], '2026-10-03')));
       await settle(); http.expectNone(() => true);
       const refreshedElements = elements();
       expect(refreshedElements.length).toBe(2);
@@ -255,4 +241,30 @@ describe('Vibration measurement/date selection → native HTTP data → existing
       expect(root().textContent).toContain('No analysis tabs yet');
     }, 20000);
   }
+
+  it('shows Time Domain API errors in Frequency Domain and retries the failed request', async () => {
+    state.setRoute('/cm/vibration/frequency-domain');
+    harness = await RouterTestingHarness.create('/cm/vibration/frequency-domain');
+    interact(() => state.execute({ ...execution, selection: { ...execution.selection, measurementIds: [6] },
+      measurements: execution.measurements.slice(0, 1) }));
+    const fail = (request: ReturnType<typeof expectCatalogue>, message: string) =>
+      interact(() => request.flush({ message }, { status: 400, statusText: 'Bad Request' }));
+    const alert = () => root().querySelector<HTMLElement>('[role="alert"]')!;
+    const retry = () => interact(() => alert().querySelector('button')!.click());
+    fail(expectCatalogue([6]), 'Acquisitions unavailable');
+    expect(alert().textContent).toContain('Acquisitions unavailable');
+    await settle(true);
+    expect(eventTime().disabled).toBeTrue();
+    retry();
+    interact(() => flushCatalogue([6]));
+    interact(() => selectEvent());
+    fail(expectWaveform([6], '2026-10-01'), 'Measurement 6 exceeds the 1,000,000 sample limit');
+    expect(alert().textContent).toContain('Measurement 6 exceeds the 1,000,000 sample limit');
+    expect(chartElements()).toEqual([]);
+    retry();
+    interact(() => expectWaveform([6], '2026-10-01').flush(waveform([6], '2026-10-01')));
+    await settle();
+    expect(alert()).toBeNull();
+    expect(chartElements().length).toBe(1);
+  });
 });

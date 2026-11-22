@@ -24,6 +24,8 @@ import { largestSpectrumPeaks, SpectrumPeak } from 'src/app/core/services/vibrat
 })
 export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDestroy {
   @Input({ required: true }) measurementId: number;
+  @Input() measurementIds?: readonly number[];
+  @Input() sourceKey?: string;
   @Input({ required: true }) from: string;
   @Input({ required: true }) to: string;
   @Input() settings?: AnalysisChartSettings;
@@ -58,7 +60,9 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['measurementId'] || changes['from'] || changes['to']) { this.reload(); }
+    if (changes['measurementId'] || changes['measurementIds'] || changes['sourceKey'] || changes['from'] || changes['to']) {
+      this.reload();
+    }
     else if (changes['settings']) { this.scheduleAnalysis(); }
     else { this.updateChartTheme(); }
   }
@@ -71,17 +75,22 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
     this.session?.release();
     this.session = undefined;
     this.raw = undefined;
-    // Keep the existing chart/zoom while a new measurement range is loading.
-    // Successful results merge into it; failures remove the stale visualization.
+    this.analysis = undefined;
+    this.peaks = [];
+    this.acquisitionStartedAt = undefined;
+    this.points = [];
+    this.chartOptions = undefined;
     this.loading = true;
     this.error = '';
-    this.subscription = this.source.load({ measurementId: this.measurementId, from: this.from, to: this.to }).subscribe({
+    this.subscription = this.source.load({
+      measurementId: this.measurementId, from: this.from, to: this.to,
+      ...(this.measurementIds && { measurementIds: this.measurementIds }),
+      ...(this.sourceKey && { sourceKey: this.sourceKey }),
+    }).subscribe({
       next: raw => {
         this.sourceProfile.emit({ quantity: raw.quantity, unit: raw.unit });
         if (isVibrationDisplay(raw)) {
           this.loading = false;
-          this.analysis = undefined;
-          this.chartOptions = undefined;
           this.error = raw.series.representation === 'minmax-statistical-envelope'
             ? 'FFT cannot be calculated from summary data. Raw waveform samples are required.'
             : 'FFT requires at least three continuous raw samples. The returned data is incomplete or contains gaps.';
@@ -100,8 +109,6 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
         this.sourceProfile.emit(undefined);
         this.loading = false;
         this.error = vibrationError(error);
-        this.analysis = undefined;
-        this.chartOptions = undefined;
         this.changeDetector.markForCheck();
       },
     });
@@ -165,9 +172,10 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
     const token = (name: string) => styles.getPropertyValue(`--bs-${name}`).trim();
     const quantity = VIBRATION_QUANTITIES[result.quantity].label;
     const label = `${quantity} (${result.unit} ${AMPLITUDE_LABELS[result.amplitudeMode]})`;
+    const signalColor = vibrationChartColor();
     this.chartOptions = {
       animation: false,
-      color: [vibrationChartColor()],
+      color: [signalColor],
       textStyle: { color: token('gray-600'), fontFamily: styles.fontFamily },
       tooltip: {
         trigger: 'axis',
@@ -192,9 +200,10 @@ export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDest
           textStyle: { color: token('gray-600') }, handleStyle: { color: token('primary'), borderColor: token('primary') },
           moveHandleStyle: { color: token('primary') },
           dataBackground: { lineStyle: { color: token('gray-500') }, areaStyle: { color: token('gray-200') } },
-          selectedDataBackground: { lineStyle: { color: token('primary') }, areaStyle: { color: token('primary-light') } } },
+          selectedDataBackground: { lineStyle: { color: signalColor }, areaStyle: { color: token('primary-light') } } },
       ],
-      series: [{ id: 'raw-frequency', name: quantity, type: 'line', showSymbol: false, lineStyle: { width: 1 },
+      series: [{ id: 'raw-frequency', name: quantity, type: 'line', showSymbol: false,
+        lineStyle: { width: 1, color: signalColor }, itemStyle: { color: signalColor },
         sampling: 'minmax', progressive: 5000, data: this.points }],
     };
   }

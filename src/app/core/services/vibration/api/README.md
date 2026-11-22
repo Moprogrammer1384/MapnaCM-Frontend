@@ -1,13 +1,14 @@
 # DARP Vibration APIs
 
-Updated 2026-11-18. All Vibration HTTP adapters live in this folder. Filenames
+Updated 2026-11-22. All Vibration HTTP adapters live in this folder. Filenames
 and injectable classes identify the Vibration module, backend feature and purpose.
 Numerical analysis and workers remain in their respective feature folders.
 
 | Service file | Injectable class | Page / purpose | Existing GET endpoint |
 | --- | --- | --- | --- |
-| `vibration-time-domain-acquisition-api.service.ts` | `VibrationTimeDomainAcquisitionApiService` | Time Domain online and offline waveforms | `/TimeDomain/GetRecent`, `/TimeDomain/GetCaptures`, `/TimeDomain/GetCaptureAvailability` |
-| `vibration-time-domain-api.service.ts` | `VibrationTimeDomainApiService` | Frequency Domain and Signal Indicators raw waveform reads | `/TimeDomain/Get` |
+| `vibration-time-domain-acquisition-api.service.ts` | `VibrationTimeDomainAcquisitionApiService` | Time Domain online and offline waveforms, and Frequency Domain's offline waveform input | `/TimeDomain/GetRecent`, `/TimeDomain/GetCaptures`, `/TimeDomain/GetCaptureAvailability` |
+| `time-domain-capture-availability-api.service.ts` | `TimeDomainCaptureAvailabilityApiService` | Per-selection loading, results and Retry for the shared Time/Frequency event picker | Uses `VibrationTimeDomainAcquisitionApiService.availability` |
+| `vibration-time-domain-api.service.ts` | `VibrationTimeDomainApiService` | Signal Indicators waveform reads for a range | `/TimeDomain/Get` |
 | `vibration-time-domain-availability-api.service.ts` | `VibrationTimeDomainAvailabilityApiService` | Available calendar days for range-based consumers | `/TimeDomain/GetAvailability` |
 | `vibration-bode-analysis-api.service.ts` | `VibrationBodeAnalysisApiService` | Bode Analysis acquisitions | `/BodeAnalysis/Get` |
 | `vibration-bode-analysis-availability-api.service.ts` | `VibrationBodeAnalysisAvailabilityApiService` | Bode Analysis event times and available dates | `/BodeAnalysis/GetAvailability` |
@@ -15,8 +16,9 @@ Numerical analysis and workers remain in their respective feature folders.
 | `vibration-orbit-analysis-availability-api.service.ts` | `VibrationOrbitAnalysisAvailabilityApiService` | Exact daily Orbit instants | `/OrbitAnalysis/GetAvailability` |
 | `vibration-rotor-position-api.service.ts` | `VibrationRotorPositionApiService` | Shared operating-event discovery and independent recorded DC acquisition | `/RotorPosition/GetAvailability`, `/RotorPosition/Get` |
 
-Frequency Domain computes its FFT locally from the Time Domain response; it has
-no separate HTTP endpoint.
+Frequency Domain computes its FFT locally from the selected Time Domain
+offline capture. One `GetCaptures` request sends the common `SourceKey` and
+all selected `MeasurementIds`.
 
 Time Domain waveform endpoints enforce a server-owned limit of 1,000,000 raw
 samples for each measurement. The adapters submit the

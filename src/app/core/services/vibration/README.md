@@ -1,8 +1,9 @@
 # DARP vibration data and processing
 
-Updated 2026-11-18. Time Domain uses `VibrationTimeDomainAcquisitionApiService`
-for exact offline captures and recent online data. Frequency Domain and Signal
-Indicators use the range-based `VibrationTimeDomainApiService`. HTTP adapters are grouped in
+Updated 2026-11-22. Time Domain and Frequency Domain share
+`VibrationTimeDomainAcquisitionApiService` for exact offline captures. Time
+Domain also uses it for recent online data. Signal Indicators use the range-based
+`VibrationTimeDomainApiService`. HTTP adapters are grouped in
 [api/](api/README.md), with explicit Vibration/feature/purpose names.
 The old Time/Frequency workbook fixture and tenfold repetition were removed.
 Overview has no chart. Rotor Position uses recorded DC acquisitions through its
@@ -17,10 +18,11 @@ Synthetic Time/Frequency workload data exists under src/testing/ for regression 
 ## Data access and selection
 
 The active backend contract is docs/Vibration-TimeDomain-API.fa.md (seconds version).
-API time coordinates are in seconds. Time Domain loads all selected channels in
-one GetCaptures or GetRecent request. Frequency Domain and Signal Indicators use
-one Get request per measurement and applied UTC range, sending MeasurementId,
-From and To.
+API time coordinates are in seconds. Time Domain Offline and Frequency Domain
+use `GetCaptureAvailability` to list common captures. Date filters that list,
+and Event time loads all selected channels in one `GetCaptures` request.
+Time Domain Online loads all selected channels in one `GetRecent` request.
+Signal Indicators use one `Get` request per measurement and applied UTC range.
 
 The API returns all requested raw samples up to 1,000,000 per measurement, inclusive.
 If any measurement exceeds its limit, the request returns a business error.
@@ -28,12 +30,11 @@ The frontend submits the selection and
 shows the API's message if the request fails. Reported gaps or insufficient
 raw input prevent FFT. Complete contiguous points map to the existing workers.
 
-HttpParams carries measurement ID and explicit UTC ISO timestamps. Local picker
-values are converted once; existing offsets are respected. From is inclusive, To
-exclusive. Existing environment.apiUrl and JWT AuthInterceptor are reused.
-Business success=false, transport and malformed-contract failures show actual
-messages and Retry. Range changes and destruction cancel the pending request.
-There is no new storage, credential, dependency or backend/database implementation.
+Exact capture requests use the server's `SourceKey`. For range requests,
+`HttpParams` carries the measurement ID and explicit UTC ISO timestamps.
+`From` is inclusive and `To` is exclusive. Both adapters use
+`environment.apiUrl` and the JWT interceptor. Errors show the message and
+offer Retry. Replacing a selection or closing its tab cancels pending reads.
 
 ## Preserve vibration meaning and the existing charts
 
@@ -130,6 +131,9 @@ The worker measures each directly from that window and preserves any DC in the
 displayed waveform. The waveform and the three curves share the Bode-style
 zoom and cursor. The top reference lines continue to use the full-record
 Amplitude selection. [SKF vibration guide](https://www.skf.com/binaries/pub12/Images/0901d196802179ea-JM02001_Introduction_Guide_to_Vibration_Monitoring_2017_tcm_12-312756.pdf) · [MathWorks windowed RMS](https://www.mathworks.com/help/dsp/ug/energy-detection-in-time-domain.html)
+
+The lower plot's series colours are blue for RMS, orange for 0p and teal for
+pp. The waveform uses a 2 px blue line in both Online and Offline modes.
 
 ## Runtime and verification
 

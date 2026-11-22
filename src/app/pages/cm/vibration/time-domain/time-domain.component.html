@@ -2,11 +2,11 @@
   [dateSelectionContent]="timeDate" dateSelectionTitle="Acquisition date and time"
   awaitingSelectionMessage="Select an event time above to display its waveform."></app-analysis-workspace>
 <ng-template #timeDate let-tab>
-  @if (catalogue(tab) | async; as availability) {
+  @if (captureAvailability.forSelection(tab.selection) | async; as availability) {
   @if (availability.error) {
     <div class="alert alert-danger d-flex align-items-center flex-wrap gap-3" role="alert">
       <span>{{ availability.error }}</span>
-      <button type="button" class="btn btn-sm btn-light-danger" (click)="retryCatalogue(tab)">Retry</button>
+      <button type="button" class="btn btn-sm btn-light-danger" (click)="captureAvailability.retry(tab.selection)">Retry</button>
     </div>
   }
   <div class="row g-3 mx-0 align-items-start">

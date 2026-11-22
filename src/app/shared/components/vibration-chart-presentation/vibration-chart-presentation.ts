@@ -32,7 +32,9 @@ export function vibrationStackedGrids(ids: readonly [string, string]): GridCompo
     { id: ids[1], left: 64, right: 30, top: '52%', height: '30%' },
   ];
 }
-export function vibrationLinearZoom(ids: readonly [string, string], axes: number | number[]): DataZoomComponentOption[] {
+export function vibrationLinearZoom(
+  ids: readonly [string, string], axes: number | number[], selectedLineColor?: string,
+): DataZoomComponentOption[] {
   const { token, text, muted, border } = vibrationChartAppearance();
   return [
     { id: ids[0], type: 'inside', xAxisIndex: axes, filterMode: 'none', throttle: 16 },
@@ -41,7 +43,7 @@ export function vibrationLinearZoom(ids: readonly [string, string], axes: number
       textStyle: { color: text }, handleStyle: { color: token('primary'), borderColor: token('primary') },
       moveHandleStyle: { color: token('primary') },
       dataBackground: { lineStyle: { color: muted }, areaStyle: { color: token('gray-200') } },
-      selectedDataBackground: { lineStyle: { color: token('primary') }, areaStyle: { color: token('primary-light') } } },
+      selectedDataBackground: { lineStyle: { color: selectedLineColor ?? token('primary') }, areaStyle: { color: token('primary-light') } } },
   ];
 }
 export function vibrationPositionGrid(width: number, height: number) {

@@ -7,7 +7,6 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { By } from '@angular/platform-browser';
-import * as echarts from 'echarts';
 import type { Instance } from 'flatpickr/dist/types/instance';
 import { providePrimeNG } from 'primeng/config';
 import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
@@ -39,7 +38,8 @@ const execution: AssetTaxonomyExecution = {
 describe('Combined date/time range on Vibration pages', () => {
   let harness: RouterTestingHarness;
   let state: VibrationSelectionService;
-  const rangePages = Object.keys(VIBRATION_PAGES).filter(page => !['time-domain', 'bode-analysis', 'orbit-analysis', 'rotor-position', 'waterfall'].includes(page));
+  const rangePages = Object.keys(VIBRATION_PAGES).filter(page =>
+    !['time-domain', 'frequency-domain', 'bode-analysis', 'orbit-analysis', 'rotor-position', 'waterfall'].includes(page));
   const input = () => harness.routeNativeElement!.querySelector<HTMLInputElement>('app-date-time-range input')!;
   const picker = () => (input() as HTMLInputElement & { _flatpickr: Instance })._flatpickr;
   const detect = () => harness.fixture.detectChanges();
@@ -71,9 +71,6 @@ describe('Combined date/time range on Vibration pages', () => {
     state.updateDateRange(id, { from: '2026-10-01', to: '2026-10-12' });
     state.applyDateTimeRange(id, { from: '2026-10-01T00:00', to: '2026-10-12T23:59' });
     detect(); await harness.fixture.whenStable(); detect();
-    for (let attempt = 0; harness.routeNativeElement!.querySelector('app-vibration-frequency-domain-chart[aria-busy="true"]') && attempt < 200; attempt++) {
-      await new Promise(resolve => setTimeout(resolve, 10)); detect();
-    }
     return id;
   };
 
@@ -171,7 +168,7 @@ describe('Combined date/time range on Vibration pages', () => {
   });
 
   it('saves dates and times together through existing workspace events and restores them on tab switches', async () => {
-    await navigate('frequency-domain');
+    await navigate('overview');
     const firstId = await createTab(); const secondId = await createTab();
     const workspace = harness.routeDebugElement!.query(By.directive(AnalysisWorkspaceComponent)).componentInstance as AnalysisWorkspaceComponent;
     const dates = spyOn(workspace.dateRangeChange, 'emit').and.callThrough();
@@ -200,7 +197,7 @@ describe('Combined date/time range on Vibration pages', () => {
   });
 
   it('preserves unfinished edits during unrelated state updates and cancels without changing tab state', async () => {
-    await navigate('frequency-domain'); await createTab();
+    await navigate('overview'); await createTab();
     const originalTab = state.activeTab();
     input().click(); picker().jumpToDate('2026-10-01');
     picker().calendarContainer.querySelector<HTMLElement>('[aria-label="October 5, 2026"]')!.click();
@@ -220,14 +217,9 @@ describe('Combined date/time range on Vibration pages', () => {
     expect(state.activeTab()!.timeRange).toEqual(originalTab!.timeRange);
   });
 
-  it('retains real charts when applying the range and fits the analysis header at mobile and desktop widths', async () => {
-    await navigate('frequency-domain'); await createTab();
+  it('fits the range picker in the analysis header at mobile and desktop widths', async () => {
+    await navigate('overview'); await createTab();
     const root = harness.routeNativeElement!;
-    const chartElement = root.querySelector<HTMLElement>('[_echarts_instance_]')!;
-    const chart = echarts.getInstanceByDom(chartElement)!;
-    expect(chart).toBeDefined();
-    await apply('8', '7', '18', '43');
-    expect(echarts.getInstanceByDom(chartElement)).toBe(chart);
     const oldTheme = document.documentElement.getAttribute('data-bs-theme');
     try {
       for (const theme of ['light', 'dark']) {
@@ -235,7 +227,6 @@ describe('Combined date/time range on Vibration pages', () => {
         for (const width of [320, 768, 1280]) {
           harness.fixture.nativeElement.style.width = `${width}px`;
           detect();
-          // Let the existing chart ResizeObserver resize its canvas to the new container.
           await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
           const panel = root.querySelector<HTMLElement>('app-analysis-panel')!;
           const range = root.querySelector<HTMLElement>('app-date-time-range')!;

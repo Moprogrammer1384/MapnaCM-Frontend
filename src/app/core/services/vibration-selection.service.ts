@@ -182,7 +182,7 @@ export class VibrationSelectionService {
   }
 
   selectTimeDomainEvent(id: string, event: AnalysisEventTime): void {
-    if (this.page() !== 'time-domain') { return; }
+    if (this.page() !== 'time-domain' && this.page() !== 'frequency-domain') { return; }
     this.updateWorkspace({
       tabs: this.tabs().map(tab => tab.id === id ? { ...tab, timeDomainEvent: event, awaitingDateRange: false } : tab),
       activeId: this.activeTabId(),

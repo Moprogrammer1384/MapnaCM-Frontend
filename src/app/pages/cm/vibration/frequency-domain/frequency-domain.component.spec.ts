@@ -1,5 +1,3 @@
-import { TIME_AVAILABILITY_SOURCE } from 'src/app/core/services/time-availability.service';
-import { availabilityFixtureSource } from 'src/testing/time-availability-fixture';
 import { provideHttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
@@ -14,6 +12,8 @@ import { vibrationTestRecord } from 'src/testing/vibration-test-data';
 import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
 import { vibrationUnitOptions } from 'src/app/core/models/analysis-chart-settings.model';
 import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
+import { TimeDomainCaptureAvailabilityApiService } from 'src/app/core/services/vibration/api/time-domain-capture-availability-api.service';
+import { VibrationTimeDomainAcquisitionApiService } from 'src/app/core/services/vibration/api/vibration-time-domain-acquisition-api.service';
 import { prepareFrequencyDomainRecord, analyzeFrequencyDomain } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
 import { METRONIC_PRIMENG_CONFIG } from 'src/app/shared/components/metronic-primeng.config';
@@ -27,6 +27,8 @@ const execution: AssetTaxonomyExecution = {
     asset: { id: 4, name: 'Asset', tag: null }, system: { id: 3, name: 'System', tag: null },
     unit: { id: 2, name: 'Unit', tag: null }, sensitivity: null }],
 };
+
+const event = { id: 'analytic', from: '2026-10-01T00:00:00', to: '2026-10-01T00:00:25', label: 'Analytical capture' };
 
 interface Snapshot {
   xAxis: { min: number; max: number; name: string; axisLabel: { formatter: (value: number) => string };
@@ -67,17 +69,19 @@ describe('Frequency Domain with an isolated analytical workload', () => {
     // a response: the chart must notify Angular without a second user interaction.
     await TestBed.configureTestingModule({ imports: [NoopAnimationsModule], providers: [provideHttpClient(),
       provideRouter([{ path: 'cm/vibration', loadChildren: () => VibrationModule }]),
-      providePrimeNG(METRONIC_PRIMENG_CONFIG), { provide: TIME_AVAILABILITY_SOURCE, useValue: availabilityFixtureSource }, VibrationSelectionService,
-      { provide: VIBRATION_DATA_SOURCE, useValue: { load: () => of(vibrationTestRecord) } }] })
-      .overrideComponent(VibrationFrequencyDomainComponent, { set: { changeDetection: ChangeDetectionStrategy.OnPush } })
+      providePrimeNG(METRONIC_PRIMENG_CONFIG), VibrationSelectionService] })
+      .overrideComponent(VibrationFrequencyDomainComponent, { set: { changeDetection: ChangeDetectionStrategy.OnPush, providers: [
+        TimeDomainCaptureAvailabilityApiService,
+        { provide: VibrationTimeDomainAcquisitionApiService, useValue: { availability: () => of({ events: [event] }) } },
+        { provide: VIBRATION_DATA_SOURCE, useValue: { load: () => of(vibrationTestRecord) } },
+      ] } })
       .compileComponents();
     state = TestBed.inject(VibrationSelectionService);
     state.setRoute('/cm/vibration/frequency-domain');
     harness = await RouterTestingHarness.create('/cm/vibration/frequency-domain');
     harness.fixture.autoDetectChanges();
     interact(() => { state.execute(execution);
-      const tab = state.activeTab()!;
-      state.applyDateTimeRange(tab.id, { from: tab.dateRange.from + 'T' + tab.timeRange.from, to: tab.dateRange.to + 'T' + tab.timeRange.to });
+      state.selectTimeDomainEvent(state.activeTabId(), event);
     }); await settle();
   });
   afterEach(() => harness.fixture.destroy());
@@ -155,8 +159,7 @@ describe('Frequency Domain with an isolated analytical workload', () => {
     expect(snapshot().xAxis[0].name).toBe('Frequency (Order)');
     expect(snapshot().series[0].data[100][0]).toBeCloseTo(component().analysis!.resolutionHz * 100 / 20, 10);
     interact(() => { state.execute(execution);
-      const tab = state.activeTab()!;
-      state.applyDateTimeRange(tab.id, { from: tab.dateRange.from + 'T' + tab.timeRange.from, to: tab.dateRange.to + 'T' + tab.timeRange.to });
+      state.selectTimeDomainEvent(state.activeTabId(), event);
     }); await settle();
     expect(control('X axis').value).toBe('hz');
     expect(state.activeTab()!.chartSettings!.referenceRpm).toBeUndefined();

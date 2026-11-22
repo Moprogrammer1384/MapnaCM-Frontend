@@ -1,9 +1,31 @@
-<app-analysis-workspace [state]="state" [useAvailableDates]="true" domain="frequency"
-  [measurementChartContent]="frequencyChart"></app-analysis-workspace>
+<app-analysis-workspace [state]="state" domain="frequency"
+  [measurementChartContent]="frequencyChart" [isMeasurementChartReady]="chartReady"
+  [dateSelectionContent]="frequencyDate" dateSelectionTitle="Acquisition date and time"
+  awaitingSelectionMessage="Select an event time above to display its spectrum."></app-analysis-workspace>
+<ng-template #frequencyDate let-tab>
+  @if (captureAvailability.forSelection(tab.selection) | async; as availability) {
+    @if (availability.error) {
+      <div class="alert alert-danger d-flex align-items-center flex-wrap gap-3" role="alert">
+        <span>{{ availability.error }}</span>
+        <button type="button" class="btn btn-sm btn-light-danger" (click)="captureAvailability.retry(tab.selection)">Retry</button>
+      </div>
+    }
+    <app-vibration-event-picker [inputId]="tab.id + '_frequency_domain'" [events]="availability.data?.events ?? []"
+      [value]="tab.timeDomainEvent ?? emptyRange" [eventId]="tab.timeDomainEvent?.id"
+      [disabled]="!availability.data?.events?.length"
+      (eventSelected)="state.selectTimeDomainEvent(tab.id, $event)"></app-vibration-event-picker>
+    @if (availability.loading) {
+      <p class="text-gray-600 fs-7 mt-3 mb-0" role="status">Loading stored acquisitions…</p>
+    } @else if (availability.data && !availability.data.events.length) {
+      <p class="text-gray-600 fs-7 mt-3 mb-0" role="status">No common offline acquisitions.</p>
+    }
+  }
+</ng-template>
 <ng-template #frequencyChart let-item let-tab="tab">
-  <app-vibration-frequency-domain-chart [measurementId]="item.measurement.id" [settings]="tab.chartSettings"
-    (sourceProfile)="state.updateSourceProfile(tab.id, item.measurement.id, $event)"
-    (sourceSettings)="initializeSettings(tab.id, $event)"
-    [from]="tab.dateRange.from + 'T' + tab.timeRange.from"
-    [to]="tab.dateRange.to + 'T' + tab.timeRange.to"></app-vibration-frequency-domain-chart>
+  @if (tab.timeDomainEvent; as event) {
+    <app-vibration-frequency-domain-chart [measurementId]="item.measurement.id" [settings]="tab.chartSettings"
+      [measurementIds]="tab.selection.measurementIds" [sourceKey]="event.id" [from]="event.from" [to]="event.to"
+      (sourceProfile)="state.updateSourceProfile(tab.id, item.measurement.id, $event)"
+      (sourceSettings)="initializeSettings(tab.id, $event)"></app-vibration-frequency-domain-chart>
+  }
 </ng-template>

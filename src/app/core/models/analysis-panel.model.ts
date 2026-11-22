@@ -28,6 +28,7 @@ export interface AnalysisTab extends AssetTaxonomyExecution {
   readonly awaitingDateRange?: boolean;
   readonly timeDomainRecentSeconds?: number;
   readonly timeDomainRecentRevision?: number;
+  readonly timeDomainOnlineStartUtc?: string;
   readonly timeDomainEvent?: AnalysisEventTime;
   readonly orbitPairs?: readonly OrbitProbePair[];
   readonly orbitSettings?: OrbitSettings;

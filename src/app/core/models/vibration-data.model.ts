@@ -2,6 +2,12 @@ import { AmplitudeMode, AnalysisChartSettings, VibrationQuantity, VibrationUnit 
 
 export type VibrationTimeUnit = 's' | 'ms';
 
+/** Common UTC bounds for online waveform data, with an exclusive end. */
+export interface VibrationOnlineWindow {
+  readonly fromUtc: string;
+  readonly toUtc: string;
+}
+
 /** Frontend domain model, not a proposed backend response contract. Never mutate a loaded record. */
 export interface RawVibrationRecord {
   readonly id: string;
@@ -23,6 +29,7 @@ export interface VibrationDataRequest {
   readonly sourceKey?: string;
   readonly recentSeconds?: number;
   readonly recentRevision?: number;
+  readonly onlineStartUtc?: string;
   readonly quantity?: VibrationQuantity;
 }
 

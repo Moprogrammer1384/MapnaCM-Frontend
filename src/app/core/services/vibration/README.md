@@ -22,6 +22,12 @@ API time coordinates are in seconds. Time Domain Offline and Frequency Domain
 use `GetCaptureAvailability` to list common captures. Date filters that list,
 and Event time loads all selected channels in one `GetCaptures` request.
 Time Domain Online loads all selected channels in one `GetRecent` request.
+An empty start date uses the latest stored seconds. The optional Tehran date
+and minute picker uses the shared online bounds from `GetCaptureAvailability`.
+Display requests the chosen number of seconds forward from that start by sending
+`EndedAtUtc` as the exclusive UTC end. Clearing the start returns the form to
+latest mode. The form checks that an anchored request fits in the common window
+and the server's duration limit.
 Signal Indicators use one `Get` request per measurement and applied UTC range.
 
 The API returns all requested raw samples up to 1,000,000 per measurement, inclusive.

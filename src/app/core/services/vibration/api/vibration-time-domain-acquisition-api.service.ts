@@ -5,9 +5,9 @@ import { environment } from 'src/environments/environment';
 import { AnalysisEventTime } from '../../../models/analysis-event-time.model';
 import { ApiEnvelope } from '../../../models/response.model';
 import { VibrationChartDto } from '../../../models/vibration-api.model';
-import { VibrationDataRequest } from '../../../models/vibration-data.model';
+import { VibrationDataRequest, VibrationOnlineWindow } from '../../../models/vibration-data.model';
 import { apiErrorMessage } from '../../../utils/api-error';
-import { formatVibrationDateTime } from '../../../utils/vibration-date-time';
+import { formatVibrationDateTime, tehranWallTime } from '../../../utils/vibration-date-time';
 import { VibrationDataRecord, VibrationDataSource, vibrationProfile } from './vibration-time-domain-api.service';
 
 interface CaptureEventDto {
@@ -21,26 +21,17 @@ interface CaptureEventDto {
 interface CaptureAvailabilityDto {
   readonly timeZone: string;
   readonly events: readonly CaptureEventDto[];
-  readonly onlineWindow: { readonly maximumSeconds: number } | null;
+  readonly onlineWindow: { readonly from: string; readonly to: string; readonly maximumSeconds: number } | null;
 }
 
 export interface TimeDomainAvailability {
   readonly events: readonly AnalysisEventTime[];
   readonly maximumRecentSeconds: number;
+  readonly onlineWindow?: VibrationOnlineWindow;
 }
 
-const tehran = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Tehran', year: 'numeric', month: '2-digit',
-  day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
 const quantityCodes = { displacement: 1, velocity: 2, acceleration: 3 } as const;
 const sampleRateHz = 2560;
-
-function tehranWallTime(utc: string): string {
-  const parts = tehran.formatToParts(new Date(utc));
-  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(value => value.type === type)?.value;
-  const fraction = utc.match(/\.\d{1,7}(?=Z$)/i)?.[0] ?? '';
-  const hour = part('hour') === '24' ? '00' : part('hour');
-  return `${part('year')}-${part('month')}-${part('day')}T${hour}:${part('minute')}:${part('second')}${fraction}`;
-}
 
 function measurementParams(ids: readonly number[]): HttpParams {
   return ids.reduce((params, id) => params.append('MeasurementIds', id), new HttpParams());
@@ -70,17 +61,29 @@ export class VibrationTimeDomainAcquisitionApiService implements VibrationDataSo
         return { id: event.id, from: tehranWallTime(event.from), to: tehranWallTime(event.to),
           label: `${formatVibrationDateTime(event.from)} · ${(event.sampleCount / event.sampleRateHz).toFixed(2)} s` };
       });
-      const max = data.onlineWindow?.maximumSeconds ?? 0;
-      return { events, maximumRecentSeconds: Number.isInteger(max) && max > 0 ? max : 0 };
+      const window = data.onlineWindow;
+      const max = window?.maximumSeconds ?? 0;
+      const maximumRecentSeconds = Number.isInteger(max) && max > 0 ? max : 0;
+      const onlineWindow = maximumRecentSeconds && window?.from?.endsWith('Z') && window.to?.endsWith('Z') &&
+        Date.parse(window.to) > Date.parse(window.from) ? { fromUtc: window.from, toUtc: window.to } : undefined;
+      return { events, maximumRecentSeconds, onlineWindow };
     }));
   }
 
   load(request: VibrationDataRequest): Observable<VibrationDataRecord> {
     return defer(() => {
       const ids = request.measurementIds ?? [request.measurementId];
-      const online = request.recentSeconds !== undefined;
+      const seconds = request.recentSeconds;
+      const online = seconds !== undefined;
       let params = measurementParams(ids).set('Quantity', quantityCodes[request.quantity ?? 'displacement']);
-      if (online) { params = params.set('Seconds', request.recentSeconds!); }
+      if (seconds !== undefined) {
+        params = params.set('Seconds', seconds);
+        if (request.onlineStartUtc) {
+          const end = new Date(Date.parse(request.onlineStartUtc) + seconds * 1000);
+          if (!Number.isFinite(end.getTime())) { throw new Error('Select a valid online start time.'); }
+          params = params.set('EndedAtUtc', end.toISOString());
+        }
+      }
       else if (request.sourceKey) { params = params.set('SourceKey', request.sourceKey); }
       else { throw new Error('Select an offline acquisition.'); }
       const action = online ? 'GetRecent' : 'GetCaptures';

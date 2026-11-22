@@ -34,6 +34,7 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
   @Input() sourceKey?: string;
   @Input() recentSeconds?: number;
   @Input() recentRevision?: number;
+  @Input() onlineStartUtc?: string;
   @Output() readonly sourceProfile = new EventEmitter<VibrationSourceProfile | undefined>(true);
   @Output() readonly sourceSettings = new EventEmitter<AnalysisChartSettings>(true);
   loading = true;
@@ -66,7 +67,7 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
     const quantityChanged = this.recentSeconds !== undefined && changes['settings'] &&
       (changes['settings'].previousValue?.quantity ?? 'displacement') !== (this.settings?.quantity ?? 'displacement');
     if (changes['measurementId'] || changes['from'] || changes['to'] || changes['measurementIds'] ||
-        changes['sourceKey'] || changes['recentSeconds'] || changes['recentRevision'] || quantityChanged) { this.reload(); }
+        changes['sourceKey'] || changes['recentSeconds'] || changes['recentRevision'] || changes['onlineStartUtc'] || quantityChanged) { this.reload(); }
     else if (changes['settings']) { this.scheduleAnalysis(); }
     else { this.updateChartTheme(); }
   }
@@ -85,7 +86,8 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
     this.error = '';
     this.subscription = this.source.load({ measurementId: this.measurementId, from: this.from, to: this.to,
       ...(this.measurementIds ? { measurementIds: this.measurementIds, sourceKey: this.sourceKey, recentSeconds: this.recentSeconds,
-        recentRevision: this.recentRevision, quantity: this.recentSeconds === undefined ? undefined : this.settings?.quantity } : {}),
+        recentRevision: this.recentRevision, onlineStartUtc: this.onlineStartUtc,
+        quantity: this.recentSeconds === undefined ? undefined : this.settings?.quantity } : {}),
     }).subscribe({
       next: raw => {
         if (isVibrationDisplay(raw)) {

@@ -23,12 +23,6 @@ export class VibrationTimeDomainComponent {
     return tab.timeDomainEvent ?? EMPTY_RANGE;
   }
 
-  showRecent(tabId: string, seconds: number): void {
-    if (Number.isInteger(seconds) && seconds >= 1) {
-      this.state.setTimeDomainRecentSeconds(tabId, seconds);
-    }
-  }
-
   initializeSettings(tabId: string, settings: AnalysisChartSettings): void {
     if (this.state.tabs().some(tab => tab.id === tabId && !tab.chartSettings)) {
       this.state.updateChartSettings(tabId, settings);

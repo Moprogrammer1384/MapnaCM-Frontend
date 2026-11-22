@@ -1,0 +1,37 @@
+<form (submit)="$event.preventDefault(); display(duration.valueAsNumber)">
+  <div class="row g-3 align-items-start">
+    <div class="col-12 col-lg">
+      <label class="form-label" [for]="inputId + '_online_date'">Start date</label>
+      <div class="input-group input-group-solid flex-nowrap">
+        <input #dateInput [id]="inputId + '_online_date'" type="text" class="form-control form-control-solid min-w-0"
+          placeholder="Latest data" autocomplete="off" dir="ltr" aria-haspopup="dialog" aria-expanded="false"
+          [disabled]="!canChooseStart" (click)="openDate()" (keydown.enter)="openDate(); $event.preventDefault()">
+        <button type="button" class="btn btn-icon btn-light" aria-label="Clear start date and use latest data" [disabled]="!day" (click)="clearDate()">
+          <app-keenicon name="cross" class="fs-2"></app-keenicon>
+        </button>
+        <button type="button" class="btn btn-icon btn-light" aria-label="Choose online start date" [disabled]="!canChooseStart" (click)="openDate()">
+          <app-keenicon name="calendar-8" class="fs-2"></app-keenicon>
+        </button>
+      </div>
+    </div>
+    <div class="col-12 col-sm-5 col-lg-auto">
+      <label class="form-label" [for]="inputId + '_online_time'">Start time</label>
+      <input #clock [id]="inputId + '_online_time'" type="time" class="form-control form-control-solid" step="60"
+        [disabled]="!day || !canChooseStart" [required]="!!day" [min]="minTime" [max]="maxTime" [value]="time"
+        (input)="changeTime(clock.value)">
+    </div>
+    <div class="col-12 col-sm-7 col-lg">
+      <label class="form-label" [for]="inputId + '_recent_seconds'">{{ day ? 'Seconds after start' : 'Recent seconds' }}</label>
+      <div class="input-group input-group-solid flex-nowrap">
+        <input #duration [id]="inputId + '_recent_seconds'" type="number" class="form-control form-control-solid min-w-0"
+          required min="1" step="1" [value]="seconds" [attr.aria-describedby]="inputId + '_recent_limit'">
+        <button type="submit" class="btn btn-primary" [disabled]="!maximumSeconds">Display</button>
+      </div>
+      <p class="form-text mb-0" [id]="inputId + '_recent_limit'">
+        @if (day && maximumFromStart) { Up to {{ maximumFromStart }} seconds from this start time. }
+        @else if (!day && maximumSeconds) { Up to {{ maximumSeconds }} seconds for this selection. }
+      </p>
+    </div>
+  </div>
+  @if (error) { <p class="text-danger fs-7 mt-2 mb-0" role="alert">{{ error }}</p> }
+</form>

@@ -172,10 +172,11 @@ export class VibrationSelectionService {
     this.workspaces.update(workspaces => ({ ...workspaces, [this.page()]: value }));
   }
 
-  setTimeDomainRecentSeconds(id: string, seconds?: number): void {
+  setTimeDomainRecentSeconds(id: string, seconds?: number, startUtc?: string): void {
     if (this.page() !== 'time-domain') { return; }
     this.updateWorkspace({
       tabs: this.tabs().map(tab => tab.id === id ? { ...tab, timeDomainRecentSeconds: seconds,
+        timeDomainOnlineStartUtc: seconds === undefined ? undefined : startUtc,
         timeDomainRecentRevision: (tab.timeDomainRecentRevision ?? 0) + 1 } : tab),
       activeId: this.activeTabId(),
     });

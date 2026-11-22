@@ -21,15 +21,17 @@ describe('Time Domain acquisition API', () => {
   afterEach(() => http.verify());
 
   it('maps an exact UTC event to Tehran and uses the online duration provided by the API', () => {
+    const onlineWindow = { from: '2026-08-16T20:30:00.0000001Z', to: '2026-08-20T20:30:15Z', maximumSeconds: 390 };
     api.availability([1, 4]).subscribe(result => {
       expect(result.events[0].from).toBe('2026-08-17T00:00:00');
       expect(result.events[0].label).toBe('2026-08-17 12:00:00 AM · 0.80 s');
       expect(result.maximumRecentSeconds).toBe(390);
+      expect(result.onlineWindow).toEqual({ fromUtc: onlineWindow.from, toUtc: onlineWindow.to });
     });
     const request = http.expectOne(req => req.url.endsWith('/GetCaptureAvailability'));
     expect(request.request.params.getAll('MeasurementIds')).toEqual(['1', '4']);
     request.flush({ success: true, data: { timeZone: 'Asia/Tehran', events: [{ id: 'key', from, to,
-      sampleCount: 2048, sampleRateHz: 2560 }], onlineWindow: { maximumSeconds: 390 } } });
+      sampleCount: 2048, sampleRateHz: 2560 }], onlineWindow } });
   });
 
   it('shares one exact capture request for multiple channels and accepts normalized complete samples', () => {
@@ -58,6 +60,19 @@ describe('Time Domain acquisition API', () => {
         ...raw(1), quantity: 2, unit: 5,
       }] } });
     }
+  });
+
+  it('shares one anchored online request and sends the exclusive end after the selected start', () => {
+    const onlineStartUtc = '2026-08-18T20:29:00.000Z';
+    for (const measurementId of [1, 4]) {
+      api.load({ measurementId, measurementIds: [1, 4], from: '', to: '', recentSeconds: 65, onlineStartUtc })
+        .subscribe(result => expect(result.timeOriginUtc).toBe(onlineStartUtc));
+    }
+    const request = http.expectOne(req => req.url.endsWith('/GetRecent'));
+    expect(request.request.params.getAll('MeasurementIds')).toEqual(['1', '4']);
+    expect(request.request.params.get('Seconds')).toBe('65');
+    expect(request.request.params.get('EndedAtUtc')).toBe('2026-08-18T20:30:05.000Z');
+    request.flush({ success: true, data: { timeOriginUtc: onlineStartUtc, timeUnit: 's', series: [raw(1), raw(4)] } });
   });
 
   it('forwards the requested duration and exposes the server rejection without emitting data', () => {

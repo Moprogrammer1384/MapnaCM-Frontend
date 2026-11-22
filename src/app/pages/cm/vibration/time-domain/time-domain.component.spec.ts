@@ -58,7 +58,9 @@ interface Snapshot {
 describe('Time Domain with an isolated analytical workload', () => {
   let harness: RouterTestingHarness;
   let state: VibrationSelectionService;
+  let requests: VibrationDataRequest[];
   const root = () => harness.routeNativeElement!;
+  const latestRequest = () => requests[requests.length - 1];
   const control = (label: string) => root().querySelector<HTMLSelectElement>(`select[aria-label="${label}"]`)!;
   const chart = () => echarts.getInstanceByDom(root().querySelector<HTMLElement>('[_echarts_instance_]')!)!;
   const snapshot = () => chart().getOption() as unknown as Snapshot;
@@ -79,6 +81,7 @@ describe('Time Domain with an isolated analytical workload', () => {
   };
 
   beforeEach(async () => {
+    requests = [];
     // Mirror the application's OnPush ancestor. Never force change detection after
     // a response: the chart must notify Angular without a second user interaction.
     await TestBed.configureTestingModule({ imports: [NoopAnimationsModule], providers: [provideHttpClient(),
@@ -89,16 +92,20 @@ describe('Time Domain with an isolated analytical workload', () => {
         providers: [
           TimeDomainCaptureAvailabilityApiService,
           { provide: VibrationTimeDomainAcquisitionApiService, useValue: {
-            availability: () => of({ events, maximumRecentSeconds: 390 }),
+            availability: () => of({ events, maximumRecentSeconds: 390,
+              onlineWindow: { fromUtc: '2026-08-17T20:30:00.0000001Z', toUtc: '2026-08-20T20:31:02.5000000Z' } }),
           } },
           { provide: VIBRATION_DATA_SOURCE, useValue: {
-            load: ({ recentSeconds }: VibrationDataRequest) => {
+            load: (request: VibrationDataRequest) => {
+              requests.push(request);
+              const { recentSeconds, onlineStartUtc } = request;
               if (recentSeconds === undefined) { return of(vibrationTestRecord); }
               if (recentSeconds === 391) { return throwError(() => new Error(serverLimitMessage)); }
               const count = recentSeconds * 2560;
               return of({ ...vibrationTestRecord, id: `recent-${recentSeconds}`,
                 time: vibrationTestRecord.time.slice(0, count),
                 values: vibrationTestRecord.values.slice(0, count),
+                timeOriginUtc: onlineStartUtc ?? vibrationTestRecord.timeOriginUtc,
               });
             },
           } },
@@ -204,6 +211,57 @@ describe('Time Domain with an isolated analytical workload', () => {
     expect(input.value).toBe('');
     expect(control('Event time').options.length).toBe(5);
     expect(chart()).toBe(originalChart);
+  });
+
+  it('applies an available Tehran date and minute, and clears the anchor back to the latest data', async () => {
+    const toggle = root().querySelector<HTMLInputElement>('input[role="switch"]')!;
+    interact(() => toggle.click());
+    await settle();
+    expect(latestRequest()).toEqual(jasmine.objectContaining({ recentSeconds: 1, onlineStartUtc: undefined }));
+
+    const date = root().querySelector<HTMLInputElement>('input[id$="_online_date"]')! as HTMLInputElement & { _flatpickr: Instance };
+    const picker = date._flatpickr;
+    expect(picker.isEnabled('2026-08-17')).toBeFalse();
+    expect(picker.isEnabled('2026-08-18')).toBeTrue();
+    expect(picker.isEnabled('2026-08-21')).toBeTrue();
+    expect(picker.isEnabled('2026-08-22')).toBeFalse();
+
+    const clock = root().querySelector<HTMLInputElement>('input[type="time"]')!;
+    const duration = root().querySelector<HTMLInputElement>('input[id$="_recent_seconds"]')!;
+    const submit = (seconds: string) => interact(() => { duration.value = seconds; duration.form!.requestSubmit(); });
+    const previousCount = requests.length;
+    interact(() => picker.setDate('2026-08-18', true));
+    await settle();
+    expect(clock.min).toBe('00:01');
+    expect(clock.value).toBe('00:01');
+    interact(() => picker.setDate('2026-08-19', true));
+    interact(() => { clock.value = '08:10'; clock.dispatchEvent(new Event('input')); });
+    await settle();
+    expect(requests.length).toBe(previousCount);
+    submit('2');
+    await settle();
+    expect(latestRequest()).toEqual(jasmine.objectContaining({ recentSeconds: 2, onlineStartUtc: '2026-08-19T04:40:00.000Z' }));
+    expect(component().analysis?.sampleCount).toBe(5120);
+
+    interact(() => picker.setDate('2026-08-21', true));
+    await settle();
+    expect(clock.max).toBe('00:01');
+    expect(clock.value).toBe('00:00');
+    interact(() => { clock.value = '00:01'; clock.dispatchEvent(new Event('input')); });
+    const displayed = requests.length;
+    submit('3');
+    await settle();
+    expect(requests.length).toBe(displayed);
+    expect(root().querySelector('[role="alert"]')!.textContent).toContain('Select up to 2 seconds');
+
+    const clear = root().querySelector<HTMLButtonElement>('button[aria-label="Clear start date and use latest data"]')!;
+    interact(() => clear.click());
+    await settle();
+    expect(date.value).toBe('');
+    expect(clock.disabled).toBeTrue();
+    submit('1');
+    await settle();
+    expect(latestRequest()).toEqual(jasmine.objectContaining({ recentSeconds: 1, onlineStartUtc: undefined }));
   });
 
   it('plots the complete waveform above aligned RMS, 0p and pp curves in milliseconds', () => {

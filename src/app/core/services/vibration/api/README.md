@@ -8,7 +8,8 @@ Numerical analysis and workers remain in their respective feature folders.
 | --- | --- | --- | --- |
 | `vibration-time-domain-acquisition-api.service.ts` | `VibrationTimeDomainAcquisitionApiService` | Time Domain online and offline waveforms, and Frequency Domain's offline waveform input | `/TimeDomain/GetRecent`, `/TimeDomain/GetCaptures`, `/TimeDomain/GetCaptureAvailability` |
 | `time-domain-capture-availability-api.service.ts` | `TimeDomainCaptureAvailabilityApiService` | Per-selection loading, results and Retry for the shared Time/Frequency event picker | Uses `VibrationTimeDomainAcquisitionApiService.availability` |
-| `vibration-time-domain-api.service.ts` | `VibrationTimeDomainApiService` | Signal Indicators waveform reads for a range | `/TimeDomain/Get` |
+| `vibration-time-domain-api.service.ts` | `VibrationTimeDomainApiService` | Default Time Domain range source | `/TimeDomain/Get` |
+| `vibration-signal-indicator-api.service.ts` | `VibrationSignalIndicatorApiService` | Signal Indicator dates and stored one-second values | `/SignalIndicator/GetAvailability`, `/SignalIndicator/Get` |
 | `vibration-time-domain-availability-api.service.ts` | `VibrationTimeDomainAvailabilityApiService` | Available calendar days for range-based consumers | `/TimeDomain/GetAvailability` |
 | `vibration-bode-analysis-api.service.ts` | `VibrationBodeAnalysisApiService` | Bode Analysis acquisitions | `/BodeAnalysis/Get` |
 | `vibration-bode-analysis-availability-api.service.ts` | `VibrationBodeAnalysisAvailabilityApiService` | Bode Analysis event times and available dates | `/BodeAnalysis/GetAvailability` |
@@ -30,7 +31,7 @@ request leaves the chart empty.
 defaults to `VibrationBodeAnalysisApiService`. The shared
 `TIME_AVAILABILITY_SOURCE` contract/token remains in
 `../../time-availability.service.ts`, with the Time Domain adapter as its default.
-The Bode page overrides that token with its own availability adapter.
+The Bode and Signal Indicators pages provide their own availability adapters.
 
 `ROTOR_POSITION_DATA_SOURCE` defaults to `VibrationRotorPositionApiService`.
 Its event ID is the backend OperatingRun ID; each returned record has its own

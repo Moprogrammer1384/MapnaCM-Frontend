@@ -13,7 +13,7 @@ import { of, throwError } from 'rxjs';
 import { vibrationTestRecord } from 'src/testing/vibration-test-data';
 import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
 import { VibrationDataRequest } from 'src/app/core/models/vibration-data.model';
-import { AMPLITUDE_LABELS, VIBRATION_UNITS, vibrationUnitOptions } from 'src/app/core/models/analysis-chart-settings.model';
+import { VIBRATION_UNITS, vibrationUnitOptions } from 'src/app/core/models/analysis-chart-settings.model';
 import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { prepareTimeDomainRecord } from 'src/app/core/services/vibration/time-domain/time-domain-preparation';
 import { analyzeTimeDomain } from 'src/app/core/services/vibration/time-domain/time-domain-analysis';
@@ -45,9 +45,8 @@ interface Snapshot {
   xAxis: { min: number; max: number; name: string; axisLabel: { formatter: (value: number) => string };
     axisPointer: { label: { formatter: (params: { value: number }) => string } } }[];
   yAxis: { name: string; axisLabel: { formatter: (value: number) => string } }[];
-  series: { id: string; name: string; xAxisIndex?: number; yAxisIndex?: number; data: number[][]; lineStyle: { color: string; width: number }; markLine?: {
-    data: { yAxis: number }[]; label: { formatter: string }; lineStyle: { color: string };
-  } }[];
+  series: { id: string; name: string; xAxisIndex?: number; yAxisIndex?: number; data: number[][];
+    lineStyle: { color: string; width: number }; markLine?: unknown }[];
   dataZoom: { start: number; end: number; xAxisIndex: number | number[]; labelFormatter?: (value: number) => string;
     selectedDataBackground?: { lineStyle: { color: string } } }[];
   tooltip: { formatter: (params: { value: number[] } | { value: number[]; seriesId: string; seriesName: string }[]) => string }[];
@@ -122,6 +121,7 @@ describe('Time Domain with an isolated analytical workload', () => {
     interact(() => toggle.click());
     await settle();
     expect(root().querySelector('app-vibration-event-picker')).toBeNull();
+    expect(root().querySelector('select[aria-label="Amplitude"]')).toBeNull();
     expect(component().analysis?.sampleCount).toBe(2560);
     expect(snapshot().xAxis[0].name).toBe('Time (ms)');
     expect(snapshot().grid.length).toBe(1);
@@ -129,7 +129,7 @@ describe('Time Domain with an isolated analytical workload', () => {
     expect(snapshot().series[0].lineStyle.color).toBe('#2563EB');
     expect(snapshot().series[0].lineStyle).toEqual(offline.series[0].lineStyle);
     expect(snapshot().series[0].lineStyle.width).toBe(2);
-    expect(snapshot().series[0].markLine?.lineStyle).toEqual(offline.series[0].markLine?.lineStyle);
+    expect(snapshot().series[0].markLine).toBeUndefined();
     expect(chart().getVisual({ seriesIndex: 0 }, 'color')).toBe('#2563EB');
     expect(snapshot().dataZoom[1].selectedDataBackground?.lineStyle.color).toBe('#2563EB');
     expect(snapshot().dataZoom[1].selectedDataBackground?.lineStyle).toEqual(offline.dataZoom[1].selectedDataBackground?.lineStyle);
@@ -209,6 +209,8 @@ describe('Time Domain with an isolated analytical workload', () => {
   it('plots the complete waveform above aligned RMS, 0p and pp curves in milliseconds', () => {
     expect(root().querySelector('select[aria-label="X axis"]')).toBeNull();
     expect(root().querySelector('[id$="_x_axis"]')).toBeNull();
+    expect(root().querySelector('select[aria-label="Amplitude"]')).toBeNull();
+    expect(root().textContent).not.toContain('RMS · 0p (zero-to-peak) · pp (peak-to-peak)');
     const options = snapshot();
     const data = options.series[0].data;
     expect(data.length).toBe(409600);
@@ -264,7 +266,7 @@ describe('Time Domain with an isolated analytical workload', () => {
     expect(control('Unit').value).toBe(vibrationTestRecord.unit);
   });
 
-  it('renders every quantity, unit and amplitude after one selection under an OnPush ancestor', async () => {
+  it('renders every quantity and unit after one selection under an OnPush ancestor', async () => {
     const raw = vibrationTestRecord;
     const started = performance.now();
     const prepared = prepareTimeDomainRecord(raw);
@@ -293,65 +295,37 @@ describe('Time Domain with an isolated analytical workload', () => {
         const displayedMax = expected.statistics.max.toFixed(2).replace(/^-0\.00$/, '0.00');
         expect(root().querySelector('[data-testid="record-min"]')!.textContent!.trim()).toBe(`Min: ${displayedMin} ${unit.value}`);
         expect(root().querySelector('[data-testid="record-max"]')!.textContent!.trim()).toBe(`Max: ${displayedMax} ${unit.value}`);
-        for (const amplitude of ['rms', '0p', 'pp'] as const) {
-          await change('Amplitude', amplitude);
-          const result = component().analysis!;
-          expect(result.amplitude).toBeCloseTo(amplitude === 'rms' ? expected.statistics.rms
-            : amplitude === 'pp' ? expected.statistics.peakToPeak : expected.statistics.peak, 8);
-          expect(root().querySelector('[data-testid="record-sample-count"]')!.textContent).toBe('409,600 Data');
-          expect(snapshot().series[0].data[100][1]).toBe(data[100][1]);
-        }
+        expect(component().analysis!.amplitude).toBeCloseTo(expected.statistics.peak, 8);
+        expect(root().querySelector('[data-testid="record-sample-count"]')!.textContent).toBe('409,600 Data');
         expect(chart()).toBe(instance);
         expect(snapshot().dataZoom[0].start).toBe(30);
       }
     }
   }, 60000);
 
-  it('shows the selected amplitude as chart reference levels after one selection, including cached results', async () => {
+  it('omits the waveform reference lines while keeping the linked zoom and offline legend', () => {
     const instance = chart();
     instance.dispatchAction({ type: 'dataZoom', start: 30, end: 60 });
     instance.dispatchAction({ type: 'legendUnSelect', name: 'pp' });
     const time = 12000;
     expect(Number(instance.convertToPixel({ xAxisIndex: 0 }, time)))
       .toBeCloseTo(Number(instance.convertToPixel({ xAxisIndex: 1 }, time)), 8);
-    const setOption = spyOn(instance, 'setOption').and.callThrough();
-    const waveform = snapshot().series[0].data;
-    const windowedValues = snapshot().series.slice(1).map(series => series.data);
-    for (const amplitude of ['rms', 'pp', '0p', 'rms'] as const) {
-      setOption.calls.reset();
-      await change('Amplitude', amplitude);
-      const result = component().analysis!;
-      const options = snapshot();
-      const reference = options.series[0].markLine;
-      expect(reference).withContext(`Visible ${amplitude} reference`).toBeDefined();
-      if (!reference) { return; }
-      const levels = reference.data.map(item => item.yAxis);
-      expect(levels[0]).toBeCloseTo(amplitude === 'pp' ? result.statistics.min : -result.amplitude, 10);
-      expect(levels[1]).toBeCloseTo(amplitude === 'pp' ? result.statistics.max : result.amplitude, 10);
-      expect(reference.label.formatter).toBe(`${AMPLITUDE_LABELS[amplitude]}: ${result.amplitude.toFixed(2)} ${result.unit}`);
-      expect(options.tooltip[0].formatter({ value: [1.23456789, -12.3456789] })).toBe(
-        `1.23 ms<br/>Displacement: -12.35 ${result.unit}<br/>${AMPLITUDE_LABELS[amplitude]}: ${result.amplitude.toFixed(2)} ${result.unit}`);
-      expect(reference.lineStyle.color).toBe(getComputedStyle(document.documentElement).getPropertyValue('--bs-warning').trim());
-      expect(options.series[0].data).toEqual(waveform);
-      expect(options.series.slice(1).map(series => series.data)).toEqual(windowedValues);
-      expect(options.legend[0].selected['pp']).toBeFalse();
-      expect(options.dataZoom[0].start).toBe(30);
-      expect(chart()).toBe(instance);
-      expect(setOption).toHaveBeenCalled();
-      // Amplitude changes update only reference/tooltip/axis options, not 409600 waveform points.
-      const updates = setOption.calls.mostRecent().args[0] as unknown as { series: { data?: unknown }[] };
-      expect(updates.series[0].data).toBeUndefined();
-    }
-  }, 15000);
+    const result = component().analysis!;
+    const options = snapshot();
+    expect(options.series[0].markLine).toBeUndefined();
+    expect(options.tooltip[0].formatter({ value: [1.23456789, -12.3456789] })).toBe(
+      `1.23 ms<br/>Displacement: -12.35 ${result.unit}<br/>0p: ${result.amplitude.toFixed(2)} ${result.unit}`);
+    expect(options.legend[0].selected['pp']).toBeFalse();
+    expect(options.dataZoom[0].start).toBe(30);
+  });
 
   it('retains independent tab settings and uses Metronic colors without rerunning signal processing on theme changes', async () => {
     const first = state.activeTabId();
-    await change('Quantity', 'velocity'); await change('Unit', 'mm/s'); await change('Amplitude', 'rms');
+    await change('Quantity', 'velocity'); await change('Unit', 'mm/s');
     interact(() => { state.execute(execution); selectFirstEvent(); }); await settle();
     expect(control('Quantity').value).toBe('displacement');
     interact(() => state.activateTab(first)); await settle();
     expect(control('Unit').value).toBe('mm/s');
-    expect(control('Amplitude').value).toBe('rms');
     const oldTheme = document.documentElement.getAttribute('data-bs-theme');
     const result = component().analysis;
     try {
@@ -360,6 +334,7 @@ describe('Time Domain with an isolated analytical workload', () => {
         await new Promise(resolve => setTimeout(resolve, 0)); await settle();
         expect(component().analysis).toBe(result);
         expect(snapshot().series.map(series => series.lineStyle.color)).toEqual(['#2563EB', '#2563EB', '#EA580C', '#0D9488']);
+        expect(snapshot().series[0].markLine).toBeUndefined();
         for (const width of [320, 768, 1280]) {
           harness.fixture.nativeElement.style.width = `${width}px`;
           await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));

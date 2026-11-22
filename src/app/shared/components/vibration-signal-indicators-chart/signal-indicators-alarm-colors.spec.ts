@@ -1,6 +1,5 @@
 import * as echarts from 'echarts';
-import { analyzeSignalIndicators } from 'src/app/core/services/vibration/signal-indicators/signal-indicators-analysis';
-import { signalIndicatorRecords } from 'src/testing/signal-indicators-fixture';
+import { storedIndicatorRecord } from 'src/testing/signal-indicators-fixture';
 import { signalIndicatorAlarmColor } from './signal-indicators-alarm-colors';
 import { signalIndicatorsChartOptions } from './signal-indicators-chart-options';
 
@@ -15,8 +14,8 @@ describe('Signal indicator alarm line rendering', () => {
   });
   it('colours the actual line without reference lines or changes to observed samples', () => {
     const values = [0, 2, 3, 4, 5, 10, 15, 20, 21, 22, 23, 25, 30];
-    const analysis = analyzeSignalIndicators({ ...signalIndicatorRecords[0], time: values.map((_, index) => index * 60), values }, 'displacement', 'µm', 60);
-    const original = analysis.points.map(point => point.statistics.rms);
+    const analysis = storedIndicatorRecord(values);
+    const original = analysis.points.map(point => point.rms);
     const dom = document.createElement('div'); document.body.append(dom);
     const chart = echarts.init(dom, undefined, { width: 700, height: 380 });
     try {

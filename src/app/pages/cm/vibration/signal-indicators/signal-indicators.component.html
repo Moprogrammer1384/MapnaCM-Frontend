@@ -1,28 +1,27 @@
-<app-analysis-workspace [state]="state" [useAvailableDates]="true" [showXAxis]="false" [showAmplitude]="false"
-  [additionalControlsContent]="indicatorControls" [measurementChartContent]="indicatorChart"></app-analysis-workspace>
+<app-analysis-workspace [state]="state" [useAvailableDates]="true"
+  [controlsContent]="indicatorControls" [measurementChartContent]="indicatorChart"></app-analysis-workspace>
 <ng-template #indicatorControls let-tab>
-  <div class="col-12 col-sm-6 col-lg-3">
-    <label class="form-label" [for]="tab.id + '_indicator_mode'">Indicator</label>
-    <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
-      [id]="tab.id + '_indicator_mode'" aria-label="Indicator" [ngModel]="tab.signalIndicatorSettings?.mode || 'all'"
-      (ngModelChange)="state.updateSignalIndicatorMode(tab.id, $event)">
-      <option value="all">All</option><option value="rms">RMS</option><option value="0p">0p</option><option value="pp">pp</option>
-    </select>
-  </div>
-  <div class="col-12 col-sm-6 col-lg-3 d-flex align-items-end">
-    <label class="form-check form-switch form-check-custom form-check-solid mb-3" [for]="tab.id + '_show_alarms'">
-      <input class="form-check-input" type="checkbox" [id]="tab.id + '_show_alarms'" aria-label="Show alarms"
-        [ngModel]="tab.signalIndicatorSettings?.showAlarms !== false"
-        (ngModelChange)="state.updateSignalIndicatorAlarmsVisible(tab.id, $event)" />
-      <span class="form-check-label text-gray-700">Show alarms</span>
-    </label>
+  <div class="row g-5 mt-0">
+    <div class="col-12 col-sm-6 col-lg-3">
+      <label class="form-label" [for]="tab.id + '_indicator_mode'">Indicator</label>
+      <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+        [id]="tab.id + '_indicator_mode'" aria-label="Indicator" [ngModel]="tab.signalIndicatorSettings?.mode || 'all'"
+        (ngModelChange)="state.updateSignalIndicatorMode(tab.id, $event)">
+        <option value="all">All</option><option value="rms">RMS</option><option value="0p">0p</option><option value="pp">pp</option>
+      </select>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3 d-flex align-items-end">
+      <label class="form-check form-switch form-check-custom form-check-solid mb-3" [for]="tab.id + '_show_alarms'">
+        <input class="form-check-input" type="checkbox" [id]="tab.id + '_show_alarms'" aria-label="Show alarms"
+          [ngModel]="tab.signalIndicatorSettings?.showAlarms !== false"
+          (ngModelChange)="state.updateSignalIndicatorAlarmsVisible(tab.id, $event)" />
+        <span class="form-check-label text-gray-700">Show alarms</span>
+      </label>
+    </div>
   </div>
 </ng-template>
 <ng-template #indicatorChart let-item let-tab="tab">
-  <app-vibration-signal-indicators-chart [measurementId]="item.measurement.id" [settings]="tab.chartSettings"
-    [inputId]="tab.id + '_indicator_' + item.measurement.id" [viewSettings]="tab.signalIndicatorSettings"
-    (sourceProfile)="state.updateSourceProfile(tab.id, item.measurement.id, $event)"
-    (sourceSettings)="initializeSettings(tab.id, $event)"
+  <app-vibration-signal-indicators-chart [measurementId]="item.measurement.id" [viewSettings]="tab.signalIndicatorSettings"
     [from]="tab.dateRange.from + 'T' + tab.timeRange.from"
     [to]="tab.dateRange.to + 'T' + tab.timeRange.to"></app-vibration-signal-indicators-chart>
 </ng-template>

@@ -42,7 +42,7 @@ export function vibrationError(error: unknown): string {
   return apiErrorMessage(error, 'vibration data', 'vibration API');
 }
 
-/** Range-based Time Domain API used by Frequency Domain and Signal Indicators. */
+/** Range-based Time Domain API. */
 @Injectable({ providedIn: 'root' })
 export class VibrationTimeDomainApiService implements VibrationDataSource {
   private readonly http = inject(HttpClient);

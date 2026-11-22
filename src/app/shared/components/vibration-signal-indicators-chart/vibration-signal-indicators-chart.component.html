@@ -1,6 +1,6 @@
-@if (analysis && options) {
+@if (record && options) {
   @if (showAlarms && mode !== 'all') {
-    @if (alarmLoading) { <p class="text-gray-500 fs-7 mb-4" role="status">Loading alarm settings?</p> }
+    @if (alarmLoading) { <p class="text-gray-500 fs-7 mb-4" role="status">Loading alarm settings…</p> }
     @if (alarmError) {
       <div class="alert alert-warning d-flex align-items-center justify-content-between gap-3" role="alert">
         <span>{{ alarmError }}</span>
@@ -11,21 +11,24 @@
   <app-apache-echarts [options]="options" [mergeOptions]="true" height="380px"></app-apache-echarts>
   <footer class="d-flex flex-column gap-3 text-gray-500 fs-7 mt-3" dir="ltr" role="group" aria-label="Signal indicators summary">
     <div class="d-flex flex-wrap justify-content-start gap-3 gap-md-5">
-      <span>RMS: <strong class="text-gray-700 fw-semibold" data-testid="indicator-rms">{{ analysis.signal.statistics.rms | numberFormat }} {{ analysis.signal.unit }}</strong></span>
-      <span>0p: <strong class="text-gray-700 fw-semibold" data-testid="indicator-0p">{{ analysis.signal.statistics.peak | numberFormat }} {{ analysis.signal.unit }}</strong></span>
-      <span>pp: <strong class="text-gray-700 fw-semibold" data-testid="indicator-pp">{{ analysis.signal.statistics.peakToPeak | numberFormat }} {{ analysis.signal.unit }}</strong></span>
+      <span>{{ record.quantity | titlecase }} ({{ record.unit }})</span>
+      <span>Max RMS: <strong class="text-gray-700 fw-semibold" data-testid="indicator-rms">{{ record.maxima.rms | numberFormat }} {{ record.unit }}</strong></span>
+      <span>Max 0p: <strong class="text-gray-700 fw-semibold" data-testid="indicator-0p">{{ record.maxima.zeroToPeak | numberFormat }} {{ record.unit }}</strong></span>
+      <span>Max pp: <strong class="text-gray-700 fw-semibold" data-testid="indicator-pp">{{ record.maxima.peakToPeak | numberFormat }} {{ record.unit }}</strong></span>
     </div>
     <div class="d-flex flex-wrap justify-content-end gap-3 gap-md-5">
-      <span>Start: <time [attr.datetime]="acquisitionStartedAt">{{ acquisitionStartedAt | acquisitionDate }}</time></span>
-      <span><strong class="text-gray-700 fw-semibold">{{ analysis.signal.sampleCount | number }}</strong> Data</span>
+      <span>Start: <time [attr.datetime]="record.firstAtUtc">{{ record.firstAtUtc | acquisitionDate }}</time></span>
+      <span><strong class="text-gray-700 fw-semibold">{{ record.totalCount | number }}</strong> Data</span>
     </div>
   </footer>
-  @for (notice of analysis.signal.notices; track notice) { <p class="text-gray-500 fs-7 mt-3 mb-0">{{ notice }}</p> }
 }
 @if (loading) {
   <div class="d-flex align-items-center justify-content-center gap-3 text-gray-600 py-10" role="status">
-    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>{{ analysis ? 'Calculating signal indicators…' : 'Loading Time Domain data…' }}
+    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>Loading signal indicators…
   </div>
+}
+@if (empty) {
+  <p class="text-gray-600 py-10 text-center mb-0" role="status">No signal indicators were recorded in this range.</p>
 }
 @if (error) {
   <div class="alert alert-danger d-flex flex-wrap align-items-center justify-content-between gap-3" role="alert">

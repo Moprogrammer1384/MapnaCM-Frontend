@@ -144,11 +144,10 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
           });
           this.updateChartTheme();
         } else {
-          // Merge only reference/tooltip/axis updates; keep the full waveform and zoom.
+          // Merge tooltip and axis updates without replacing the waveform or zoom.
           this.chartOptions = {
             tooltip: { formatter: this.tooltipFormatter(result) },
             yAxis: this.amplitudeAxisRange(result),
-            series: [{ id: 'raw-time', type: 'line', markLine: this.amplitudeMarkLine(result) }],
           };
         }
         // Entering NgZone alone does not mark the application's OnPush ancestors.
@@ -170,21 +169,6 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
   private amplitudeAxisRange(result: TimeDomainAnalysis): { min: number; max: number } {
     return { min: Math.min(result.statistics.min, result.amplitudeReference.lower),
       max: Math.max(result.statistics.max, result.amplitudeReference.upper) };
-  }
-
-  private amplitudeMarkLine(result: TimeDomainAnalysis): LineSeriesOption['markLine'] {
-    const styles = getComputedStyle(document.documentElement);
-    const token = (name: string) => styles.getPropertyValue(`--bs-${name}`).trim();
-    return {
-      silent: true, animation: false, symbol: ['none', 'none'],
-      lineStyle: { color: token('warning'), type: 'dashed', width: 1 },
-      label: { show: true, position: 'insideEndBottom', color: token('body-color'), backgroundColor: token('body-bg'),
-        padding: [2, 4], formatter: `${AMPLITUDE_LABELS[result.amplitudeMode]}: ${formatNumber(result.amplitude)} ${result.unit}` },
-      data: [
-        { yAxis: result.amplitudeReference.lower, label: { show: false } },
-        { yAxis: result.amplitudeReference.upper },
-      ],
-    };
   }
 
   private tooltipFormatter(result: TimeDomainAnalysis): TooltipComponentOption['formatter'] {
@@ -259,7 +243,7 @@ export class VibrationTimeDomainChartComponent implements OnChanges, OnDestroy {
     return { id: 'raw-time', name: VIBRATION_QUANTITIES[result.quantity].label, type: 'line',
       showSymbol: false, lineStyle: { width: 2, color }, itemStyle: { color },
       connectNulls: false, sampling: 'minmax', progressive: 5000,
-      data: this.points, markLine: this.amplitudeMarkLine(result) };
+      data: this.points };
   }
 
   private offlineChartOptions(result: TimeDomainAnalysis, windows: readonly TimeDomainAmplitudeWindow[]): EChartsOption {

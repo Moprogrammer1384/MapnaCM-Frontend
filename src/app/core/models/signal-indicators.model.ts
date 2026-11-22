@@ -1,5 +1,4 @@
-import { TimeDomainAnalysis, TimeDomainStatistics } from './vibration-data.model';
-import { AmplitudeMode, VibrationQuantity } from './analysis-chart-settings.model';
+import { AmplitudeMode, VibrationQuantity, VibrationSourceProfile } from './analysis-chart-settings.model';
 
 export type SignalIndicatorMode = 'all' | AmplitudeMode;
 export interface SignalIndicatorAlarmRange {
@@ -18,18 +17,30 @@ export interface SignalIndicatorViewSettings {
   readonly showAlarms?: boolean;
 }
 
-export interface SignalIndicatorPoint {
-  readonly from: number;
-  readonly to: number;
-  readonly sampleCount: number;
-  readonly statistics: TimeDomainStatistics;
-  readonly breakBefore?: boolean;
+export interface SignalIndicatorValues {
+  readonly rms: number;
+  readonly zeroToPeak: number;
+  readonly peakToPeak: number;
 }
 
-export interface SignalIndicatorAnalysis {
-  readonly basis: 'raw' | 'summary';
-  readonly sourceId: string;
-  readonly signal: TimeDomainAnalysis;
-  readonly windowSeconds: number;
+export interface SignalIndicatorPoint extends SignalIndicatorValues {
+  readonly sampledAtUtc: string;
+  readonly breakBefore: boolean;
+}
+
+interface SignalIndicatorSeries {
+  readonly measurementId: number;
+  readonly firstAtUtc: string;
+  readonly lastAtUtc: string;
+  readonly totalCount: number;
+  readonly stepSeconds: number;
+  readonly maxima: SignalIndicatorValues;
   readonly points: readonly SignalIndicatorPoint[];
 }
+
+export interface SignalIndicatorSeriesDto extends SignalIndicatorSeries {
+  readonly quantity: number;
+  readonly unit: number;
+}
+
+export type SignalIndicatorRecord = SignalIndicatorSeries & VibrationSourceProfile;

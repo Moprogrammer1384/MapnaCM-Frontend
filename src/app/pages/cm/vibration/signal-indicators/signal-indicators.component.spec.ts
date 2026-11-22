@@ -11,7 +11,7 @@ import type { Instance } from 'flatpickr/dist/types/instance';
 import { of } from 'rxjs';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
-import { VibrationTimeDomainApiService, vibrationUtc } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
+import { VibrationSignalIndicatorApiService } from 'src/app/core/services/vibration/api/vibration-signal-indicator-api.service';
 import { flattenAssetTaxonomyTree } from 'src/app/core/utils/asset-taxonomy-tree';
 import { AssetTaxonomyDrawerComponent } from 'src/app/shared/components/asset-taxonomy-drawer/asset-taxonomy-drawer.component';
 import { assetTaxonomyFixture } from 'src/app/shared/components/asset-taxonomy-drawer/testing/asset-taxonomy-fixture';
@@ -20,9 +20,8 @@ import { DateTimeRangeComponent } from 'src/app/shared/components/date-time-rang
 import { VibrationSignalIndicatorsChartComponent } from 'src/app/shared/components/vibration-signal-indicators-chart/vibration-signal-indicators-chart.component';
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
 import { orbitExecution } from 'src/testing/orbit-fixture';
-import { signalIndicatorChartDto, signalIndicatorSummaryDto, signalIndicatorRecords } from 'src/testing/signal-indicators-fixture';
-import { VibrationChartDto } from 'src/app/core/models/vibration-api.model';
-import { analyzeSignalIndicators } from 'src/app/core/services/vibration/signal-indicators/signal-indicators-analysis';
+import { storedIndicatorDto } from 'src/testing/signal-indicators-fixture';
+import { SignalIndicatorSeriesDto } from 'src/app/core/models/signal-indicators.model';
 import { VibrationModule } from '../vibration.module';
 
 @Component({ standalone: true, imports: [RouterOutlet, AssetTaxonomyDrawerComponent], template: `
@@ -37,7 +36,7 @@ describe('Signal Indicators standard vibration workspace', () => {
   let settingsFailure = false, missingSettings = false;
   const root = () => harness.routeNativeElement!;
   const flushAvailability = () => {
-    const requests = TestBed.inject(HttpTestingController).match(request => request.url.endsWith('/TimeDomain/GetAvailability'));
+    const requests = TestBed.inject(HttpTestingController).match(request => request.url.endsWith('/SignalIndicator/GetAvailability'));
     for (const request of requests) {
       const ids = request.request.params.getAll('MeasurementIds')!.map(Number);
       const window = { from: request.request.params.get('From') ?? '2026-10-01', to: request.request.params.get('To') ?? '2026-11-01' };
@@ -73,19 +72,19 @@ describe('Signal Indicators standard vibration workspace', () => {
       measurements: ids.map((id, index) => ({ ...base.measurements[index % 2], measurement: { id, name: index ? 'Y' : 'X', tag: 'vi' + id } })) });
     await settle();
   };
-  const apply = async (fromHour = 12, toHour = 1, response: (id: number) => VibrationChartDto = signalIndicatorChartDto) => {
+  const apply = async (fromHour = 12, toHour = 1, response: (id: number) => SignalIndicatorSeriesDto | null = storedIndicatorDto) => {
     const range = harness.fixture.debugElement.query(By.directive(DateTimeRangeComponent)).componentInstance as DateTimeRangeComponent;
     const input = root().querySelector<HTMLInputElement>('input[id$="_range"]') as HTMLInputElement & { _flatpickr: Instance };
     input._flatpickr.setDate(['2026-10-23', '2026-10-23'], true, 'Y-m-d');
     range.times.from = { hour: fromHour, minute: 0 }; range.times.to = { hour: toHour, minute: 0 };
     range.periods.from = range.periods.to = 'AM';
     range.apply(); harness.fixture.detectChanges();
-    const requests = TestBed.inject(HttpTestingController).match(request => request.url.endsWith('/TimeDomain/Get'));
+    const requests = TestBed.inject(HttpTestingController).match(request => request.url.endsWith('/SignalIndicator/Get'));
     expect(requests.length).toBeGreaterThan(0);
     for (const request of requests) {
       expect(request.request.params.keys().sort()).toEqual(['From', 'MeasurementId', 'To']);
-      expect(request.request.params.get('From')).toBe(vibrationUtc(state.activeTab()!.dateRange.from + 'T' + state.activeTab()!.timeRange.from));
-      expect(request.request.params.get('To')).toBe(vibrationUtc(state.activeTab()!.dateRange.to + 'T' + state.activeTab()!.timeRange.to));
+      expect(request.request.params.get('From')).toBe(state.activeTab()!.dateRange.from + 'T' + state.activeTab()!.timeRange.from);
+      expect(request.request.params.get('To')).toBe(state.activeTab()!.dateRange.to + 'T' + state.activeTab()!.timeRange.to);
       request.flush({ success: true, data: response(Number(request.request.params.get('MeasurementId'))) });
     }
     await settle();
@@ -107,7 +106,7 @@ describe('Signal Indicators standard vibration workspace', () => {
       provideRouter([{ path: 'cm/vibration', component: IndicatorsTestHostComponent, children: [{ path: '', loadChildren: () => VibrationModule }] }]),
     ] }).compileComponents();
     configureMetronicPrimeNG();
-    load = spyOn(TestBed.inject(VibrationTimeDomainApiService), 'load').and.callThrough();
+    load = spyOn(TestBed.inject(VibrationSignalIndicatorApiService), 'load').and.callThrough();
     state = TestBed.inject(VibrationSelectionService); state.setRoute('/cm/vibration/signal-indicators');
     harness = await RouterTestingHarness.create('/cm/vibration/signal-indicators'); await settle();
   });
@@ -115,7 +114,7 @@ describe('Signal Indicators standard vibration workspace', () => {
     TestBed.inject(HttpTestingController).verify(); harness.fixture.destroy();
     if (oldTheme === null) { document.documentElement.removeAttribute('data-bs-theme'); } else { document.documentElement.setAttribute('data-bs-theme', oldTheme); }
   });
-  it('uses the real drawer, API-proven dates and one Time Domain read per measurement only after Apply', async () => {
+  it('uses the real drawer, API-proven dates and one Signal Indicator read per measurement only after Apply', async () => {
     expect(state.active()).toBeTrue(); expect(root().textContent).toContain('No analysis tabs yet');
     expect(root().querySelector('#indicator_asset')).toBeNull();
     state.open(); await settle();
@@ -129,15 +128,15 @@ describe('Signal Indicators standard vibration workspace', () => {
     expect(button.disabled).toBeFalse(); button.click(); await settle();
     expect(state.activeTab()!.awaitingDateRange).toBeTrue(); expect(load).not.toHaveBeenCalled();
     expect(root().querySelector('app-vibration-date-time-range')).not.toBeNull();
-    expect(root().querySelector('select[aria-label="Quantity"]')).not.toBeNull();
+    expect(root().querySelector('select[aria-label="Quantity"]')).toBeNull();
     expect(root().querySelector('select[aria-label="Amplitude"]')).toBeNull();
     const mode = root().querySelector<HTMLSelectElement>('select[aria-label="Indicator"]')!;
     expect(Array.from(mode.options).map(option => option.textContent!.trim())).toEqual(['All', 'RMS', '0p', 'pp']);
     expect(mode.value).toBe('all');
     expect(root().querySelector('app-apache-echarts')).toBeNull();
     await apply();
-    expect(load).toHaveBeenCalledTimes(1); expect(chartComponent().analysis!.signal.sampleCount).toBe(3600);
-    expect(state.activeTab()!.chartSettings!.quantity).toBe('displacement');
+    expect(load).toHaveBeenCalledTimes(1); expect(chartComponent().record!.totalCount).toBe(3);
+    expect(chartComponent().record!.quantity).toBe('displacement');
     expect(root().querySelector('[data-testid="indicator-rms"]')!.textContent).toContain('14.03');
     expect(root().querySelector('[data-testid="indicator-pp"]')!.textContent).toContain('54.02');
     expect(root().querySelector('[data-testid="indicator-0p"]')!.textContent).toContain('27.78');
@@ -149,65 +148,72 @@ describe('Signal Indicators standard vibration workspace', () => {
     expect(input._flatpickr.isEnabled(new Date('2026-10-22T12:00:00'))).toBeTrue();
     expect(input._flatpickr.isEnabled(new Date('2026-10-24T12:00:00'))).toBeFalse();
     await apply(); expect(root().querySelectorAll('app-apache-echarts').length).toBe(2);
-    await apply(2, 3, () => ({ timeOriginUtc: '2026-10-22T20:30:00Z', timeUnit: 's', series: [] }));
+    await apply(2, 3, () => null);
     expect(root().querySelectorAll('app-apache-echarts').length).toBe(0);
-    expect(root().querySelector('[role="alert"]')).not.toBeNull();
+    expect(root().textContent).toContain('No signal indicators were recorded in this range.');
   });
-  it('shows RMS/0p/pp together with independent legend toggles and keeps unit, theme and zoom interactions local', async () => {
+  it('shows RMS/0p/pp together with independent legend toggles and keeps theme and zoom interactions local', async () => {
     await execute(); await apply(); const instance = chart();
     instance.dispatchAction({ type: 'dataZoom', dataZoomId: 'signal-indicators-inside', start: 20, end: 70 });
-    const first = chartComponent().analysis!.points[0].statistics;
+    const first = chartComponent().record!.points[0];
     const snapshot = () => instance.getOption() as unknown as { series: { data: number[][]; name: string }[]; color: string[]; legend: { selected: Record<string, boolean> }[] };
     expect(snapshot().series.map(series => series.name)).toEqual(['RMS', '0p', 'pp']);
-    expect(snapshot().series.map(series => series.data[0][1])).toEqual([first.rms, first.peak, first.peakToPeak]);
+    expect(snapshot().series.map(series => series.data[0][1])).toEqual([first.rms, first.zeroToPeak, first.peakToPeak]);
     expect(snapshot().color).toEqual(['#2563EB', '#EA580C', '#0D9488']);
     instance.dispatchAction({ type: 'legendToggleSelect', name: '0p' });
     expect(snapshot().legend[0].selected['0p']).toBeFalse();
     instance.dispatchAction({ type: 'legendToggleSelect', name: 'pp' });
     expect(snapshot().legend[0].selected.pp).toBeFalse();
-    await change('Unit', 'mm'); expect(chartComponent().analysis!.signal.statistics.peak).toBeCloseTo(0.027780988250636593, 12);
     document.documentElement.setAttribute('data-bs-theme', oldTheme === 'dark' ? 'light' : 'dark'); await settle();
     expect(chart()).toBe(instance);
     expect(snapshot().legend[0].selected['0p']).toBeFalse(); expect(snapshot().legend[0].selected.pp).toBeFalse();
     instance.dispatchAction({ type: 'legendToggleSelect', name: '0p' }); expect(snapshot().legend[0].selected['0p']).toBeTrue();
     expect((instance.getOption() as unknown as { dataZoom: { start: number }[] }).dataZoom[0].start).toBe(20);
-    await change('Quantity', 'velocity');
-    const converted = analyzeSignalIndicators(signalIndicatorRecords[0], 'velocity', 'mm/s', 60);
-    expect(chartComponent().analysis!.signal.quantity).toBe('velocity');
-    expect(chartComponent().analysis!.signal.statistics.rms).toBeCloseTo(converted.signal.statistics.rms, 12);
     expect(load).toHaveBeenCalledTimes(1);
   });
   it('retains independent visited tabs and range/settings, and disposes the selected chart when its tab closes', async () => {
     await execute(); await apply(); const id = state.activeTabId(), instance = chart();
-    await change('Unit', 'mm');
     await execute(); expect(state.activeTab()!.awaitingDateRange).toBeTrue();
-    state.activateTab(id); await settle(); expect(chart()).toBe(instance); expect(state.activeTab()!.chartSettings!.unit).toBe('mm');
+    state.activateTab(id); await settle(); expect(chart()).toBe(instance); expect(chartComponent().record!.unit).toBe('µm');
     expect(load).toHaveBeenCalledTimes(1);
     state.closeTab(id); await settle(); expect(instance.isDisposed()).toBeTrue();
   });
-  it('rejects legacy envelopes returned by the shared Time Domain API', async () => {
-    await execute(); await apply(12, 1, signalIndicatorSummaryDto);
-    expect(chartComponent().analysis).toBeUndefined();
+  it('rejects inconsistent count metadata from the Signal Indicator API', async () => {
+    await execute(); await apply(12, 1, id => ({ ...storedIndicatorDto(id), totalCount: 90 }));
+    expect(chartComponent().record).toBeUndefined();
     expect(root().querySelector('app-apache-echarts')).toBeNull();
-    expect(root().querySelector('[role="alert"]')!.textContent).toContain('incomplete raw record');
+    expect(root().querySelector('[role="alert"]')!.textContent).toContain('incompatible series metadata');
     expect(load).toHaveBeenCalledTimes(1);
+  });
+  it('plots stored overview values with gaps and omits the overview message', async () => {
+    await execute();
+    await apply(12, 1, id => {
+      const data = storedIndicatorDto(id);
+      return { ...data, stepSeconds: 2, totalCount: 18_000,
+        points: data.points.map((point, index) => ({ ...point, breakBefore: index === 2 })) };
+    });
+    expect(root().textContent).not.toContain('Overview shows');
+    expect(root().textContent).not.toContain('Apply a shorter range');
+    expect(root().textContent).toContain('18,000');
+    const { series } = chart().getOption() as { series: { data: (number | null)[][] }[] };
+    expect(series[0].data).toEqual([[0, 8], [1, 14.03], [2, null], [2, 11]]);
   });
   it('surfaces calendar/API failures, supports Retry and cancels an outstanding read when its tab closes', async () => {
     await execute();
     state.applyDateTimeRange(state.activeTabId(), { from: '2026-10-23T00:00', to: '2026-10-23T01:00' }); harness.fixture.detectChanges();
     const http = TestBed.inject(HttpTestingController);
-    http.expectOne(request => request.url.endsWith('/TimeDomain/Get')).flush({ message: 'Time Domain unavailable' }, { status: 500, statusText: 'Server Error' });
-    await settle(); expect(root().querySelector('[role="alert"]')!.textContent).toContain('Time Domain unavailable');
+    http.expectOne(request => request.url.endsWith('/SignalIndicator/Get')).flush({ message: 'Signal indicators unavailable' }, { status: 500, statusText: 'Server Error' });
+    await settle(); expect(root().querySelector('[role="alert"]')!.textContent).toContain('Signal indicators unavailable');
     root().querySelector<HTMLButtonElement>('.alert button')!.click(); harness.fixture.detectChanges();
-    const pending = http.expectOne(request => request.url.endsWith('/TimeDomain/Get'));
+    const pending = http.expectOne(request => request.url.endsWith('/SignalIndicator/Get'));
     state.closeTab(state.activeTabId()); await settle(); expect(pending.cancelled).toBeTrue();
   });
-  it('blocks date selection on failed availability and retries the real Time Domain calendar endpoint before Apply', async () => {
+  it('blocks date selection on failed availability and retries the real Signal Indicator calendar endpoint before Apply', async () => {
     const base = orbitExecution();
     state.execute({ ...base, selection: { ...base.selection, measurementIds: [1] },
       measurements: [{ ...base.measurements[0], measurement: { id: 1, name: 'X', tag: 'vi508' } }] });
     harness.fixture.detectChanges();
-    TestBed.inject(HttpTestingController).expectOne(request => request.url.endsWith('/TimeDomain/GetAvailability'))
+    TestBed.inject(HttpTestingController).expectOne(request => request.url.endsWith('/SignalIndicator/GetAvailability'))
       .flush({ message: 'Available dates unavailable' }, { status: 503, statusText: 'Unavailable' });
     await settle();
     expect(root().querySelector<HTMLInputElement>('input[id$="_range"]')!.disabled).toBeTrue();
@@ -216,8 +222,8 @@ describe('Signal Indicators standard vibration workspace', () => {
     expect(root().querySelector<HTMLInputElement>('input[id$="_range"]')!.disabled).toBeFalse();
     expect(load).not.toHaveBeenCalled(); await apply(); expect(load).toHaveBeenCalledTimes(1);
   });
-  it('uses stored limits only for curve colours and preserves zoom and physical boundaries through units and modes', async () => {
-    await execute(); await apply(); const instance = chart(), analysis = chartComponent().analysis!;
+  it('uses stored limits only for curve colours and preserves zoom and native alarm limits through mode changes', async () => {
+    await execute(); await apply(); const instance = chart(), analysis = chartComponent().record!;
     expect(root().querySelector('input[type="number"]')).toBeNull();
     expect(root().textContent).not.toContain('statistics windows. Select RMS');
     instance.dispatchAction({ type: 'dataZoom', dataZoomId: 'signal-indicators-inside', start: 20, end: 70 });
@@ -226,13 +232,12 @@ describe('Signal Indicators standard vibration workspace', () => {
     expect(snapshot().color).toEqual(['#2563EB', '#2563EB', '#2563EB']);
     expect(snapshot().series.map(series => series.data.length > 0)).toEqual([false, true, false]);
     expect(snapshot().series.every(series => series.markLine.data.length === 0)).toBeTrue();
-    expect(chartComponent().analysis).toBe(analysis); expect(snapshot().dataZoom[0].start).toBe(20);
+    expect(chartComponent().record).toBe(analysis); expect(snapshot().dataZoom[0].start).toBe(20);
     expect(root().querySelector('[aria-label="Configured alarm limits"]')).toBeNull();
     expect(root().textContent).not.toContain('Danger / Caution / Normal');
     expect(root().textContent).not.toContain('Normal / Caution / Danger');
-    await change('Unit', 'mm');
-    expect(chartComponent().alarmLimits!.upperNormal).toBeCloseTo(0.010, 12);
-    expect(chartComponent().alarmLimits!.upperDanger).toBeCloseTo(0.014, 12);
+    expect(chartComponent().alarmLimits!.upperNormal).toBeCloseTo(10, 12);
+    expect(chartComponent().alarmLimits!.upperDanger).toBeCloseTo(14, 12);
     await change('Indicator', 'rms'); expect(snapshot().series.map(series => series.data.length > 0)).toEqual([true, false, false]);
     await change('Indicator', 'all');
     expect(snapshot().color).toEqual(['#2563EB', '#EA580C', '#0D9488']);
@@ -255,7 +260,7 @@ describe('Signal Indicators standard vibration workspace', () => {
   });
   it('defaults alarm colours to on and toggles a plain curve locally without changing zoom, samples or settings', async () => {
     await execute(); await apply(); await change('Indicator', 'rms');
-    const component = chartComponent(), instance = chart(), analysis = component.analysis;
+    const component = chartComponent(), instance = chart(), analysis = component.record;
     const control = () => root().querySelector<HTMLInputElement>('input[aria-label="Show alarms"]')!;
     const mapping = () => (instance.getOption() as unknown as { visualMap: { seriesIndex: number[] }[] }).visualMap[0].seriesIndex;
     expect(control().checked).toBeTrue(); expect(state.activeTab()!.signalIndicatorSettings!.showAlarms).toBeTrue();
@@ -263,7 +268,7 @@ describe('Signal Indicators standard vibration workspace', () => {
     instance.dispatchAction({ type: 'dataZoom', dataZoomId: 'signal-indicators-inside', start: 20, end: 70 });
     control().click(); await settle();
     expect(control().checked).toBeFalse(); expect(mapping()).toEqual([]); expect(component.alarmLimits).toBeUndefined();
-    expect(component.analysis).toBe(analysis); expect(chart()).toBe(instance);
+    expect(component.record).toBe(analysis); expect(chart()).toBe(instance);
     expect((instance.getOption() as unknown as { dataZoom: { start: number }[] }).dataZoom[0].start).toBe(20);
     await change('Indicator', 'pp'); expect(control().checked).toBeFalse(); expect(mapping()).toEqual([]);
     control().click(); await settle(); expect(mapping()).toEqual([2]);

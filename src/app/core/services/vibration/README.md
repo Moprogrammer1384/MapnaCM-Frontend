@@ -38,8 +38,8 @@ offer Retry. Replacing a selection or closing its tab cancels pending reads.
 
 ## Preserve vibration meaning and the existing charts
 
-Time Domain displays a numeric Time (ms) axis, instantaneous physical waveform, RMS/0p/pp
-reference levels and footer. Frequency Domain keeps FFT, resampling/windowing,
+Time Domain displays a numeric Time (ms) axis, instantaneous physical waveform and
+acquisition footer. Offline mode adds RMS, 0p and pp trends. Frequency Domain keeps FFT, resampling/windowing,
 Fourier quantity conversion, units/amplitudes and Hz/CPM/Order with explicit RPM.
 Settings and zoom work on the already loaded record and do not cause HTTP calls.
 There is no calendar-axis replacement or server fetch on zoom.
@@ -94,15 +94,10 @@ record, never from an earlier unit/quantity display or a downsampled waveform.
    RMS includes DC when present in the selected signal. The sample RMS definition
    is explicitly sample-weighted (not a continuous-time quadrature estimate).
    A scaled sum-of-squares avoids squaring overflow for ordinary finite inputs.
-7. `selectTimeDomainAmplitude`: selects the measured RMS/0p/pp scalar. Changing
-   Amplitude recomputes/selects record statistics; it **does not multiply the time
-   samples** by √2 or 2. Those factors describe individual sinusoids, not arbitrary
-   time records. Axes/tooltips show instantaneous physical values and the chosen
-   amplitude statistic is shown inside the chart and in the point tooltip.
-   `timeDomainAmplitudeReference` supplies symmetric +/-RMS or +/-absolute-peak
-   levels, or the actual minimum/maximum for pp. These are full-record reference
-   levels; pp's displayed value remains max-minus-min. The waveform retains its
-   instantaneous values. A compact wrapping footer shows full-record Min/Max
+7. `selectTimeDomainAmplitude` reads the measured RMS/0p/pp scalar from the
+   record statistics. The waveform tooltip pairs the default full-record 0p
+   with the instantaneous physical value. The Y axis uses the measured bounds
+   and amplitude extent. A compact wrapping footer shows full-record Min/Max
    with the selected unit and two-decimal display, alongside the total sample
    count. It reuses the result statistics without another pass over the data;
    zoom does not change the full-record extrema.
@@ -129,8 +124,7 @@ the window centre and its tooltip shows the first and last contributing times.
 RMS is `sqrt(sum(y²) / N)`, 0p is `max(abs(y))`, and pp is `max(y) − min(y)`.
 The worker measures each directly from that window and preserves any DC in the
 displayed waveform. The waveform and the three curves share the Bode-style
-zoom and cursor. The top reference lines continue to use the full-record
-Amplitude selection. [SKF vibration guide](https://www.skf.com/binaries/pub12/Images/0901d196802179ea-JM02001_Introduction_Guide_to_Vibration_Monitoring_2017_tcm_12-312756.pdf) · [MathWorks windowed RMS](https://www.mathworks.com/help/dsp/ug/energy-detection-in-time-domain.html)
+zoom and cursor. The Time Domain controls omit the Amplitude selector. [SKF vibration guide](https://www.skf.com/binaries/pub12/Images/0901d196802179ea-JM02001_Introduction_Guide_to_Vibration_Monitoring_2017_tcm_12-312756.pdf) · [MathWorks windowed RMS](https://www.mathworks.com/help/dsp/ug/energy-detection-in-time-domain.html)
 
 The lower plot's series colours are blue for RMS, orange for 0p and teal for
 pp. The waveform uses a 2 px blue line in both Online and Offline modes.

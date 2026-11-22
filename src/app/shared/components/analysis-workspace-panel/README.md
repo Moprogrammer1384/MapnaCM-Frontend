@@ -31,16 +31,13 @@ selection and data loading. A projected `ng-template` receives the active
 `AnalysisPanelComponent` can also be used independently with its required `tab`
 input, optional `chartContent` template input and date/time range change outputs.
 
-`showAmplitude` defaults to `true` on both components. Signal Indicators passes
-`false` because its chart shows RMS, 0p and pp simultaneously with independent
-legend toggles. This hides only that consumer's single-amplitude selector;
-Time Domain and the other existing consumers keep their controls unchanged.
+`showAmplitude` defaults to `true` on both components and controls the standard
+single-amplitude selector.
 
 `additionalControlsContent` optionally appends feature controls to the existing
 Quantity/Unit/Amplitude row. Its implicit context is the owning `AnalysisTab`.
-Signal Indicators uses it for the All/RMS/0p/pp selector while reusing the normal
-Quantity/Unit fields. Unlike `controlsContent`, this slot does not replace the
-standard controls. Existing consumers remain unchanged when it is absent.
+Signal Indicators uses `controlsContent` for the Indicator and Show alarms
+controls and displays the native quantity and unit on each chart.
 
 Alternatively, pass a module-owned `AnalysisWorkspaceState` as `state`. The
 workspace reads its title/tabs/active ID and delegates selection, activation,

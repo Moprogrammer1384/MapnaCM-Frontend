@@ -1,13 +1,12 @@
 import * as echarts from 'echarts';
-import { analyzeSignalIndicators } from 'src/app/core/services/vibration/signal-indicators/signal-indicators-analysis';
-import { signalIndicatorRecords } from 'src/testing/signal-indicators-fixture';
+import { storedIndicatorRecord } from 'src/testing/signal-indicators-fixture';
 import { signalIndicatorsChartOptions } from './signal-indicators-chart-options';
 
 describe('Signal indicator visible-curve scaling', () => {
   let element: HTMLDivElement, chart: echarts.ECharts;
   // The shared chart grid starts at y=52; converting that pixel reads its actual rendered maximum.
   const axisMaximum = () => Number(chart.convertFromPixel({ yAxisIndex: 0 }, 52));
-  const analysis = () => analyzeSignalIndicators(signalIndicatorRecords[0], 'displacement', 'µm', 60);
+  const analysis = () => storedIndicatorRecord();
   beforeEach(() => {
     element = document.createElement('div'); document.body.append(element);
     chart = echarts.init(element, undefined, { width: 700, height: 380 });
@@ -24,7 +23,7 @@ describe('Signal indicator visible-curve scaling', () => {
     chart.dispatchAction({ type: 'legendToggleSelect', name: '0p' });
     const rmsMaximum = axisMaximum();
     expect(rmsMaximum).toBeLessThan(peakMaximum);
-    expect(rmsMaximum).toBeCloseTo(Math.max(...data.points.map(point => point.statistics.rms)) * 1.1, 10);
+    expect(rmsMaximum).toBeCloseTo(Math.max(...data.points.map(point => point.rms)) * 1.1, 10);
     chart.dispatchAction({ type: 'legendToggleSelect', name: 'pp' });
     expect(axisMaximum()).toBeCloseTo(fullMaximum, 10);
   });
@@ -35,7 +34,7 @@ describe('Signal indicator visible-curve scaling', () => {
     chart.setOption({ series: [{ id: 'signal-indicator-rms', type: 'line', markLine: { data: [{ yAxis: 1000000 }] } }] });
     const alarms = { upperNormal: 10000, upperCaution: 20000, upperDanger: 30000 };
     chart.setOption(signalIndicatorsChartOptions(data, 'rms', alarms));
-    expect(axisMaximum()).toBeCloseTo(Math.max(...data.points.map(point => point.statistics.rms)) * 1.1, 10);
+    expect(axisMaximum()).toBeCloseTo(Math.max(...data.points.map(point => point.rms)) * 1.1, 10);
     const snapshot = chart.getOption() as unknown as { series: { markLine: { data: unknown[] } }[] };
     expect(snapshot.series.every(series => series.markLine.data.length === 0)).toBeTrue();
     expect(chart.getZr().storage.getDisplayList(true).some(item => 'style' in item &&
@@ -46,7 +45,7 @@ describe('Signal indicator visible-curve scaling', () => {
     chart.setOption(signalIndicatorsChartOptions(analysis()));
     for (const name of ['RMS', '0p', 'pp']) { chart.dispatchAction({ type: 'legendToggleSelect', name }); }
     expect(Number.isFinite(axisMaximum())).toBeTrue(); expect(axisMaximum()).toBeGreaterThan(0);
-    const zero = analyzeSignalIndicators({ ...signalIndicatorRecords[0], time: [0, 1, 2], values: [0, 0, 0] }, 'displacement', 'µm', 60);
+    const zero = storedIndicatorRecord([0, 0, 0]);
     chart.setOption(signalIndicatorsChartOptions(zero, 'rms'));
     expect(Number.isFinite(axisMaximum())).toBeTrue(); expect(axisMaximum()).toBeGreaterThan(0);
   });

@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import { DataTableDirective } from 'angular-datatables';
-import { fromEvent } from 'rxjs';
-import { debounceTime, map } from 'rxjs/operators';
+import { fromEvent, Subscription } from 'rxjs';
+import { debounceTime, filter, map } from 'rxjs/operators';
 import { SweetAlertOptions } from 'sweetalert2';
 import { Api, Config } from 'datatables.net';
 
@@ -51,6 +51,8 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
   private modalRef: NgbModalRef;
 
   private clickListener: () => void;
+
+  private filterSubscription?: Subscription;
 
   constructor(private renderer: Renderer2, private router: Router, private modalService: NgbModal) { }
 
@@ -150,6 +152,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.reload.unsubscribe();
+    this.filterSubscription?.unsubscribe();
     if (this.clickListener) {
       this.clickListener();
     }
@@ -161,21 +164,16 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   triggerFilter() {
-    fromEvent<KeyboardEvent>(document, 'keyup')
+    this.filterSubscription = fromEvent(document, 'input')
       .pipe(
-        debounceTime(50),
-        map(event => {
-          const target = event.target as HTMLElement;
-          const action = target.getAttribute('data-action');
-          const value = (target as HTMLInputElement).value?.trim().toLowerCase();
-
-          return { action, value };
-        })
+        map(event => event.target),
+        filter((target): target is HTMLInputElement =>
+          target instanceof HTMLInputElement && target.dataset['action'] === 'filter'),
+        debounceTime(50)
       )
-      .subscribe(({ action, value }) => {
-        if (action === 'filter') {
-          this.datatableElement.dtInstance.then((dtInstance: Api) => dtInstance.search(value).draw());
-        }
+      .subscribe((input) => {
+        const value = input.value.trim().toLowerCase();
+        this.datatableElement.dtInstance.then((dtInstance: Api) => dtInstance.search(value).draw());
       });
   }
 

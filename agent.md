@@ -1,6 +1,6 @@
 # DARP frontend: project memory
 
-Updated **2026-11-22 (Asia/Tehran)**. Read this file before each task, then inspect the relevant live source. Repository rules are in [AGENTS.md](AGENTS.md). `CLAUDE.md` is historical.
+Updated **2026-11-23 (Asia/Tehran)**. Read this file before each task, then inspect the relevant live source. Repository rules are in [AGENTS.md](AGENTS.md). `CLAUDE.md` is historical.
 
 ## Working rules and memory maintenance
 
@@ -54,6 +54,8 @@ DARP uses Angular 18, TypeScript 5.5, RxJS 7, Metronic 8 demo1, Bootstrap 5 and 
 | `src/app/_fake/` | Mixed demo implementations; some services make actual outgoing requests to Keenthemes |
 | `src/styles.scss`, `src/assets/` | Metronic Sass, plugins, icons, media and generated chart assets |
 | `src/app/graphify-out/` | Generated historical reports; not application source |
+
+**User listing mobile layout, 2026-11-23:** `/apps/users` keeps the existing server-side DataTables integration. Its Metronic horizontal scroll region contains the table, and the search, Add User button, and wrapping pagination stay outside the region. The shared CRUD filter uses the native `input` event and releases its subscription on destroy. Angular template compilation, scoped lint and 18 Chrome Headless checks passed, including 320 px layout and scrolling to row actions, 900 px card layout, paging, and typing or clearing search without key events. Tests use controlled data. The local dev server served the updated chunk. A signed-in live browser session and a physical phone were not checked.
 
 Product names/titles use **DARP**. Preserve its supplied emblem/custom SVG lettering, red details, white dark-surface variants and standalone D compact logo; sidebar has no slogan. See [logo mappings](src/assets/media/logos/README.md).
 

@@ -67,6 +67,16 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.datatableConfig = {
       serverSide: true,
+      dom: "<'table-responsive position-relative't>" +
+        "<'d-flex flex-wrap align-items-center justify-content-between gap-3 pt-3'i<'mw-100'p>>",
+      initComplete() {
+        const scroller = this.api().table().node().parentElement;
+        if (scroller) {
+          scroller.tabIndex = 0;
+          scroller.setAttribute('role', 'region');
+          scroller.setAttribute('aria-label', 'Users table');
+        }
+      },
       ajax: (dataTablesParameters: any, callback) => {
         this.apiService.getUsers(dataTablesParameters).subscribe({
           next: resp => callback(resp),
@@ -78,19 +88,19 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       columns: [
         {
-          title: 'User', data: 'userName', render: (data, type, full) => {
+          title: 'User', data: 'userName', className: 'min-w-175px min-w-sm-250px', render: (data, type, full) => {
             const name = `${full.firstName || ''} ${full.lastName || ''}`.trim() || full.userName;
             const initials = (full.firstName?.[0] || full.userName?.[0] || '?').toUpperCase();
             const email = full.email || '';
 
             return `
               <div class="d-flex align-items-center">
-                <div class="symbol symbol-circle symbol-50px overflow-hidden me-3" data-action="view" data-id="${full.id}">
+                <div class="symbol symbol-circle symbol-50px flex-shrink-0 overflow-hidden me-3" data-action="view" data-id="${full.id}">
                   <a href="javascript:;">
                     <span class="symbol-label fs-3 bg-light-primary text-primary">${initials}</span>
                   </a>
                 </div>
-                <div class="d-flex flex-column" data-action="view" data-id="${full.id}">
+                <div class="d-flex flex-column text-break" data-action="view" data-id="${full.id}">
                   <a href="javascript:;" class="text-gray-800 text-hover-primary mb-1">${name}</a>
                   <span>${email}</span>
                 </div>
@@ -130,9 +140,6 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
       ],
-      createdRow: function (row, data, dataIndex) {
-        $('td:eq(0)', row).addClass('min-w-250px');
-      },
     };
   }
 

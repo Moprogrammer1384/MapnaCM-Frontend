@@ -10,6 +10,7 @@ import { SystemComponent } from './system/system.component';
 import { AssetComponent } from './asset/asset.component';
 import { ComponentComponent } from './component/component.component';
 import { MeasurementComponent } from './measurement/measurement.component';
+import { SensorComponent } from './sensor/sensor.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { MeasurementComponent } from './measurement/measurement.component';
     AssetComponent,
     ComponentComponent,
     MeasurementComponent,
+    SensorComponent,
   ],
   imports: [
     CommonModule,
@@ -53,6 +55,10 @@ import { MeasurementComponent } from './measurement/measurement.component';
       {
         path: 'measurement',
         component: MeasurementComponent,
+      },
+      {
+        path: 'sensor',
+        component: SensorComponent,
       },
       { path: '', redirectTo: 'site', pathMatch: 'full' },
     ]),

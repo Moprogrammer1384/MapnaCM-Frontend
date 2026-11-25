@@ -1,0 +1,85 @@
+<div class="row gx-5 gx-xl-10">
+  <div class="col-xl-8 mb-5 mb-xl-10">
+    <div class="card card-flush mt-6 mt-xl-9">
+      <div class="card-header mt-5">
+        <div class="card-title flex-column"><h3 class="fw-bold mb-1">Sensor</h3></div>
+        <div class="card-toolbar my-1 w-100 w-md-auto gap-3 gap-md-0">
+          <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
+            <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
+            <input type="text" [disabled]="listState.loading()" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Sensor" aria-label="Search sensors" #sensorSearch (input)="sensors.search(sensorSearch.value)" />
+          </div>
+          <button type="button" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" [disabled]="!canAdd" (click)="openSensor(sensorModal)">Add Sensor</button>
+        </div>
+      </div>
+      <div class="card-body pt-0">
+        <app-request-feedback [state]="typesState" loadingMessage="Loading sensor types..." [retryDisabled]="saving" (retry)="loadTypes()"></app-request-feedback>
+        <div *ngIf="typesState.ready && typeOptions.length === 0" class="alert alert-warning">Add a Sensor Type before creating a Sensor.</div>
+        <app-data-table [table]="sensors" [loading]="listState.loading()" [error]="listState.error()" [retryDisabled]="saving" [actionsDisabled]="saving || !typesState.ready" (retry)="loadSensors()" tableId="kt_sensor_table" emptyMessage="No sensors yet."
+          (editRecord)="openSensor(sensorModal, $event)" (deleteRecord)="sensors.confirmDelete($event, $event.name)"></app-data-table>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4 mb-5 mb-xl-10">
+    <div class="card card-flush mt-6 mt-xl-9">
+      <div class="card-header mt-5">
+        <div class="card-title flex-column"><h3 class="fw-bold mb-1">Sensor Type</h3></div>
+        <div class="card-toolbar my-1 w-100 w-md-auto gap-3 gap-md-0">
+          <div class="d-flex align-items-center position-relative my-1 me-md-4 w-100 w-md-auto">
+            <app-keenicon name="magnifier" class="fs-3 position-absolute ms-3"></app-keenicon>
+            <input type="text" [disabled]="typesState.loading()" class="form-control form-control-solid form-select-sm w-100 w-md-150px ps-9" placeholder="Search Type" aria-label="Search sensor types" #typeSearch (input)="types.search(typeSearch.value)" />
+          </div>
+          <button type="button" class="btn btn-sm fw-bold btn-primary my-1 w-100 w-md-auto" [disabled]="saving || !typesState.ready" (click)="openType(typeModal)">Add Type</button>
+        </div>
+      </div>
+      <div class="card-body pt-0">
+        <app-data-table [table]="types" [loading]="typesState.loading()" [error]="typesState.error()" [actionsDisabled]="saving" [retryDisabled]="saving" (retry)="loadTypes()" tableId="kt_sensor_type_table" emptyMessage="No sensor types yet."
+          (editRecord)="openType(typeModal, $event)" (deleteRecord)="types.confirmDelete($event, $event.name)"></app-data-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #sensorModal let-modal>
+  <app-form-modal #formModal [title]="sensorForm.id ? 'Edit Sensor' : 'Add Sensor'"
+    [formId]="sensorForm.id ? 'kt_modal_edit_sensor_form' : 'kt_modal_add_sensor_form'"
+    [submitLabel]="sensorForm.id ? 'Save' : 'Submit'" [saving]="saving" (dismiss)="modal.dismiss($event)">
+    <form [id]="formModal.formId" [attr.aria-labelledby]="formModal.formId + '_title'" class="form" (ngSubmit)="submitSensor(sensorNgForm, modal)" #sensorNgForm="ngForm" novalidate>
+      <div class="d-flex flex-column mb-8 fv-row">
+        <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_name'">Name</label>
+        <input [id]="formModal.formId + '_name'" type="text" class="form-control form-control-solid" placeholder="Enter Sensor Name" name="name" [(ngModel)]="sensorForm.name" required maxlength="300" appTrimmedRequired #nameControl="ngModel"
+          [class.is-invalid]="nameControl.invalid && (nameControl.touched || sensorNgForm.submitted)"
+          [attr.aria-invalid]="nameControl.invalid && (nameControl.touched || sensorNgForm.submitted) ? 'true' : null"
+          [attr.aria-describedby]="nameControl.invalid && (nameControl.touched || sensorNgForm.submitted) ? formModal.formId + '_name_error' : null" />
+        <div *ngIf="nameControl.invalid && (nameControl.touched || sensorNgForm.submitted)" [id]="formModal.formId + '_name_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter name.</div>
+      </div>
+      <div class="d-flex flex-column mb-15 fv-row">
+        <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_type'">Type</label>
+        <select [id]="formModal.formId + '_type'" class="form-select form-select-solid" data-control="select2" data-hide-search="true" data-placeholder="Select a Type" name="sensorTypeId" [(ngModel)]="sensorForm.sensorTypeId" required #typeControl="ngModel"
+          [class.is-invalid]="typeControl.invalid && (typeControl.touched || sensorNgForm.submitted)"
+          [attr.aria-invalid]="typeControl.invalid && (typeControl.touched || sensorNgForm.submitted) ? 'true' : null"
+          [attr.aria-describedby]="typeControl.invalid && (typeControl.touched || sensorNgForm.submitted) ? formModal.formId + '_type_error' : null">
+          <option [ngValue]="null" disabled>Select type...</option>
+          <option *ngFor="let type of typeOptions" [ngValue]="type.id">{{ type.name }}</option>
+        </select>
+        <div *ngIf="typeControl.invalid && (typeControl.touched || sensorNgForm.submitted)" [id]="formModal.formId + '_type_error'" class="fv-plugins-message-container invalid-feedback d-block">Select type.</div>
+      </div>
+    </form>
+  </app-form-modal>
+</ng-template>
+
+<ng-template #typeModal let-modal>
+  <app-form-modal #formModal [title]="typeForm.id ? 'Edit Sensor Type' : 'Add Sensor Type'"
+    [formId]="typeForm.id ? 'kt_modal_edit_sensor_type_form' : 'kt_modal_add_sensor_type_form'"
+    [submitLabel]="typeForm.id ? 'Save' : 'Submit'" [saving]="saving" (dismiss)="modal.dismiss($event)">
+    <form [id]="formModal.formId" [attr.aria-labelledby]="formModal.formId + '_title'" class="form" (ngSubmit)="submitType(typeNgForm, modal)" #typeNgForm="ngForm" novalidate>
+      <div class="d-flex flex-column mb-15 fv-row">
+        <label class="required fs-6 fw-semibold mb-2" [for]="formModal.formId + '_name'">Name</label>
+        <input [id]="formModal.formId + '_name'" type="text" class="form-control form-control-solid" placeholder="Enter Type Name" name="name" [(ngModel)]="typeForm.name" required maxlength="200" appTrimmedRequired #nameControl="ngModel"
+          [class.is-invalid]="nameControl.invalid && (nameControl.touched || typeNgForm.submitted)"
+          [attr.aria-invalid]="nameControl.invalid && (nameControl.touched || typeNgForm.submitted) ? 'true' : null"
+          [attr.aria-describedby]="nameControl.invalid && (nameControl.touched || typeNgForm.submitted) ? formModal.formId + '_name_error' : null" />
+        <div *ngIf="nameControl.invalid && (nameControl.touched || typeNgForm.submitted)" [id]="formModal.formId + '_name_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter name.</div>
+      </div>
+    </form>
+  </app-form-modal>
+</ng-template>

@@ -39,7 +39,7 @@ DARP uses Angular 18, TypeScript 5.5, RxJS 7, Metronic 8 demo1, Bootstrap 5 and 
 | --- | --- |
 | `src/app/pages/routing.ts` | Authenticated lazy feature routes; public auth/error routes are in `app-routing.module.ts` |
 | `src/app/_metronic/layout/` | Shared chrome, hardcoded sidebar/menu, route breadcrumbs and theme initialization |
-| `src/app/pages/asset-taxonomy/` | Real API: Site, Plant/Plant Type, Unit, System, Asset, Component, Measurement |
+| `src/app/pages/asset-taxonomy/` | Real API: Site, Plant/Plant Type, Unit, System, Asset, Component, Measurement, independent Sensor/Sensor Type |
 | `src/app/core/models/asset-taxonomy/` | Shared taxonomy entity and drawer selection models |
 | `src/app/core/services/asset-taxonomy/asset-taxonomy-api.service.ts` | `AssetApiService`: taxonomy CRUD and employer lookups |
 | `src/app/pages/user/` | Real users CRUD, activity toggle, role assignment, details and audit |
@@ -78,6 +78,7 @@ General number display **2026-11-03**: standalone `NumberFormatPipe` in `shared/
 
 ## Taxonomy models and UI patterns
 
+- **Sensor, 2026-11-25:** independent /asset-taxonomy/sensor has Sensor and Sensor Type cards with shared table paging, search, sorting and CRUD modals. Sensor has a required name and type ID; SensorType in use cannot be deleted, and type renames appear on Sensor reads. SensorApiService calls /Sensor and /SensorType GetAll/Add/Update/Delete with standard envelopes; GetAll requests up to 10,000 rows for client-side tables. Read errors/retry, modal save locking, failure retention and row-delete locks follow existing taxonomy patterns. The API uses EF writes and Dapper reads, with serializable type locks for concurrent Sensor writes/type deletion. The additive migration was applied to local Mapna_Asset with existing table counts unchanged; the main API requires a rebuild/restart to serve new endpoints. Frontend production build, focused lint, test TypeScript and six Chrome Headless tests passed; backend 57 non-SQL and three SQL/actual-host checks passed. No manual signed-in browser acceptance.
 - **Folder organization, 2026-11-25:** entity and drawer selection models live in `core/models/asset-taxonomy/`. `AssetApiService` lives in `core/services/asset-taxonomy/`. Production build passed after the import updates with the existing bundle budget and CSS selector warnings.
 
 - Hierarchy: **Site -> Plant -> Unit -> System -> Asset -> Component -> Measurement**. Plant Type is managed on the Plant page; successful type mutations refresh both types and Plants.
@@ -88,7 +89,7 @@ General number display **2026-11-03**: standalone `NumberFormatPipe` in `shared/
 - **Elevation:** required integer meters in [-500,9000], with zero/negative values valid; reject fractions, missing and non-finite values.
 - Asset/Component/Measurement have optional free-text `tag`; missing tags render blank, and clearing submits `''`.
 - **Measurement Type was removed.** Measurement has one table/modal, finite required Sensitivity (zero/negative/decimals valid), Component selection and optional Tag. Add/Update sends name/tag/componentId/sensitivity, plus id on Update. Do not restore type/unit joins; analysis quantity/unit comes from vibration metadata.
-- All taxonomy entities use the existing API. Component/Measurement browser-storage implementations are obsolete.
+- Hierarchy entities and independent Sensor/Sensor Type use the API. Component/Measurement browser-storage implementations are obsolete.
 
 Taxonomy uses `<app-data-table>` and `TablePagination<T>` under `shared/components/data-table/`, exported through `SharedModule`; it does **not** use the legacy `<app-crud>` DataTables plugin.
 

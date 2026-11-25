@@ -9,8 +9,7 @@
     "rtl": "webpack --config=rtl.config.js",
     "test": "ng test",
     "lint": "ng lint",
-    "verify:apache-echarts": "node tools/verify-apache-echarts.mjs",
-    "test:apache-echarts": "ng test --watch=false --browsers=ChromeHeadless --main=src/apache-echarts-test.ts --ts-config=tsconfig.apache-echarts-test.json --include=src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component.spec.ts --include=src/app/modules/widgets-examples/apache-charts/apache-charts.component.spec.ts"
+    "verify:apache-echarts": "node tools/verify-apache-echarts.mjs"
   },
   "private": true,
   "dependencies": {

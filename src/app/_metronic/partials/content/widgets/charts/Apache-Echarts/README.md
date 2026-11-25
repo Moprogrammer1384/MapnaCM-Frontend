@@ -38,8 +38,7 @@ node tools/generate-apache-echarts.mjs `
 
 Run `npm run verify:apache-echarts` after regeneration. This verifies the
 catalog count, generated wrappers, executable scripts, referenced local data,
-and vendored dependencies. Run `npm run test:apache-echarts` for the focused
-Angular browser tests.
+and vendored dependencies.
 
 Resources are served from `src/assets/apache-echarts`. The seven examples that
 depend on the external Baidu Maps API are intentionally excluded.

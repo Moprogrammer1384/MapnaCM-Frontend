@@ -26,9 +26,3 @@ automatically. `appSelect2` is an equivalent attribute for new selects.
   jQuery instance for Select2 would leave it without the registered plugin.
 - Select2's base CSS loads before the existing Metronic Bootstrap 5 overrides.
   Version 4.1 supplies the `selectionCssClass` support used by that theme.
-
-Run the integration checks with:
-
-```sh
-npm test -- --watch=false --browsers=ChromeHeadless --include=src/app/_metronic/shared/select2/select2.directive.spec.ts --include=src/app/pages/asset-taxonomy/plant/plant.component.spec.ts
-```

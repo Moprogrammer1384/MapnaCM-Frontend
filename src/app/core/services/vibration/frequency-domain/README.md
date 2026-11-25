@@ -24,8 +24,6 @@ failure. See [waveform data access](../README.md#data-access-and-selection).
 | `frequency-domain-analysis.ts` | Assembles the pipeline; caches the source complex spectrum for each window |
 | `frequency-domain-analysis.service.ts` | Reference-counted shared sessions, module worker, six-result LRU and scheduled workerless fallback |
 | `frequency-domain-analysis.worker.ts` | Background message processing; transfers result buffers without detaching cached spectra |
-| `frequency-domain-analysis.spec.ts` | Independent direct DFT, analytical tones, Parseval, DC/Nyquist, units, windows and resampling checks |
-| `frequency-domain-analysis.service.spec.ts` | Real-worker equivalence, sharing/release, invalid data and fallback |
 
 FFT-specific input interpolation and windowing live in this folder, as clarified
 by the user on 2026-10-21. They are used only by the FFT pipeline. The existing
@@ -132,9 +130,7 @@ against these accessible primary numerical references and analytical tests:
 - [NI vibration/order analysis](https://www.ni.com/en/shop/labview/vibration-analysis-and-signal-processing-in-labview.html):
   angular-domain sampling for true order analysis.
 
-Browser numerical, worker, control and isolated analytical and HTTP integration tests live beside
-their respective modules/components. Current verified commands/results are in
-the dated Frequency Domain maintenance entry in the root `agent.md`.
+Prior numerical, worker, UI and HTTP validation results are recorded in the dated entries in the root `agent.md`.
 
 ### Footer maxima (2026-11-09)
 

@@ -16,7 +16,7 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 ## Running unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+The Angular test target is configured for Jasmine and Karma. There are currently no `*.spec.ts` suites to run.
 
 ## Running end-to-end tests
 

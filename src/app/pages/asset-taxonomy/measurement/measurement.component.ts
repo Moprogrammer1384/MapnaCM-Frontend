@@ -6,6 +6,8 @@ import { AssetTaxonomyMutations } from 'src/app/core/utils/asset-taxonomy-mutati
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
 import type { Measurement, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy/asset-taxonomy.model';
 import { AssetApiService } from 'src/app/core/services/asset-taxonomy/asset-taxonomy-api.service';
+import { SensorApiService } from 'src/app/core/services/asset-taxonomy/sensor-api.service';
+import type { Sensor } from 'src/app/core/models/asset-taxonomy/sensor.model';
 import { buildParentIdMap, buildParentOptions, buildPlantEmployerMap, resolveInheritedEmployer } from 'src/app/core/utils/asset-taxonomy-hierarchy';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
 
@@ -35,11 +37,13 @@ export class MeasurementComponent implements OnInit, OnDestroy {
   // Options carry the backend hierarchy labels ("City - Plant - Unit -
   // System - Asset - Component"); the select binds the numeric component id.
   componentOptions: TaxonomyParentOption[] = [];
+  sensorOptions: Sensor[] = [];
   // Employer filter values are user IDs; names are for display only.
   employers: EmployerOption[] = [];
   employerFilter: string | null = null;
   componentFilter: number | null = null;
   measurementForm: Measurement = this.emptyForm();
+  selectedSensorId: number | null = null;
   saving = false;
 
   private assetIdByComponentId: Record<number, number> = {};
@@ -50,11 +54,12 @@ export class MeasurementComponent implements OnInit, OnDestroy {
 
   readonly listState = new RequestState();
   readonly employersState = new RequestState();
+  readonly sensorsState = new RequestState();
   private readonly mutations: AssetTaxonomyMutations;
   private activeModal?: NgbModalRef;
 
   get canAdd(): boolean {
-    return !this.saving && this.listState.ready && this.componentOptions.length > 0;
+    return !this.saving && this.listState.ready && this.componentOptions.length > 0 && this.sensorsState.ready && this.sensorOptions.length > 0;
   }
 
   get actionsDisabled(): boolean {
@@ -64,6 +69,7 @@ export class MeasurementComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.listState.destroy();
     this.employersState.destroy();
+    this.sensorsState.destroy();
     this.saving = false;
     this.activeModal?.dismiss('page destroyed');
   }
@@ -71,6 +77,7 @@ export class MeasurementComponent implements OnInit, OnDestroy {
   constructor(
     private modalService: NgbModal,
     private apiService: AssetApiService,
+    private sensorApi: SensorApiService,
     private alertService: MetronicAlertService,
     private cdr: ChangeDetectorRef
   ) {
@@ -80,7 +87,18 @@ export class MeasurementComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.table.onConfirmedDelete = (row) => this.deleteMeasurementConfirmed(row);
     this.loadEmployerOptions();
+    this.loadSensors();
     this.refresh();
+  }
+
+  loadSensors(): void {
+    this.sensorsState.track(this.sensorApi.getSensors(), 'Unable to load sensors.', 'getSensors').subscribe({
+      next: (sensors) => {
+        this.sensorOptions = sensors.filter((sensor) => sensor.id !== undefined && sensor.id > 0);
+        this.cdr.detectChanges();
+      },
+      error: () => this.cdr.detectChanges(),
+    });
   }
 
   loadEmployerOptions(): void {
@@ -189,6 +207,7 @@ export class MeasurementComponent implements OnInit, OnDestroy {
       return;
     }
     this.measurementForm = this.emptyForm();
+    this.selectedSensorId = null;
     this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
@@ -203,6 +222,8 @@ export class MeasurementComponent implements OnInit, OnDestroy {
       tag: measurement.tag ?? '',
       sensitivity: measurement.sensitivity,
     };
+    // Existing measurements store only a name, so preserve it without inferring a sensor ID.
+    this.selectedSensorId = 0;
     this.activeModal = this.modalService.open(content, this.modalConfig);
   }
 
@@ -210,7 +231,10 @@ export class MeasurementComponent implements OnInit, OnDestroy {
     if (this.saving) {
       return;
     }
-    if (form.invalid || !this.measurementForm.name.trim() || !this.measurementForm.componentId ||
+    const selectedSensor = this.sensorOptions.find((sensor) => sensor.id === this.selectedSensorId);
+    const isExistingName = this.measurementForm.id !== undefined && this.selectedSensorId === 0;
+    const name = isExistingName ? this.measurementForm.name.trim() : selectedSensor?.name.trim();
+    if (form.invalid || !name || (!isExistingName && (!this.sensorsState.ready || !selectedSensor)) || !this.measurementForm.componentId ||
       this.measurementForm.sensitivity === null) {
       form.control.markAllAsTouched();
       this.alertService.show('error', 'Error!', 'Please fill in all required fields.');
@@ -226,7 +250,7 @@ export class MeasurementComponent implements OnInit, OnDestroy {
       return;
     }
     const payload = {
-      name: this.measurementForm.name.trim(),
+      name,
       tag: this.measurementForm.tag ?? '',
       sensitivity: this.measurementForm.sensitivity,
       componentId,

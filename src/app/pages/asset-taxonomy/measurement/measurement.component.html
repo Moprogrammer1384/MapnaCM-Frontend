@@ -44,7 +44,9 @@
       <!--begin::Card body-->
       <div class="card-body pt-0">
         <app-request-feedback [state]="employersState" loadingMessage="Loading employers..." [retryDisabled]="saving" (retry)="loadEmployerOptions()"></app-request-feedback>
+        <app-request-feedback [state]="sensorsState" loadingMessage="Loading sensors..." [retryDisabled]="saving" (retry)="loadSensors()"></app-request-feedback>
         <div *ngIf="listState.ready && componentOptions.length === 0" class="alert alert-warning">Add a <a routerLink="/asset-taxonomy/component" class="alert-link">Component</a> before creating a Measurement.</div>
+        <div *ngIf="sensorsState.ready && sensorOptions.length === 0" class="alert alert-warning">Add a <a routerLink="/asset-taxonomy/sensor" class="alert-link">Sensor</a> before creating a Measurement.</div>
         <!--begin::Table container-->
         <app-data-table
           [table]="table"
@@ -82,23 +84,26 @@
       <div class="d-flex flex-column mb-8 fv-row">
         <!--begin::Label-->
         <label class="d-flex align-items-center fs-6 fw-semibold mb-2" [for]="formModal.formId + '_measurement'">
-          <span class="required">Measurement Name</span>
+          <span class="required">Sensor Name</span>
         </label>
         <!--end::Label-->
-        <input
+        <select
           [id]="formModal.formId + '_measurement'"
-          type="text"
-          class="form-control form-control-solid"
-          placeholder="Enter Measurement Name"
-          name="measurement"
-          [(ngModel)]="measurementForm.name"
+          class="form-select form-select-solid"
+          data-control="select2"
+          data-placeholder="Select a Sensor"
+          name="sensor"
+          [(ngModel)]="selectedSensorId"
           required
           #measurementControl="ngModel"
           [class.is-invalid]="measurementControl.invalid && (measurementControl.touched || measurementNgForm.submitted)"
           [attr.aria-invalid]="(measurementControl.invalid && (measurementControl.touched || measurementNgForm.submitted)) ? 'true' : null"
-          [attr.aria-describedby]="(measurementControl.invalid && (measurementControl.touched || measurementNgForm.submitted)) ? (formModal.formId + '_measurement_error') : null"
-          appTrimmedRequired />
-        <div *ngIf="measurementControl.invalid && (measurementControl.touched || measurementNgForm.submitted)" [id]="formModal.formId + '_measurement_error'" class="fv-plugins-message-container invalid-feedback d-block">Enter measurement name.</div>
+          [attr.aria-describedby]="(measurementControl.invalid && (measurementControl.touched || measurementNgForm.submitted)) ? (formModal.formId + '_measurement_error') : null">
+          <option [ngValue]="null" disabled>Select sensor...</option>
+          <option *ngIf="measurementForm.id" [ngValue]="0">{{ measurementForm.name }} (current name)</option>
+          <option *ngFor="let sensor of sensorOptions" [ngValue]="sensor.id">{{ sensor.name }}{{ sensor.typeName ? ' · ' + sensor.typeName : '' }}</option>
+        </select>
+        <div *ngIf="measurementControl.invalid && (measurementControl.touched || measurementNgForm.submitted)" [id]="formModal.formId + '_measurement_error'" class="fv-plugins-message-container invalid-feedback d-block">Select a sensor.</div>
       </div>
       <!--end::Input group-->
       <!--begin::Input group-->

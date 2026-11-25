@@ -1,6 +1,6 @@
 # DARP frontend: project memory
 
-Updated **2026-11-23 (Asia/Tehran)**. Read this file before each task, then inspect the relevant live source. Repository rules are in [AGENTS.md](AGENTS.md). `CLAUDE.md` is historical.
+Updated **2026-11-25 (Asia/Tehran)**. Read this file before each task, then inspect the relevant live source. Repository rules are in [AGENTS.md](AGENTS.md). `CLAUDE.md` is historical.
 
 ## Working rules and memory maintenance
 
@@ -51,6 +51,7 @@ DARP uses Angular 18, TypeScript 5.5, RxJS 7, Metronic 8 demo1, Bootstrap 5 and 
 | `src/app/pages/cm/vibration/` | Shared workspace; Time/Frequency/Signal Indicators/Bode/Orbit/Rotor/Waterfall use APIs; Overview has no chart |
 | `src/app/shared/components/` | Reusable tables, forms, feedback, drawer, tabs, date/time controls and analysis/chart UI |
 | `src/app/core/services/vibration/` | All HTTP adapters in `api/`; separate `time-domain/`, `frequency-domain/`, `bode-analysis/` logic |
+| `src/app/core/models/vibration/` | Vibration workspace, chart, analysis and API models; generic taxonomy selection and date/availability models remain in `core/models/` |
 | `src/app/_fake/` | Mixed demo implementations; some services make actual outgoing requests to Keenthemes |
 | `src/styles.scss`, `src/assets/` | Metronic Sass, plugins, icons, media and generated chart assets |
 | `src/app/graphify-out/` | Generated historical reports; not application source |
@@ -103,6 +104,8 @@ Taxonomy uses `<app-data-table>` and `TablePagination<T>` under `shared/componen
 - The local Metronic drawer has an intentional resize-state fix: `_update()` reads the same `data-kt-drawer-${name}` attribute written by `_show()`. Preserve it; regression coverage includes Plant dropdown/selection during resize. Physical Samsung verification remains outstanding.
 
 ## Vibration workspace and data
+
+- **Model organization, 2026-11-25:** moved 15 Vibration-specific models under `core/models/vibration/` and updated source, test and documentation imports. Angular application/template compilation and test TypeScript compilation passed; runtime tests and live integration were not rerun for this path-only change.
 
 - **Time Domain data quality, user requirement 2026-11-18:** both Online and Offline must show realistic turbine vibration as uniformly sampled time-domain waveforms. Prefer recordings with known machine, sensor, unit, sample rate and provenance. For development replay, use a waveform reference with recorded provenance, preserve sample order, time base and native units, and label replay or simulation as such. Check waveform shape, variation across captures/channels, continuity, and rotational orders against the reference. Use consistent time-domain samples for stats and display. Do not treat an FFT, trend, envelope or generic sine wave as the acquired source.
 - **Time Domain replay, 2026-11-18:** the only authorized writes are to `Value` in local `Mapna_Vibration.Vibration.TimeDomainOnlineSample` and `Mapna_Vibration.Vibration.TimeDomainSample`. Offline metadata lives in `TimeDomainAcquisition`. The replay uses `Book1.xlsx`, `Sheet1` column G (86,400 points for channel 1 and 13,600 for channel 4). Workbook sample rate and field provenance are unconfirmed. The model uses the existing 2560 Hz time base and nominal 9500 rpm, with band limiting, shaft-phase alignment, smoothly joined reference excerpts and channel-specific gain/phase. Eighteen preview windows across six channels passed checks for continuity, distinct waveforms and a 157.4–159.1 Hz dominant component. These are development replay values. [EPRI rotor vibration guidance, §5.2](https://restservice.epri.com/publicdownload/000000000001024579/0/Product). [NREL gearbox accelerometer data reviewed for context](https://data.openei.org/submissions/738).

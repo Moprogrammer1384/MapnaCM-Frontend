@@ -13,7 +13,7 @@ import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.servic
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
 import { ORBIT_DATA_SOURCE } from 'src/app/core/services/vibration/orbit-analysis/orbit-data-source.service';
 import { VibrationOrbitAnalysisAvailabilityApiService } from 'src/app/core/services/vibration/api/vibration-orbit-analysis-availability-api.service';
-import { OrbitRecord } from 'src/app/core/models/orbit-analysis.model';
+import { OrbitRecord } from 'src/app/core/models/vibration/orbit-analysis.model';
 import { flattenAssetTaxonomyTree } from 'src/app/core/utils/asset-taxonomy-tree';
 import { AssetTaxonomyDrawerComponent } from 'src/app/shared/components/asset-taxonomy-drawer/asset-taxonomy-drawer.component';
 import { assetTaxonomyFixture } from 'src/app/shared/components/asset-taxonomy-drawer/testing/asset-taxonomy-fixture';

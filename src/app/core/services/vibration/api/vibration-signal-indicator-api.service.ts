@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ApiEnvelope } from '../../../models/response.model';
-import { SignalIndicatorRecord, SignalIndicatorSeriesDto, SignalIndicatorValues } from '../../../models/signal-indicators.model';
+import { SignalIndicatorRecord, SignalIndicatorSeriesDto, SignalIndicatorValues } from '../../../models/vibration/signal-indicators.model';
 import { apiErrorMessage } from '../../../utils/api-error';
 import { vibrationProfile } from './vibration-time-domain-api.service';
 import { VibrationTimeDomainAvailabilityApiService } from './vibration-time-domain-availability-api.service';

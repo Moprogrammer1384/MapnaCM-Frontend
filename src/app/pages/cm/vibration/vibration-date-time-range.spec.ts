@@ -10,7 +10,7 @@ import { By } from '@angular/platform-browser';
 import type { Instance } from 'flatpickr/dist/types/instance';
 import { providePrimeNG } from 'primeng/config';
 import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
-import { VIBRATION_PAGES } from 'src/app/core/models/vibration-page.model';
+import { VIBRATION_PAGES } from 'src/app/core/models/vibration/vibration-page.model';
 import { ChartLayoutPreferenceService } from 'src/app/core/services/chart-layout-preference.service';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
 import { METRONIC_PRIMENG_CONFIG } from 'src/app/shared/components/metronic-primeng.config';

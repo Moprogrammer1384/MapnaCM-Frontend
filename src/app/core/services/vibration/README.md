@@ -60,7 +60,7 @@ The raw numerical modules/formulas and chart axes remain unchanged.
 ## File organization
 
 - api/: named HTTP adapters for Time/Frequency data, Bode data and each feature's availability.
-- core/models/vibration-api.model.ts: backend DTOs and display-only record type.
+- core/models/vibration/vibration-api.model.ts: backend DTOs and display-only record type.
 - time-domain/: existing raw time mathematics/workers, plus the separate summary display adapter.
 - frequency-domain/: existing FFT mathematics, FFT-only resampling/windowing and workers.
 - shared/components/vibration-*-domain-chart/: existing charts and minimal data-lifecycle adaptation.

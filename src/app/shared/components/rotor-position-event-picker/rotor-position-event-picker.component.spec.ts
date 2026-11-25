@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, Subject, throwError } from 'rxjs';
-import { RotorPositionEvent } from 'src/app/core/models/rotor-position.model';
+import { RotorPositionEvent } from 'src/app/core/models/vibration/rotor-position.model';
 import { ROTOR_POSITION_DATA_SOURCE } from 'src/app/core/services/vibration/rotor-position/rotor-position-data-source.service';
 import { rotorEvent, rotorPair } from 'src/testing/rotor-position-fixture';
 import { RotorPositionEventPickerComponent } from './rotor-position-event-picker.component';

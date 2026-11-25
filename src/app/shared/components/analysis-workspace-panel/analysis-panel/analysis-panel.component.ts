@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnChanges, Output, TemplateRef } from '@angular/core';
-import { AnalysisDateRange, AnalysisTab, AnalysisTimeRange } from 'src/app/core/models/analysis-panel.model';
+import { AnalysisDateRange, AnalysisTab, AnalysisTimeRange } from 'src/app/core/models/vibration/analysis-panel.model';
 import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
 import { DateTimeRangeComponent } from '../../date-time-range/date-time-range.component';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
-import { AnalysisChartSettings, AnalysisDomain, defaultChartSettings, vibrationUnitOptions } from 'src/app/core/models/analysis-chart-settings.model';
+import { AnalysisChartSettings, AnalysisDomain, defaultChartSettings, vibrationUnitOptions } from 'src/app/core/models/vibration/analysis-chart-settings.model';
 import { VibrationDateTimeRangeComponent } from '../../vibration-date-time-range/vibration-date-time-range.component';
 
 @Component({

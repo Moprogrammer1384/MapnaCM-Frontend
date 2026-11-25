@@ -1,5 +1,5 @@
-import { AmplitudeMode } from '../../../models/analysis-chart-settings.model';
-import { TimeDomainStatistics } from '../../../models/vibration-data.model';
+import { AmplitudeMode } from '../../../models/vibration/analysis-chart-settings.model';
+import { TimeDomainStatistics } from '../../../models/vibration/vibration-data.model';
 
 /** Time-domain statistics use every sample. RMS includes DC; peak is max(abs(y)); pp is max(y)-min(y).
  * No sine-wave sqrt(2) approximation, and no rescaling of instantaneous samples.

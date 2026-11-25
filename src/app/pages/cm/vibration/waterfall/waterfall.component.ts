@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
-import { DEFAULT_WATERFALL_SETTINGS } from 'src/app/core/models/waterfall.model';
+import { DEFAULT_WATERFALL_SETTINGS } from 'src/app/core/models/vibration/waterfall.model';
 
 @Component({
   selector: 'app-vibration-waterfall',

@@ -1,6 +1,6 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
-import { AnalysisChartSettings } from '../../../models/analysis-chart-settings.model';
-import { RawVibrationRecord, TimeDomainAnalysis, TimeDomainWorkerRequest, TimeDomainWorkerResponse } from '../../../models/vibration-data.model';
+import { AnalysisChartSettings } from '../../../models/vibration/analysis-chart-settings.model';
+import { RawVibrationRecord, TimeDomainAnalysis, TimeDomainWorkerRequest, TimeDomainWorkerResponse } from '../../../models/vibration/vibration-data.model';
 import { prepareTimeDomainRecord } from './time-domain-preparation';
 import { analyzeTimeDomain } from './time-domain-analysis';
 

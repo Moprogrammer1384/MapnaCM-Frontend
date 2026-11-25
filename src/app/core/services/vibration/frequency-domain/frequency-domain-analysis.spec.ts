@@ -1,5 +1,5 @@
-import { AnalysisChartSettings, VIBRATION_UNITS } from '../../../models/analysis-chart-settings.model';
-import { RawVibrationRecord } from '../../../models/vibration-data.model';
+import { AnalysisChartSettings, VIBRATION_UNITS } from '../../../models/vibration/analysis-chart-settings.model';
+import { RawVibrationRecord } from '../../../models/vibration/vibration-data.model';
 import { prepareTimeDomainRecord } from '../time-domain/time-domain-preparation';
 import { resampleFftInput } from './fft-input-resampling';
 import { windowFftInput } from './fft-input-window';

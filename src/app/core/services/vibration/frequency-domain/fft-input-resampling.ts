@@ -1,4 +1,4 @@
-import { PreparedTimeDomainRecord } from '../../../models/vibration-data.model';
+import { PreparedTimeDomainRecord } from '../../../models/vibration/vibration-data.model';
 
 /** Same N/endpoints, linear interpolation on the actual time coordinates (no decimation).
  * This cannot recover acquisition bandwidth or undo timestamp rounding/aliasing. */

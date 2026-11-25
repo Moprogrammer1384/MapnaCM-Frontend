@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, ContentChild, ElementRef, EventEmitter, inject, Input, OnDestroy, Output, TemplateRef, ViewChild } from '@angular/core';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
-import { AnalysisChartSettingsChange, AnalysisDateRangeChange, AnalysisTab, AnalysisTimeRangeChange, AnalysisWorkspaceState } from 'src/app/core/models/analysis-panel.model';
-import { AnalysisDomain } from 'src/app/core/models/analysis-chart-settings.model';
+import { AnalysisChartSettingsChange, AnalysisDateRangeChange, AnalysisTab, AnalysisTimeRangeChange, AnalysisWorkspaceState } from 'src/app/core/models/vibration/analysis-panel.model';
+import { AnalysisDomain } from 'src/app/core/models/vibration/analysis-chart-settings.model';
 import { ChartLayoutPreferenceService } from 'src/app/core/services/chart-layout-preference.service';
 import { ClosableTabsComponent } from '../closable-tabs/closable-tabs.component';
 import { AnalysisPanelComponent } from './analysis-panel/analysis-panel.component';

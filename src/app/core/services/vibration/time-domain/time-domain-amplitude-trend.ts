@@ -1,4 +1,4 @@
-import { TimeDomainAmplitudeWindow } from '../../../models/vibration-data.model';
+import { TimeDomainAmplitudeWindow } from '../../../models/vibration/vibration-data.model';
 import { calculateTimeDomainStatistics } from './time-domain-statistics';
 
 const WINDOW_SECONDS = 0.1;

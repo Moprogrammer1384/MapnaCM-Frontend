@@ -1,5 +1,5 @@
 import { Observable, of } from 'rxjs';
-import { BodeRecord } from 'src/app/core/models/bode-analysis.model';
+import { BodeRecord } from 'src/app/core/models/vibration/bode-analysis.model';
 import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
 import type { BodeDataRequest, BodeDataSource } from 'src/app/core/services/vibration/bode-analysis/bode-data-source.service';
 import reference from './bode-reference.json';

@@ -1,7 +1,7 @@
 import { NgZone } from '@angular/core';
 import * as echarts from 'echarts';
-import { DEFAULT_ORBIT_SETTINGS, OrbitAnalysis } from 'src/app/core/models/orbit-analysis.model';
-import { DEFAULT_ROTOR_POSITION_SETTINGS, RotorPositionAnalysis } from 'src/app/core/models/rotor-position.model';
+import { DEFAULT_ORBIT_SETTINGS, OrbitAnalysis } from 'src/app/core/models/vibration/orbit-analysis.model';
+import { DEFAULT_ROTOR_POSITION_SETTINGS, RotorPositionAnalysis } from 'src/app/core/models/vibration/rotor-position.model';
 import { ORBIT_POSITION_ZOOM_IDS, orbitChartOptions, orbitTrackingOptions } from '../vibration-orbit-chart/orbit-chart-options';
 import { rotorPositionChartOptions, rotorPositionTrackingOptions } from '../vibration-rotor-position-chart/rotor-position-chart-options';
 import { POSITION_ZOOM_X, POSITION_ZOOM_Y } from '../vibration-rotor-position-chart/rotor-position-zoom';

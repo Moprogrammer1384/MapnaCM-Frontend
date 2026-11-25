@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Even
 import type { ECharts, EChartsOption } from 'echarts';
 import { Subscription } from 'rxjs';
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
-import { RotorPositionAnalysis, RotorPositionEvent, RotorPositionPair, RotorPositionRecord, RotorPositionSettings, RotorPositionUnit } from 'src/app/core/models/rotor-position.model';
+import { RotorPositionAnalysis, RotorPositionEvent, RotorPositionPair, RotorPositionRecord, RotorPositionSettings, RotorPositionUnit } from 'src/app/core/models/vibration/rotor-position.model';
 import { analyzeRotorPosition } from 'src/app/core/services/vibration/rotor-position/rotor-position-analysis';
 import { ROTOR_POSITION_DATA_SOURCE } from 'src/app/core/services/vibration/rotor-position/rotor-position-data-source.service';
 import { apiErrorMessage } from 'src/app/core/utils/api-error';

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of, Subject, throwError } from 'rxjs';
-import { OrbitCaptureChoice } from 'src/app/core/models/orbit-analysis.model';
+import { OrbitCaptureChoice } from 'src/app/core/models/vibration/orbit-analysis.model';
 import { VibrationOrbitAnalysisAvailabilityApiService } from 'src/app/core/services/vibration/api/vibration-orbit-analysis-availability-api.service';
 import { orbitPair } from 'src/testing/orbit-fixture';
 import { VibrationEventPickerComponent } from '../vibration-event-picker/vibration-event-picker.component';

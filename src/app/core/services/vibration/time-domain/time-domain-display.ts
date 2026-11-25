@@ -1,6 +1,6 @@
-import { AnalysisChartSettings, vibrationUnit } from '../../../models/analysis-chart-settings.model';
-import { VibrationDisplayRecord } from '../../../models/vibration-api.model';
-import { TimeDomainAnalysis, TimeDomainStatistics } from '../../../models/vibration-data.model';
+import { AnalysisChartSettings, vibrationUnit } from '../../../models/vibration/analysis-chart-settings.model';
+import { VibrationDisplayRecord } from '../../../models/vibration/vibration-api.model';
+import { TimeDomainAnalysis, TimeDomainStatistics } from '../../../models/vibration/vibration-data.model';
 import { timeDomainAmplitudeReference } from './time-domain-amplitude';
 import { selectTimeDomainAmplitude } from './time-domain-statistics';
 import { unitToSi } from './time-domain-unit-conversion';

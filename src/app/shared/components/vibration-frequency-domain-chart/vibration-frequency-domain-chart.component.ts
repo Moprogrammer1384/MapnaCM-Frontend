@@ -4,9 +4,9 @@ import { ChangeDetectorRef, Component, EventEmitter, inject, Input, NgZone, OnCh
 import { Subscription } from 'rxjs';
 import type { EChartsOption, TooltipComponentOption } from 'echarts';
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
-import { AMPLITUDE_LABELS, AnalysisChartSettings, VibrationSourceProfile, VIBRATION_QUANTITIES } from 'src/app/core/models/analysis-chart-settings.model';
-import { RawVibrationRecord } from 'src/app/core/models/vibration-data.model';
-import { FrequencyDomainAnalysis } from 'src/app/core/models/frequency-domain.model';
+import { AMPLITUDE_LABELS, AnalysisChartSettings, VibrationSourceProfile, VIBRATION_QUANTITIES } from 'src/app/core/models/vibration/analysis-chart-settings.model';
+import { RawVibrationRecord } from 'src/app/core/models/vibration/vibration-data.model';
+import { FrequencyDomainAnalysis } from 'src/app/core/models/vibration/frequency-domain.model';
 import { FrequencyDomainAnalysisService, FrequencyDomainAnalysisSession } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis.service';
 import { VIBRATION_DATA_SOURCE, isVibrationDisplay, vibrationError } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { formatNumber, NumberFormatPipe } from '../../pipes/number-format.pipe';

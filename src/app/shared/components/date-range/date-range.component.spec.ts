@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import type { Instance } from 'flatpickr/dist/types/instance';
-import { AnalysisDateRange } from 'src/app/core/models/analysis-panel.model';
+import { AnalysisDateRange } from 'src/app/core/models/vibration/analysis-panel.model';
 import { DateRangeComponent } from './date-range.component';
 
 @Component({

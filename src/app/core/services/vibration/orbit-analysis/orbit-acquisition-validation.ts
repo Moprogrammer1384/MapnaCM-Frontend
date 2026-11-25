@@ -1,4 +1,4 @@
-import { OrbitRecord } from 'src/app/core/models/orbit-analysis.model';
+import { OrbitRecord } from 'src/app/core/models/vibration/orbit-analysis.model';
 import { validateKeyphasor } from './orbit-keyphasor';
 import { orbitCaptureDuration, validOrbitCaptureTiming, validOrbitPeriod, validOrbitPeriodDate } from './orbit-capture-selection';
 

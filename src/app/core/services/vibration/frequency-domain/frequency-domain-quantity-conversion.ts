@@ -1,4 +1,4 @@
-import { VibrationQuantity } from '../../../models/analysis-chart-settings.model';
+import { VibrationQuantity } from '../../../models/vibration/analysis-chart-settings.model';
 
 const ORDERS: Record<VibrationQuantity, number> = { displacement: 0, velocity: 1, acceleration: 2 };
 

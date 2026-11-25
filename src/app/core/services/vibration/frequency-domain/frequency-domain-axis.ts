@@ -1,4 +1,4 @@
-import { AnalysisChartSettings } from '../../../models/analysis-chart-settings.model';
+import { AnalysisChartSettings } from '../../../models/vibration/analysis-chart-settings.model';
 
 /** Order is a constant-speed reference axis; variable-speed tracking needs tach data. */
 export function frequencyDomainAxis(settings: AnalysisChartSettings): { unit: 'Hz' | 'CPM' | 'Order'; scale: number } {

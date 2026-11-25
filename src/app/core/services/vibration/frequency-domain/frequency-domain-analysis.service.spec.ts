@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { RawVibrationRecord } from '../../../models/vibration-data.model';
+import { RawVibrationRecord } from '../../../models/vibration/vibration-data.model';
 import { prepareFrequencyDomainRecord, analyzeFrequencyDomain } from './frequency-domain-analysis';
 import { FrequencyDomainAnalysisService } from './frequency-domain-analysis.service';
 

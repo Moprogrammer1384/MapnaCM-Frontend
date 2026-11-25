@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { BodeRecord } from 'src/app/core/models/bode-analysis.model';
+import { BodeRecord } from 'src/app/core/models/vibration/bode-analysis.model';
 import { BODE_DATA_SOURCE } from 'src/app/core/services/vibration/bode-analysis/bode-data-source.service';
 import { VibrationBodeChartComponent } from './vibration-bode-chart.component';
 

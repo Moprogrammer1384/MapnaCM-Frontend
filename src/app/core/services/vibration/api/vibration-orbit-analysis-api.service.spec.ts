@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { analyticalOrbit, orbitPair } from 'src/testing/orbit-fixture';
 import { environment } from 'src/environments/environment';
-import { OrbitPeriod } from '../../../models/orbit-analysis.model';
+import { OrbitPeriod } from '../../../models/vibration/orbit-analysis.model';
 import { ORBIT_DATA_SOURCE } from '../orbit-analysis/orbit-data-source.service';
 import { VibrationOrbitAnalysisApiService } from './vibration-orbit-analysis-api.service';
 import { VibrationOrbitAnalysisAvailabilityApiService } from './vibration-orbit-analysis-availability-api.service';

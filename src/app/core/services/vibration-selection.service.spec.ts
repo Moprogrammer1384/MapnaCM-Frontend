@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { AssetTaxonomyExecution } from '../models/asset-taxonomy-selection.model';
-import { VibrationPage, VIBRATION_PAGES } from '../models/vibration-page.model';
+import { VibrationPage, VIBRATION_PAGES } from '../models/vibration/vibration-page.model';
 import { VibrationSelectionService } from './vibration-selection.service';
 import { orbitExecution } from 'src/testing/orbit-fixture';
 

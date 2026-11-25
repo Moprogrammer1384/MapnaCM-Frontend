@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import type { Instance } from 'flatpickr/dist/types/instance';
-import { AnalysisTimeRange } from 'src/app/core/models/analysis-panel.model';
+import { AnalysisTimeRange } from 'src/app/core/models/vibration/analysis-panel.model';
 import { TimeRangeComponent } from './time-range.component';
 
 @Component({

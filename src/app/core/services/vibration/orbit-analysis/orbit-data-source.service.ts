@@ -1,6 +1,6 @@
 import { inject, InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
-import { OrbitCaptureSelection, OrbitProbePair, OrbitRecord } from 'src/app/core/models/orbit-analysis.model';
+import { OrbitCaptureSelection, OrbitProbePair, OrbitRecord } from 'src/app/core/models/vibration/orbit-analysis.model';
 import { VibrationOrbitAnalysisApiService } from '../api/vibration-orbit-analysis-api.service';
 
 export interface OrbitDataRequest { readonly pair: OrbitProbePair; readonly selection: OrbitCaptureSelection; }

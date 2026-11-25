@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, Output } from '@angular/core';
 import { EMPTY, expand, Subscription, takeLast, tap } from 'rxjs';
 import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
-import { AnalysisEventTime } from 'src/app/core/models/analysis-event-time.model';
+import { AnalysisEventTime } from 'src/app/core/models/vibration/analysis-event-time.model';
 import { CalendarDateRange, TimeAvailability } from 'src/app/core/models/time-availability.model';
 import { TIME_AVAILABILITY_SOURCE } from 'src/app/core/services/time-availability.service';
 import { vibrationError } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';

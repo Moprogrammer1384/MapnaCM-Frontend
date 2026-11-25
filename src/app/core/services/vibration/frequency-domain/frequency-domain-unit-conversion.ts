@@ -1,4 +1,4 @@
-import { VibrationQuantity, VibrationUnit } from '../../../models/analysis-chart-settings.model';
+import { VibrationQuantity, VibrationUnit } from '../../../models/vibration/analysis-chart-settings.model';
 import { unitToSi } from '../time-domain/time-domain-unit-conversion';
 
 /** Dimensional scale only; never differentiates/integrates time samples. */

@@ -1,5 +1,5 @@
 import { fakeAsync, tick } from '@angular/core/testing';
-import { DEFAULT_WATERFALL_SETTINGS as defaults, WaterfallEventType, WaterfallRequest } from '../../../models/waterfall.model';
+import { DEFAULT_WATERFALL_SETTINGS as defaults, WaterfallEventType, WaterfallRequest } from '../../../models/vibration/waterfall.model';
 import { analyzeWaterfall, prepareWaterfall } from './waterfall-analysis';
 import { createMockWaterfall, mockWaterfallEvents, MockWaterfallDataSource } from 'src/testing/waterfall-fixture';
 

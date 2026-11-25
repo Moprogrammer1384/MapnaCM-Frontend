@@ -1,6 +1,6 @@
 import { vibrationChartColor } from '../vibration-chart-presentation/vibration-chart-colors';
 import type { EChartsOption, ScatterSeriesOption, TooltipComponentOption } from 'echarts';
-import { RotorPositionAnalysis, RotorPositionPoint, RotorPositionSettings } from 'src/app/core/models/rotor-position.model';
+import { RotorPositionAnalysis, RotorPositionPoint, RotorPositionSettings } from 'src/app/core/models/vibration/rotor-position.model';
 import { formatNumber } from '../../pipes/number-format.pipe';
 import { POSITION_ZOOM_X, POSITION_ZOOM_Y } from './rotor-position-zoom';
 import { vibrationChartAppearance, vibrationLinearZoom, vibrationPositionGrid, vibrationPositionZoom } from '../vibration-chart-presentation/vibration-chart-presentation';

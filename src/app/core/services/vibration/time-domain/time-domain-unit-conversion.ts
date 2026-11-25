@@ -1,4 +1,4 @@
-import { VibrationQuantity, VibrationUnit, VIBRATION_UNITS } from '../../../models/analysis-chart-settings.model';
+import { VibrationQuantity, VibrationUnit, VIBRATION_UNITS } from '../../../models/vibration/analysis-chart-settings.model';
 
 /** Exact scale from each quantity's default display unit to SI. */
 const DEFAULT_TO_SI: Record<VibrationQuantity, number> = { displacement: 1e-6, velocity: 1e-3, acceleration: 1 };

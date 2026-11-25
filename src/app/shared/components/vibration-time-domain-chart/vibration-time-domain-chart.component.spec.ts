@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { AnalysisChartSettings } from 'src/app/core/models/analysis-chart-settings.model';
-import { RawVibrationRecord, TimeDomainAnalysis } from 'src/app/core/models/vibration-data.model';
+import { AnalysisChartSettings } from 'src/app/core/models/vibration/analysis-chart-settings.model';
+import { RawVibrationRecord, TimeDomainAnalysis } from 'src/app/core/models/vibration/vibration-data.model';
 import { prepareTimeDomainRecord } from 'src/app/core/services/vibration/time-domain/time-domain-preparation';
 import { analyzeTimeDomain } from 'src/app/core/services/vibration/time-domain/time-domain-analysis';
 import { TimeDomainAnalysisService } from 'src/app/core/services/vibration/time-domain/time-domain-analysis.service';
 import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { VibrationTimeDomainChartComponent } from './vibration-time-domain-chart.component';
-import { VibrationDisplayRecord } from 'src/app/core/models/vibration-api.model';
+import { VibrationDisplayRecord } from 'src/app/core/models/vibration/vibration-api.model';
 
 const raw: RawVibrationRecord = { id: 'component', label: 'Component raw record', quantity: 'velocity', unit: 'cm/s',
   timeUnit: 'ms', time: [0, 1, 2, 3], values: [1, -4, 2, 3] };

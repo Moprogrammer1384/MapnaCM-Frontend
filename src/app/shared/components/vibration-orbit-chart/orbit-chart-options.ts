@@ -1,6 +1,6 @@
 import { vibrationChartColor } from '../vibration-chart-presentation/vibration-chart-colors';
 import { EChartsOption, LineSeriesOption, ScatterSeriesOption, TooltipComponentOption } from 'echarts';
-import { OrbitAnalysis, OrbitPoint, OrbitSettings } from 'src/app/core/models/orbit-analysis.model';
+import { OrbitAnalysis, OrbitPoint, OrbitSettings } from 'src/app/core/models/vibration/orbit-analysis.model';
 import { formatNumber } from '../../pipes/number-format.pipe';
 import { vibrationChartAppearance, vibrationLinearGrid, vibrationLinearZoom, vibrationPositionGrid, vibrationPositionZoom } from '../vibration-chart-presentation/vibration-chart-presentation';
 

@@ -1,4 +1,4 @@
-import { SignalIndicatorRecord, SignalIndicatorSeriesDto } from 'src/app/core/models/signal-indicators.model';
+import { SignalIndicatorRecord, SignalIndicatorSeriesDto } from 'src/app/core/models/vibration/signal-indicators.model';
 
 const values = { rms: 14.03, zeroToPeak: 27.78, peakToPeak: 54.02 };
 const firstAtUtc = '2026-10-22T20:30:00.000Z';

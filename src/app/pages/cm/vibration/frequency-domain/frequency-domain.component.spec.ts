@@ -10,7 +10,7 @@ import { providePrimeNG } from 'primeng/config';
 import { of } from 'rxjs';
 import { vibrationTestRecord } from 'src/testing/vibration-test-data';
 import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
-import { vibrationUnitOptions } from 'src/app/core/models/analysis-chart-settings.model';
+import { vibrationUnitOptions } from 'src/app/core/models/vibration/analysis-chart-settings.model';
 import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
 import { TimeDomainCaptureAvailabilityApiService } from 'src/app/core/services/vibration/api/time-domain-capture-availability-api.service';
 import { VibrationTimeDomainAcquisitionApiService } from 'src/app/core/services/vibration/api/vibration-time-domain-acquisition-api.service';

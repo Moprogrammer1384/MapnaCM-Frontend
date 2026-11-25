@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DEFAULT_ORBIT_SETTINGS } from 'src/app/core/models/orbit-analysis.model';
+import { DEFAULT_ORBIT_SETTINGS } from 'src/app/core/models/vibration/orbit-analysis.model';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
 
 @Component({ selector: 'app-vibration-orbit-analysis', templateUrl: './orbit-analysis.component.html' })

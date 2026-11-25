@@ -6,8 +6,8 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, in
 import { Subscription } from 'rxjs';
 import type { EChartsOption, TooltipComponentOption } from 'echarts';
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
-import { AMPLITUDE_LABELS, AnalysisChartSettings, VibrationSourceProfile, VIBRATION_QUANTITIES } from 'src/app/core/models/analysis-chart-settings.model';
-import { BodeAnalysis, BodeRecord } from 'src/app/core/models/bode-analysis.model';
+import { AMPLITUDE_LABELS, AnalysisChartSettings, VibrationSourceProfile, VIBRATION_QUANTITIES } from 'src/app/core/models/vibration/analysis-chart-settings.model';
+import { BodeAnalysis, BodeRecord } from 'src/app/core/models/vibration/bode-analysis.model';
 import { analyzeBode, bodeSettingsForRecord } from 'src/app/core/services/vibration/bode-analysis/bode-analysis';
 import { BODE_DATA_SOURCE } from 'src/app/core/services/vibration/bode-analysis/bode-data-source.service';
 import { apiErrorMessage } from 'src/app/core/utils/api-error';

@@ -1,5 +1,5 @@
-import { VibrationQuantity, VIBRATION_UNITS } from '../../../models/analysis-chart-settings.model';
-import { RawVibrationRecord } from '../../../models/vibration-data.model';
+import { VibrationQuantity, VIBRATION_UNITS } from '../../../models/vibration/analysis-chart-settings.model';
+import { RawVibrationRecord } from '../../../models/vibration/vibration-data.model';
 import { prepareTimeDomainRecord } from './time-domain-preparation';
 import { detrendSignal, differentiateSignal, integrateSignal } from './time-domain-calculus';
 import { convertTimeDomainUnit } from './time-domain-unit-conversion';

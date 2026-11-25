@@ -1,4 +1,4 @@
-import { DEFAULT_ROTOR_POSITION_SETTINGS as defaults } from 'src/app/core/models/rotor-position.model';
+import { DEFAULT_ROTOR_POSITION_SETTINGS as defaults } from 'src/app/core/models/vibration/rotor-position.model';
 import { rotorPair, rotorRecord } from 'src/testing/rotor-position-fixture';
 import { analyzeRotorPosition } from './rotor-position-analysis';
 import { TestRotorPositionDataSource } from 'src/testing/rotor-position-source.fixture';

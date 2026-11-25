@@ -1,6 +1,6 @@
 import type { CustomSeriesRenderItem, EChartsOption } from 'echarts';
-import { AMPLITUDE_LABELS } from 'src/app/core/models/analysis-chart-settings.model';
-import { WaterfallSettings, WaterfallSpectrum } from 'src/app/core/models/waterfall.model';
+import { AMPLITUDE_LABELS } from 'src/app/core/models/vibration/analysis-chart-settings.model';
+import { WaterfallSettings, WaterfallSpectrum } from 'src/app/core/models/vibration/waterfall.model';
 import { formatNumber } from '../../pipes/number-format.pipe';
 import { vibrationChartAppearance, vibrationLinearGrid, vibrationLinearZoom } from '../vibration-chart-presentation/vibration-chart-presentation';
 import { vibrationChartColor } from '../vibration-chart-presentation/vibration-chart-colors';

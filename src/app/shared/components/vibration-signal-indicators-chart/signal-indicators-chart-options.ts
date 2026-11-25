@@ -1,5 +1,5 @@
 import type { EChartsOption } from 'echarts';
-import { SignalIndicatorAlarmRange, SignalIndicatorMode, SignalIndicatorRecord } from 'src/app/core/models/signal-indicators.model';
+import { SignalIndicatorAlarmRange, SignalIndicatorMode, SignalIndicatorRecord } from 'src/app/core/models/vibration/signal-indicators.model';
 import { formatNumber } from '../../pipes/number-format.pipe';
 import { vibrationChartAppearance, vibrationLinearGrid, vibrationLinearZoom } from '../vibration-chart-presentation/vibration-chart-presentation';
 import { VIBRATION_PEAK_TO_PEAK_COLOR, vibrationChartColor } from '../vibration-chart-presentation/vibration-chart-colors';

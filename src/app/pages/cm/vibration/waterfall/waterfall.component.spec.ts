@@ -13,7 +13,7 @@ import { orbitExecution as baseExecution } from 'src/testing/orbit-fixture';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
 import { WATERFALL_DATA_SOURCE } from 'src/app/core/services/vibration/waterfall/waterfall-data-source.service';
 import { createMockWaterfall, mockWaterfallEvents, MockWaterfallDataSource } from 'src/testing/waterfall-fixture';
-import { DEFAULT_WATERFALL_SETTINGS, WaterfallCapture, WaterfallEventType } from 'src/app/core/models/waterfall.model';
+import { DEFAULT_WATERFALL_SETTINGS, WaterfallCapture, WaterfallEventType } from 'src/app/core/models/vibration/waterfall.model';
 import { METRONIC_PRIMENG_CONFIG } from 'src/app/shared/components/metronic-primeng.config';
 import { VibrationWaterfallChartComponent } from 'src/app/shared/components/vibration-waterfall-chart/vibration-waterfall-chart.component';
 import { WaterfallControlsComponent } from 'src/app/shared/components/waterfall-controls/waterfall-controls.component';

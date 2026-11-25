@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
-import { WaterfallEventType, WaterfallSettings } from 'src/app/core/models/waterfall.model';
-import { vibrationUnitOptions } from 'src/app/core/models/analysis-chart-settings.model';
+import { WaterfallEventType, WaterfallSettings } from 'src/app/core/models/vibration/waterfall.model';
+import { vibrationUnitOptions } from 'src/app/core/models/vibration/analysis-chart-settings.model';
 
 @Component({
   selector: 'app-waterfall-controls', standalone: true, imports: [FormsModule, SharedModule],

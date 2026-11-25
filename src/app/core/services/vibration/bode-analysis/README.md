@@ -89,7 +89,7 @@ Automated tests keep their independent source and numeric fixture under
 
 ## Architecture and lifecycle
 
-- `core/models/bode-analysis.model.ts`: observations, record metadata and results.
+- `core/models/vibration/bode-analysis.model.ts`: observations, record metadata and results.
 - `VibrationBodeAnalysisApiService` / `BODE_DATA_SOURCE`: database API adapter in
   [the shared API folder](../api/README.md), with no local-data
   fallback. Services stay in core/services/; test doubles stay in src/testing/.

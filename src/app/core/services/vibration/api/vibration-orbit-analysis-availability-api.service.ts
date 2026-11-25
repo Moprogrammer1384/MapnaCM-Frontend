@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { defer, map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { OrbitCaptureChoice, OrbitPeriod, OrbitProbePair } from '../../../models/orbit-analysis.model';
+import { OrbitCaptureChoice, OrbitPeriod, OrbitProbePair } from '../../../models/vibration/orbit-analysis.model';
 import { ApiEnvelope } from '../../../models/response.model';
 import { apiErrorMessage } from '../../../utils/api-error';
 import { validOrbitCaptureTiming, validOrbitPeriod, validOrbitPeriodDate } from '../orbit-analysis/orbit-capture-selection';

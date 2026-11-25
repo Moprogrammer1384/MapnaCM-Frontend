@@ -1,7 +1,7 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
-import { AnalysisChartSettings } from '../../../models/analysis-chart-settings.model';
-import { RawVibrationRecord } from '../../../models/vibration-data.model';
-import { FrequencyDomainAnalysis, FrequencyDomainWorkerRequest, FrequencyDomainWorkerResponse } from '../../../models/frequency-domain.model';
+import { AnalysisChartSettings } from '../../../models/vibration/analysis-chart-settings.model';
+import { RawVibrationRecord } from '../../../models/vibration/vibration-data.model';
+import { FrequencyDomainAnalysis, FrequencyDomainWorkerRequest, FrequencyDomainWorkerResponse } from '../../../models/vibration/frequency-domain.model';
 import { prepareFrequencyDomainRecord, analyzeFrequencyDomain } from './frequency-domain-analysis';
 
 export interface FrequencyDomainAnalysisSession {

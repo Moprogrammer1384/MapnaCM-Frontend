@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { RawVibrationRecord } from '../../../models/vibration-data.model';
+import { RawVibrationRecord } from '../../../models/vibration/vibration-data.model';
 import { prepareTimeDomainRecord } from './time-domain-preparation';
 import { analyzeTimeDomain } from './time-domain-analysis';
 import { TimeDomainAnalysisService } from './time-domain-analysis.service';

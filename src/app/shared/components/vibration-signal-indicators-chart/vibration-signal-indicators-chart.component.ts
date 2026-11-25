@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input, N
 import type { EChartsOption } from 'echarts';
 import { Subscription } from 'rxjs';
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
-import { SignalIndicatorAlarmRange, SignalIndicatorAlarmSetting, SignalIndicatorRecord, SignalIndicatorViewSettings } from 'src/app/core/models/signal-indicators.model';
+import { SignalIndicatorAlarmRange, SignalIndicatorAlarmSetting, SignalIndicatorRecord, SignalIndicatorViewSettings } from 'src/app/core/models/vibration/signal-indicators.model';
 import { VibrationSignalIndicatorApiService } from 'src/app/core/services/vibration/api/vibration-signal-indicator-api.service';
 import { scaleSignalIndicatorLimits } from 'src/app/core/services/vibration/signal-indicators/signal-indicators-alarms';
 import { VibrationSignalIndicatorSettingsApiService } from 'src/app/core/services/vibration/api/vibration-signal-indicator-settings-api.service';

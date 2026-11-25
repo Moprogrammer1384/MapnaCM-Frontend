@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import type { Instance } from 'flatpickr/dist/types/instance';
-import { AnalysisEventTime } from 'src/app/core/models/analysis-event-time.model';
+import { AnalysisEventTime } from 'src/app/core/models/vibration/analysis-event-time.model';
 import { VibrationEventPickerComponent } from './vibration-event-picker.component';
 
 const events: readonly AnalysisEventTime[] = [

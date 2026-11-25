@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
-import { DEFAULT_ORBIT_SETTINGS, OrbitSettings } from 'src/app/core/models/orbit-analysis.model';
+import { DEFAULT_ORBIT_SETTINGS, OrbitSettings } from 'src/app/core/models/vibration/orbit-analysis.model';
 
 @Component({ selector: 'app-orbit-analysis-controls', standalone: true,
   imports: [CommonModule, FormsModule, SharedModule], templateUrl: './orbit-analysis-controls.component.html' })

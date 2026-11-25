@@ -21,7 +21,7 @@ import { VibrationSignalIndicatorsChartComponent } from 'src/app/shared/componen
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
 import { orbitExecution } from 'src/testing/orbit-fixture';
 import { storedIndicatorDto } from 'src/testing/signal-indicators-fixture';
-import { SignalIndicatorSeriesDto } from 'src/app/core/models/signal-indicators.model';
+import { SignalIndicatorSeriesDto } from 'src/app/core/models/vibration/signal-indicators.model';
 import { VibrationModule } from '../vibration.module';
 
 @Component({ standalone: true, imports: [RouterOutlet, AssetTaxonomyDrawerComponent], template: `

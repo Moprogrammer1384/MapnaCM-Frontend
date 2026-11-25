@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import flatpickr from 'flatpickr';
 import type { Instance } from 'flatpickr/dist/types/instance';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
-import { AnalysisEventTime } from 'src/app/core/models/analysis-event-time.model';
+import { AnalysisEventTime } from 'src/app/core/models/vibration/analysis-event-time.model';
 import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
 import { CalendarDateRange } from 'src/app/core/models/time-availability.model';
 import { VIBRATION_EVENT_LABELS } from '../vibration-chart-presentation/vibration-event-presentation';

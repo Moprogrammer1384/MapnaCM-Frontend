@@ -7,7 +7,7 @@ folder contains `AnalysisPanelComponent` and its template.
 `AnalysisWorkspaceComponent` and `AnalysisPanelComponent` are standalone UI
 components for analysis screens in any module. They use shared `AnalysisTab`,
 `AnalysisDateRange`, `AnalysisTimeRange` and their change-event types from
-`core/models/analysis-panel.model.ts` and do not inject feature services, read
+`core/models/vibration/analysis-panel.model.ts` and do not inject feature services, read
 routes or own storage. Consumers supply their own chart templates; the workspace
 does not generate data or provide a default chart.
 

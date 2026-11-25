@@ -10,7 +10,7 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import * as echarts from 'echarts';
 import { providePrimeNG } from 'primeng/config';
 import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
-import { AmplitudeMode, AnalysisXAxis, VibrationQuantity, VibrationUnit, vibrationUnit } from 'src/app/core/models/analysis-chart-settings.model';
+import { AmplitudeMode, AnalysisXAxis, VibrationQuantity, VibrationUnit, vibrationUnit } from 'src/app/core/models/vibration/analysis-chart-settings.model';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
 import { VibrationModule } from 'src/app/pages/cm/vibration/vibration.module';
 import { VibrationFrequencyDomainComponent } from 'src/app/pages/cm/vibration/frequency-domain/frequency-domain.component';

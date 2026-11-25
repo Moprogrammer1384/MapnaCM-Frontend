@@ -1,4 +1,4 @@
-import { RawVibrationRecord } from '../models/vibration-data.model';
+import { RawVibrationRecord } from '../models/vibration/vibration-data.model';
 
 /** UTC origin plus the first actual raw sample offset, never the query's From. */
 export function rawAcquisitionStart(record: RawVibrationRecord | undefined): string | undefined {

@@ -1,4 +1,4 @@
-import { AmplitudeMode } from '../../../models/analysis-chart-settings.model';
+import { AmplitudeMode } from '../../../models/vibration/analysis-chart-settings.model';
 
 /** Single-sided sinusoidal line amplitudes, NOT full-record waveform extrema.
  * DC/Nyquist are unpaired; DC is constant (RMS=peak, pp=0). */

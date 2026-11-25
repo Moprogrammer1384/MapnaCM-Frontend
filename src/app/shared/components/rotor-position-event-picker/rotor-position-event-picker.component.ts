@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
-import { RotorPositionEvent, RotorPositionPair } from 'src/app/core/models/rotor-position.model';
+import { RotorPositionEvent, RotorPositionPair } from 'src/app/core/models/vibration/rotor-position.model';
 import { ROTOR_POSITION_DATA_SOURCE } from 'src/app/core/services/vibration/rotor-position/rotor-position-data-source.service';
 import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { VibrationEventPickerComponent } from '../vibration-event-picker/vibration-event-picker.component';

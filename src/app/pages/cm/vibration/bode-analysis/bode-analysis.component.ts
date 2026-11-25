@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AnalysisChartSettings } from 'src/app/core/models/analysis-chart-settings.model';
+import { AnalysisChartSettings } from 'src/app/core/models/vibration/analysis-chart-settings.model';
 import { VibrationBodeAnalysisAvailabilityApiService } from 'src/app/core/services/vibration/api/vibration-bode-analysis-availability-api.service';
 import { TIME_AVAILABILITY_SOURCE } from 'src/app/core/services/time-availability.service';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';

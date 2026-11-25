@@ -3,7 +3,7 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, Input, NgZone, OnCh
 import flatpickr from 'flatpickr';
 import type { Instance } from 'flatpickr/dist/types/instance';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
-import { AnalysisDateRange } from 'src/app/core/models/analysis-panel.model';
+import { AnalysisDateRange } from 'src/app/core/models/vibration/analysis-panel.model';
 
 @Component({
   selector: 'app-date-range',

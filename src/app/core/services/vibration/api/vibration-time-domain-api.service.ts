@@ -2,10 +2,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, InjectionToken } from '@angular/core';
 import { catchError, defer, map, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { VibrationQuantity, VibrationUnit, VIBRATION_UNITS } from '../../../models/analysis-chart-settings.model';
+import { VibrationQuantity, VibrationUnit, VIBRATION_UNITS } from '../../../models/vibration/analysis-chart-settings.model';
 import { ApiEnvelope } from '../../../models/response.model';
-import { RawVibrationRecord, VibrationDataRequest } from '../../../models/vibration-data.model';
-import { VibrationChartDto, VibrationDisplayRecord } from '../../../models/vibration-api.model';
+import { RawVibrationRecord, VibrationDataRequest } from '../../../models/vibration/vibration-data.model';
+import { VibrationChartDto, VibrationDisplayRecord } from '../../../models/vibration/vibration-api.model';
 import { apiErrorMessage } from '../../../utils/api-error';
 
 export type VibrationDataRecord = RawVibrationRecord | VibrationDisplayRecord;

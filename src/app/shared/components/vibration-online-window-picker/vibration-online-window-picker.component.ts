@@ -3,7 +3,7 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import flatpickr from 'flatpickr';
 import type { Instance } from 'flatpickr/dist/types/instance';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
-import type { VibrationOnlineWindow } from 'src/app/core/models/vibration-data.model';
+import type { VibrationOnlineWindow } from 'src/app/core/models/vibration/vibration-data.model';
 import { tehranWallTime, utcFromTehranMinute } from 'src/app/core/utils/vibration-date-time';
 
 const minuteMs = 60_000;

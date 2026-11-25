@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
-import { AnalysisChartSettings } from 'src/app/core/models/analysis-chart-settings.model';
-import { AnalysisTab } from 'src/app/core/models/analysis-panel.model';
+import { AnalysisChartSettings } from 'src/app/core/models/vibration/analysis-chart-settings.model';
+import { AnalysisTab } from 'src/app/core/models/vibration/analysis-panel.model';
 import { TimeDomainCaptureAvailabilityApiService } from 'src/app/core/services/vibration/api/time-domain-capture-availability-api.service';
 import { VibrationTimeDomainAcquisitionApiService } from 'src/app/core/services/vibration/api/vibration-time-domain-acquisition-api.service';
 import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';

@@ -30,7 +30,7 @@ by the user on 2026-10-21. They are used only by the FFT pipeline. The existing
 `../time-domain/time-domain-preparation.ts` is reused for validation and SI
 normalization. Frequency-domain quantity conversion uses Fourier differentiation
 and integration.
-The reusable chart is `shared/components/vibration-frequency-domain-chart/`;
+The reusable chart is `shared/components/vibration/frequency-domain-chart/`;
 page components contain no numerical processing.
 
 ## Numerical conventions

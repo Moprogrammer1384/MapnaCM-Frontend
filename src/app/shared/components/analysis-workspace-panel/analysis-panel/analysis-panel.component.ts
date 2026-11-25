@@ -6,7 +6,7 @@ import { DateTimeRangeComponent } from '../../date-time-range/date-time-range.co
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
 import { AnalysisChartSettings, AnalysisDomain, defaultChartSettings, vibrationUnitOptions } from 'src/app/core/models/vibration/analysis-chart-settings.model';
-import { VibrationDateTimeRangeComponent } from '../../vibration-date-time-range/vibration-date-time-range.component';
+import { VibrationDateTimeRangeComponent } from '../../vibration/availability-date-time-range/availability-date-time-range.component';
 
 @Component({
   selector: 'app-analysis-panel',

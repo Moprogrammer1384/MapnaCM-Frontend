@@ -63,7 +63,7 @@ The raw numerical modules/formulas and chart axes remain unchanged.
 - core/models/vibration/api/vibration-api.model.ts: backend DTOs and display-only record type.
 - time-domain/: existing raw time mathematics/workers, plus the separate summary display adapter.
 - frequency-domain/: existing FFT mathematics, FFT-only resampling/windowing and workers.
-- shared/components/vibration-*-domain-chart/: existing charts and minimal data-lifecycle adaptation.
+- shared/components/vibration/*-domain-chart/: existing charts and minimal data-lifecycle adaptation.
 
 The numerical pipeline below applies ONLY to native raw analysis records.
 
@@ -168,7 +168,7 @@ See the latest dated agent.md maintenance entry for executed results and live-te
 ## Available calendar days (2026-10-25)
 
 VibrationTimeDomainAvailabilityApiService calls GetAvailability for the selected IDs before date
-confirmation. The connected vibration-date-time-range wrapper enables only proven
+confirmation. The connected availability date/time wrapper enables only proven
 commonRanges through native Flatpickr rules, initially disabling all days. Calendar
 labels keep their day meaning and exclusive To; no UTC conversion applies to this
 metadata. Unknown months are queried on navigation and failed reads remain closed

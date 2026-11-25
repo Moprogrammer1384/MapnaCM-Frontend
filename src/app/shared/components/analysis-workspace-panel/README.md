@@ -110,7 +110,7 @@ and opposite event-type badge together inside `app-vibration-bode-chart`.
 ```
 
 Frequency Domain uses the shared raw-data FFT chart in
-`shared/components/vibration-frequency-domain-chart/`. It loads measurement records
+`shared/components/vibration/frequency-domain-chart/`. It loads measurement records
 from the selected Time Domain offline capture, initializes quantity/unit from
 source metadata, and plots all one-sided FFT bins with unit/amplitude/axis conversions.
 See [Frequency Domain methods and limitations](../../../core/services/vibration/frequency-domain/README.md).
@@ -119,7 +119,7 @@ Bode Analysis supplies its own paired tracking charts through
 
 ## Chart controls (2026-10-19)
 
-Time Domain provides the reusable `vibration-time-domain-chart` template, loading
+Time Domain provides the reusable `time-domain-chart.component.html` template, loading
 measurement records through `VIBRATION_DATA_SOURCE` / `VibrationTimeDomainAcquisitionApiService`.
 It initializes Quantity and Unit from source metadata, performs raw-record numerical conversions in a shared Web Worker,
 and displays true full-record RMS/0p/pp as a separate scalar without rescaling the

@@ -30,7 +30,7 @@ or tachometer signal here to recompute tracking or establish its phase conventio
   `/BodeAnalysis/GetAvailability`. Proven common
   event windows enable blue dates; bounds guide navigation and never fill holes.
 - The user requested **discrete event selection**, replacing Bode's range and
-  hour/minute fields. `shared/components/vibration-event-picker/` uses Flatpickr
+  hour/minute fields. `shared/components/vibration/event-picker/` uses Flatpickr
   single-date mode and the existing searchable Select2 adapter. Selecting a time
   immediately loads that event; there is no extra Apply step or inline event list.
   Time/Frequency keep their original range picker and explicit Apply behavior.
@@ -96,7 +96,7 @@ Automated tests keep their independent source and numeric fixture under
 - `bode-analysis.ts`: binds settings to native quantity/unit metadata and performs
   pure display transformations and input validation, separate
   from Time/Frequency numerical processing. No worker is needed for 1,020 triples.
-- `shared/components/vibration-bode-chart/`: standalone OnPush ECharts adapter.
+- `shared/components/vibration/bode-analysis-chart/`: standalone OnPush ECharts adapter.
   Owns the sensor heading/tag and the opposite event-type badge in one responsive
   header; Bode disables the duplicate workspace heading and preserves its label ID.
   One ECharts instance contains **amplitude above phase**, aligned speed grids,

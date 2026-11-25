@@ -55,12 +55,12 @@ values; `valueChange` remains change-only. Availability updates preserve drafts 
 the visible month. Time values and hour/minute validation retain their prior behavior.
 
 Signal Indicators use the connected wrapper in
-`shared/components/vibration-date-time-range/`. Time Domain Offline, Frequency
+`shared/components/vibration/availability-date-time-range/`. Time Domain Offline, Frequency
 Domain, Bode, Orbit and Rotor use discrete event pickers.
 
 Available-day colour (2026-11-10): days proven by explicit `enabledDates` receive
 the same `darp-data-available` class as event calendars. Both scoped calendars use
-the shared Metronic primary-light/primary rule in `vibration-event-picker/`.
+the shared Metronic primary-light/primary rule in `shared/components/vibration/event-picker/`.
 Unknown/unrestricted calendars are not labelled as data-bearing. Disabled days,
 selected endpoints, in-range days and hover/focus retain native theme styling.
 Availability refreshes redraw the markers, preserving real gaps and exclusive

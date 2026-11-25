@@ -1,0 +1,219 @@
+import { vibrationChartColor } from '../chart-presentation/chart-colors';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import { Subscription } from 'rxjs';
+import type { EChartsOption, TooltipComponentOption } from 'echarts';
+import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
+import { AMPLITUDE_LABELS, AnalysisChartSettings, VibrationSourceProfile, VIBRATION_QUANTITIES } from 'src/app/core/models/vibration/analysis-chart-settings.model';
+import { RawVibrationRecord } from 'src/app/core/models/vibration/time-domain/vibration-data.model';
+import { FrequencyDomainAnalysis } from 'src/app/core/models/vibration/frequency-domain/frequency-domain.model';
+import { FrequencyDomainAnalysisService, FrequencyDomainAnalysisSession } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-analysis.service';
+import { VIBRATION_DATA_SOURCE, isVibrationDisplay, vibrationError } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
+import { formatNumber, NumberFormatPipe } from '../../../pipes/number-format.pipe';
+import { AcquisitionDatePipe } from '../../../pipes/acquisition-date.pipe';
+import { rawAcquisitionStart } from 'src/app/core/utils/vibration-acquisition-start';
+import { largestSpectrumPeaks, SpectrumPeak } from 'src/app/core/services/vibration/frequency-domain/frequency-domain-peaks';
+
+/** Raw-record FFT rendering. Source/API integration and all signal math remain in core/services/vibration. */
+@Component({
+  selector: 'app-vibration-frequency-domain-chart',
+  standalone: true,
+  imports: [CommonModule, ApacheEchartsComponent, NumberFormatPipe, AcquisitionDatePipe],
+  templateUrl: './frequency-domain-chart.component.html',
+  host: { class: 'd-block mw-100', '[attr.aria-busy]': 'loading' },
+})
+export class VibrationFrequencyDomainChartComponent implements OnChanges, OnDestroy {
+  @Input({ required: true }) measurementId: number;
+  @Input() measurementIds?: readonly number[];
+  @Input() sourceKey?: string;
+  @Input({ required: true }) from: string;
+  @Input({ required: true }) to: string;
+  @Input() settings?: AnalysisChartSettings;
+  @Output() readonly sourceProfile = new EventEmitter<VibrationSourceProfile | undefined>(true);
+  @Output() readonly sourceSettings = new EventEmitter<AnalysisChartSettings>(true);
+  loading = true;
+  error = '';
+  raw?: RawVibrationRecord;
+  analysis?: FrequencyDomainAnalysis;
+  peaks: readonly SpectrumPeak[] = [];
+  acquisitionStartedAt?: string;
+  readonly amplitudeLabels = AMPLITUDE_LABELS;
+  chartOptions?: EChartsOption;
+  private readonly source = inject(VIBRATION_DATA_SOURCE);
+  private readonly processor = inject(FrequencyDomainAnalysisService);
+  private readonly zone = inject(NgZone);
+  private readonly changeDetector = inject(ChangeDetectorRef);
+  private subscription?: Subscription;
+  private session?: FrequencyDomainAnalysisSession;
+  private observer?: MutationObserver;
+  private version = 0;
+  private points: [number, number][] = [];
+  private destroyed = false;
+  private analysisTimer?: ReturnType<typeof setTimeout>;
+
+  constructor() {
+    this.observer = new MutationObserver(() => this.zone.run(() => {
+      this.updateChartTheme();
+      this.changeDetector.markForCheck();
+    }));
+    this.observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['measurementId'] || changes['measurementIds'] || changes['sourceKey'] || changes['from'] || changes['to']) {
+      this.reload();
+    }
+    else if (changes['settings']) { this.scheduleAnalysis(); }
+    else { this.updateChartTheme(); }
+  }
+
+  reload(): void {
+    if (this.subscription) { this.sourceProfile.emit(undefined); }
+    ++this.version;
+    clearTimeout(this.analysisTimer);
+    this.subscription?.unsubscribe();
+    this.session?.release();
+    this.session = undefined;
+    this.raw = undefined;
+    this.analysis = undefined;
+    this.peaks = [];
+    this.acquisitionStartedAt = undefined;
+    this.points = [];
+    this.chartOptions = undefined;
+    this.loading = true;
+    this.error = '';
+    this.subscription = this.source.load({
+      measurementId: this.measurementId, from: this.from, to: this.to,
+      ...(this.measurementIds && { measurementIds: this.measurementIds }),
+      ...(this.sourceKey && { sourceKey: this.sourceKey }),
+    }).subscribe({
+      next: raw => {
+        this.sourceProfile.emit({ quantity: raw.quantity, unit: raw.unit });
+        if (isVibrationDisplay(raw)) {
+          this.loading = false;
+          this.error = raw.series.representation === 'minmax-statistical-envelope'
+            ? 'FFT cannot be calculated from summary data. Raw waveform samples are required.'
+            : 'FFT requires at least three continuous raw samples. The returned data is incomplete or contains gaps.';
+          this.changeDetector.markForCheck();
+          return;
+        }
+        this.session?.release();
+        this.raw = raw;
+        this.session = this.processor.acquire(raw);
+        if (!this.settings) {
+          this.sourceSettings.emit({ quantity: raw.quantity, unit: raw.unit, xAxis: 'hz', amplitude: '0p' });
+        }
+        this.scheduleAnalysis();
+      },
+      error: error => {
+        this.sourceProfile.emit(undefined);
+        this.loading = false;
+        this.error = vibrationError(error);
+        this.changeDetector.markForCheck();
+      },
+    });
+  }
+
+  private scheduleAnalysis(): void {
+    if (!this.session) { return; }
+    ++this.version;
+    clearTimeout(this.analysisTimer);
+    this.loading = true;
+    this.changeDetector.markForCheck();
+    // Coalesce keyboard/Select2 bursts before posting work; stale replies are also ignored.
+    this.analysisTimer = setTimeout(() => void this.analyze(), 16);
+  }
+
+  private async analyze(): Promise<void> {
+    if (!this.session || !this.raw) { return; }
+    const version = ++this.version;
+    const settings = this.settings ?? { quantity: this.raw.quantity, unit: this.raw.unit, xAxis: 'hz', amplitude: '0p' };
+    this.loading = true;
+    this.error = '';
+    try {
+      const result = await this.session.analyze(settings);
+      if (this.destroyed || version !== this.version) { return; }
+      this.zone.run(() => {
+        this.analysis = result;
+        this.peaks = largestSpectrumPeaks(result);
+        this.acquisitionStartedAt = rawAcquisitionStart(this.raw);
+        this.loading = false;
+        this.points = Array.from(result.frequency, (hz, index) => [hz, result.values[index]]);
+        this.updateChartTheme();
+        // Entering NgZone alone does not mark the application's OnPush ancestors.
+        // Publish every completion, including cached/amplitude-only results.
+        this.changeDetector.markForCheck();
+      });
+    } catch (error) {
+      if (this.destroyed || version !== this.version) { return; }
+      this.zone.run(() => {
+        this.loading = false;
+        this.error = error instanceof Error ? error.message : 'Unable to analyze this record.';
+        this.analysis = undefined;
+        this.chartOptions = undefined;
+        this.changeDetector.markForCheck();
+      });
+    }
+  }
+
+  private tooltipFormatter(result: FrequencyDomainAnalysis): TooltipComponentOption['formatter'] {
+    return params => {
+      const point = Array.isArray(params) ? params[0] : params;
+      if (!Array.isArray(point.value)) { return ''; }
+      const quantity = VIBRATION_QUANTITIES[result.quantity].label;
+      return `${formatNumber(Number(point.value[0]))} ${result.axisUnit}<br/>${quantity}: ${formatNumber(Number(point.value[1]))} ${result.unit} ${AMPLITUDE_LABELS[result.amplitudeMode]}`;
+    };
+  }
+
+  private updateChartTheme(): void {
+    const result = this.analysis;
+    if (!result) { return; }
+    const styles = getComputedStyle(document.documentElement);
+    const token = (name: string) => styles.getPropertyValue(`--bs-${name}`).trim();
+    const quantity = VIBRATION_QUANTITIES[result.quantity].label;
+    const label = `${quantity} (${result.unit} ${AMPLITUDE_LABELS[result.amplitudeMode]})`;
+    const signalColor = vibrationChartColor();
+    this.chartOptions = {
+      animation: false,
+      color: [signalColor],
+      textStyle: { color: token('gray-600'), fontFamily: styles.fontFamily },
+      tooltip: {
+        trigger: 'axis',
+        formatter: this.tooltipFormatter(result),
+        backgroundColor: token('body-bg'), borderColor: token('border-color'), textStyle: { color: token('body-color') },
+      },
+      grid: { left: 20, right: 24, top: 45, bottom: 75, containLabel: true },
+      xAxis: { type: 'value', name: `Frequency (${result.axisUnit})`, nameLocation: 'middle', nameGap: 30,
+        min: 0, max: result.frequency[result.frequency.length - 1], splitLine: { show: false },
+        axisLabel: { formatter: formatNumber },
+        axisPointer: { label: { formatter: params => formatNumber(Number(params.value)) } },
+        axisLine: { lineStyle: { color: token('gray-500') } } },
+      yAxis: { type: 'value', name: label, min: 0, nameTextStyle: { align: 'left' },
+        axisLabel: { formatter: formatNumber },
+        axisPointer: { label: { formatter: params => formatNumber(Number(params.value)) } },
+        splitLine: { lineStyle: { color: token('border-color') } } },
+      dataZoom: [
+        { type: 'inside', xAxisIndex: 0 },
+        { type: 'slider', xAxisIndex: 0, height: 20, bottom: 10,
+          labelFormatter: formatNumber,
+          borderColor: token('border-color'), backgroundColor: token('gray-100'), fillerColor: token('primary-light'),
+          textStyle: { color: token('gray-600') }, handleStyle: { color: token('primary'), borderColor: token('primary') },
+          moveHandleStyle: { color: token('primary') },
+          dataBackground: { lineStyle: { color: token('gray-500') }, areaStyle: { color: token('gray-200') } },
+          selectedDataBackground: { lineStyle: { color: signalColor }, areaStyle: { color: token('primary-light') } } },
+      ],
+      series: [{ id: 'raw-frequency', name: quantity, type: 'line', showSymbol: false,
+        lineStyle: { width: 1, color: signalColor }, itemStyle: { color: signalColor },
+        sampling: 'minmax', progressive: 5000, data: this.points }],
+    };
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed = true;
+    ++this.version;
+    this.subscription?.unsubscribe();
+    clearTimeout(this.analysisTimer);
+    this.session?.release();
+    this.observer?.disconnect();
+  }
+}

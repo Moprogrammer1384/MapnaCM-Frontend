@@ -5,7 +5,7 @@ import { TIME_AVAILABILITY_SOURCE } from 'src/app/core/services/time-availabilit
 import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
 import { VibrationSignalIndicatorApiService } from 'src/app/core/services/vibration/api/vibration-signal-indicator-api.service';
 import { AnalysisWorkspaceComponent } from 'src/app/shared/components/analysis-workspace-panel/analysis-workspace.component';
-import { VibrationSignalIndicatorsChartComponent } from 'src/app/shared/components/vibration-signal-indicators-chart/vibration-signal-indicators-chart.component';
+import { VibrationSignalIndicatorsChartComponent } from 'src/app/shared/components/vibration/signal-indicators-chart/signal-indicators-chart.component';
 
 @Component({
   selector: 'app-vibration-signal-indicators', standalone: true,

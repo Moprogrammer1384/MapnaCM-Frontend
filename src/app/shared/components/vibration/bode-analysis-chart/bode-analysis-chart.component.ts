@@ -1,0 +1,175 @@
+import { vibrationChartColor } from '../chart-presentation/chart-colors';
+import { CommonModule } from '@angular/common';
+import { VIBRATION_EVENT_CLASSES } from '../chart-presentation/event-presentation';
+import { formatVibrationDateTime } from 'src/app/core/utils/vibration-date-time';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, inject, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import { Subscription } from 'rxjs';
+import type { EChartsOption, TooltipComponentOption } from 'echarts';
+import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
+import { AMPLITUDE_LABELS, AnalysisChartSettings, VibrationSourceProfile, VIBRATION_QUANTITIES } from 'src/app/core/models/vibration/analysis-chart-settings.model';
+import { BodeAnalysis, BodeRecord } from 'src/app/core/models/vibration/bode-analysis/bode-analysis.model';
+import { analyzeBode, bodeSettingsForRecord } from 'src/app/core/services/vibration/bode-analysis/bode-analysis';
+import { BODE_DATA_SOURCE } from 'src/app/core/services/vibration/bode-analysis/bode-data-source.service';
+import { apiErrorMessage } from 'src/app/core/utils/api-error';
+import { formatNumber, NumberFormatPipe } from '../../../pipes/number-format.pipe';
+import { AcquisitionDatePipe } from '../../../pipes/acquisition-date.pipe';
+import { vibrationChartAppearance, vibrationLinearZoom, vibrationStackedGrids } from '../chart-presentation/chart-presentation';
+
+/** Paired phase/amplitude plots of one tracking run, sharing speed cursor and zoom. */
+@Component({
+  selector: 'app-vibration-bode-chart',
+  standalone: true,
+  imports: [CommonModule, ApacheEchartsComponent, NumberFormatPipe, AcquisitionDatePipe],
+  templateUrl: './bode-analysis-chart.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'd-block mw-100', '[attr.aria-busy]': 'loading' },
+})
+export class VibrationBodeChartComponent implements OnChanges, OnDestroy {
+  readonly eventClasses = VIBRATION_EVENT_CLASSES;
+  @Input({ required: true }) measurementId: number;
+  @Input({ required: true }) from: string;
+  @Input({ required: true }) to: string;
+  @Input() settings?: AnalysisChartSettings;
+  @Input() title = '';
+  @Input() tag?: string | null;
+  @Input() titleId?: string;
+  @Output() readonly sourceProfile = new EventEmitter<VibrationSourceProfile | undefined>(true);
+  @Output() readonly sourceSettings = new EventEmitter<AnalysisChartSettings>(true);
+  loading = false;
+  error = '';
+  record?: BodeRecord;
+  analysis?: BodeAnalysis;
+  chartOptions?: EChartsOption;
+  private readonly source = inject(BODE_DATA_SOURCE);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly zone = inject(NgZone);
+  private subscription?: Subscription;
+  private readonly observer: MutationObserver;
+
+  constructor() {
+    this.observer = new MutationObserver(() => this.zone.run(() => {
+      this.updateChartOptions();
+      this.cdr.markForCheck();
+    }));
+    this.observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['measurementId'] || changes['from'] || changes['to']) { this.reload(); }
+    else { this.updateAnalysis(); }
+  }
+
+  reload(): void {
+    if (this.subscription) { this.sourceProfile.emit(undefined); }
+    this.subscription?.unsubscribe();
+    this.loading = true;
+    this.error = '';
+    this.record = undefined;
+    this.analysis = undefined;
+    this.chartOptions = undefined;
+    this.subscription = this.source.load({ measurementId: this.measurementId, from: this.from, to: this.to }).subscribe({
+      next: result => {
+        const records = 'observations' in result ? [result] : result;
+        this.record = records[records.length - 1];
+        this.sourceProfile.emit(this.record ? { quantity: this.record.quantity, unit: this.record.unit } : undefined);
+        this.loading = false;
+        this.updateAnalysis();
+      },
+      error: error => {
+        this.sourceProfile.emit(undefined);
+        this.loading = false;
+        this.error = apiErrorMessage(error, 'Bode data');
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  private updateAnalysis(): void {
+    this.error = '';
+    if (!this.record) { this.cdr.markForCheck(); return; }
+    try {
+      const settings = bodeSettingsForRecord(this.record, this.settings);
+      if (this.settings?.quantity !== settings.quantity || this.settings?.unit !== settings.unit) {
+        this.sourceSettings.emit(settings);
+      }
+      this.analysis = this.record.observations.length ? analyzeBode(this.record, settings) : undefined;
+      if (this.analysis) { this.updateChartOptions(); }
+      else { this.chartOptions = undefined; }
+    } catch (error) {
+      this.analysis = undefined;
+      this.chartOptions = undefined;
+      this.error = apiErrorMessage(error, 'Bode analysis');
+    }
+    this.cdr.markForCheck();
+  }
+
+  private tooltipFormatter(): TooltipComponentOption['formatter'] {
+    return params => {
+      const entries = Array.isArray(params) ? params : [params];
+      const entry = entries.find(item => Array.isArray(item.value) && Number(item.value[2]) >= 0);
+      const index = entry && Array.isArray(entry.value) ? Number(entry.value[2]) : -1;
+      const point = this.record?.observations[index], result = this.analysis;
+      if (!point || !result) { return ''; }
+      const quantity = VIBRATION_QUANTITIES[result.quantity].label;
+      return `${formatNumber(point.speedRpm)} RPM · ${formatNumber(point.speedRpm / 60)} Hz<br/>` +
+        `${quantity}: ${formatNumber(result.amplitude[index])} ${result.unit} ${AMPLITUDE_LABELS[result.amplitudeMode]}<br/>` +
+        `Phase: ${formatNumber(result.phase[index])}°<br/>${formatVibrationDateTime(point.timestamp)}`;
+    };
+  }
+
+  private updateChartOptions(): void {
+    const result = this.analysis;
+    if (!result) { return; }
+    const { token, base, legend, tooltip, axis } = vibrationChartAppearance();
+    const phasePoints: [number, number | null, number][] = [];
+    result.speed.forEach((speed, index) => {
+      // A 359° -> 0° wrap is not a physical phase excursion. Break the wrapped
+      // trace instead of drawing a false line through all intermediate angles.
+      if (result.phaseMode === 'wrapped' && index > 0 && Math.abs(result.phase[index] - result.phase[index - 1]) > 180) {
+        phasePoints.push([speed, null, -1]);
+      }
+      phasePoints.push([speed, result.phase[index], index]);
+    });
+    const quantity = VIBRATION_QUANTITIES[result.quantity].label;
+    const amplitudeName = `${quantity} (${result.unit} ${AMPLITUDE_LABELS[result.amplitudeMode]})`;
+    const xAxis = (gridIndex: number) => ({
+      ...axis(gridIndex === 1 ? `Speed (${result.axisUnit})` : ''), gridIndex,
+      min: (result.minimumSpeedRpm - (result.speed.length === 1 ? 30 : 0)) / (result.axisUnit === 'Hz' ? 60 : 1),
+      max: (result.maximumSpeedRpm + (result.speed.length === 1 ? 30 : 0)) / (result.axisUnit === 'Hz' ? 60 : 1),
+    });
+    this.chartOptions = {
+      ...base, legend,
+      tooltip: { ...tooltip, trigger: 'axis', formatter: this.tooltipFormatter() },
+      axisPointer: { link: [{ xAxisIndex: 'all' }], snap: true,
+        label: { backgroundColor: token('gray-700') }, lineStyle: { color: token('gray-500') } },
+      grid: vibrationStackedGrids(['bode-amplitude-grid', 'bode-phase-grid']),
+      xAxis: [xAxis(0), xAxis(1)],
+      yAxis: [
+        { ...axis(amplitudeName, true), gridIndex: 0, min: 0 },
+        { ...axis(result.phaseMode === 'wrapped' ? 'Phase (°)' : 'Continuous phase (°)', true), gridIndex: 1,
+          min: result.phaseMode === 'wrapped' ? 0 : Math.floor(result.phase.reduce((min, value) => Math.min(min, value), Infinity) / 90) * 90,
+          max: result.phaseMode === 'wrapped' ? 360 : Math.ceil(result.phase.reduce((max, value) => Math.max(max, value), -Infinity) / 90) * 90 + 90,
+          interval: 90,
+        },
+      ],
+      dataZoom: vibrationLinearZoom(['bode-zoom-inside', 'bode-zoom-slider'], [0, 1]),
+      series: [
+        { id: 'bode-amplitude', name: '1X amplitude', type: 'line', xAxisIndex: 0, yAxisIndex: 0, showSymbol: result.speed.length <= 2,
+          symbol: 'circle', symbolSize: 4, lineStyle: { width: 2, color: vibrationChartColor() }, itemStyle: { color: vibrationChartColor() },
+          data: result.speed.map((speed, index) => [speed, result.amplitude[index], index]),
+          markPoint: { symbol: 'circle', symbolSize: 8, itemStyle: { color: token('warning') },
+            label: { show: false }, data: [{ name: 'Peak amplitude', coord: [result.speed[result.peakIndex], result.amplitude[result.peakIndex]] }] } },
+        { id: 'bode-phase', name: '1X phase', type: 'line', xAxisIndex: 1, yAxisIndex: 1,
+          // Wrapped runs can have isolated points between consecutive wraps.
+          // Keep their markers visible even when neither adjacent line is drawn.
+          showSymbol: result.phaseMode === 'wrapped' || result.speed.length <= 2, symbol: 'circle', symbolSize: 4,
+          connectNulls: false, lineStyle: { width: 2, color: vibrationChartColor(1) }, itemStyle: { color: vibrationChartColor(1) }, data: phasePoints },
+      ],
+    };
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+    this.observer.disconnect();
+  }
+}

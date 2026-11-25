@@ -1,0 +1,41 @@
+<app-analysis-controls [tab]="tab" [state]="state" [showXAxis]="false" [showAmplitude]="false"
+  [dateSelectionContent]="acquisition" dateSelectionTitle="Acquisition date and time"></app-analysis-controls>
+<ng-template #acquisition let-tab>
+  @if (captureAvailability.forSelection(tab.selection) | async; as availability) {
+  @if (availability.error) {
+    <div class="alert alert-danger d-flex align-items-center flex-wrap gap-3" role="alert">
+      <span>{{ availability.error }}</span>
+      <button type="button" class="btn btn-sm btn-light-danger" (click)="captureAvailability.retry(tab.selection)">Retry</button>
+    </div>
+  }
+  <div class="row g-3 mx-0 align-items-start">
+    <div class="col-12 col-md-auto">
+      <label class="form-label" [for]="tab.id + '_online'">Online</label>
+      <div class="form-check form-switch form-check-custom form-check-solid min-h-45px">
+        <input #online type="checkbox" role="switch" class="form-check-input" [id]="tab.id + '_online'"
+          [checked]="tab.timeDomainRecentSeconds !== undefined"
+          [disabled]="tab.timeDomainRecentSeconds === undefined && !availability.data?.maximumRecentSeconds"
+          (change)="state.setTimeDomainRecentSeconds(tab.id, online.checked ? 1 : undefined)">
+      </div>
+    </div>
+    @if (tab.timeDomainRecentSeconds !== undefined) {
+      <app-vibration-online-window-picker class="col-12 col-md" [inputId]="tab.id" [seconds]="tab.timeDomainRecentSeconds"
+        [startUtc]="tab.timeDomainOnlineStartUtc" [window]="availability.data?.onlineWindow"
+        [maximumSeconds]="availability.data?.maximumRecentSeconds ?? 0"
+        (displayed)="state.setTimeDomainRecentSeconds(tab.id, $event.seconds, $event.startUtc)"></app-vibration-online-window-picker>
+    } @else {
+      <div class="col-12 col-md px-0">
+        <app-vibration-event-picker [inputId]="tab.id + '_time_domain'" [events]="availability.data?.events ?? []" [value]="tab.timeDomainEvent ?? emptyRange"
+          [eventId]="tab.timeDomainEvent?.id" [disabled]="!availability.data?.events?.length"
+          (eventSelected)="state.selectTimeDomainEvent(tab.id, $event)"></app-vibration-event-picker>
+      </div>
+    }
+  </div>
+  @if (availability.loading) {
+    <p class="text-gray-600 fs-7 mt-3 mb-0" role="status">Loading stored acquisitions…</p>
+  } @else if (availability.data) {
+    @if (!availability.data.events.length) { <p class="text-gray-600 fs-7 mt-3 mb-0" role="status">No common offline acquisitions.</p> }
+    @if (!availability.data.maximumRecentSeconds) { <p class="text-gray-600 fs-7 mt-3 mb-0" role="status">No common online recording.</p> }
+  }
+  }
+</ng-template>

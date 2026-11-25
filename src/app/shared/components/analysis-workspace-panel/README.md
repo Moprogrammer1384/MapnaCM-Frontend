@@ -1,8 +1,8 @@
 # DARP shared analysis workspace panel
 
-The workspace component and its panel tests live in
-`shared/components/analysis-workspace-panel/`. The nested `analysis-panel/`
-folder contains `AnalysisPanelComponent` and its template.
+The workspace and panel live in `shared/components/analysis-workspace-panel/`.
+The nested `analysis-controls/` component supplies the shared measurement
+summary, date selection and default chart controls.
 
 `AnalysisWorkspaceComponent` and `AnalysisPanelComponent` are standalone UI
 components for analysis screens in any module. They use shared `AnalysisTab`,
@@ -46,16 +46,27 @@ precedence over `title`, `tabs` and `activeId`. Outputs are still emitted as act
 notifications; consumers using `state` should not bind them back to the same
 methods. No feature-service provider is required by the workspace itself.
 
-All five Vibration pages inject the existing layout-owned
-`VibrationSelectionService` and pass it directly to the workspace. For the
-Overview/Rotor Position pages, the basic integration is:
+All eight Vibration pages pass the layout-owned `VibrationSelectionService`
+to the workspace. A `headerContent` template receives the owning `AnalysisTab`
+and renders the page's `*-controls` component in the header. The page controls
+compose the shared form with their own picker and settings. Callers that omit
+`headerContent` retain the shared panel's original header and outputs.
 
 ```html
-<app-analysis-workspace [state]="state"></app-analysis-workspace>
+<app-analysis-workspace [state]="state" [headerContent]="header"
+  [measurementChartContent]="chart"></app-analysis-workspace>
+<ng-template #header let-tab>
+  <app-overview-controls [tab]="tab"></app-overview-controls>
+</ng-template>
+<ng-template #chart let-item let-tab="tab">
+  <app-overview-chart [measurementId]="item.measurement.id"
+    [from]="tab.dateRange.from + 'T' + tab.timeRange.from"
+    [to]="tab.dateRange.to + 'T' + tab.timeRange.to"></app-overview-chart>
+</ng-template>
 ```
 
-Overview has no chart content. Rotor Position supplies dedicated paired chart,
-control and discrete-event templates backed by a separated frontend simulation.
+Overview plots stored RMS after Apply. Orbit and Rotor Position provide paired
+charts through the workspace's full chart template.
 
 When a consumer supplies `measurementChartContent`, the workspace renders one
 independent chart per selected Measurement, titled with
@@ -127,7 +138,7 @@ instantaneous waveform. See [processing and API-adapter documentation](../../../
 Frequency Domain also uses the raw record, with Fourier quantity conversion and
 RMS/0p/pp line amplitudes. Bode uses the separate tracking methods described below.
 
-The nested analysis panel includes four base Metronic Select2 controls, using the
+The shared analysis controls include four base Metronic Select2 controls, using the
 existing `SharedModule` directive (no extra plugin initialization):
 
 - Quantity: Displacement, Velocity, Acceleration.
@@ -153,7 +164,7 @@ existing `SharedModule` directive (no extra plugin initialization):
   per tab; a positive finite value is required. No synthetic speed is prefilled.
 
 `AnalysisTab.chartSettings` is optional for backward compatibility; omitted
-values use those defaults. `AnalysisPanelComponent.chartSettingsChange` emits
+values use those defaults. `AnalysisControlsComponent.chartSettingsChange` emits
 the complete `AnalysisChartSettings`. The workspace emits `{ tabId,
 chartSettings }`; controlled consumers update the corresponding tab immutably.
 State consumers implement `updateChartSettings(id, settings)` (an optional
@@ -217,7 +228,7 @@ outside dismissal discards pending edits. Same-day and overnight ranges work.
 The existing lower-layer Flatpickr CSS and Metronic `_flatpickr.scss` provide
 calendar styling; the footer uses existing Metronic forms/buttons/grid utilities.
 
-The picker accepts local `YYYY-MM-DDTHH:mm` values. `AnalysisPanelComponent`
+The picker accepts local `YYYY-MM-DDTHH:mm` values. `AnalysisControlsComponent`
 combines the tab's existing `dateRange`/`timeRange` for that input and splits a
 confirmed result back into the existing `dateRangeChange`/`timeRangeChange`
 events, emitting only the parts that changed. The workspace/state interface and

@@ -27,6 +27,7 @@ export class AnalysisWorkspaceComponent implements OnDestroy {
   @Input() useAvailableDates = false;
   @Input() dateSelectionContent?: TemplateRef<{ $implicit: AnalysisTab }>;
   @Input() dateSelectionTitle?: string;
+  @Input() headerContent?: TemplateRef<{ $implicit: AnalysisTab }>;
   @Input() controlsContent?: TemplateRef<{ $implicit: AnalysisTab }>;
   @Input() additionalControlsContent?: TemplateRef<{ $implicit: AnalysisTab }>;
   @Input() measurementChartContent?: TemplateRef<{ $implicit: AnalysisTab['measurements'][number]; tab: AnalysisTab }>;

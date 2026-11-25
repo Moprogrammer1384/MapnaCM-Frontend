@@ -17,7 +17,7 @@ const EMPTY_RANGE = { from: '', to: '' };
 })
 export class VibrationTimeDomainComponent {
   readonly chartReady = (tab: AnalysisTab) => tab.timeDomainRecentSeconds !== undefined || !!tab.timeDomainEvent;
-  constructor(public state: VibrationSelectionService, public captureAvailability: TimeDomainCaptureAvailabilityApiService) {}
+  constructor(public state: VibrationSelectionService) {}
 
   range(tab: AnalysisTab) {
     return tab.timeDomainEvent ?? EMPTY_RANGE;

@@ -75,7 +75,7 @@ export class VibrationSelectionService {
       ...structuredClone(execution), id: `vibration-${++this.tabSequence}`, title: `Analysis ${number}`,
       dateRange: { from: date(from), to: date(today) },
       timeRange: { from: '00:00', to: '23:59' },
-      awaitingDateRange: page === 'time-domain' || page === 'frequency-domain' || page === 'signal-indicators' || page === 'bode-analysis' || page === 'waterfall' || !!orbit,
+      awaitingDateRange: page !== 'rotor-position',
       ...(page === 'waterfall' ? { waterfallSettings: { ...DEFAULT_WATERFALL_SETTINGS } } : {}),
       ...(page === 'signal-indicators' ? { signalIndicatorSettings: { mode: 'all' as const, showAlarms: true } } : {}),
       ...(orbit ? { orbitPairs: structuredClone(orbit.pairs), orbitSettings: { ...DEFAULT_ORBIT_SETTINGS } } : {}),

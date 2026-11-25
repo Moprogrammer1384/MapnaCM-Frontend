@@ -1,1 +1,9 @@
-<app-analysis-workspace [state]="state"></app-analysis-workspace>
+<app-analysis-workspace [state]="state" [headerContent]="header" [measurementChartContent]="overviewChart"
+  awaitingSelectionMessage="Select a date and time range and press Apply to view the RMS trend."></app-analysis-workspace>
+<ng-template #header let-tab>
+  <app-overview-controls [tab]="tab"></app-overview-controls>
+</ng-template>
+<ng-template #overviewChart let-item let-tab="tab">
+  <app-overview-chart [measurementId]="item.measurement.id" [from]="tab.dateRange.from + 'T' + tab.timeRange.from"
+    [to]="tab.dateRange.to + 'T' + tab.timeRange.to"></app-overview-chart>
+</ng-template>

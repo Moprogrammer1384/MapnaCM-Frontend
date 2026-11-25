@@ -1,5 +1,4 @@
-<app-analysis-workspace [state]="state" [controlsContent]="orbitControls" [dateSelectionContent]="orbitDate"
-  dateSelectionTitle="Acquisition date and time">
+<app-analysis-workspace [state]="state" [headerContent]="header">
   <ng-template let-tab>
     @if (!tab.orbitCapture) {
       <div class="text-gray-500 text-center py-10" role="status">Select a date and event time above to load the recorded measurement data.</div>
@@ -14,11 +13,6 @@
     }
   </ng-template>
 </app-analysis-workspace>
-<ng-template #orbitDate let-tab>
-  <app-orbit-acquisition-picker [inputId]="tab.id" [pairs]="tab.orbitPairs" [value]="tab.orbitCapture"
-    (selected)="state.selectOrbitCapture(tab.id, $event)"></app-orbit-acquisition-picker>
-</ng-template>
-<ng-template #orbitControls let-tab>
-  <app-orbit-analysis-controls [inputId]="tab.id" [settings]="tab.orbitSettings || defaults"
-    (settingsChange)="state.updateOrbitSettings(tab.id, $event)"></app-orbit-analysis-controls>
+<ng-template #header let-tab>
+  <app-orbit-analysis-controls [tab]="tab"></app-orbit-analysis-controls>
 </ng-template>

@@ -1,8 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { OrbitAcquisitionPickerComponent } from 'src/app/shared/components/vibration/orbit-analysis-acquisition-picker/orbit-analysis-acquisition-picker.component';
-import { VibrationEventPickerComponent } from 'src/app/shared/components/vibration/event-picker/event-picker.component';
-import { VibrationOnlineWindowPickerComponent } from 'src/app/shared/components/vibration/time-domain-online-window-picker/time-domain-online-window-picker.component';
+import { OverviewControlsComponent } from 'src/app/shared/components/vibration/overview-controls/overview-controls.component';
+import { OverviewChartComponent } from 'src/app/shared/components/vibration/overview-chart/overview-chart.component';
+import { BodeAnalysisControlsComponent } from 'src/app/shared/components/vibration/bode-analysis-controls/bode-analysis-controls.component';
+import { FrequencyDomainControlsComponent } from 'src/app/shared/components/vibration/frequency-domain-controls/frequency-domain-controls.component';
+import { TimeDomainControlsComponent } from 'src/app/shared/components/vibration/time-domain-controls/time-domain-controls.component';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
 import { AnalysisWorkspaceComponent } from 'src/app/shared/components/analysis-workspace-panel/analysis-workspace.component';
@@ -18,12 +20,10 @@ import { VibrationOrbitAnalysisComponent } from './orbit-analysis/orbit-analysis
 import { VibrationOrbitChartComponent } from 'src/app/shared/components/vibration/orbit-analysis-chart/orbit-analysis-chart.component';
 import { OrbitAnalysisControlsComponent } from 'src/app/shared/components/vibration/orbit-analysis-controls/orbit-analysis-controls.component';
 import { RotorPositionControlsComponent } from 'src/app/shared/components/vibration/rotor-position-controls/rotor-position-controls.component';
-import { RotorPositionEventPickerComponent } from 'src/app/shared/components/vibration/rotor-position-event-picker/rotor-position-event-picker.component';
 import { VibrationRotorPositionChartComponent } from 'src/app/shared/components/vibration/rotor-position-chart/rotor-position-chart.component';
 import { MeasurementHeadingPipe } from 'src/app/shared/pipes/measurement-heading.pipe';
 import { VibrationWaterfallComponent } from './waterfall/waterfall.component';
 import { WaterfallControlsComponent } from 'src/app/shared/components/vibration/waterfall-controls/waterfall-controls.component';
-import { WaterfallAcquisitionPickerComponent } from 'src/app/shared/components/vibration/waterfall-acquisition-picker/waterfall-acquisition-picker.component';
 import { VibrationWaterfallChartComponent } from 'src/app/shared/components/vibration/waterfall-chart/waterfall-chart.component';
 
 @NgModule({
@@ -40,20 +40,20 @@ import { VibrationWaterfallChartComponent } from 'src/app/shared/components/vibr
     CommonModule,
     SharedModule,
     AnalysisWorkspaceComponent,
-    OrbitAcquisitionPickerComponent,
-    VibrationEventPickerComponent,
+    OverviewControlsComponent,
+    OverviewChartComponent,
+    BodeAnalysisControlsComponent,
+    FrequencyDomainControlsComponent,
+    TimeDomainControlsComponent,
     VibrationFrequencyDomainChartComponent,
     VibrationTimeDomainChartComponent,
-    VibrationOnlineWindowPickerComponent,
     VibrationBodeChartComponent,
     VibrationOrbitChartComponent,
     OrbitAnalysisControlsComponent,
     RotorPositionControlsComponent,
-    RotorPositionEventPickerComponent,
     VibrationRotorPositionChartComponent,
     MeasurementHeadingPipe,
     WaterfallControlsComponent,
-    WaterfallAcquisitionPickerComponent,
     VibrationWaterfallChartComponent,
     RouterModule.forChild([
       {

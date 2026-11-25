@@ -1,0 +1,18 @@
+@if (record(); as series) {
+  <app-apache-echarts [options]="options()" [mergeOptions]="true" height="380px"></app-apache-echarts>
+  <footer class="d-flex flex-wrap justify-content-between gap-3 text-gray-500 fs-7 mt-3" dir="ltr" aria-label="RMS summary">
+    <span>Max RMS: <strong class="text-gray-700 fw-semibold">{{ series.maxima.rms | numberFormat }} {{ series.unit }}</strong></span>
+    <span>Start: <time [attr.datetime]="series.firstAtUtc">{{ series.firstAtUtc | acquisitionDate }}</time></span>
+  </footer>
+} @else if (request.loading()) {
+  <div class="d-flex align-items-center justify-content-center gap-3 text-gray-600 py-10" role="status">
+    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>Loading RMS trend…
+  </div>
+} @else if (request.error()) {
+  <div class="alert alert-danger d-flex flex-wrap align-items-center justify-content-between gap-3" role="alert">
+    <span>{{ request.error() }}</span>
+    <button type="button" class="btn btn-sm btn-light-danger" (click)="reload()">Retry</button>
+  </div>
+} @else if (request.loaded()) {
+  <p class="text-gray-600 py-10 text-center mb-0" role="status">No RMS data was recorded in this range.</p>
+}

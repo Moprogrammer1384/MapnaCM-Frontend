@@ -1,0 +1,21 @@
+<app-analysis-controls [tab]="tab" [state]="state" domain="frequency"
+  [dateSelectionContent]="acquisition" dateSelectionTitle="Acquisition date and time"></app-analysis-controls>
+<ng-template #acquisition let-tab>
+  @if (captureAvailability.forSelection(tab.selection) | async; as availability) {
+    @if (availability.error) {
+      <div class="alert alert-danger d-flex align-items-center flex-wrap gap-3" role="alert">
+        <span>{{ availability.error }}</span>
+        <button type="button" class="btn btn-sm btn-light-danger" (click)="captureAvailability.retry(tab.selection)">Retry</button>
+      </div>
+    }
+    <app-vibration-event-picker [inputId]="tab.id + '_frequency_domain'" [events]="availability.data?.events ?? []"
+      [value]="tab.timeDomainEvent ?? emptyRange" [eventId]="tab.timeDomainEvent?.id"
+      [disabled]="!availability.data?.events?.length"
+      (eventSelected)="state.selectTimeDomainEvent(tab.id, $event)"></app-vibration-event-picker>
+    @if (availability.loading) {
+      <p class="text-gray-600 fs-7 mt-3 mb-0" role="status">Loading stored acquisitions…</p>
+    } @else if (availability.data && !availability.data.events.length) {
+      <p class="text-gray-600 fs-7 mt-3 mb-0" role="status">No common offline acquisitions.</p>
+    }
+  }
+</ng-template>

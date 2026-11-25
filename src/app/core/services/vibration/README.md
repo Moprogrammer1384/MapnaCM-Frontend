@@ -2,11 +2,11 @@
 
 Updated 2026-11-22. Time Domain and Frequency Domain share
 `VibrationTimeDomainAcquisitionApiService` for exact offline captures. Time
-Domain also uses it for recent online data. Signal Indicators use the range-based
-`VibrationTimeDomainApiService`. HTTP adapters are grouped in
+Domain also uses it for recent online data. Signal Indicators and Overview use
+`VibrationSignalIndicatorApiService`. HTTP adapters are grouped in
 [api/](api/README.md), with explicit Vibration/feature/purpose names.
 The old Time/Frequency workbook fixture and tenfold repetition were removed.
-Overview has no chart. Rotor Position uses recorded DC acquisitions through its
+Overview displays the stored RMS trend for the applied range. Rotor Position uses recorded DC acquisitions through its
 own API adapter; see [Rotor Position](rotor-position/README.md).
 Waterfall is frontend-only with an isolated mock source and sequential FFT
 snapshots; see [Waterfall](waterfall/README.md). It introduces no backend endpoints.
@@ -28,7 +28,8 @@ Display requests the chosen number of seconds forward from that start by sending
 `EndedAtUtc` as the exclusive UTC end. Clearing the start returns the form to
 latest mode. The form checks that an anchored request fits in the common window
 and the server's duration limit.
-Signal Indicators use one `Get` request per measurement and applied UTC range.
+Signal Indicators and Overview use one `SignalIndicator/Get` request per
+measurement and applied Tehran date/time range.
 
 The API returns all requested raw samples up to 1,000,000 per measurement, inclusive.
 If any measurement exceeds its limit, the request returns a business error.

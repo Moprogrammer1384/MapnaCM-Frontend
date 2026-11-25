@@ -15,9 +15,8 @@ import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibra
 })
 export class VibrationFrequencyDomainComponent {
   readonly chartReady = (tab: AnalysisTab) => !!tab.timeDomainEvent;
-  readonly emptyRange = { from: '', to: '' };
 
-  constructor(public state: VibrationSelectionService, public captureAvailability: TimeDomainCaptureAvailabilityApiService) {}
+  constructor(public state: VibrationSelectionService) {}
 
   initializeSettings(tabId: string, settings: AnalysisChartSettings): void {
     if (this.state.tabs().some(tab => tab.id === tabId && !tab.chartSettings)) {

@@ -4,7 +4,7 @@
     <app-closable-tabs [tabs]="workspaceTabs" [activeId]="workspaceActiveId" [preserveContent]="true"
       (activeIdChange)="activateTab($event)" (tabClose)="closeTab($event)">
       <ng-template let-tabId>
-        <app-analysis-panel *ngIf="tabById(tabId) as tab" [tab]="tab" [domain]="domain" [chartContent]="chartContent || (measurementChartContent ? measurementCharts : undefined)"
+        <app-analysis-panel *ngIf="tabById(tabId) as tab" [tab]="tab" [headerContent]="headerContent" [domain]="domain" [chartContent]="chartContent || (measurementChartContent ? measurementCharts : undefined)"
           [useAvailableDates]="useAvailableDates" [showXAxis]="showXAxis" [showAmplitude]="showAmplitude"
           [dateSelectionContent]="dateSelectionContent" [dateSelectionTitle]="dateSelectionTitle"
           [controlsContent]="controlsContent" [additionalControlsContent]="additionalControlsContent"

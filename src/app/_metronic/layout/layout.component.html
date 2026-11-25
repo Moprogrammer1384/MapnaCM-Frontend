@@ -51,11 +51,11 @@
   <app-scroll-top id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true"></app-scroll-top>
 </ng-container>
 <!-- begin:: Drawers -->
-<app-asset-taxonomy-drawer *ngIf="vibrationSelection.active()"
-  [visible]="vibrationSelection.drawerOpen()" [selection]="vibrationSelection.selection()"
-  [executionValidator]="vibrationSelection.requiresOrbitPairs() ? vibrationSelection.validateOrbitExecution : undefined"
-  (selectionSave)="vibrationSelection.save($event)" (executed)="vibrationSelection.execute($event)"
-  (closed)="vibrationSelection.drawerOpen.set(false)">
+<app-asset-taxonomy-drawer *ngIf="cmSelection.drawerActive()"
+  [visible]="cmSelection.drawerOpen()" [selection]="cmSelection.selection()"
+  [executionValidator]="cmSelection.requiresOrbitPairs() ? cmSelection.validateOrbitExecution : undefined"
+  (selectionSave)="cmSelection.save($event)" (executed)="cmSelection.execute($event)"
+  (closed)="cmSelection.drawerOpen.set(false)">
 </app-asset-taxonomy-drawer>
 <app-messenger-drawer></app-messenger-drawer>
 <!-- end:: Drawers -->

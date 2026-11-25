@@ -120,10 +120,10 @@ RPM = 60 / (p × (pulseTime[k+1] - pulseTime[k]))
 
 | محل | وضعیت فعلی | نتیجه برای Rotor Position |
 | --- | --- | --- |
-| [صفحهٔ Rotor Position](../src/app/pages/cm/vibration/rotor-position/rotor-position.component.ts) و HTML آن | فقط `VibrationSelectionService` و `app-analysis-workspace` | تحلیل و نمودار اختصاصی ندارد |
+| [صفحهٔ Rotor Position](../src/app/pages/cm/vibration/rotor-position/rotor-position.component.ts) و HTML آن | فقط `CmSelectionService` و `app-analysis-workspace` | تحلیل و نمودار اختصاصی ندارد |
 | [Workspace](../src/app/shared/components/analysis-workspace-panel/analysis-workspace.component.ts) | محل تزریق کنترل‌ها، تاریخ و نمودار دارد؛ پیش‌فرض domain برابر time است | امکان افزودن محتوای اختصاصی با حفظ پوسته وجود دارد |
 | [تنظیمات عمومی](../src/app/core/models/vibration/analysis-chart-settings.model.ts) | domainهای time/frequency/bode؛ تنظیم پیش‌فرض Velocity/mm/s | تنظیمات عمومی به‌تنهایی مدل مناسبی برای موقعیت DC نیست |
-| [سرویس انتخاب](../src/app/core/services/vibration-selection.service.ts) | الزام جفت X/Y فقط برای orbit-analysis فعال است | Rotor هنوز انتخاب جفت معتبر اختصاصی ندارد |
+| [سرویس انتخاب](../src/app/core/services/cm-selection.service.ts) | الزام جفت X/Y فقط برای orbit-analysis فعال است | Rotor هنوز انتخاب جفت معتبر اختصاصی ندارد |
 | [آماده‌سازی Orbit](../src/app/core/services/vibration/orbit-analysis/orbit-signal-preparation.ts) | با `center=true` میانگین X/Y را کم می‌کند؛ این مقدار پیش‌فرض است | خروجی مرکززدایی‌شده نباید مبنای Centerline قرار گیرد |
 | [مدل Orbit](../src/app/core/models/vibration/orbit-analysis/orbit-analysis.model.ts) | زمان، واحد displacement، کیفیت، هم‌زمانی و Keyphasor دارد | حفظ DC، مرجع gap، زاویهٔ پراب و هندسهٔ لقی صریح نیست؛ کفایت آن برای موقعیت واقعی اثبات نشده |
 

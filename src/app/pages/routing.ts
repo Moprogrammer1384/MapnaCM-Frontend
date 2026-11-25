@@ -31,6 +31,10 @@ const Routing: Routes = [
     loadChildren: () => import('./cm/vibration/vibration.module').then((m) => m.VibrationModule),
   },
   {
+    path: 'cm/performance',
+    loadChildren: () => import('./cm/performance/performance.module').then((m) => m.PerformanceModule),
+  },
+  {
     path: 'apps/chat',
     loadChildren: () => import('../modules/apps/chat/chat.module').then((m) => m.ChatModule),
     // data: { layout: 'light-sidebar' },

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AnalysisChartSettings } from 'src/app/core/models/vibration/analysis-chart-settings.model';
 import { VibrationBodeAnalysisAvailabilityApiService } from 'src/app/core/services/vibration/api/vibration-bode-analysis-availability-api.service';
 import { TIME_AVAILABILITY_SOURCE } from 'src/app/core/services/time-availability.service';
-import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
+import { CmSelectionService } from 'src/app/core/services/cm-selection.service';
 
 @Component({
   selector: 'app-vibration-bode-analysis',
@@ -12,7 +12,7 @@ import { VibrationSelectionService } from 'src/app/core/services/vibration-selec
   providers: [{ provide: TIME_AVAILABILITY_SOURCE, useExisting: VibrationBodeAnalysisAvailabilityApiService }],
 })
 export class VibrationBodeAnalysisComponent {
-  constructor(public state: VibrationSelectionService) {}
+  constructor(public state: CmSelectionService) {}
 
   initializeSettings(tabId: string, measurementId: number, settings: AnalysisChartSettings): void {
     const tab = this.state.tabs().find(item => item.id === tabId);

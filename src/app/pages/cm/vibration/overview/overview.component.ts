@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { TIME_AVAILABILITY_SOURCE } from 'src/app/core/services/time-availability.service';
 import { VibrationSignalIndicatorApiService } from 'src/app/core/services/vibration/api/vibration-signal-indicator-api.service';
-import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
+import { CmSelectionService } from 'src/app/core/services/cm-selection.service';
 
 @Component({
   selector: 'app-vibration-overview',
@@ -10,5 +10,5 @@ import { VibrationSelectionService } from 'src/app/core/services/vibration-selec
   providers: [{ provide: TIME_AVAILABILITY_SOURCE, useExisting: VibrationSignalIndicatorApiService }],
 })
 export class VibrationOverviewComponent {
-  constructor(public state: VibrationSelectionService) {}
+  constructor(public state: CmSelectionService) {}
 }

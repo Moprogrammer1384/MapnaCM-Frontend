@@ -7,7 +7,7 @@ import { vibrationUnitOptions } from 'src/app/core/models/vibration/analysis-cha
 import { AnalysisTab } from 'src/app/core/models/vibration/analysis-panel.model';
 import { AnalysisControlsComponent } from '../../analysis-workspace-panel/analysis-controls/analysis-controls.component';
 import { WaterfallAcquisitionPickerComponent } from '../waterfall-acquisition-picker/waterfall-acquisition-picker.component';
-import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
+import { CmSelectionService } from 'src/app/core/services/cm-selection.service';
 
 @Component({
   selector: 'app-waterfall-controls', standalone: true, host: { class: 'd-block mw-100' }, imports: [AnalysisControlsComponent, WaterfallAcquisitionPickerComponent, FormsModule, SharedModule],
@@ -15,7 +15,7 @@ import { VibrationSelectionService } from 'src/app/core/services/vibration-selec
 })
 export class WaterfallControlsComponent {
   @Input({ required: true }) tab: AnalysisTab;
-  protected readonly state = inject(VibrationSelectionService);
+  protected readonly state = inject(CmSelectionService);
   protected get settings(): WaterfallSettings { return this.tab.waterfallSettings ?? DEFAULT_WATERFALL_SETTINGS; }
   protected get eventType() { return this.tab.waterfallEvent?.eventType; }
   protected get hasSpeed() { return this.tab.waterfallEvent?.hasSpeed !== false; }

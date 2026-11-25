@@ -18,6 +18,7 @@ import { MeasurementHeadingPipe } from '../../pipes/measurement-heading.pipe';
 })
 export class AnalysisWorkspaceComponent implements OnDestroy {
   @Input() state?: AnalysisWorkspaceState;
+  @Input() emptyMessage = 'Select measurements and press Execute to open a new analysis tab.';
   @Input() showMeasurementTitle = true;
   @Input() awaitingSelectionMessage?: string;
   @Input() isMeasurementChartReady = (tab: AnalysisTab) => !tab.awaitingDateRange;

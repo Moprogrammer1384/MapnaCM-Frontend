@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { AnalysisTab } from 'src/app/core/models/vibration/analysis-panel.model';
-import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
+import { CmSelectionService } from 'src/app/core/services/cm-selection.service';
 import { AnalysisControlsComponent } from '../../analysis-workspace-panel/analysis-controls/analysis-controls.component';
 
 @Component({
@@ -13,5 +13,5 @@ import { AnalysisControlsComponent } from '../../analysis-workspace-panel/analys
 })
 export class OverviewControlsComponent {
   @Input({ required: true }) tab: AnalysisTab;
-  protected readonly state = inject(VibrationSelectionService);
+  protected readonly state = inject(CmSelectionService);
 }

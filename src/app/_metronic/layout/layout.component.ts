@@ -10,13 +10,13 @@ import { Subscription } from 'rxjs';
 import { LayoutService } from './core/layout.service';
 import { LayoutInitService } from './core/layout-init.service';
 import { ILayout, LayoutType } from './core/configs/config';
-import { VibrationSelectionService } from '../../core/services/vibration-selection.service';
+import { CmSelectionService } from '../../core/services/cm-selection.service';
 
 @Component({
   selector: 'app-layout',
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss'],
-  providers: [VibrationSelectionService],
+  providers: [CmSelectionService],
 })
 export class LayoutComponent implements OnInit, OnDestroy {
   private unsubscribe: Subscription[] = [];
@@ -67,13 +67,13 @@ export class LayoutComponent implements OnInit, OnDestroy {
     private layout: LayoutService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    public vibrationSelection: VibrationSelectionService
+    public cmSelection: CmSelectionService
   ) {
     // define layout type and load layout
-    this.vibrationSelection.setRoute(this.router.url);
+    this.cmSelection.setRoute(this.router.url);
     this.unsubscribe.push(this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        this.vibrationSelection.setRoute(event.urlAfterRedirects);
+        this.cmSelection.setRoute(event.urlAfterRedirects);
         const currentLayoutType = this.layout.currentLayoutTypeSubject.value;
 
         const nextLayoutType: LayoutType =

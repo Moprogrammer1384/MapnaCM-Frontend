@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AnalysisChartSettings } from 'src/app/core/models/vibration/analysis-chart-settings.model';
 import { AnalysisTab } from 'src/app/core/models/vibration/analysis-panel.model';
-import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
+import { CmSelectionService } from 'src/app/core/services/cm-selection.service';
 import { TimeDomainCaptureAvailabilityApiService } from 'src/app/core/services/vibration/api/time-domain-capture-availability-api.service';
 import { VibrationTimeDomainAcquisitionApiService } from 'src/app/core/services/vibration/api/vibration-time-domain-acquisition-api.service';
 import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibration-time-domain-api.service';
@@ -16,7 +16,7 @@ import { VIBRATION_DATA_SOURCE } from 'src/app/core/services/vibration/api/vibra
 export class VibrationFrequencyDomainComponent {
   readonly chartReady = (tab: AnalysisTab) => !!tab.timeDomainEvent;
 
-  constructor(public state: VibrationSelectionService) {}
+  constructor(public state: CmSelectionService) {}
 
   initializeSettings(tabId: string, settings: AnalysisChartSettings): void {
     if (this.state.tabs().some(tab => tab.id === tabId && !tab.chartSettings)) {

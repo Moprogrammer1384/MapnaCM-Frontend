@@ -51,12 +51,11 @@ measurement IDs. Other features can provide independent values and save handlers
   Reset emits `null`, clears the plant and measurements and leaves the drawer open.
   Missing/reparented saved records require review; they do not overwrite the saved
   value automatically.
-- `VibrationSelectionService`, provided by `LayoutComponent`, retains the
-  vibration selection and separate analysis tabs per vibration route across
-  navigation, including a visit to another feature. Each Execute opens another
-  tab with copied details and independent dates; see `../analysis-workspace-panel/README.md`.
-  Its state ends when the authenticated layout is destroyed (logout/reload).
-  Vibration pages may inject it and read `selection()` when integrating real charts.
+- `CmSelectionService`, provided by `LayoutComponent`, retains separate
+  drawer selections for Vibration and Performance across navigation. On
+  Vibration routes, Execute opens a tab with copied details and independent
+  dates. On Performance routes, Execute closes the drawer with the selection
+  saved. The state ends when the authenticated layout is destroyed.
 
 The shared PrimeNG configuration supplies an empty visual preset; no default
 theme or PrimeIcons is added. `_metronic-taxonomy-tree.scss` is a scoped adapter

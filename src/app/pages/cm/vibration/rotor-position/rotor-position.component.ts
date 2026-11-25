@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RotorPositionTabStateService } from 'src/app/core/services/vibration/rotor-position/rotor-position-tab-state.service';
-import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
+import { CmSelectionService } from 'src/app/core/services/cm-selection.service';
 
 @Component({
   selector: 'app-vibration-rotor-position',
@@ -10,5 +10,5 @@ import { VibrationSelectionService } from 'src/app/core/services/vibration-selec
   host: { class: 'd-block mw-100' },
 })
 export class VibrationRotorPositionComponent {
-  constructor(public state: VibrationSelectionService, public sessions: RotorPositionTabStateService) {}
+  constructor(public state: CmSelectionService, public sessions: RotorPositionTabStateService) {}
 }

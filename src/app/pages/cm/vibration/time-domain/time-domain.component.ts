@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
+import { CmSelectionService } from 'src/app/core/services/cm-selection.service';
 import { AnalysisChartSettings } from 'src/app/core/models/vibration/analysis-chart-settings.model';
 import { AnalysisTab } from 'src/app/core/models/vibration/analysis-panel.model';
 import { TimeDomainCaptureAvailabilityApiService } from 'src/app/core/services/vibration/api/time-domain-capture-availability-api.service';
@@ -17,7 +17,7 @@ const EMPTY_RANGE = { from: '', to: '' };
 })
 export class VibrationTimeDomainComponent {
   readonly chartReady = (tab: AnalysisTab) => tab.timeDomainRecentSeconds !== undefined || !!tab.timeDomainEvent;
-  constructor(public state: VibrationSelectionService) {}
+  constructor(public state: CmSelectionService) {}
 
   range(tab: AnalysisTab) {
     return tab.timeDomainEvent ?? EMPTY_RANGE;

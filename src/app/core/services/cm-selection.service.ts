@@ -16,13 +16,18 @@ interface PageTabs {
   readonly activeId: string;
 }
 
-/** Provided by the authenticated layout: shared across vibration routes, cleared on logout. */
+/** Layout-owned measurement selection and Vibration tabs, cleared on logout. */
 @Injectable()
-export class VibrationSelectionService {
-  readonly active = signal(false);
+export class CmSelectionService {
+  private readonly drawerSection = signal<'vibration' | 'performance' | null>(null);
+  readonly active = computed(() => this.drawerSection() === 'vibration');
+  readonly drawerActive = computed(() => this.drawerSection() !== null);
   readonly drawerOpen = signal(false);
-  private readonly savedSelection = signal<AssetTaxonomySelection | null>(null);
-  readonly selection = this.savedSelection.asReadonly();
+  private readonly savedSelections = {
+    vibration: signal<AssetTaxonomySelection | null>(null),
+    performance: signal<AssetTaxonomySelection | null>(null),
+  };
+  readonly selection = computed(() => this.savedSelections[this.drawerSection() ?? 'vibration']());
   private readonly page = signal<VibrationPage>('overview');
   private readonly workspaces = signal<Partial<Record<VibrationPage, PageTabs>>>({});
   private tabSequence = 0;
@@ -32,29 +37,28 @@ export class VibrationSelectionService {
   readonly activeTab = computed(() => this.tabs().find(tab => tab.id === this.activeTabId()));
   readonly pageTitle = computed(() => VIBRATION_PAGES[this.page()]);
   // Both radial analyses use the same drawer validator and Execute gate.
-  readonly requiresOrbitPairs = computed(() => this.page() === 'orbit-analysis' || this.page() === 'rotor-position');
+  readonly requiresOrbitPairs = computed(() =>
+    this.active() && (this.page() === 'orbit-analysis' || this.page() === 'rotor-position'));
   readonly validateOrbitExecution = (execution: AssetTaxonomyExecution | null): string =>
     resolveOrbitProbePairs(execution).error;
 
   setRoute(url: string): void {
-    const page = url.split(/[?#]/)[0].split('/')[3];
-    this.active.set(/^\/cm\/vibration(?:\/|[?#]|$)/.test(url));
-    if (page && Object.prototype.hasOwnProperty.call(VIBRATION_PAGES, page)) {
-      this.page.set(page as VibrationPage);
-    } else if (this.active()) {
-      this.page.set('overview');
+    const [, area, section, page] = url.split(/[?#]/, 1)[0].split('/');
+    this.drawerSection.set(area === 'cm' && (section === 'vibration' || section === 'performance') ? section : null);
+    if (this.active()) {
+      this.page.set(page && Object.prototype.hasOwnProperty.call(VIBRATION_PAGES, page) ? page as VibrationPage : 'overview');
     }
     this.drawerOpen.set(false);
   }
 
   open(): void {
-    if (this.active()) {
+    if (this.drawerActive()) {
       this.drawerOpen.set(true);
     }
   }
 
   save(selection: AssetTaxonomySelection | null): void {
-    this.savedSelection.set(selection ? {
+    this.savedSelections[this.drawerSection() ?? 'vibration'].set(selection ? {
       ...selection, measurementIds: [...new Set(selection.measurementIds)],
     } : null);
   }

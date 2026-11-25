@@ -7,13 +7,13 @@ import { DEFAULT_ORBIT_SETTINGS, OrbitSettings } from 'src/app/core/models/vibra
 import { AnalysisTab } from 'src/app/core/models/vibration/analysis-panel.model';
 import { AnalysisControlsComponent } from '../../analysis-workspace-panel/analysis-controls/analysis-controls.component';
 import { OrbitAcquisitionPickerComponent } from '../orbit-analysis-acquisition-picker/orbit-analysis-acquisition-picker.component';
-import { VibrationSelectionService } from 'src/app/core/services/vibration-selection.service';
+import { CmSelectionService } from 'src/app/core/services/cm-selection.service';
 
 @Component({ selector: 'app-orbit-analysis-controls', standalone: true,
   host: { class: 'd-block mw-100' }, imports: [AnalysisControlsComponent, OrbitAcquisitionPickerComponent, CommonModule, FormsModule, SharedModule], templateUrl: './orbit-analysis-controls.component.html' })
 export class OrbitAnalysisControlsComponent {
   @Input({ required: true }) tab: AnalysisTab;
-  protected readonly state = inject(VibrationSelectionService);
+  protected readonly state = inject(CmSelectionService);
   protected get settings(): OrbitSettings { return this.tab.orbitSettings ?? DEFAULT_ORBIT_SETTINGS; }
   readonly units = ['µm', 'mm'];
   readonly orders = [

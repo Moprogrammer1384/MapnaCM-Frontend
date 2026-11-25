@@ -17,6 +17,7 @@ The workspace accepts `title`, `tabs` and `activeId`. It emits
 Each tab supplies its own required date/time ranges. The consuming module owns tab creation/removal, active-tab
 selection and data loading. A projected `ng-template` receives the active
 `AnalysisTab` as its implicit value, allowing each module to render its own chart.
+Use `emptyMessage` to customize the help text when the workspace has no tabs.
 
 ```html
 <app-analysis-workspace [title]="title" [tabs]="tabs" [activeId]="activeId"
@@ -46,7 +47,7 @@ precedence over `title`, `tabs` and `activeId`. Outputs are still emitted as act
 notifications; consumers using `state` should not bind them back to the same
 methods. No feature-service provider is required by the workspace itself.
 
-All eight Vibration pages pass the layout-owned `VibrationSelectionService`
+All eight Vibration pages pass the layout-owned `CmSelectionService`
 to the workspace. A `headerContent` template receives the owning `AnalysisTab`
 and renders the page's `*-controls` component in the header. The page controls
 compose the shared form with their own picker and settings. Callers that omit
@@ -168,7 +169,7 @@ values use those defaults. `AnalysisControlsComponent.chartSettingsChange` emits
 the complete `AnalysisChartSettings`. The workspace emits `{ tabId,
 chartSettings }`; controlled consumers update the corresponding tab immutably.
 State consumers implement `updateChartSettings(id, settings)` (an optional
-extension of `AnalysisWorkspaceState`). `VibrationSelectionService` implements
+extension of `AnalysisWorkspaceState`). `CmSelectionService` implements
 it and retains independent settings per tab and route in layout memory; there
 is no new browser persistence or API contract. Projected templates read
 `tab.chartSettings`; Frequency Domain binds it to its per-measurement chart.

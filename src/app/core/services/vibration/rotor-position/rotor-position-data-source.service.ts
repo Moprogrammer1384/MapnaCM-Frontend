@@ -1,6 +1,6 @@
 import { inject, InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
-import { RotorPositionEvent, RotorPositionPair, RotorPositionRecord } from 'src/app/core/models/vibration/rotor-position.model';
+import { RotorPositionEvent, RotorPositionPair, RotorPositionRecord } from 'src/app/core/models/vibration/rotor-position/rotor-position.model';
 import { VibrationRotorPositionApiService } from '../api/vibration-rotor-position-api.service';
 
 /** Recorded DC acquisition source. Bode tracking amplitudes are never reused as probe means. */

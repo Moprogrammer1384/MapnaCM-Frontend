@@ -1,5 +1,5 @@
 import { VibrationQuantity } from '../../../models/vibration/analysis-chart-settings.model';
-import { PreparedTimeDomainRecord } from '../../../models/vibration/vibration-data.model';
+import { PreparedTimeDomainRecord } from '../../../models/vibration/time-domain/vibration-data.model';
 import { differentiateSignal, integrateDynamicSignal } from './time-domain-calculus';
 
 export const TIME_DOMAIN_QUANTITY_ORDER: Readonly<Record<VibrationQuantity, number>> = { displacement: 0, velocity: 1, acceleration: 2 };

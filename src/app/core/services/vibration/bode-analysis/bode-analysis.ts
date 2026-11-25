@@ -1,5 +1,5 @@
 import { AnalysisChartSettings, defaultChartSettings, VIBRATION_UNITS, vibrationUnit } from '../../../models/vibration/analysis-chart-settings.model';
-import { BodeAnalysis, BodeRecord } from '../../../models/vibration/bode-analysis.model';
+import { BodeAnalysis, BodeRecord } from '../../../models/vibration/bode-analysis/bode-analysis.model';
 import { unitToSi } from '../time-domain/time-domain-unit-conversion';
 
 /** The source owns Quantity; preserve compatible display choices without converting physical quantity. */

@@ -1,10 +1,10 @@
-import type { AssetTaxonomyExecution } from '../asset-taxonomy-selection.model';
+import type { AssetTaxonomyExecution } from '../asset-taxonomy/asset-taxonomy-selection.model';
 import type { AnalysisChartSettings, VibrationSourceProfile } from './analysis-chart-settings.model';
 import type { DateTimeRange } from '../date-time-range.model';
 import type { AnalysisEventTime } from './analysis-event-time.model';
-import type { OrbitCaptureSelection, OrbitProbePair, OrbitSettings } from './orbit-analysis.model';
-import type { WaterfallEvent, WaterfallSettings } from './waterfall.model';
-import type { SignalIndicatorViewSettings } from './signal-indicators.model';
+import type { OrbitCaptureSelection, OrbitProbePair, OrbitSettings } from './orbit-analysis/orbit-analysis.model';
+import type { WaterfallEvent, WaterfallSettings } from './waterfall/waterfall.model';
+import type { SignalIndicatorViewSettings } from './signal-indicators/signal-indicators.model';
 
 /** Calendar dates in local YYYY-MM-DD form; no UTC conversion or backend contract. */
 export interface AnalysisDateRange {

@@ -1,4 +1,4 @@
-import type { SelectedMeasurementDetails } from '../asset-taxonomy-selection.model';
+import type { SelectedMeasurementDetails } from '../../asset-taxonomy/asset-taxonomy-selection.model';
 
 export interface OrbitProbePair {
   readonly key: string;

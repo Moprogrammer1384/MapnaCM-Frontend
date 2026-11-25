@@ -1,4 +1,4 @@
-import { RotorPositionAnalysis, RotorPositionPoint, RotorPositionRecord, RotorPositionSettings, RotorPositionUnit } from 'src/app/core/models/vibration/rotor-position.model';
+import { RotorPositionAnalysis, RotorPositionPoint, RotorPositionRecord, RotorPositionSettings, RotorPositionUnit } from 'src/app/core/models/vibration/rotor-position/rotor-position.model';
 import { elapsedSeconds } from 'src/app/core/utils/elapsed-seconds';
 
 /** Micrometres per native unit. Conversion never changes physical quantity or removes DC. */

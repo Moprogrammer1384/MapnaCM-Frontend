@@ -4,7 +4,7 @@ import { ECharts, EChartsOption } from 'echarts';
 import { Subscription } from 'rxjs';
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
-import { DEFAULT_ORBIT_SETTINGS, OrbitAnalysis, OrbitCaptureSelection, OrbitProbePair, OrbitRecord, OrbitSettings } from 'src/app/core/models/vibration/orbit-analysis.model';
+import { DEFAULT_ORBIT_SETTINGS, OrbitAnalysis, OrbitCaptureSelection, OrbitProbePair, OrbitRecord, OrbitSettings } from 'src/app/core/models/vibration/orbit-analysis/orbit-analysis.model';
 import { analyzeOrbit } from 'src/app/core/services/vibration/orbit-analysis/orbit-analysis';
 import { ORBIT_DATA_SOURCE } from 'src/app/core/services/vibration/orbit-analysis/orbit-data-source.service';
 import { apiErrorMessage } from 'src/app/core/utils/api-error';

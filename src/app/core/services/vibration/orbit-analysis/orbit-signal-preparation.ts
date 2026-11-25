@@ -1,4 +1,4 @@
-import { OrbitPoint, OrbitRecord, OrbitSettings, OrbitUnit } from 'src/app/core/models/vibration/orbit-analysis.model';
+import { OrbitPoint, OrbitRecord, OrbitSettings, OrbitUnit } from 'src/app/core/models/vibration/orbit-analysis/orbit-analysis.model';
 import { validateOrbitAcquisition } from './orbit-acquisition-validation';
 
 export const ORBIT_UNIT_SCALE: Record<OrbitUnit, number> = { 'µm': 1, mm: 1 / 1000, mil: 1 / 25.4, in: 1 / 25400 };

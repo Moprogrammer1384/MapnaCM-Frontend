@@ -1,6 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { AnalysisTab } from 'src/app/core/models/vibration/analysis-panel.model';
-import { DEFAULT_ROTOR_POSITION_SETTINGS, RotorPositionEvent, RotorPositionSettings, RotorPositionUnit } from 'src/app/core/models/vibration/rotor-position.model';
+import { DEFAULT_ROTOR_POSITION_SETTINGS, RotorPositionEvent, RotorPositionSettings, RotorPositionUnit } from 'src/app/core/models/vibration/rotor-position/rotor-position.model';
 import { resolveOrbitProbePairs } from '../orbit-analysis/orbit-probe-pairing';
 
 function createTabState(tab: AnalysisTab) {

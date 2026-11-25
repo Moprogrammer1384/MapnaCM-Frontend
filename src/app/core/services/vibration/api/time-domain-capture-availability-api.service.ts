@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, map, Observable, of, shareReplay, startWith, switchMap } from 'rxjs';
-import { AssetTaxonomyExecution } from '../../../models/asset-taxonomy-selection.model';
+import { AssetTaxonomyExecution } from '../../../models/asset-taxonomy/asset-taxonomy-selection.model';
 import { TimeDomainAvailability, VibrationTimeDomainAcquisitionApiService } from './vibration-time-domain-acquisition-api.service';
 import { vibrationError } from './vibration-time-domain-api.service';
 

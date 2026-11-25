@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, defer, map, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ApiEnvelope } from '../../../models/response.model';
-import { SIGNAL_INDICATOR_BOUNDARIES, SignalIndicatorAlarmRange, SignalIndicatorAlarmSetting } from '../../../models/vibration/signal-indicators.model';
+import { SIGNAL_INDICATOR_BOUNDARIES, SignalIndicatorAlarmRange, SignalIndicatorAlarmSetting } from '../../../models/vibration/signal-indicators/signal-indicators.model';
 import { AmplitudeMode } from '../../../models/vibration/analysis-chart-settings.model';
 import { apiErrorMessage } from '../../../utils/api-error';
 import { scaleSignalIndicatorLimits, validSignalIndicatorLimits } from '../signal-indicators/signal-indicators-alarms';

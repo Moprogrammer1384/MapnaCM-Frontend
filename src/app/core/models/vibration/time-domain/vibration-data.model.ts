@@ -1,4 +1,4 @@
-import { AmplitudeMode, AnalysisChartSettings, VibrationQuantity, VibrationUnit } from './analysis-chart-settings.model';
+import { AmplitudeMode, AnalysisChartSettings, VibrationQuantity, VibrationUnit } from '../analysis-chart-settings.model';
 
 export type VibrationTimeUnit = 's' | 'ms';
 

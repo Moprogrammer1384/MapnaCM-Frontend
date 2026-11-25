@@ -4,8 +4,8 @@ import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstr
 import { MetronicAlertService } from 'src/app/core/services/metronic-alert.service';
 import { AssetTaxonomyMutations } from 'src/app/core/utils/asset-taxonomy-mutations';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
-import type { Asset, AssetSystem, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy.model';
-import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
+import type { Asset, AssetSystem, TaxonomyParentOption, EmployerOption, InheritedEmployer } from 'src/app/core/models/asset-taxonomy/asset-taxonomy.model';
+import { AssetApiService } from 'src/app/core/services/asset-taxonomy/asset-taxonomy-api.service';
 import { buildParentIdMap, buildParentOptions, buildPlantEmployerMap, resolveInheritedEmployer } from 'src/app/core/utils/asset-taxonomy-hierarchy';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
 

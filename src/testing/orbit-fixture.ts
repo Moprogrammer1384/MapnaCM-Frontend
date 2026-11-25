@@ -1,5 +1,5 @@
-import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
-import { OrbitProbePair, OrbitRecord } from 'src/app/core/models/vibration/orbit-analysis.model';
+import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy/asset-taxonomy-selection.model';
+import { OrbitProbePair, OrbitRecord } from 'src/app/core/models/vibration/orbit-analysis/orbit-analysis.model';
 
 export function orbitExecution(): AssetTaxonomyExecution {
   const x = { measurement: { id: 0, name: 'Displacement X', tag: 'VI-X' }, component: { id: 0, name: 'Bearing 1', tag: null },

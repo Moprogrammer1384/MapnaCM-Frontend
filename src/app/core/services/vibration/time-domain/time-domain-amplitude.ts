@@ -1,5 +1,5 @@
 import { AmplitudeMode } from '../../../models/vibration/analysis-chart-settings.model';
-import { TimeDomainAmplitudeReference, TimeDomainStatistics } from '../../../models/vibration/vibration-data.model';
+import { TimeDomainAmplitudeReference, TimeDomainStatistics } from '../../../models/vibration/time-domain/vibration-data.model';
 import { selectTimeDomainAmplitude } from './time-domain-statistics';
 
 /** Full-record reference levels; instantaneous waveform samples retain their physical values. */

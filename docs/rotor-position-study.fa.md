@@ -125,7 +125,7 @@ RPM = 60 / (p × (pulseTime[k+1] - pulseTime[k]))
 | [تنظیمات عمومی](../src/app/core/models/vibration/analysis-chart-settings.model.ts) | domainهای time/frequency/bode؛ تنظیم پیش‌فرض Velocity/mm/s | تنظیمات عمومی به‌تنهایی مدل مناسبی برای موقعیت DC نیست |
 | [سرویس انتخاب](../src/app/core/services/vibration-selection.service.ts) | الزام جفت X/Y فقط برای orbit-analysis فعال است | Rotor هنوز انتخاب جفت معتبر اختصاصی ندارد |
 | [آماده‌سازی Orbit](../src/app/core/services/vibration/orbit-analysis/orbit-signal-preparation.ts) | با `center=true` میانگین X/Y را کم می‌کند؛ این مقدار پیش‌فرض است | خروجی مرکززدایی‌شده نباید مبنای Centerline قرار گیرد |
-| [مدل Orbit](../src/app/core/models/vibration/orbit-analysis.model.ts) | زمان، واحد displacement، کیفیت، هم‌زمانی و Keyphasor دارد | حفظ DC، مرجع gap، زاویهٔ پراب و هندسهٔ لقی صریح نیست؛ کفایت آن برای موقعیت واقعی اثبات نشده |
+| [مدل Orbit](../src/app/core/models/vibration/orbit-analysis/orbit-analysis.model.ts) | زمان، واحد displacement، کیفیت، هم‌زمانی و Keyphasor دارد | حفظ DC، مرجع gap، زاویهٔ پراب و هندسهٔ لقی صریح نیست؛ کفایت آن برای موقعیت واقعی اثبات نشده |
 
 خاموش‌کردن Center در Orbit به‌تنهایی این کمبود متادیتا را حل نمی‌کند. دادهٔ جابه‌جایی موجود ممکن است برای حرکت نسبی قابل استفاده باشد، اما بدون اعلام ماهیت DC و مرجع، نباید به عنوان موقعیت واقعی در یاتاقان نمایش داده شود.
 

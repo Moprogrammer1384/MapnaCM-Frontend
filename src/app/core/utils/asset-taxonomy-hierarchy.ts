@@ -1,4 +1,4 @@
-import type { InheritedEmployer, Plant, TaxonomyParentOption } from '../models/asset-taxonomy.model';
+import type { InheritedEmployer, Plant, TaxonomyParentOption } from '../models/asset-taxonomy/asset-taxonomy.model';
 
 /** Saved parent IDs remain distinct even when their display labels match. */
 export function buildParentOptions(parents: readonly Pick<Plant, 'id' | 'name' | 'hierarchyLabel'>[]): TaxonomyParentOption[] {

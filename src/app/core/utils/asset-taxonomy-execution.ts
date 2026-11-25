@@ -1,7 +1,7 @@
 import type {
   AssetTaxonomyExecution, AssetTaxonomySelection, AssetTaxonomySnapshot,
   SelectedMeasurementDetails, TaxonomyEntitySummary,
-} from '../models/asset-taxonomy-selection.model';
+} from '../models/asset-taxonomy/asset-taxonomy-selection.model';
 
 function indexById<T extends { id?: number }>(rows: readonly T[]): Map<number, T & { id: number }> {
   return new Map(rows.filter((row): row is T & { id: number } => row.id !== undefined).map(row => [row.id, row]));

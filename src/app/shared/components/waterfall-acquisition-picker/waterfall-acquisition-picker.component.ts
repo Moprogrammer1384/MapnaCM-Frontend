@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, in
 import { Subscription } from 'rxjs';
 import { AnalysisTab } from 'src/app/core/models/vibration/analysis-panel.model';
 import { AnalysisEventTime } from 'src/app/core/models/vibration/analysis-event-time.model';
-import { WaterfallEvent } from 'src/app/core/models/vibration/waterfall.model';
+import { WaterfallEvent } from 'src/app/core/models/vibration/waterfall/waterfall.model';
 import { WATERFALL_DATA_SOURCE } from 'src/app/core/services/vibration/waterfall/waterfall-data-source.service';
 import { VibrationEventPickerComponent } from '../vibration-event-picker/vibration-event-picker.component';
 import { VIBRATION_EVENT_LABELS } from '../vibration-chart-presentation/vibration-event-presentation';

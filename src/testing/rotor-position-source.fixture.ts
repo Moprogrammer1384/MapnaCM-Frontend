@@ -1,5 +1,5 @@
 import { defer, Observable, of } from 'rxjs';
-import { RotorPositionEvent, RotorPositionPair, RotorPositionRecord } from 'src/app/core/models/vibration/rotor-position.model';
+import { RotorPositionEvent, RotorPositionPair, RotorPositionRecord } from 'src/app/core/models/vibration/rotor-position/rotor-position.model';
 import type { RotorPositionDataSource } from 'src/app/core/services/vibration/rotor-position/rotor-position-data-source.service';
 
 /** Explicit frontend demonstration data. Never a fallback for measured/API data. */

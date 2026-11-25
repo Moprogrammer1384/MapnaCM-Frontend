@@ -1,4 +1,4 @@
-import { FrequencyDomainAnalysis } from 'src/app/core/models/vibration/frequency-domain.model';
+import { FrequencyDomainAnalysis } from 'src/app/core/models/vibration/frequency-domain/frequency-domain.model';
 
 export interface SpectrumPeak { readonly frequency: number; readonly amplitude: number; }
 

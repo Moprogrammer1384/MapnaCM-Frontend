@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { defer, map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { OrbitRecord } from '../../../models/vibration/orbit-analysis.model';
+import { OrbitRecord } from '../../../models/vibration/orbit-analysis/orbit-analysis.model';
 import { ApiEnvelope } from '../../../models/response.model';
 import { apiErrorMessage } from '../../../utils/api-error';
 import { validateOrbitAcquisition } from '../orbit-analysis/orbit-acquisition-validation';

@@ -1,6 +1,6 @@
 import { AnalysisChartSettings, vibrationUnit } from '../../../models/vibration/analysis-chart-settings.model';
-import { FrequencyDomainAnalysis } from '../../../models/vibration/frequency-domain.model';
-import { RawVibrationRecord } from '../../../models/vibration/vibration-data.model';
+import { FrequencyDomainAnalysis } from '../../../models/vibration/frequency-domain/frequency-domain.model';
+import { RawVibrationRecord } from '../../../models/vibration/time-domain/vibration-data.model';
 import { prepareTimeDomainRecord } from '../time-domain/time-domain-preparation';
 import { resampleFftInput } from './fft-input-resampling';
 import { windowFftInput } from './fft-input-window';

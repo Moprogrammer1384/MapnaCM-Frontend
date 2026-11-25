@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-import { FrequencyDomainWorkerRequest, FrequencyDomainWorkerResponse } from '../../../models/vibration/frequency-domain.model';
+import { FrequencyDomainWorkerRequest, FrequencyDomainWorkerResponse } from '../../../models/vibration/frequency-domain/frequency-domain.model';
 import { prepareFrequencyDomainRecord, analyzeFrequencyDomain } from './frequency-domain-analysis';
 
 let record: ReturnType<typeof prepareFrequencyDomainRecord> | undefined;

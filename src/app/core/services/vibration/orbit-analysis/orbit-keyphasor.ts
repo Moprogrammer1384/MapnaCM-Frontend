@@ -1,4 +1,4 @@
-import { OrbitPoint, OrbitRecord } from 'src/app/core/models/vibration/orbit-analysis.model';
+import { OrbitPoint, OrbitRecord } from 'src/app/core/models/vibration/orbit-analysis/orbit-analysis.model';
 import { interpolateOrbitPoint } from './orbit-point-interpolation';
 
 export function validateKeyphasor(record: OrbitRecord): readonly number[] {

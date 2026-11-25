@@ -1,5 +1,5 @@
-import { VibrationQuantity, VibrationUnit } from './analysis-chart-settings.model';
-import { TimeDomainStatistics } from './vibration-data.model';
+import { VibrationQuantity, VibrationUnit } from '../analysis-chart-settings.model';
+import { TimeDomainStatistics } from '../time-domain/vibration-data.model';
 
 export interface VibrationChartDto {
   readonly timeOriginUtc: string;

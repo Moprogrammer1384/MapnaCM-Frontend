@@ -1,4 +1,4 @@
-import type { AssetTaxonomySnapshot } from 'src/app/core/models/asset-taxonomy-selection.model';
+import type { AssetTaxonomySnapshot } from 'src/app/core/models/asset-taxonomy/asset-taxonomy-selection.model';
 
 export function assetTaxonomyFixture(): AssetTaxonomySnapshot {
   return {

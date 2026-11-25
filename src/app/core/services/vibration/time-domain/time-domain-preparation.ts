@@ -1,4 +1,4 @@
-import { PreparedTimeDomainRecord, RawVibrationRecord } from '../../../models/vibration/vibration-data.model';
+import { PreparedTimeDomainRecord, RawVibrationRecord } from '../../../models/vibration/time-domain/vibration-data.model';
 import { TIME_DOMAIN_QUANTITY_ORDER } from './time-domain-quantity-conversion';
 import { scaleSignal, unitToSi } from './time-domain-unit-conversion';
 

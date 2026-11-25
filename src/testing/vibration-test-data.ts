@@ -1,4 +1,4 @@
-import { RawVibrationRecord } from '../app/core/models/vibration/vibration-data.model';
+import { RawVibrationRecord } from '../app/core/models/vibration/time-domain/vibration-data.model';
 
 /** Test-only workload for the established numerical/worker/OnPush regressions. */
 export const vibrationTestRecord: RawVibrationRecord = {

@@ -1,4 +1,4 @@
-import { OrbitPoint } from 'src/app/core/models/vibration/orbit-analysis.model';
+import { OrbitPoint } from 'src/app/core/models/vibration/orbit-analysis/orbit-analysis.model';
 
 /** Interpolate a position at a supplied reference time, without extrapolating the acquisition. */
 export function interpolateOrbitPoint(points: readonly OrbitPoint[], time: number): OrbitPoint {

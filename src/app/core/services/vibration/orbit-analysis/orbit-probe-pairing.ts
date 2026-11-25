@@ -1,5 +1,5 @@
-import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy-selection.model';
-import { OrbitProbePair } from 'src/app/core/models/vibration/orbit-analysis.model';
+import { AssetTaxonomyExecution } from 'src/app/core/models/asset-taxonomy/asset-taxonomy-selection.model';
+import { OrbitProbePair } from 'src/app/core/models/vibration/orbit-analysis/orbit-analysis.model';
 
 /** A distinct synchronized X/Y pair per bearing, within one asset. */
 export function resolveOrbitProbePairs(execution: AssetTaxonomyExecution | null): { pairs: OrbitProbePair[]; error: string } {

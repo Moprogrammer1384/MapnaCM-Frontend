@@ -1,4 +1,4 @@
-import type { AmplitudeMode, VibrationQuantity, VibrationUnit } from './analysis-chart-settings.model';
+import type { AmplitudeMode, VibrationQuantity, VibrationUnit } from '../analysis-chart-settings.model';
 
 /** Tracking observations, not a waveform or a transfer-function gain. */
 export interface BodeObservation {

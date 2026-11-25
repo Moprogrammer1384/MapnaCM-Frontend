@@ -1,6 +1,6 @@
 import { inject, InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
-import { BodeRecord } from '../../../models/vibration/bode-analysis.model';
+import { BodeRecord } from '../../../models/vibration/bode-analysis/bode-analysis.model';
 import { DateTimeRange } from '../../../models/date-time-range.model';
 import { VibrationBodeAnalysisApiService } from '../api/vibration-bode-analysis-api.service';
 

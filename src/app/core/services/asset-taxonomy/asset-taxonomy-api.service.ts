@@ -3,10 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
-import { ApiEnvelope } from '../models/response.model';
-import { criteriaToHttpParams } from '../utils/query-params';
-import { PaginatedResult } from '../models/user-management.model';
+import { environment } from '../../../../environments/environment';
+import { ApiEnvelope } from '../../models/response.model';
+import { criteriaToHttpParams } from '../../utils/query-params';
+import { PaginatedResult } from '../../models/user-management.model';
 import type {
   EmployerOption,
   Asset,
@@ -18,7 +18,7 @@ import type {
   Component,
   Measurement,
   Unit,
-} from '../models/asset-taxonomy.model';
+} from '../../models/asset-taxonomy/asset-taxonomy.model';
 
 /** Shared page request for the taxonomy lists: everything, client-side filtered. */
 const ALL_ROWS_PARAMS = criteriaToHttpParams({ skip: 0, take: 10000 });

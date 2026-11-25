@@ -5,8 +5,8 @@ import { MetronicAlertService } from 'src/app/core/services/metronic-alert.servi
 import { AssetTaxonomyMutations } from 'src/app/core/utils/asset-taxonomy-mutations';
 import { formatGeoCoordinate } from 'src/app/core/utils/geo-coordinate-display';
 import { RequestState } from 'src/app/shared/components/request-state/request-state';
-import type { Plant, PlantType, TaxonomyParentOption, EmployerOption } from 'src/app/core/models/asset-taxonomy.model';
-import { AssetApiService } from 'src/app/core/services/asset-taxonomy-api.service';
+import type { Plant, PlantType, TaxonomyParentOption, EmployerOption } from 'src/app/core/models/asset-taxonomy/asset-taxonomy.model';
+import { AssetApiService } from 'src/app/core/services/asset-taxonomy/asset-taxonomy-api.service';
 import { TablePagination, TablePaginationColumn } from 'src/app/shared/components/data-table/pagination/table-pagination';
 
 @Component({

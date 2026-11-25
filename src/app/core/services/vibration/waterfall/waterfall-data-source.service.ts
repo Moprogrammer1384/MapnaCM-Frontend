@@ -1,6 +1,6 @@
 import { inject, InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
-import { WaterfallCapture, WaterfallEvent, WaterfallRequest } from '../../../models/vibration/waterfall.model';
+import { WaterfallCapture, WaterfallEvent, WaterfallRequest } from '../../../models/vibration/waterfall/waterfall.model';
 import { VibrationWaterfallApiService } from '../api/vibration-waterfall-api.service';
 
 export interface WaterfallDataSource {

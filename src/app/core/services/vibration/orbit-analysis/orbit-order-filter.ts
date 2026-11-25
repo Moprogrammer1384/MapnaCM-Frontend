@@ -1,4 +1,4 @@
-import { OrbitPoint } from 'src/app/core/models/vibration/orbit-analysis.model';
+import { OrbitPoint } from 'src/app/core/models/vibration/orbit-analysis/orbit-analysis.model';
 import { shaftPhaseAt } from './orbit-keyphasor';
 
 /** Least squares: DC + a*cos(n*shaftPhase) + b*sin(n*shaftPhase), independently for X/Y. */

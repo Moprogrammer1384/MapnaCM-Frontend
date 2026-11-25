@@ -1,4 +1,4 @@
-import { AmplitudeMode, VibrationQuantity, VibrationSourceProfile } from './analysis-chart-settings.model';
+import { AmplitudeMode, VibrationQuantity, VibrationSourceProfile } from '../analysis-chart-settings.model';
 
 export type SignalIndicatorMode = 'all' | AmplitudeMode;
 export interface SignalIndicatorAlarmRange {

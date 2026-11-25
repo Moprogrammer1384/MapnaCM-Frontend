@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';
-import { RotorPositionSettings, RotorPositionUnit } from 'src/app/core/models/vibration/rotor-position.model';
+import { RotorPositionSettings, RotorPositionUnit } from 'src/app/core/models/vibration/rotor-position/rotor-position.model';
 
 @Component({ selector: 'app-rotor-position-controls', standalone: true, imports: [FormsModule, SharedModule],
   templateUrl: './rotor-position-controls.component.html', changeDetection: ChangeDetectionStrategy.OnPush })

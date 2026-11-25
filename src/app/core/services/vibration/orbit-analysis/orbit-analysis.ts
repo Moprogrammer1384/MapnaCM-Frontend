@@ -1,4 +1,4 @@
-import { OrbitAnalysis, OrbitRecord, OrbitSettings } from 'src/app/core/models/vibration/orbit-analysis.model';
+import { OrbitAnalysis, OrbitRecord, OrbitSettings } from 'src/app/core/models/vibration/orbit-analysis/orbit-analysis.model';
 import { keyphasorMarkers, validateKeyphasor } from './orbit-keyphasor';
 import { filterOrbitOrder } from './orbit-order-filter';
 import { prepareOrbitSignal } from './orbit-signal-preparation';

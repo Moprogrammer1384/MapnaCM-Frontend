@@ -1,6 +1,6 @@
-import { AnalysisChartSettings } from './analysis-chart-settings.model';
-import { RawVibrationRecord } from './vibration-data.model';
-import { FrequencyDomainAnalysis } from './frequency-domain.model';
+import { AnalysisChartSettings } from '../analysis-chart-settings.model';
+import { RawVibrationRecord } from '../time-domain/vibration-data.model';
+import { FrequencyDomainAnalysis } from '../frequency-domain/frequency-domain.model';
 
 /** Display settings; native acquisition DTOs are defined in waterfall-api.model.ts. */
 export interface WaterfallSettings extends AnalysisChartSettings {

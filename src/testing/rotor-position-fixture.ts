@@ -1,4 +1,4 @@
-import { RotorPositionEvent, RotorPositionRecord } from 'src/app/core/models/vibration/rotor-position.model';
+import { RotorPositionEvent, RotorPositionRecord } from 'src/app/core/models/vibration/rotor-position/rotor-position.model';
 import { orbitPair } from './orbit-fixture';
 
 export const rotorPair = orbitPair;

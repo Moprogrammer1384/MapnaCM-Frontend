@@ -1,4 +1,4 @@
-import { WaterfallCapture, WaterfallSettings, WaterfallSpectrum } from '../../../models/vibration/waterfall.model';
+import { WaterfallCapture, WaterfallSettings, WaterfallSpectrum } from '../../../models/vibration/waterfall/waterfall.model';
 import { analyzeFrequencyDomain, prepareFrequencyDomainRecord } from '../frequency-domain/frequency-domain-analysis';
 
 /** Each snapshot is transformed independently; time gaps are never interpolated. */

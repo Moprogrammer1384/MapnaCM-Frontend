@@ -1,15 +1,15 @@
 import { computed, Injectable, signal } from '@angular/core';
 import type { AnalysisEventTime } from '../models/vibration/analysis-event-time.model';
-import type { AssetTaxonomyExecution, AssetTaxonomySelection } from '../models/asset-taxonomy-selection.model';
+import type { AssetTaxonomyExecution, AssetTaxonomySelection } from '../models/asset-taxonomy/asset-taxonomy-selection.model';
 import { AnalysisDateRange, AnalysisTab, AnalysisTimeRange } from '../models/vibration/analysis-panel.model';
 import { VibrationPage, VIBRATION_PAGES } from '../models/vibration/vibration-page.model';
 import { AnalysisChartSettings, defaultChartSettings, VibrationSourceProfile, vibrationUnitOptions } from '../models/vibration/analysis-chart-settings.model';
 import { DateTimeRange } from '../models/date-time-range.model';
-import { DEFAULT_ORBIT_SETTINGS, OrbitCaptureSelection, OrbitSettings } from '../models/vibration/orbit-analysis.model';
+import { DEFAULT_ORBIT_SETTINGS, OrbitCaptureSelection, OrbitSettings } from '../models/vibration/orbit-analysis/orbit-analysis.model';
 import { validOrbitCaptureInstant, validOrbitPeriod, validOrbitPeriodDate } from './vibration/orbit-analysis/orbit-capture-selection';
 import { resolveOrbitProbePairs } from './vibration/orbit-analysis/orbit-probe-pairing';
-import { DEFAULT_WATERFALL_SETTINGS, WaterfallEvent, WaterfallSettings } from '../models/vibration/waterfall.model';
-import { SignalIndicatorMode } from '../models/vibration/signal-indicators.model';
+import { DEFAULT_WATERFALL_SETTINGS, WaterfallEvent, WaterfallSettings } from '../models/vibration/waterfall/waterfall.model';
+import { SignalIndicatorMode } from '../models/vibration/signal-indicators/signal-indicators.model';
 
 interface PageTabs {
   readonly tabs: readonly AnalysisTab[];

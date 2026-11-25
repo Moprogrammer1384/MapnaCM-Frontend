@@ -1,4 +1,4 @@
-import type { AssetTaxonomyNode, AssetTaxonomySnapshot, TaxonomyNodeKind } from '../models/asset-taxonomy-selection.model';
+import type { AssetTaxonomyNode, AssetTaxonomySnapshot, TaxonomyNodeKind } from '../models/asset-taxonomy/asset-taxonomy-selection.model';
 
 type NamedRecord = { id?: number; name: string; tag?: string | null };
 

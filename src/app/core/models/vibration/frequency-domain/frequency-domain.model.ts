@@ -1,5 +1,5 @@
-import { AmplitudeMode, AnalysisChartSettings, VibrationQuantity, VibrationUnit } from './analysis-chart-settings.model';
-import { RawVibrationRecord } from './vibration-data.model';
+import { AmplitudeMode, AnalysisChartSettings, VibrationQuantity, VibrationUnit } from '../analysis-chart-settings.model';
+import { RawVibrationRecord } from '../time-domain/vibration-data.model';
 
 export interface FrequencyDomainAnalysis {
   readonly frequency: Float64Array;

@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, in
 import { Subscription } from 'rxjs';
 import { AnalysisEventTime } from 'src/app/core/models/vibration/analysis-event-time.model';
 import { DateTimeRange } from 'src/app/core/models/date-time-range.model';
-import { OrbitCaptureChoice, OrbitCaptureSelection, OrbitProbePair } from 'src/app/core/models/vibration/orbit-analysis.model';
+import { OrbitCaptureChoice, OrbitCaptureSelection, OrbitProbePair } from 'src/app/core/models/vibration/orbit-analysis/orbit-analysis.model';
 import { VibrationOrbitAnalysisAvailabilityApiService } from 'src/app/core/services/vibration/api/vibration-orbit-analysis-availability-api.service';
 import { apiErrorMessage } from 'src/app/core/utils/api-error';
 import { analysisEventLabel } from 'src/app/core/utils/analysis-event-label';

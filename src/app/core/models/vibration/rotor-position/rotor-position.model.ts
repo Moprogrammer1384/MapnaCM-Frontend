@@ -1,5 +1,5 @@
-import { SelectedMeasurementDetails } from '../asset-taxonomy-selection.model';
-import { AnalysisEventTime } from './analysis-event-time.model';
+import { SelectedMeasurementDetails } from '../../asset-taxonomy/asset-taxonomy-selection.model';
+import { AnalysisEventTime } from '../analysis-event-time.model';
 
 export type RotorPositionEventType = 'Startup' | 'CoastDown' | 'Trip';
 export type RotorPositionUnit = 'µm' | 'mm' | 'mil' | 'in';

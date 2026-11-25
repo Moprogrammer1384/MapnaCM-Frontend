@@ -4,8 +4,8 @@ import { catchError, defer, map, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { VibrationQuantity, VibrationUnit, VIBRATION_UNITS } from '../../../models/vibration/analysis-chart-settings.model';
 import { ApiEnvelope } from '../../../models/response.model';
-import { RawVibrationRecord, VibrationDataRequest } from '../../../models/vibration/vibration-data.model';
-import { VibrationChartDto, VibrationDisplayRecord } from '../../../models/vibration/vibration-api.model';
+import { RawVibrationRecord, VibrationDataRequest } from '../../../models/vibration/time-domain/vibration-data.model';
+import { VibrationChartDto, VibrationDisplayRecord } from '../../../models/vibration/api/vibration-api.model';
 import { apiErrorMessage } from '../../../utils/api-error';
 
 export type VibrationDataRecord = RawVibrationRecord | VibrationDisplayRecord;

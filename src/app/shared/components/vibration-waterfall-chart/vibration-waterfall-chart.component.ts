@@ -4,7 +4,7 @@ import type { ECharts, EChartsOption } from 'echarts';
 import { Subscription } from 'rxjs';
 import { ApacheEchartsComponent } from 'src/app/_metronic/partials/content/widgets/charts/Apache-Echarts/apache-echarts.component';
 import { AMPLITUDE_LABELS } from 'src/app/core/models/vibration/analysis-chart-settings.model';
-import { WaterfallCapture, WaterfallEvent, WaterfallSettings, WaterfallSpectrum } from 'src/app/core/models/vibration/waterfall.model';
+import { WaterfallCapture, WaterfallEvent, WaterfallSettings, WaterfallSpectrum } from 'src/app/core/models/vibration/waterfall/waterfall.model';
 import { VIBRATION_EVENT_CLASSES, VIBRATION_EVENT_LABELS } from '../vibration-chart-presentation/vibration-event-presentation';
 import { analyzeWaterfall, prepareWaterfall } from 'src/app/core/services/vibration/waterfall/waterfall-analysis';
 import { WATERFALL_DATA_SOURCE } from 'src/app/core/services/vibration/waterfall/waterfall-data-source.service';

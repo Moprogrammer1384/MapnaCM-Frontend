@@ -1,4 +1,4 @@
-import { OrbitPeriod } from 'src/app/core/models/vibration/orbit-analysis.model';
+import { OrbitPeriod } from 'src/app/core/models/vibration/orbit-analysis/orbit-analysis.model';
 
 export function validOrbitPeriod(value: unknown): value is OrbitPeriod {
   return value === 'Daily';

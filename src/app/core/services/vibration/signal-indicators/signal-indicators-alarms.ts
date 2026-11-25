@@ -1,4 +1,4 @@
-import { SIGNAL_INDICATOR_BOUNDARIES, SignalIndicatorAlarmRange } from '../../../models/vibration/signal-indicators.model';
+import { SIGNAL_INDICATOR_BOUNDARIES, SignalIndicatorAlarmRange } from '../../../models/vibration/signal-indicators/signal-indicators.model';
 
 export function validSignalIndicatorLimits(limits: SignalIndicatorAlarmRange): boolean {
   const values = SIGNAL_INDICATOR_BOUNDARIES.map(key => limits[key]);

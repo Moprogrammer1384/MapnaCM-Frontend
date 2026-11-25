@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { defer, map, Observable, timer } from 'rxjs';
-import { WaterfallCapture, WaterfallEvent, WaterfallEventType, WaterfallRequest } from 'src/app/core/models/vibration/waterfall.model';
+import { WaterfallCapture, WaterfallEvent, WaterfallEventType, WaterfallRequest } from 'src/app/core/models/vibration/waterfall/waterfall.model';
 
 import type { WaterfallDataSource } from 'src/app/core/services/vibration/waterfall/waterfall-data-source.service';
 

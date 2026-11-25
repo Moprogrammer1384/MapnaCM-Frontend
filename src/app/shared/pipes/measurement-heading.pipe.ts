@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { TaxonomyEntitySummary } from 'src/app/core/models/asset-taxonomy-selection.model';
+import { TaxonomyEntitySummary } from 'src/app/core/models/asset-taxonomy/asset-taxonomy-selection.model';
 
 /** One heading format for single-channel charts and explicit X/Y probe pairs. */
 @Pipe({ name: 'measurementHeading', standalone: true })

@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-import { PreparedTimeDomainRecord, TimeDomainWorkerRequest, TimeDomainWorkerResponse } from '../../../models/vibration/vibration-data.model';
+import { PreparedTimeDomainRecord, TimeDomainWorkerRequest, TimeDomainWorkerResponse } from '../../../models/vibration/time-domain/vibration-data.model';
 import { prepareTimeDomainRecord } from './time-domain-preparation';
 import { analyzeTimeDomain } from './time-domain-analysis';
 
